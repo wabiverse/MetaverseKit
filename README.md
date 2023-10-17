@@ -9,6 +9,12 @@ the entire **Apple** family of devices: **macOS**, **visionOS**, **iOS**, **tvOS
 as well as support for **Microsoft Windows**. To learn more about Swift, please visit [swift.org](https://www.swift.org).
 <br>
 
+# Included
+- **Eigen v3.4.0**
+- **Draco v1.5.6**
+- **Python v3.11.6**
+- **...growing...**
+
 # Usage
 ##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L95).
 ```swift
