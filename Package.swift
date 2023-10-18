@@ -21,6 +21,10 @@ let package = Package(
       name: "Python",
       targets: ["Python"]
     ),
+    .library(
+      name: "MoltenVK",
+      targets: ["MoltenVK"]
+    ),
   ],
   targets: [
     .target(
@@ -100,6 +104,12 @@ let package = Package(
       url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/Python.xcframework.zip", 
       checksum: "11c2238d09cf559340ce3fd240235b08f227e8b9c6e60f48d4187cd6de52fa7a"
     ),
+
+    .binaryTarget(
+      name: "MoltenVK", 
+      url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/MoltenVK.xcframework.zip", 
+      checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
+    )
   ],
   cxxLanguageStandard: .cxx17
 )
