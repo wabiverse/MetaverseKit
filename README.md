@@ -13,7 +13,7 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 - **Eigen v3.4.0**
 - **Draco v1.5.6**
 - **Python v3.11.6**
-- **MoltenVK v1.2.6-rc1** (macOS)
+- **MoltenVK v1.2.6-rc1** (darwin-based platforms)
 - **...growing...**
 
 # Usage
