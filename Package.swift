@@ -2,21 +2,9 @@
 
 import PackageDescription
 
-/* --------------------------------------------------------------------------------------------- *
- * We will need to migrate these include paths once we provide each of Pixar's USD dependencies, *
- * we are also looking to the industry & community for guidance as to which versions we support. *
- * --------------------------------------------------------------------------------------------- */
-
-#if os(macOS)
-  let platformIncludes: [String] = []
-  let platformExcludes: [String] = []
-#elseif os(Linux)
-  let platformIncludes: [String] = []
-  let platformExcludes: [String] = []
-#else /* os(Windows) */
-  let platformIncludes: [String] = []
-  let platformExcludes: [String] = []
-#endif /* os(Windows) */
+/* ------------------------------------------------------
+ *  :: :  💫 The Open Source Metaverse  :   ::
+ * ------------------------------------------------------ */
 
 let package = Package(
   name: "MetaverseKit",
