@@ -17,7 +17,7 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 - **MoltenVK v1.2.6-rc1** (darwin-based platforms)
 - **OneTBB v2021.10.0**
 - **Shaderc v2023.2**
-- **SpirvCross 1.3.261.1**
+- **SpirvCross v1.3.261.1**
 - **...growing...**
 
 # Usage
