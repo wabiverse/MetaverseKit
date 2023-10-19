@@ -16,6 +16,7 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 - **Glslang v12.3.1**
 - **MoltenVK v1.2.6-rc1** (darwin-based platforms)
 - **oneTBB v2021.10.0**
+- **Shaderc v2023.2**
 - **...growing...**
 
 # Usage
