@@ -36,6 +36,10 @@ let package = Package(
       name: "Glslang",
       targets: ["Glslang"]
     ),
+    .library(
+      name: "OneTBB",
+      targets: ["OneTBB"]
+    ),
   ],
   targets: [
     .target(
@@ -48,6 +52,7 @@ let package = Package(
         .interoperabilityMode(.Cxx),
       ]
     ),
+
     .target(
       name: "Draco",
       dependencies: [
@@ -126,6 +131,20 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .define("ENABLE_HLSL", to: "1")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "OneTBB",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_XOPEN_SOURCE"),
+        .define("TBB_USE_PROFILING_TOOLS", to: "2")
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
