@@ -40,6 +40,10 @@ let package = Package(
       name: "OneTBB",
       targets: ["OneTBB"]
     ),
+    .library(
+      name: "Shaderc",
+      targets: ["Shaderc"]
+    ),
   ],
   targets: [
     .target(
@@ -145,6 +149,39 @@ let package = Package(
       cxxSettings: [
         .define("_XOPEN_SOURCE"),
         .define("TBB_USE_PROFILING_TOOLS", to: "2")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "Shaderc",
+      dependencies: [
+        .target(name: "Glslang"),
+      ],
+      exclude: [
+        "include/shaderc/shaderc_test.cc",
+        "include/shaderc/libshaderc_util/string_piece_test.cc",
+        "include/shaderc/libshaderc_util/version_profile_test.cc",
+        "include/shaderc/shaderc_private_test.cc",
+        "include/shaderc/shaderc_cpp_test.cc",
+        "include/shaderc/libshaderc_util/message_test.cc",
+        "include/shaderc/libshaderc_util/mutex_test.cc",
+        "include/shaderc/libshaderc_util/file_finder_test.cc",
+        "include/shaderc/libshaderc_util/io_shaderc_test.cc",
+        "include/shaderc/libshaderc_util/format_test.cc",
+        "include/shaderc/libshaderc_util/counting_includer_test.cc",
+        "include/shaderc/libshaderc_util/compiler_test.cc",
+        "include/shaderc/glslc/stage_test.cc",
+        "include/shaderc/glslc/resource_parse_test.cc",
+        "include/shaderc/glslc/file_test.cc",
+        "include/shaderc/glslc/notmain.cc"
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("include/shaderc"),
+        .define("ENABLE_HLSL", to: "1")
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
