@@ -17,16 +17,24 @@ let package = Package(
   ],
   products: [
     .library(
+      name: "OneTBB",
+      targets: ["OneTBB"]
+    ),
+    .library(
+      name: "Boost",
+      targets: ["Boost"]
+    ),
+    .library(
+      name: "Python",
+      targets: ["Python"]
+    ),
+    .library(
       name: "Eigen",
       targets: ["Eigen"]
     ),
     .library(
       name: "Draco",
       targets: ["Draco"]
-    ),
-    .library(
-      name: "Python",
-      targets: ["Python"]
     ),
     .library(
       name: "MoltenVK",
@@ -37,17 +45,13 @@ let package = Package(
       targets: ["Glslang"]
     ),
     .library(
-      name: "OneTBB",
-      targets: ["OneTBB"]
-    ),
-    .library(
       name: "Shaderc",
       targets: ["Shaderc"]
     ),
     .library(
       name: "SPIRVCross",
       targets: ["SPIRVCross"]
-    ),
+    )
   ],
   targets: [
     .target(
@@ -180,7 +184,8 @@ let package = Package(
         "include/shaderc/glslc/stage_test.cc",
         "include/shaderc/glslc/resource_parse_test.cc",
         "include/shaderc/glslc/file_test.cc",
-        "include/shaderc/glslc/notmain.cc"
+        "include/shaderc/glslc/notmain.cc",
+        "include/shaderc/shaderc_c_smoke_test.c",
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -201,6 +206,12 @@ let package = Package(
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
+    ),
+
+    .binaryTarget(
+      name: "Boost", 
+      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.2/boost.xcframework.zip", 
+      checksum: "a4846beef0b8f335a0fd0de5711aec07674e9c804c066e0090d864a31b99e9de"
     ),
 
     .binaryTarget(
