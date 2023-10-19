@@ -8,6 +8,13 @@ import PackageDescription
 
 let package = Package(
   name: "MetaverseKit",
+  platforms: [
+    .macOS(.v11),
+    .visionOS(.v1),
+    .iOS(.v12),
+    .tvOS(.v12),
+    .watchOS(.v4)
+  ],
   products: [
     .library(
       name: "Eigen",
@@ -24,6 +31,10 @@ let package = Package(
     .library(
       name: "MoltenVK",
       targets: ["MoltenVK"]
+    ),
+    .library(
+      name: "Glslang",
+      targets: ["Glslang"]
     ),
   ],
   targets: [
@@ -94,6 +105,28 @@ let package = Package(
       ],
       publicHeadersPath: "include",
       cxxSettings: [],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "Glslang",
+      exclude: [
+        "include/glslang/CMakeLists.txt",
+        "include/glslang/ExtensionHeaders/GL_EXT_shader_realtime_clock.glsl",
+        "include/glslang/MachineIndependent/glslang.m4",
+        "include/glslang/MachineIndependent/glslang.y",
+        "include/glslang/OSDependent/Unix/CMakeLists.txt",
+        "include/glslang/OSDependent/Web",
+        "include/glslang/OSDependent/Windows",
+        "include/glslang/updateGrammar",
+        "include/SPIRV/CMakeLists.txt",
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("ENABLE_HLSL", to: "1")
+      ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
