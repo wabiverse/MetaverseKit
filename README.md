@@ -9,14 +9,15 @@ the entire **Apple** family of devices: **macOS**, **visionOS**, **iOS**, **tvOS
 as well as support for **Microsoft Windows**. To learn more about Swift, please visit [swift.org](https://www.swift.org).
 <br>
 
-# Included
+# Included (names based on Swift library names)
 - **Eigen v3.4.0**
 - **Draco v1.5.6**
 - **Python v3.11.6**
 - **Glslang v12.3.1**
 - **MoltenVK v1.2.6-rc1** (darwin-based platforms)
-- **oneTBB v2021.10.0**
+- **OneTBB v2021.10.0**
 - **Shaderc v2023.2**
+- **SpirvCross 1.3.261.1**
 - **...growing...**
 
 # Usage
