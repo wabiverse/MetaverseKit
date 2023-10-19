@@ -44,6 +44,10 @@ let package = Package(
       name: "Shaderc",
       targets: ["Shaderc"]
     ),
+    .library(
+      name: "SPIRVCross",
+      targets: ["SPIRVCross"]
+    ),
   ],
   targets: [
     .target(
@@ -183,6 +187,17 @@ let package = Package(
         .headerSearchPath("include/shaderc"),
         .define("ENABLE_HLSL", to: "1")
       ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "SPIRVCross",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include/spirv_cross",
+      cxxSettings: [],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
