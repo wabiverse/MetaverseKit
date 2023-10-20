@@ -29,6 +29,10 @@ let package = Package(
       targets: ["Python"]
     ),
     .library(
+      name: "IMath",
+      targets: ["IMath"]
+    ),
+    .library(
       name: "Eigen",
       targets: ["Eigen"]
     ),
@@ -203,6 +207,26 @@ let package = Package(
       exclude: [],
       publicHeadersPath: "include/spirv_cross",
       cxxSettings: [],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "IMath",
+      dependencies: [
+        .target(name: "Python"),
+        .target(name: "Boost"),
+      ],
+      exclude: [
+        "include/python/PyImathNumpy"
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("include/Imath"),
+        .headerSearchPath("include/python"),
+        .headerSearchPath("include/python/PyImath"),
+      ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
