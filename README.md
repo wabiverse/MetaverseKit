@@ -17,6 +17,7 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 - **Blosc v1.21.5**
 - **PyBind11 v2.11.1**
 - **OpenVDB v10.1.0**
+- **Ptex v2.4.2**
 - **Eigen v3.4.0**
 - **Draco v1.5.6**
 - **Glslang v12.3.1**
@@ -29,6 +30,6 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 ##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L95).
 ```swift
 dependencies: [
-  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.0.9"),
+  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.1.1"),
 ]
 ```

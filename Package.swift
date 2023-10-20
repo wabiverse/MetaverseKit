@@ -55,6 +55,10 @@ let package = Package(
       targets: ["Blosc"]
     ),
     .library(
+      name: "Ptex",
+      targets: ["Ptex"]
+    ),
+    .library(
       name: "Eigen",
       targets: ["Eigen"]
     ),
@@ -248,6 +252,15 @@ let package = Package(
         .headerSearchPath("include/Imath/python"),
         .headerSearchPath("include/Imath/python/PyImath"),
       ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "Ptex",
+      publicHeadersPath: "include",
+      cxxSettings: [],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
