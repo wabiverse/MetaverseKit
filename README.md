@@ -13,6 +13,7 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 - **OneTBB v2021.10.0**
 - **Boost v1.81.2**
 - **Python v3.11.6**
+- **IMath v3.1.9**
 - **Eigen v3.4.0**
 - **Draco v1.5.6**
 - **Glslang v12.3.1**
@@ -25,6 +26,6 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 ##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L95).
 ```swift
 dependencies: [
-  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.0.7"),
+  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.0.8"),
 ]
 ```
