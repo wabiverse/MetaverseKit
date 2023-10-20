@@ -3,12 +3,14 @@
 import PackageDescription
 
 #if os(Windows)
-let platformBloscExcludes: [String] = [
-
-]
+let platformBloscExcludes: [String] = []
+let platformMetaPyExcludes: [String] = []
 #else /* os(Windows) */
 let platformBloscExcludes: [String] = [
   "include/win32"
+]
+let platformMetaPyExcludes: [String] = [
+  "PyAlembic/msvc14fixes.cpp"
 ]
 #endif /* !os(Windows) */
 
@@ -39,8 +41,16 @@ let package = Package(
       targets: ["Python"]
     ),
     .library(
+      name: "MetaPy",
+      targets: ["MetaPy"]
+    ),
+    .library(
       name: "IMath",
       targets: ["IMath"]
+    ),
+    .library(
+      name: "HDF5",
+      targets: ["HDF5"]
     ),
     .library(
       name: "OpenVDB",
@@ -57,6 +67,10 @@ let package = Package(
     .library(
       name: "Ptex",
       targets: ["Ptex"]
+    ),
+    .library(
+      name: "Alembic",
+      targets: ["Alembic"]
     ),
     .library(
       name: "Eigen",
@@ -244,13 +258,29 @@ let package = Package(
         .target(name: "Python"),
         .target(name: "Boost"),
       ],
-      exclude: [
-        "include/Imath/python/PyImathNumpy"
-      ],
+      exclude: [],
       publicHeadersPath: "include/Imath",
       cxxSettings: [
-        .headerSearchPath("include/Imath/python"),
-        .headerSearchPath("include/Imath/python/PyImath"),
+        .headerSearchPath("include/python/PyImath"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "MetaPy",
+      dependencies: [
+        .target(name: "Python"),
+        .target(name: "Boost"),
+        .target(name: "IMath"),
+        .target(name: "Alembic"),
+      ],
+      exclude: platformMetaPyExcludes,
+      publicHeadersPath: "include/python",
+      cxxSettings: [
+        .headerSearchPath("include/python/PyImath"),
+        .headerSearchPath("include/python/PyAlembic")
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -261,6 +291,39 @@ let package = Package(
       name: "Ptex",
       publicHeadersPath: "include",
       cxxSettings: [],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "HDF5",
+      exclude: [
+        "c++"
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("H5_HAVE_C99_FUNC", to: "1"),
+        .define("H5_USE_18_API", to: "1"),
+        .define("H5_BUILT_AS_DYNAMIC_LIB", to: "1"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "Alembic",
+      dependencies: [
+        .target(name: "Boost"),
+        .target(name: "Python"),
+        .target(name: "HDF5"),
+        .target(name: "IMath")
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("include/Alembic/AbcMaterial"),
+      ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
@@ -295,7 +358,8 @@ let package = Package(
         .target(name: "IMath"),
       ],
       exclude: [
-        "include/openvdb/unittest"
+        "include/openvdb/unittest",
+        "include/openvdb/unittest/notmain.cc"
       ],
       publicHeadersPath: "include",
       cxxSettings: [],
