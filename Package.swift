@@ -260,9 +260,6 @@ let package = Package(
       ],
       exclude: [],
       publicHeadersPath: "include/Imath",
-      cxxSettings: [
-        .headerSearchPath("include/python/PyImath"),
-      ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
