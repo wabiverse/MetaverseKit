@@ -219,13 +219,12 @@ let package = Package(
         .target(name: "Boost"),
       ],
       exclude: [
-        "include/python/PyImathNumpy"
+        "include/Imath/python/PyImathNumpy"
       ],
-      publicHeadersPath: "include",
+      publicHeadersPath: "include/Imath",
       cxxSettings: [
-        .headerSearchPath("include/Imath"),
-        .headerSearchPath("include/python"),
-        .headerSearchPath("include/python/PyImath"),
+        .headerSearchPath("include/Imath/python"),
+        .headerSearchPath("include/Imath/python/PyImath"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
