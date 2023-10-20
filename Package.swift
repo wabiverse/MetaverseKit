@@ -2,6 +2,16 @@
 
 import PackageDescription
 
+#if os(Windows)
+let platformBloscExcludes: [String] = [
+
+]
+#else /* os(Windows) */
+let platformBloscExcludes: [String] = [
+  "include/win32"
+]
+#endif /* !os(Windows) */
+
 /* ------------------------------------------------------
  *  :: :  💫 The Open Source Metaverse  :   ::
  * ------------------------------------------------------ */
@@ -31,6 +41,18 @@ let package = Package(
     .library(
       name: "IMath",
       targets: ["IMath"]
+    ),
+    .library(
+      name: "OpenVDB",
+      targets: ["OpenVDB"]
+    ),
+    .library(
+      name: "PyBind11",
+      targets: ["PyBind11"]
+    ),
+    .library(
+      name: "Blosc",
+      targets: ["Blosc"]
     ),
     .library(
       name: "Eigen",
@@ -226,6 +248,44 @@ let package = Package(
         .headerSearchPath("include/Imath/python"),
         .headerSearchPath("include/Imath/python/PyImath"),
       ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "PyBind11",
+      publicHeadersPath: "include",
+      cxxSettings: [],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "Blosc",
+      exclude: platformBloscExcludes,
+      publicHeadersPath: "include/blosc",
+      cxxSettings: [],
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "OpenVDB",
+      dependencies: [
+        .target(name: "OneTBB"),
+        .target(name: "Boost"),
+        .target(name: "Blosc"),
+        .target(name: "PyBind11"),
+        .target(name: "IMath"),
+      ],
+      exclude: [
+        "include/openvdb/unittest"
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]

@@ -14,6 +14,9 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 - **Boost v1.81.2**
 - **Python v3.11.6**
 - **IMath v3.1.9**
+- **Blosc v1.21.5**
+- **PyBind11 v2.11.1**
+- **OpenVDB v10.1.0**
 - **Eigen v3.4.0**
 - **Draco v1.5.6**
 - **Glslang v12.3.1**
