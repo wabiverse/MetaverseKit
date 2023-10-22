@@ -1,0 +1,11 @@
+#ifndef _CONFIGURATION_HEADER_GUARD_H_
+#define _CONFIGURATION_HEADER_GUARD_H_
+
+//#define HAVE_LZ4 @HAVE_LZ4@
+//#define HAVE_SNAPPY @HAVE_SNAPPY@
+#define HAVE_ZLIB 1
+#define HAVE_ZSTD 1
+//#define BLOSC_DLL_EXPORT @DLL_EXPORT@
+
+
+#endif

@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: OpenColorIO
+Version: 2.3.0
+Description: A color management framework for visual effects and animation.
+URL: https://opencolorio.org/
+Libs: -L${libdir} -lOpenColorIO
+Cflags: -I${includedir}

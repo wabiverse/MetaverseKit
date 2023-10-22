@@ -10,7 +10,7 @@
 
 #ifdef OPENVDB_USE_IMATH_HALF
 #ifdef OPENVDB_IMATH_VERSION
-#include <Imath/half.h>
+#include <half.h>
 #else
 #include <OpenEXR/half.h>
 #endif

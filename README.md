@@ -16,9 +16,8 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 - **MetaPy (Metaverse Python Libraries)**
 - **IMath v3.1.9**
 - **Alembic v1.8.5**
-- **HDF5 v1.10.0**
+- **OpenColorIO v2.3.0**
 - **Blosc v1.21.5**
-- **PyBind11 v2.11.1**
 - **OpenVDB v10.1.0**
 - **Ptex v2.4.2**
 - **Eigen v3.4.0**
@@ -27,12 +26,20 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 - **MoltenVK v1.2.6-rc1** (darwin-based platforms)
 - **Shaderc v2023.2**
 - **SpirvCross v1.3.261.1**
+- **PyBind11 v2.11.1**
+- **HDF5 v1.10.0**
+- **ZStandard v1.5.5**
+- **ZLibDataCompression v1.2.11**
+- **LZMA2 v5.4.4**
+- **MiniZip v4.0.1**
+- **Yaml v0.8.0**
+- **OpenSSL v(BoringSSL `abfd5eb`)**
 - **...growing...**
 
 # Usage
 ##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L95).
 ```swift
 dependencies: [
-  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.1.2"),
+  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.1.3"),
 ]
 ```

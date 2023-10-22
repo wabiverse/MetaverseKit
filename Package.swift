@@ -3,16 +3,50 @@
 import PackageDescription
 
 #if os(Windows)
-let platformBloscExcludes: [String] = []
-let platformMetaPyExcludes: [String] = []
+  let platformBloscExcludes: [String] = []
+  let platformMetaPyExcludes: [String] = []
+  let platformMiniZipExcludes: [String] = [
+    "mz_strm_os_posix.c",
+    "mz_os_posix.c",
+    "mz_crypt_apple.c"
+  ]
+  let platformOCIOExcludes: [String] = [
+    "SystemMonitor_macos.cpp",
+  ]
 #else /* os(Windows) */
-let platformBloscExcludes: [String] = [
-  "include/win32"
-]
-let platformMetaPyExcludes: [String] = [
-  "PyAlembic/msvc14fixes.cpp"
-]
-#endif /* !os(Windows) */
+  #if os(macOS)
+    let platformOCIOExcludes: [String] = [
+      "SystemMonitor_windows.cpp",
+    ]
+    let platformMiniZipExcludes: [String] = [
+      "mz_strm_os_win32.c",
+      "mz_os_win32.c",
+      "mz_crypt_winvista.c",
+      "mz_crypt_winxp.c"
+    ]
+  #elseif os(Linux)
+    let platformOCIOExcludes: [String] = [
+      "SystemMonitor_macos.cpp",
+      "SystemMonitor_windows.cpp"
+    ]
+    let platformMiniZipExcludes: [String] = [
+      "mz_strm_os_win32.c",
+      "mz_os_win32.c",
+      "mz_crypt_winvista.c",
+      "mz_crypt_winxp.c",
+      "mz_crypt_apple.c"
+    ]
+  #endif /* os(Linux) */
+  /* ---------------------------------- *
+   * Same excludes for macOS and Linux. *
+   * ---------------------------------- */
+  let platformBloscExcludes: [String] = [
+    "include/win32"
+  ]
+  let platformMetaPyExcludes: [String] = [
+    "PyAlembic/msvc14fixes.cpp"
+  ]
+#endif /* os(macOS) || os(Linux) */
 
 /* ------------------------------------------------------
  *  :: :  💫 The Open Source Metaverse  :   ::
@@ -55,6 +89,34 @@ let package = Package(
     .library(
       name: "OpenVDB",
       targets: ["OpenVDB"]
+    ),
+    .library(
+      name: "OpenColorIO",
+      targets: ["OpenColorIO"]
+    ),
+    .library(
+      name: "ZStandard",
+      targets: ["ZStandard"]
+    ),
+    .library(
+      name: "ZLibDataCompression",
+      targets: ["ZLibDataCompression"]
+    ),
+    .library(
+      name: "LZMA2",
+      targets: ["LZMA2"]
+    ),
+    .library(
+      name: "MiniZip",
+      targets: ["MiniZip"]
+    ),
+    .library(
+      name: "Yaml", 
+      targets: ["Yaml"]
+    ),
+    .library(
+      name: "OpenSSL",
+      targets: ["OpenSSL"]
     ),
     .library(
       name: "PyBind11",
@@ -266,6 +328,118 @@ let package = Package(
     ),
 
     .target(
+      name: "ZStandard",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: ".",
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "LZMA2",
+      dependencies: [],
+      exclude: [
+        "check/crc32_small.c"
+      ],
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath("common"),
+        .headerSearchPath("lzmacommon"),
+        .headerSearchPath("check"),
+        .headerSearchPath("delta"),
+        .headerSearchPath("lz"),
+        .headerSearchPath("lzma"),
+        .headerSearchPath("rangecoder"),
+        .headerSearchPath("simple"),
+        .define("HAVE_STDBOOL_H", to: "1"),
+        .define("MYTHREAD_POSIX", to: "1", .when(platforms: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux])),
+        .define("MYTHREAD_VISTA", to: "1", .when(platforms: [.windows])),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "Yaml",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include",
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "OpenSSL",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include",
+      cSettings: [
+        .define("BORINGSSL_NO_STATIC_INITIALIZER", to: "1")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "MiniZip",
+      dependencies: [
+        .target(name: "LZMA2"),
+        .target(name: "ZLibDataCompression"),
+        .target(name: "ZStandard"),
+        .target(name: "OpenSSL")
+      ],
+      exclude: platformMiniZipExcludes,
+      publicHeadersPath: "include",
+      cSettings: [
+        .define("HAVE_ZLIB", to: "1"),
+        .define("ZLIB_COMPAT", to: "1")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "ZLibDataCompression",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath("."),
+        .define("HAVE_ATTRIBUTE_ALIGNED", to: "1"),
+        .define("WITH_GZFILEOP", to: "1"),
+        .define("HAVE_UNISTD_H", to: "1"),
+        .define("Z_HAVE_STDARG_H", to: "1")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "OpenColorIO",
+      dependencies: [
+        .target(name: "IMath"),
+        .target(name: "Python"),
+        .target(name: "MiniZip"),
+        .target(name: "Yaml")
+      ],
+      exclude: platformOCIOExcludes,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath(".")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
       name: "MetaPy",
       dependencies: [
         .target(name: "Python"),
@@ -295,11 +469,8 @@ let package = Package(
 
     .target(
       name: "HDF5",
-      exclude: [
-        "c++"
-      ],
       publicHeadersPath: "include",
-      cxxSettings: [
+      cSettings: [
         .define("H5_HAVE_C99_FUNC", to: "1"),
         .define("H5_USE_18_API", to: "1"),
         .define("H5_BUILT_AS_DYNAMIC_LIB", to: "1"),
@@ -337,9 +508,12 @@ let package = Package(
 
     .target(
       name: "Blosc",
+      dependencies: [
+        .target(name: "ZLibDataCompression"),
+        .target(name: "ZStandard")
+      ],
       exclude: platformBloscExcludes,
       publicHeadersPath: "include/blosc",
-      cxxSettings: [],
       swiftSettings: [
         .interoperabilityMode(.C),
       ]
@@ -383,5 +557,6 @@ let package = Package(
       checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
     )
   ],
+  cLanguageStandard: .gnu17,
   cxxLanguageStandard: .cxx17
 )
