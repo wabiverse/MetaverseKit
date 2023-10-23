@@ -11,8 +11,8 @@
 #include <Python.h>
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS
 #include <boost/python.hpp>
-#include <ImathQuat.h>
-#include <ImathVec.h>
+#include <OpenEXR/ImathQuat.h>
+#include <OpenEXR/ImathVec.h>
 #include "PyImath.h"
 
 namespace PyImath {

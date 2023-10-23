@@ -20,8 +20,8 @@
 #include <boost/python/make_constructor.hpp>
 #include <boost/format.hpp>
 #include <boost/cast.hpp>
-#include <ImathVec.h>
-#include <ImathVecAlgo.h>
+#include <OpenEXR/ImathVec.h>
+#include <OpenEXR/ImathVecAlgo.h>
 #include "PyImath.h"
 #include "PyImathMathExc.h"
 #include "PyImathBox.h"

@@ -11,7 +11,7 @@
 #include <Python.h>
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS
 #include <boost/python.hpp>
-#include <ImathVec.h>
+#include <OpenEXR/ImathVec.h>
 #include "PyImath.h"
 #include "PyImathFixedArray.h"
 

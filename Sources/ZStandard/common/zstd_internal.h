@@ -68,9 +68,15 @@ extern "C" {
 #define ZSTD_REP_NUM      3                 /* number of repcodes */
 static UNUSED_ATTR const U32 repStartValue[ZSTD_REP_NUM] = { 1, 4, 8 };
 
-#define KB *(1 <<10)
-#define MB *(1 <<20)
-#define GB *(1U<<30)
+#ifndef KB
+# define KB *(1 <<10)
+#endif /* KB */
+#ifndef MB
+# define MB *(1 <<20)
+#endif /* MB */
+#ifndef GB
+# define GB *(1U<<30)
+#endif /* GB */
 
 #define BIT7 128
 #define BIT6  64

@@ -13,6 +13,14 @@ import PackageDescription
   let platformOCIOExcludes: [String] = [
     "SystemMonitor_macos.cpp",
   ]
+  let platformTIFFExcludes: [String] = [
+    "tif_unix.c",
+    "mkg3states.c"
+  ]
+  let platformTurboJPEGExcludes: [String] = [
+    "turbojpeg-jni.c",
+    "tjunittest.c"
+  ]
 #else /* os(Windows) */
   #if os(macOS)
     let platformOCIOExcludes: [String] = [
@@ -45,6 +53,14 @@ import PackageDescription
   ]
   let platformMetaPyExcludes: [String] = [
     "PyAlembic/msvc14fixes.cpp"
+  ]
+  let platformTIFFExcludes: [String] = [
+    "tif_win32.c",
+    "mkg3states.c"
+  ]
+  let platformTurboJPEGExcludes: [String] = [
+    "turbojpeg-jni.c",
+    "tjunittest.c"
   ]
 #endif /* os(macOS) || os(Linux) */
 
@@ -79,10 +95,6 @@ let package = Package(
       targets: ["MetaPy"]
     ),
     .library(
-      name: "IMath",
-      targets: ["IMath"]
-    ),
-    .library(
       name: "HDF5",
       targets: ["HDF5"]
     ),
@@ -93,6 +105,34 @@ let package = Package(
     .library(
       name: "OpenColorIO",
       targets: ["OpenColorIO"]
+    ),
+    .library(
+      name: "OpenImageIO",
+      targets: ["OpenImageIO"]
+    ),
+    .library(
+      name: "OpenEXR",
+      targets: ["OpenEXR"]
+    ),
+    .library(
+      name: "WebP",
+      targets: ["WebP"]
+    ),
+    .library(
+      name: "TurboJPEG",
+      targets: ["TurboJPEG"]
+    ),
+    .library(
+      name: "Raw",
+      targets: ["Raw"]
+    ),
+    .library(
+      name: "TIFF",
+      targets: ["TIFF"]
+    ),
+    .library(
+      name: "LibPNG",
+      targets: ["LibPNG"]
     ),
     .library(
       name: "ZStandard",
@@ -109,6 +149,10 @@ let package = Package(
     .library(
       name: "MiniZip",
       targets: ["MiniZip"]
+    ),
+    .library(
+      name: "DEFLATE",
+      targets: ["DEFLATE"]
     ),
     .library(
       name: "Yaml", 
@@ -315,19 +359,6 @@ let package = Package(
     ),
 
     .target(
-      name: "IMath",
-      dependencies: [
-        .target(name: "Python"),
-        .target(name: "Boost"),
-      ],
-      exclude: [],
-      publicHeadersPath: "include/Imath",
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
-    ),
-
-    .target(
       name: "ZStandard",
       dependencies: [],
       exclude: [],
@@ -422,9 +453,131 @@ let package = Package(
     ),
 
     .target(
+      name: "Raw",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath(".")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "LibPNG",
+      dependencies: [
+        .target(name: "ZLibDataCompression")
+      ],
+      exclude: [],
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath(".")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "TurboJPEG",
+      dependencies: [
+        .target(name: "OpenSSL")
+      ],
+      exclude: platformTurboJPEGExcludes,
+      publicHeadersPath: "include/turbo",
+      cSettings: [
+        .headerSearchPath(".")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "TIFF",
+      dependencies: [
+        .target(name: "WebP"),
+        .target(name: "LZMA2"),
+        .target(name: "ZStandard"),
+        .target(name: "TurboJPEG"),
+      ],
+      exclude: platformTIFFExcludes,
+      publicHeadersPath: "include",
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "WebP",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath(".")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.C),
+      ]
+    ),
+
+    .target(
+      name: "OpenEXR",
+      dependencies: [
+        .target(name: "DEFLATE")
+      ],
+      exclude: [],
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath("."),
+        .headerSearchPath("OpenEXRCore"),
+        .headerSearchPath("include/OpenEXR")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "OpenImageIO",
+      dependencies: [
+        .target(name: "WebP"),
+        .target(name: "TIFF"),
+        .target(name: "Raw"),
+        .target(name: "Ptex"),
+        .target(name: "LibPNG"),
+        .target(name: "OpenVDB"),
+        .target(name: "OpenEXR"),
+        .target(name: "PyBind11"),
+      ],
+      exclude: [
+        // disabled for now... but always happy to add more in.
+        "nuke",
+        "jpeg2000.imageio",
+        "iv",
+        "heif.imageio",
+        "gif.imageio",
+        "ffmpeg.imageio",
+        "dicom.imageio",
+        "cineon.imageio"
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("."),
+        .headerSearchPath("include/OpenImageIO/detail"),
+        .headerSearchPath("libOpenImageIO")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
       name: "OpenColorIO",
       dependencies: [
-        .target(name: "IMath"),
+        .target(name: "OpenEXR"),
         .target(name: "Python"),
         .target(name: "MiniZip"),
         .target(name: "Yaml")
@@ -444,14 +597,16 @@ let package = Package(
       dependencies: [
         .target(name: "Python"),
         .target(name: "Boost"),
-        .target(name: "IMath"),
+        .target(name: "OpenEXR"),
         .target(name: "Alembic"),
+        .target(name: "OpenImageIO")
       ],
       exclude: platformMetaPyExcludes,
       publicHeadersPath: "include/python",
       cxxSettings: [
         .headerSearchPath("include/python/PyImath"),
-        .headerSearchPath("include/python/PyAlembic")
+        .headerSearchPath("include/python/PyAlembic"),
+        .headerSearchPath("include/python/PyOIIO")
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -486,7 +641,7 @@ let package = Package(
         .target(name: "Boost"),
         .target(name: "Python"),
         .target(name: "HDF5"),
-        .target(name: "IMath")
+        .target(name: "OpenEXR")
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -503,6 +658,17 @@ let package = Package(
       cxxSettings: [],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "DEFLATE",
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath("."),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.C),
       ]
     ),
 
@@ -525,8 +691,9 @@ let package = Package(
         .target(name: "OneTBB"),
         .target(name: "Boost"),
         .target(name: "Blosc"),
+        .target(name: "Python"),
         .target(name: "PyBind11"),
-        .target(name: "IMath"),
+        .target(name: "OpenEXR"),
       ],
       exclude: [
         "include/openvdb/unittest",

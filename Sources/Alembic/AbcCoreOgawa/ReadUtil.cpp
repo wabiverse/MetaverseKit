@@ -45,7 +45,7 @@
 #  endif
 #endif
 
-#include <half.h>
+#include <OpenEXR/half.h>
 
 namespace Alembic {
 namespace AbcCoreOgawa {

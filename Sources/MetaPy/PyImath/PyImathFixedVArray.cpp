@@ -10,7 +10,7 @@
 #include <boost/python.hpp>
 #include <boost/shared_array.hpp>
 #include <boost/any.hpp>
-#include <ImathVec.h>
+#include <OpenEXR/ImathVec.h>
 #include "PyImathExport.h"
 #include "PyImathFixedVArray.h"
 

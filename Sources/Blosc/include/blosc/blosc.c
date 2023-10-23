@@ -64,8 +64,12 @@
 
 
 /* Some useful units */
-#define KB 1024
-#define MB (1024 * (KB))
+#ifndef KB
+# define KB 1024
+#endif /* KB */
+#ifndef MB
+# define MB (1024 * (1024))
+#endif /* MB */
 
 /* Minimum buffer size to be compressed */
 #define MIN_BUFFERSIZE 128       /* Cannot be smaller than 66 */
@@ -74,7 +78,7 @@
 #define MAX_SPLITS 16            /* Cannot be larger than 128 */
 
 /* The size of L1 cache.  32 KB is quite common nowadays. */
-#define L1 (32 * (KB))
+#define L1 (32 * (1024))
 
 /* Have problems using posix barriers when symbol value is 200112L */
 /* This requires more investigation, but will work for the moment */

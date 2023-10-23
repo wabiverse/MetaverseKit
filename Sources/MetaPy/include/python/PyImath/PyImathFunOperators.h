@@ -8,10 +8,10 @@
 #ifndef _PyImathFunOperators_h_
 #define _PyImathFunOperators_h_
 
-#include <ImathVec.h>
-#include <ImathMatrixAlgo.h>
-#include <ImathColorAlgo.h>
-#include <ImathFun.h>
+#include <OpenEXR/ImathVec.h>
+#include <OpenEXR/ImathMatrixAlgo.h>
+#include <OpenEXR/ImathColorAlgo.h>
+#include <OpenEXR/ImathFun.h>
 #include <cmath>
 
 namespace PyImath {

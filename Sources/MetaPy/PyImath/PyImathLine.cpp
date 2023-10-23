@@ -10,8 +10,8 @@
 #include <boost/python.hpp>
 #include <boost/python/make_constructor.hpp>
 #include <boost/format.hpp>
-#include <ImathLineAlgo.h>
-#include <ImathMatrix.h>
+#include <OpenEXR/ImathLineAlgo.h>
+#include <OpenEXR/ImathMatrix.h>
 #include "PyImathLine.h"
 #include "PyImathDecorators.h"
 #include "PyImathExport.h"

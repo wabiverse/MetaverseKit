@@ -5,7 +5,7 @@
 
 // clang-format off
 
-#include <ImathVec.h>
+#include <OpenEXR/ImathVec.h>
 #include "PyImathBufferProtocol.h"
 #include "PyImathExport.h"
 #include "PyImathFixedArray.h"

@@ -70,9 +70,7 @@ extern "C" {
 #  define ZSTD_DEPS_NEED_ASSERT
 #  include "zstd_deps.h"
 #else
-#  ifndef assert   /* assert may be already defined, due to prior #include <assert.h> */
-#    define assert(condition) ((void)0)   /* disable assert (default) */
-#  endif
+#  include <assert.h>
 #endif
 
 #if (DEBUGLEVEL>=2)

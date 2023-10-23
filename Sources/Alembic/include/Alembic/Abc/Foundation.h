@@ -40,11 +40,11 @@
 #include <Alembic/AbcCoreAbstract/All.h>
 #include <Alembic/Util/All.h>
 
-#include <ImathVec.h>
-#include <ImathBox.h>
-#include <ImathMatrix.h>
-#include <ImathQuat.h>
-#include <ImathColor.h>
+#include <OpenEXR/ImathVec.h>
+#include <OpenEXR/ImathBox.h>
+#include <OpenEXR/ImathMatrix.h>
+#include <OpenEXR/ImathQuat.h>
+#include <OpenEXR/ImathColor.h>
 
 #include <iostream>
 #include <string>

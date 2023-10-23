@@ -19,8 +19,8 @@
 #include <boost/python.hpp>
 #include <boost/python/make_constructor.hpp>
 #include <boost/format.hpp>
-#include <ImathVec.h>
-#include <ImathVecAlgo.h>
+#include <OpenEXR/ImathVec.h>
+#include <OpenEXR/ImathVecAlgo.h>
 #include "PyImath.h"
 #include "PyImathBox.h"
 #include "PyImathVec.h"

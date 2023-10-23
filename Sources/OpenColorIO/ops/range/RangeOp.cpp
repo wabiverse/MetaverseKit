@@ -6,7 +6,7 @@
 
 #include <OpenColorIO/OpenColorIO.h>
 
-#include <half.h>
+#include <OpenEXR/half.h>
 
 #include "GpuShaderUtils.h"
 #include "HashUtils.h"

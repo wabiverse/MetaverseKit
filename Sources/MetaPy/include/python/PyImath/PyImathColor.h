@@ -11,7 +11,7 @@
 #include <Python.h>
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS
 #include <boost/python.hpp>
-#include <ImathColor.h>
+#include <OpenEXR/ImathColor.h>
 #include "PyImath.h"
 
 namespace PyImath {

@@ -37,9 +37,9 @@
 #include <Alembic/AbcGeom/XformSample.h>
 #include <Alembic/AbcGeom/XformOp.h>
 
-#include <ImathMatrix.h>
-#include <ImathMatrixAlgo.h>
-#include <ImathQuat.h>
+#include <OpenEXR/ImathMatrix.h>
+#include <OpenEXR/ImathMatrixAlgo.h>
+#include <OpenEXR/ImathQuat.h>
 
 #include <math.h>
 #ifndef M_PI
