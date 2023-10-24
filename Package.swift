@@ -2,24 +2,130 @@
 
 import PackageDescription
 
+/** Platforms, grouped by OS. */
+struct Arch
+{
+  static let hostTriplet: String = "\(cpuArch)-\(host)-\(device)"
+
+  enum OS
+  {
+    case apple
+    case linux
+    case windows
+    case web
+
+    public var platform: [Platform]
+    {
+      switch self
+      {
+        case .apple: [.macOS, .iOS, .visionOS, .tvOS, .watchOS]
+        case .linux: [.linux, .android, .openbsd]
+        case .windows: [.windows]
+        case .web: [.wasi]
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------------
+   * To detect platform triplets, we need to know the OS and CPU architecture.
+   * -------------------------------------------------------------------------*/
+
+  #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
+    static let host = "apple"
+    #if os(macOS)
+      static let device = "macosx"
+    #elseif os(visionOS)
+      static let device = "xros"
+    #elseif os(iOS)
+      static let device = "ios"
+    #elseif os(tvOS)
+      static let device = "tvos"
+    #elseif os(watchOS)
+      static let device = "watchos"
+    #endif
+  #elseif os(Linux) || os(Android) || os(OpenBSD)
+    static let host = "unknown-linux"
+    #if os(Android)
+      static let device = "android"
+    #else /* os(Linux) || os(OpenBSD) */
+      static let device = "unknown"
+    #endif
+  #elseif os(Windows)
+    static let host = "windows"
+    static let device = "windows"
+  #elseif os(WASI)
+    static let host = "wasi"
+    static let device = "wasi"
+  #endif
+
+  #if arch(arm64)
+    static let cpuArch: String = "arm64"
+  #elseif arch(x86_64)
+    static let cpuArch: String = "x86_64"
+  #elseif arch(i386)
+    static let cpuArch: String = "i386"
+  #elseif arch(arm)
+    static let cpuArch: String = "arm"
+  #elseif arch(powerpc64)
+    static let cpuArch: String = "powerpc64"
+  #elseif arch(powerpc64le)
+    static let cpuArch: String = "powerpc64le"
+  #elseif arch(powerpc)
+    static let cpuArch: String = "powerpc"
+  #elseif arch(s390x)
+    static let cpuArch: String = "s390x"
+  #elseif arch(wasm32)
+    static let cpuArch: String = "wasm32"
+  #elseif arch(arm64_32)
+    static let cpuArch: String = "arm64_32"
+  #endif
+}
+
 #if os(Windows)
   let platformBloscExcludes: [String] = []
   let platformMetaPyExcludes: [String] = []
   let platformMiniZipExcludes: [String] = [
     "mz_strm_os_posix.c",
     "mz_os_posix.c",
-    "mz_crypt_apple.c"
+    "mz_crypt_apple.c",
   ]
   let platformOCIOExcludes: [String] = [
     "SystemMonitor_macos.cpp",
   ]
   let platformTIFFExcludes: [String] = [
     "tif_unix.c",
-    "mkg3states.c"
+    "mkg3states.c",
   ]
   let platformTurboJPEGExcludes: [String] = [
     "turbojpeg-jni.c",
-    "tjunittest.c"
+    "tjunittest.c",
+  ]
+  let platformOsdExcludes: [String] = [
+    /* disabled for now. */
+    "osd/OpenCLD3D11VertexBuffer.cpp",
+    "osd/OpenCLEvaluator.cpp",
+    /* disabled DX3D for now. */
+    /* I have lots of TODOs on windows... */
+    "osd/D3D11ComputeEvaluator.cpp",
+    "osd/D3D11LegacyGregoryPatchTable.cpp",
+    "osd/D3D11PatchTable.cpp",
+    "osd/D3D11VertexBuffer.cpp",
+    "osd/CpuD3D11VertexBuffer.cpp",
+    /* no metal for windows. */
+    "MTLComputeEvaluator.mm",
+    "MTLLegacyGregoryPatchTable.mm",
+    "MTLMesh.mm",
+    "MTLPatchShaderSource.mm",
+    "MTLPatchTable.mm",
+    "MTLVertexBuffer.mm",
+    /* disabled CUDA for now. */
+    /* I have lots of TODOs on windows... */
+    "osd/CudaD3D11VertexBuffer.cpp",
+    "osd/CudaEvaluator.cpp",
+    "osd/CudaGLVertexBuffer.cpp",
+    "osd/CudaKernel.cu",
+    "osd/CudaPatchTable.cpp",
+    "osd/CudaVertexBuffer.cpp",
   ]
 #else /* os(Windows) */
   #if os(macOS)
@@ -30,37 +136,82 @@ import PackageDescription
       "mz_strm_os_win32.c",
       "mz_os_win32.c",
       "mz_crypt_winvista.c",
-      "mz_crypt_winxp.c"
+      "mz_crypt_winxp.c",
+    ]
+    let platformOsdExcludes: [String] = [
+      /* disabled for now */
+      "osd/OpenCLD3D11VertexBuffer.cpp",
+      "osd/OpenCLEvaluator.cpp",
+      /* peek into apple's late DX3D work
+        on macOS, we may want to tap into this. */
+      "osd/D3D11ComputeEvaluator.cpp",
+      "osd/D3D11LegacyGregoryPatchTable.cpp",
+      "osd/D3D11PatchTable.cpp",
+      "osd/D3D11VertexBuffer.cpp",
+      "osd/CpuD3D11VertexBuffer.cpp",
+      /* no CUDA support on macOS */
+      "osd/CudaD3D11VertexBuffer.cpp",
+      "osd/CudaEvaluator.cpp",
+      "osd/CudaGLVertexBuffer.cpp",
+      "osd/CudaKernel.cu",
+      "osd/CudaPatchTable.cpp",
+      "osd/CudaVertexBuffer.cpp",
     ]
   #elseif os(Linux)
     let platformOCIOExcludes: [String] = [
       "SystemMonitor_macos.cpp",
-      "SystemMonitor_windows.cpp"
+      "SystemMonitor_windows.cpp",
     ]
     let platformMiniZipExcludes: [String] = [
       "mz_strm_os_win32.c",
       "mz_os_win32.c",
       "mz_crypt_winvista.c",
       "mz_crypt_winxp.c",
-      "mz_crypt_apple.c"
+      "mz_crypt_apple.c",
+    ]
+    let platformOsdExcludes: [String] = [
+      /* disabled for now. */
+      "osd/OpenCLD3D11VertexBuffer.cpp",
+      "osd/OpenCLEvaluator.cpp",
+      /* no DirectX3D for linux. */
+      "osd/D3D11ComputeEvaluator.cpp",
+      "osd/D3D11LegacyGregoryPatchTable.cpp",
+      "osd/D3D11PatchTable.cpp",
+      "osd/D3D11VertexBuffer.cpp",
+      "osd/CpuD3D11VertexBuffer.cpp",
+      /* no metal for linux. */
+      "MTLComputeEvaluator.mm",
+      "MTLLegacyGregoryPatchTable.mm",
+      "MTLMesh.mm",
+      "MTLPatchShaderSource.mm",
+      "MTLPatchTable.mm",
+      "MTLVertexBuffer.mm",
+      /* disabled CUDA for now. */
+      /* I have lots of TODOs on linux... */
+      "osd/CudaD3D11VertexBuffer.cpp",
+      "osd/CudaEvaluator.cpp",
+      "osd/CudaGLVertexBuffer.cpp",
+      "osd/CudaKernel.cu",
+      "osd/CudaPatchTable.cpp",
+      "osd/CudaVertexBuffer.cpp",
     ]
   #endif /* os(Linux) */
-  /* ---------------------------------- *
+  /** ---------------------------------- *
    * Same excludes for macOS and Linux. *
    * ---------------------------------- */
   let platformBloscExcludes: [String] = [
-    "include/win32"
+    "include/win32",
   ]
   let platformMetaPyExcludes: [String] = [
-    "PyAlembic/msvc14fixes.cpp"
+    "PyAlembic/msvc14fixes.cpp",
   ]
   let platformTIFFExcludes: [String] = [
     "tif_win32.c",
-    "mkg3states.c"
+    "mkg3states.c",
   ]
   let platformTurboJPEGExcludes: [String] = [
     "turbojpeg-jni.c",
-    "tjunittest.c"
+    "tjunittest.c",
   ]
 #endif /* os(macOS) || os(Linux) */
 
@@ -75,7 +226,7 @@ let package = Package(
     .visionOS(.v1),
     .iOS(.v12),
     .tvOS(.v12),
-    .watchOS(.v4)
+    .watchOS(.v4),
   ],
   products: [
     .library(
@@ -113,6 +264,18 @@ let package = Package(
     .library(
       name: "OpenEXR",
       targets: ["OpenEXR"]
+    ),
+    .library(
+      name: "OpenSubdiv",
+      targets: ["OpenSubdiv"]
+    ),
+    .library(
+      name: "GPUShaders",
+      targets: ["GPUShaders"]
+    ),
+    .library(
+      name: "OpenMP",
+      targets: ["OpenMP"]
     ),
     .library(
       name: "WebP",
@@ -155,7 +318,7 @@ let package = Package(
       targets: ["DEFLATE"]
     ),
     .library(
-      name: "Yaml", 
+      name: "Yaml",
       targets: ["Yaml"]
     ),
     .library(
@@ -201,7 +364,7 @@ let package = Package(
     .library(
       name: "SPIRVCross",
       targets: ["SPIRVCross"]
-    )
+    ),
   ],
   targets: [
     .target(
@@ -218,7 +381,7 @@ let package = Package(
     .target(
       name: "Draco",
       dependencies: [
-        "Eigen"
+        "Eigen",
       ],
       exclude: [
         "include/draco/animation/keyframe_animation_encoding_test.cc",
@@ -268,7 +431,7 @@ let package = Package(
         "include/draco/compression/attributes/prediction_schemes/prediction_scheme_normal_octahedron_transform_test.cc",
         "include/draco/compression/attributes/point_d_vector_test.cc",
         "include/draco/javascript",
-        "include/draco/tools"
+        "include/draco/tools",
       ],
       publicHeadersPath: "include",
       cxxSettings: [],
@@ -292,7 +455,7 @@ let package = Package(
       ],
       publicHeadersPath: "include",
       cxxSettings: [
-        .define("ENABLE_HLSL", to: "1")
+        .define("ENABLE_HLSL", to: "1"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -306,7 +469,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .define("_XOPEN_SOURCE"),
-        .define("TBB_USE_PROFILING_TOOLS", to: "2")
+        .define("TBB_USE_PROFILING_TOOLS", to: "2"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -340,7 +503,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("include/shaderc"),
-        .define("ENABLE_HLSL", to: "1")
+        .define("ENABLE_HLSL", to: "1"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -372,7 +535,7 @@ let package = Package(
       name: "LZMA2",
       dependencies: [],
       exclude: [
-        "check/crc32_small.c"
+        "check/crc32_small.c",
       ],
       publicHeadersPath: "include",
       cSettings: [
@@ -385,8 +548,8 @@ let package = Package(
         .headerSearchPath("rangecoder"),
         .headerSearchPath("simple"),
         .define("HAVE_STDBOOL_H", to: "1"),
-        .define("MYTHREAD_POSIX", to: "1", .when(platforms: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux])),
-        .define("MYTHREAD_VISTA", to: "1", .when(platforms: [.windows])),
+        .define("MYTHREAD_POSIX", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
+        .define("MYTHREAD_VISTA", to: "1", .when(platforms: Arch.OS.windows.platform)),
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -409,7 +572,7 @@ let package = Package(
       exclude: [],
       publicHeadersPath: "include",
       cSettings: [
-        .define("BORINGSSL_NO_STATIC_INITIALIZER", to: "1")
+        .define("BORINGSSL_NO_STATIC_INITIALIZER", to: "1"),
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -422,13 +585,13 @@ let package = Package(
         .target(name: "LZMA2"),
         .target(name: "ZLibDataCompression"),
         .target(name: "ZStandard"),
-        .target(name: "OpenSSL")
+        .target(name: "OpenSSL"),
       ],
       exclude: platformMiniZipExcludes,
       publicHeadersPath: "include",
       cSettings: [
         .define("HAVE_ZLIB", to: "1"),
-        .define("ZLIB_COMPAT", to: "1")
+        .define("ZLIB_COMPAT", to: "1"),
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -445,7 +608,7 @@ let package = Package(
         .define("HAVE_ATTRIBUTE_ALIGNED", to: "1"),
         .define("WITH_GZFILEOP", to: "1"),
         .define("HAVE_UNISTD_H", to: "1"),
-        .define("Z_HAVE_STDARG_H", to: "1")
+        .define("Z_HAVE_STDARG_H", to: "1"),
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -458,7 +621,7 @@ let package = Package(
       exclude: [],
       publicHeadersPath: "include",
       cxxSettings: [
-        .headerSearchPath(".")
+        .headerSearchPath("."),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -468,12 +631,12 @@ let package = Package(
     .target(
       name: "LibPNG",
       dependencies: [
-        .target(name: "ZLibDataCompression")
+        .target(name: "ZLibDataCompression"),
       ],
       exclude: [],
       publicHeadersPath: "include",
       cSettings: [
-        .headerSearchPath(".")
+        .headerSearchPath("."),
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -483,12 +646,12 @@ let package = Package(
     .target(
       name: "TurboJPEG",
       dependencies: [
-        .target(name: "OpenSSL")
+        .target(name: "OpenSSL"),
       ],
       exclude: platformTurboJPEGExcludes,
       publicHeadersPath: "include/turbo",
       cSettings: [
-        .headerSearchPath(".")
+        .headerSearchPath("."),
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -516,7 +679,7 @@ let package = Package(
       exclude: [],
       publicHeadersPath: "include",
       cSettings: [
-        .headerSearchPath(".")
+        .headerSearchPath("."),
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -524,16 +687,68 @@ let package = Package(
     ),
 
     .target(
+      name: "OpenMP",
+      dependencies: [
+        .target(name: "Python"),
+      ],
+      exclude: [
+        "runtime/extractExternal.cpp",
+        "runtime/z_Windows_NT_util.cpp",
+        "runtime/z_Windows_NT-586_util.cpp",
+        "runtime/z_Windows_NT-586_asm.asm",
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("runtime"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "GPUShaders",
+      resources: [
+        .process("Metal"),
+        .process("GL"),
+        .process("DX3D"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "OpenSubdiv",
+      dependencies: [
+        .target(name: "OneTBB"),
+        .target(name: "OpenMP"),
+        .target(name: "GPUShaders")
+      ],
+      exclude: platformOsdExcludes,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("glLoader"),
+        /* autogenerated shader headers. */
+        .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../../.build/\(Arch.hostTriplet)/debug/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .debug)),
+        .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../../.build/\(Arch.hostTriplet)/release/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .release))
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
       name: "OpenEXR",
       dependencies: [
-        .target(name: "DEFLATE")
+        .target(name: "DEFLATE"),
       ],
       exclude: [],
       publicHeadersPath: "include",
       cSettings: [
         .headerSearchPath("."),
         .headerSearchPath("OpenEXRCore"),
-        .headerSearchPath("include/OpenEXR")
+        .headerSearchPath("include/OpenEXR"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -561,13 +776,13 @@ let package = Package(
         "gif.imageio",
         "ffmpeg.imageio",
         "dicom.imageio",
-        "cineon.imageio"
+        "cineon.imageio",
       ],
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
         .headerSearchPath("include/OpenImageIO/detail"),
-        .headerSearchPath("libOpenImageIO")
+        .headerSearchPath("libOpenImageIO"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -580,12 +795,12 @@ let package = Package(
         .target(name: "OpenEXR"),
         .target(name: "Python"),
         .target(name: "MiniZip"),
-        .target(name: "Yaml")
+        .target(name: "Yaml"),
       ],
       exclude: platformOCIOExcludes,
       publicHeadersPath: "include",
       cxxSettings: [
-        .headerSearchPath(".")
+        .headerSearchPath("."),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -599,14 +814,14 @@ let package = Package(
         .target(name: "Boost"),
         .target(name: "OpenEXR"),
         .target(name: "Alembic"),
-        .target(name: "OpenImageIO")
+        .target(name: "OpenImageIO"),
       ],
       exclude: platformMetaPyExcludes,
       publicHeadersPath: "include/python",
       cxxSettings: [
         .headerSearchPath("include/python/PyImath"),
         .headerSearchPath("include/python/PyAlembic"),
-        .headerSearchPath("include/python/PyOIIO")
+        .headerSearchPath("include/python/PyOIIO"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -641,7 +856,7 @@ let package = Package(
         .target(name: "Boost"),
         .target(name: "Python"),
         .target(name: "HDF5"),
-        .target(name: "OpenEXR")
+        .target(name: "OpenEXR"),
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -676,7 +891,7 @@ let package = Package(
       name: "Blosc",
       dependencies: [
         .target(name: "ZLibDataCompression"),
-        .target(name: "ZStandard")
+        .target(name: "ZStandard"),
       ],
       exclude: platformBloscExcludes,
       publicHeadersPath: "include/blosc",
@@ -697,7 +912,7 @@ let package = Package(
       ],
       exclude: [
         "include/openvdb/unittest",
-        "include/openvdb/unittest/notmain.cc"
+        "include/openvdb/unittest/notmain.cc",
       ],
       publicHeadersPath: "include",
       cxxSettings: [],
@@ -707,22 +922,22 @@ let package = Package(
     ),
 
     .binaryTarget(
-      name: "Boost", 
-      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.2/boost.xcframework.zip", 
+      name: "Boost",
+      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.2/boost.xcframework.zip",
       checksum: "a4846beef0b8f335a0fd0de5711aec07674e9c804c066e0090d864a31b99e9de"
     ),
 
     .binaryTarget(
-      name: "Python", 
-      url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/Python.xcframework.zip", 
+      name: "Python",
+      url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/Python.xcframework.zip",
       checksum: "11c2238d09cf559340ce3fd240235b08f227e8b9c6e60f48d4187cd6de52fa7a"
     ),
 
     .binaryTarget(
-      name: "MoltenVK", 
-      url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/MoltenVK.xcframework.zip", 
+      name: "MoltenVK",
+      url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/MoltenVK.xcframework.zip",
       checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
-    )
+    ),
   ],
   cLanguageStandard: .gnu17,
   cxxLanguageStandard: .cxx17
