@@ -1,23 +1,39 @@
 # MetaverseKit
-Dependency Stack for the **Open Source Metaverse**.
+<image src="https://miro.medium.com/v2/resize:fit:1400/1*1XgNguAZ9mIMPPGdVRsTwQ.gif">
 
-Bundling the entirety of the [**ASWF Landscape**](https://landscape.aswf.io) with simple injection into the **Swift** programming language.
+> One small step for **swift**, one giant leap for **reality**!
 
-> **NOTE:** Swift is an open source programming language that is fully
-supported across **Linux** and [**Swift on Server**](https://www.swift.org/server/),
-the entire **Apple** family of devices: **macOS**, **visionOS**, **iOS**, **tvOS**, **watchOS**,
-as well as support for **Microsoft Windows**. To learn more about Swift, please visit [swift.org](https://www.swift.org).
-<br>
+### Embark on the Metaversal Frontier
 
-# Included (names based on Swift library names)
-- **OneTBB v2021.10.0**
+Swiftly integrate the [**ASWF Landscape**](https://landscape.aswf.io) into mighty apps, plugins, and games with seamless simplicity. 
+**MetaverseKit** is a monolithic dependency target of the [**SwiftUSD**](https://github.com/wabiverse/SwiftUSD) package, and will
+continue to evolve with additional plugins, tools, and developer resources overtime. Once industry leaders adopt official support
+of these libraries as Swift Packages, the **MetaverseKit** package will begin to pull in these official git remotes through versioned
+releases, and we will provide monolithic releases in accordance with the [**VFX Reference Platform**](https://vfxplatform.com).
+
+> [!NOTE]  
+> The **Wabi Foundation** remains steadfast in its collaboration with industry leaders, diligently working to secure official support
+  for these foundational libraries through the implementation of Swift Packages. This strategic initiative opens the gateway for developers,
+  offering unparalleled opportunity to unleash the full power of industry-grade software, and unlocking its utmost potential.
+
+## Wabi Swift Targets
+- **MetaPy** - Metaversal Python, all the python modules from the below libraries, combined into a single swift target.
+- **MXGraphEditor** - MaterialX Graph Editor, visualizing, creating, and editing MaterialX graphs on the flick of a `swift run MXGraphEditor` command.
+- **MXResources** - MaterialX Resources, adding this target to your swift app or plugin will automatically install the [**MaterialX Standard Library**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/libraries) and [**MaterialX Resources**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/resources) into
+  the `/Resources` directory that is embedded within your swift application bundle or plugin module.
+- With many more coming soon...
+
+## Industry Swift Targets
+- **OneTBB v2021.10.0** - ([*Official support in progress...*](https://github.com/oneapi-src/oneTBB/issues/1244))
 - **Boost v1.81.2**
 - **Python v3.11.6**
-- **MetaPy (Metaverse Python Libraries)**
 - **IMath v3.1.9**
 - **Alembic v1.8.5**
+- **MaterialX v1.38.8**
 - **OpenColorIO v2.3.0**
 - **Blosc v1.21.5**
+- **GLFW v3.4.0**
+- **ImGui v1.89.9**
 - **OpenVDB v10.1.0**
 - **OpenEXR v3.2.1**
 - **OpenImageIO v2.5.4.0**
@@ -45,9 +61,15 @@ as well as support for **Microsoft Windows**. To learn more about Swift, please 
 - **...growing...**
 
 # Usage
-##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L95).
+##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L85).
 ```swift
 dependencies: [
-  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.1.4"),
+  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.1.6"),
 ]
 ```
+
+> **NOTE:** Swift is an open source programming language that is fully
+supported across **Linux** and [**Swift on Server**](https://www.swift.org/server/),
+the entire **Apple** family of devices: **macOS**, **visionOS**, **iOS**, **tvOS**, **watchOS**,
+as well as support for **Microsoft Windows**. To learn more about Swift, please visit [swift.org](https://www.swift.org).
+<br>
