@@ -1,5 +1,6 @@
 # MetaverseKit
-<image src="https://miro.medium.com/v2/resize:fit:1400/1*1XgNguAZ9mIMPPGdVRsTwQ.gif">
+
+<image src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2pxN2Q4Y29kdmtuaGp5b3JwMDRhdmtmcHJ0c3VzZXhrc25hdnV1ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f9m9SX5FUGIUImpaSa/giphy.gif">
 
 > One small step for **swift**, one giant leap for **reality**!
 
