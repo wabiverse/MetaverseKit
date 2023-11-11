@@ -1134,6 +1134,7 @@ DLLEXPORT unsigned long tjPlaneSizeYUV(int componentID, int width, int stride,
 
 
 /* tj3Compress*() is implemented in turbojpeg-mp.c */
+#undef BITS_IN_JSAMPLE
 #define BITS_IN_JSAMPLE  8
 
 /* TurboJPEG API functions that must be compiled for multiple data

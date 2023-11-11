@@ -10,9 +10,9 @@
 #ifndef OPENVDB_MATH_RAY_HAS_BEEN_INCLUDED
 #define OPENVDB_MATH_RAY_HAS_BEEN_INCLUDED
 
-#include "Math.h"
-#include "Vec3.h"
-#include "Transform.h"
+#include "math/Math.h"
+#include "math/Vec3.h"
+#include "math/Transform.h"
 #include <algorithm> // for std::swap()
 #include <iostream> // for std::ostream
 #include <limits> // for std::numeric_limits<Type>::max()
