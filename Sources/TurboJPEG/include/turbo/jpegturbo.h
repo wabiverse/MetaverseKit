@@ -1125,9 +1125,10 @@ DLLEXPORT int tj3Get(tjhandle handle, int param);
  * @return 0 if successful, or -1 if an error occurred (see #tj3GetErrorStr()
  * and #tj3GetErrorCode().)
  */
-DLLEXPORT int tj3Compress8(tjhandle handle, const unsigned char *srcBuf,
-                           int width, int pitch, int height, int pixelFormat,
-                           unsigned char **jpegBuf, size_t *jpegSize);
+// j16XXX hack until I clean up TurboJPEG.
+// DLLEXPORT int tj3Compress8(tjhandle handle, const unsigned char *srcBuf,
+//                            int width, int pitch, int height, int pixelFormat,
+//                            unsigned char **jpegBuf, size_t *jpegSize);
 
 /**
  * Compress a 12-bit-per-sample packed-pixel RGB, grayscale, or CMYK image into
@@ -1145,9 +1146,10 @@ DLLEXPORT int tj3Compress12(tjhandle handle, const short *srcBuf, int width,
  *
  * \details \copydetails tj3Compress8()
  */
-DLLEXPORT int tj3Compress16(tjhandle handle, const unsigned short *srcBuf,
-                            int width, int pitch, int height, int pixelFormat,
-                            unsigned char **jpegBuf, size_t *jpegSize);
+// j16XXX hack until I clean up TurboJPEG.
+// DLLEXPORT int tj3Compress16(tjhandle handle, const unsigned short *srcBuf,
+//                             int width, int pitch, int height, int pixelFormat,
+//                             unsigned char **jpegBuf, size_t *jpegSize);
 
 
 /**
@@ -1619,9 +1621,10 @@ DLLEXPORT int tj3SetCroppingRegion(tjhandle handle, tjregion croppingRegion);
  * @return 0 if successful, or -1 if an error occurred (see #tj3GetErrorStr()
  * and #tj3GetErrorCode().)
  */
-DLLEXPORT int tj3Decompress8(tjhandle handle, const unsigned char *jpegBuf,
-                             size_t jpegSize, unsigned char *dstBuf, int pitch,
-                             int pixelFormat);
+// j16XXX hack until I clean up TurboJPEG.
+// DLLEXPORT int tj3Decompress8(tjhandle handle, const unsigned char *jpegBuf,
+//                              size_t jpegSize, unsigned char *dstBuf, int pitch,
+//                              int pixelFormat);
 
 /**
  * Decompress a 12-bit-per-sample JPEG image into a 12-bit-per-sample
@@ -1639,9 +1642,10 @@ DLLEXPORT int tj3Decompress12(tjhandle handle, const unsigned char *jpegBuf,
  *
  * \details \copydetails tj3Decompress8()
  */
-DLLEXPORT int tj3Decompress16(tjhandle handle, const unsigned char *jpegBuf,
-                              size_t jpegSize, unsigned short *dstBuf,
-                              int pitch, int pixelFormat);
+// j16XXX hack until I clean up TurboJPEG.
+// DLLEXPORT int tj3Decompress16(tjhandle handle, const unsigned char *jpegBuf,
+//                               size_t jpegSize, unsigned short *dstBuf,
+//                               int pitch, int pixelFormat);
 
 
 /**
@@ -1964,9 +1968,10 @@ DLLEXPORT void *tj3Alloc(size_t bytes);
  * alignment, or NULL if an error occurred (see #tj3GetErrorStr().)  This
  * buffer should be freed using #tj3Free().
  */
-DLLEXPORT unsigned char *tj3LoadImage8(tjhandle handle, const char *filename,
-                                       int *width, int align, int *height,
-                                       int *pixelFormat);
+// j16XXX hack until I clean up TurboJPEG.
+// DLLEXPORT unsigned char *tj3LoadImage8(tjhandle handle, const char *filename,
+//                                        int *width, int align, int *height,
+//                                        int *pixelFormat);
 
 /**
  * Load a 12-bit-per-sample packed-pixel image from disk into memory.
@@ -1982,9 +1987,10 @@ DLLEXPORT short *tj3LoadImage12(tjhandle handle, const char *filename,
  *
  * \details \copydetails tj3LoadImage8()
  */
-DLLEXPORT unsigned short *tj3LoadImage16(tjhandle handle, const char *filename,
-                                         int *width, int align, int *height,
-                                         int *pixelFormat);
+// j16XXX hack until I clean up TurboJPEG.
+// DLLEXPORT unsigned short *tj3LoadImage16(tjhandle handle, const char *filename,
+//                                          int *width, int align, int *height,
+//                                          int *pixelFormat);
 
 
 /**
@@ -2019,9 +2025,10 @@ DLLEXPORT unsigned short *tj3LoadImage16(tjhandle handle, const char *filename,
  *
  * @return 0 if successful, or -1 if an error occurred (see #tj3GetErrorStr().)
  */
-DLLEXPORT int tj3SaveImage8(tjhandle handle, const char *filename,
-                            const unsigned char *buffer, int width, int pitch,
-                            int height, int pixelFormat);
+// j16XXX hack until I clean up TurboJPEG.
+// DLLEXPORT int tj3SaveImage8(tjhandle handle, const char *filename,
+//                             const unsigned char *buffer, int width, int pitch,
+//                             int height, int pixelFormat);
 
 /**
  * Save a 12-bit-per-sample packed-pixel image from memory to disk.
@@ -2037,9 +2044,10 @@ DLLEXPORT int tj3SaveImage12(tjhandle handle, const char *filename,
  *
  * \details \copydetails tj3SaveImage8()
  */
-DLLEXPORT int tj3SaveImage16(tjhandle handle, const char *filename,
-                             const unsigned short *buffer, int width,
-                             int pitch, int height, int pixelFormat);
+// j16XXX hack until I clean up TurboJPEG.
+// DLLEXPORT int tj3SaveImage16(tjhandle handle, const char *filename,
+//                              const unsigned short *buffer, int width,
+//                              int pitch, int height, int pixelFormat);
 
 
 /**

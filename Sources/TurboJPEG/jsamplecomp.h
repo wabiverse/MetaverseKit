@@ -61,26 +61,29 @@
 
 /* Global internal functions (jpegint.h) */
 #ifdef C_LOSSLESS_SUPPORTED
-#define _jinit_c_main_controller  j16init_c_main_controller
-#define _jinit_c_prep_controller  j16init_c_prep_controller
-#define _jinit_color_converter  j16init_color_converter
-#define _jinit_downsampler  j16init_downsampler
-#define _jinit_c_diff_controller  j16init_c_diff_controller
-#define _jinit_lossless_compressor  j16init_lossless_compressor
+// j16XXX hack until I clean up TurboJPEG.
+#define _jinit_c_main_controller  j12init_c_main_controller
+#define _jinit_c_prep_controller  j12init_c_prep_controller
+#define _jinit_color_converter  j12init_color_converter
+#define _jinit_downsampler  j12init_downsampler
+#define _jinit_c_diff_controller  j12init_c_diff_controller
+#define _jinit_lossless_compressor  j12init_lossless_compressor
 #endif
 
 #ifdef D_LOSSLESS_SUPPORTED
-#define _jinit_d_main_controller  j16init_d_main_controller
-#define _jinit_d_post_controller  j16init_d_post_controller
-#define _jinit_upsampler  j16init_upsampler
-#define _jinit_color_deconverter  j16init_color_deconverter
-#define _jinit_merged_upsampler  j16init_merged_upsampler
-#define _jinit_d_diff_controller  j16init_d_diff_controller
-#define _jinit_lossless_decompressor  j16init_lossless_decompressor
+// j16XXX hack until I clean up TurboJPEG.
+#define _jinit_d_main_controller  j12init_d_main_controller
+#define _jinit_d_post_controller  j12init_d_post_controller
+#define _jinit_upsampler  j12init_upsampler
+#define _jinit_color_deconverter  j12init_color_deconverter
+#define _jinit_merged_upsampler  j12init_merged_upsampler
+#define _jinit_d_diff_controller  j12init_d_diff_controller
+#define _jinit_lossless_decompressor  j12init_lossless_decompressor
 #endif
 
 #if defined(C_LOSSLESS_SUPPORTED) || defined(D_LOSSLESS_SUPPORTED)
-#define _jcopy_sample_rows  j16copy_sample_rows
+// j16XXX hack until I clean up TurboJPEG.
+#define _jcopy_sample_rows  j12copy_sample_rows
 #endif
 
 /* Internal fields (cdjpeg.h) */
@@ -88,17 +91,20 @@
 #if defined(C_LOSSLESS_SUPPORTED) || defined(D_LOSSLESS_SUPPORTED)
 /* Use the 16-bit buffer in the cjpeg_source_struct and djpeg_dest_struct
    structures. */
-#define _buffer  buffer16
+// j16XXX hack until I clean up TurboJPEG.
+#define _buffer  buffer12
 #endif
 
 /* Image I/O functions (cdjpeg.h) */
 #ifdef C_LOSSLESS_SUPPORTED
-#define _jinit_read_gif  j16init_read_gif
-#define _jinit_read_ppm  j16init_read_ppm
+// j16XXX hack until I clean up TurboJPEG.
+#define _jinit_read_gif  j12init_read_gif
+#define _jinit_read_ppm  j12init_read_ppm
 #endif
 
 #ifdef D_LOSSLESS_SUPPORTED
-#define _jinit_write_ppm  j16init_write_ppm
+// j16XXX hack until I clean up TurboJPEG.
+#define _jinit_write_ppm  j12init_write_ppm
 #endif
 
 #elif BITS_IN_JSAMPLE == 12
@@ -219,22 +225,26 @@
 #else /* BITS_IN_JSAMPLE */
 
 /* Sample data types and macros (jmorecfg.h) */
-#define _JSAMPLE  JSAMPLE
+// j16XXX hack until I clean up TurboJPEG.
+#define _JSAMPLE  J12SAMPLE
 
 #define _MAXJSAMPLE  MAXJSAMPLE
 #define _CENTERJSAMPLE   CENTERJSAMPLE
 
-#define _JSAMPROW  JSAMPROW
-#define _JSAMPARRAY  JSAMPARRAY
-#define _JSAMPIMAGE  JSAMPIMAGE
+// j16XXX hack until I clean up TurboJPEG.
+#define _JSAMPROW  J12SAMPROW
+#define _JSAMPARRAY  J12SAMPARRAY
+#define _JSAMPIMAGE  J12SAMPIMAGE
 
 /* External functions (jpeglib.h) */
-#define _jpeg_write_scanlines  jpeg_write_scanlines
-#define _jpeg_write_raw_data  jpeg_write_raw_data
-#define _jpeg_read_scanlines  jpeg_read_scanlines
-#define _jpeg_skip_scanlines  jpeg_skip_scanlines
-#define _jpeg_crop_scanline  jpeg_crop_scanline
-#define _jpeg_read_raw_data  jpeg_read_raw_data
+
+// j16XXX hack until I clean up TurboJPEG.
+#define _jpeg_write_scanlines  jpeg12_write_scanlines
+#define _jpeg_write_raw_data  jpeg12_write_raw_data
+#define _jpeg_read_scanlines  jpeg12_read_scanlines
+#define _jpeg_skip_scanlines  jpeg12_skip_scanlines
+#define _jpeg_crop_scanline  jpeg12_crop_scanline
+#define _jpeg_read_raw_data  jpeg12_read_raw_data
 
 /* Internal methods (jpegint.h) */
 
@@ -267,32 +277,35 @@
 #define _color_quantize  color_quantize
 
 /* Global internal functions (jpegint.h) */
-#define _jinit_c_main_controller  jinit_c_main_controller
-#define _jinit_c_prep_controller  jinit_c_prep_controller
-#define _jinit_c_coef_controller  jinit_c_coef_controller
-#define _jinit_color_converter  jinit_color_converter
-#define _jinit_downsampler  jinit_downsampler
-#define _jinit_forward_dct  jinit_forward_dct
+// j16XXX hack until I clean up TurboJPEG.
+#define _jinit_c_main_controller  j12init_c_main_controller
+#define _jinit_c_prep_controller  j12init_c_prep_controller
+#define _jinit_c_coef_controller  j12init_c_coef_controller
+#define _jinit_color_converter  j12init_color_converter
+#define _jinit_downsampler  j12init_downsampler
+#define _jinit_forward_dct  j12init_forward_dct
 #ifdef C_LOSSLESS_SUPPORTED
-#define _jinit_c_diff_controller  jinit_c_diff_controller
-#define _jinit_lossless_compressor  jinit_lossless_compressor
+#define _jinit_c_diff_controller  j12init_c_diff_controller
+#define _jinit_lossless_compressor  j12init_lossless_compressor
 #endif
 
-#define _jinit_d_main_controller  jinit_d_main_controller
-#define _jinit_d_coef_controller  jinit_d_coef_controller
-#define _jinit_d_post_controller  jinit_d_post_controller
-#define _jinit_inverse_dct  jinit_inverse_dct
-#define _jinit_upsampler  jinit_upsampler
-#define _jinit_color_deconverter  jinit_color_deconverter
-#define _jinit_1pass_quantizer  jinit_1pass_quantizer
-#define _jinit_2pass_quantizer  jinit_2pass_quantizer
-#define _jinit_merged_upsampler  jinit_merged_upsampler
+// j16XXX hack until I clean up TurboJPEG.
+#define _jinit_d_main_controller  j12init_d_main_controller
+#define _jinit_d_coef_controller  j12init_d_coef_controller
+#define _jinit_d_post_controller  j12init_d_post_controller
+#define _jinit_inverse_dct  j12init_inverse_dct
+#define _jinit_upsampler  j12init_upsampler
+#define _jinit_color_deconverter  j12init_color_deconverter
+#define _jinit_1pass_quantizer  j12init_1pass_quantizer
+#define _jinit_2pass_quantizer  j12init_2pass_quantizer
+#define _jinit_merged_upsampler  j12init_merged_upsampler
 #ifdef D_LOSSLESS_SUPPORTED
-#define _jinit_d_diff_controller  jinit_d_diff_controller
-#define _jinit_lossless_decompressor  jinit_lossless_decompressor
+#define _jinit_d_diff_controller  j12init_d_diff_controller
+#define _jinit_lossless_decompressor  j12init_lossless_decompressor
 #endif
 
-#define _jcopy_sample_rows  jcopy_sample_rows
+// j16XXX hack until I clean up TurboJPEG.
+#define _jcopy_sample_rows  j12copy_sample_rows
 
 /* Global internal functions (jdct.h) */
 #define _jpeg_fdct_islow  jpeg_fdct_islow
@@ -329,7 +342,9 @@
 #define _jinit_read_ppm  jinit_read_ppm
 #define _jinit_write_ppm  jinit_write_ppm
 
-#define _read_color_map  read_color_map
+// j16XXX hack until I clean up TurboJPEG.
+// #define _read_color_map  read_color_map
+#define _read_color_map  read_color_map_12
 
 #endif /* BITS_IN_JSAMPLE */
 

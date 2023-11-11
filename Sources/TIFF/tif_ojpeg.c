@@ -2713,7 +2713,8 @@ static int jpeg_read_scanlines_encap(OJPEGState *sp,
         return 0;
     else
     {
-        jpeg_read_scanlines(cinfo, scanlines, max_lines);
+        // j16XXX hack until I clean up TurboJPEG.
+        jpeg12_read_scanlines(cinfo, scanlines, max_lines);
         return 1;
     }
 }
@@ -2728,7 +2729,8 @@ static int jpeg_read_raw_data_encap(OJPEGState *sp,
         return 0;
     else
     {
-        jpeg_read_raw_data(cinfo, data, max_lines);
+        // j16XXX hack until I clean up TurboJPEG.
+        jpeg12_read_raw_data(cinfo, data, max_lines);
         return 1;
     }
 }

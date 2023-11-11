@@ -446,13 +446,14 @@ static void compTest(tjhandle handle, unsigned char **dstBuf, size_t *dstSize,
       printf("%s %s -> %s Q%d ... ", pfStr, buStrLong, subNameLong[subsamp],
              jpegQual);
     if (precision == 8) {
-      TRY_TJ(handle, tj3Compress8(handle, (unsigned char *)srcBuf, w, 0, h, pf,
+      TRY_TJ(handle, tj3Compress12(handle, (short *)srcBuf, w, 0, h, pf,
                                   dstBuf, dstSize));
     } else if (precision == 12) {
       TRY_TJ(handle, tj3Compress12(handle, (short *)srcBuf, w, 0, h, pf,
                                    dstBuf, dstSize));
     } else {
-      TRY_TJ(handle, tj3Compress16(handle, (unsigned short *)srcBuf, w, 0, h,
+      // j16XXX hack until I clean up TurboJPEG.
+      TRY_TJ(handle, tj3Compress12(handle, (short *)srcBuf, w, 0, h,
                                    pf, dstBuf, dstSize));
     }
   }
@@ -537,14 +538,15 @@ static void _decompTest(tjhandle handle, unsigned char *jpegBuf,
       printf("%d/%d ... ", sf.num, sf.denom);
     else printf("... ");
     if (precision == 8) {
-      TRY_TJ(handle, tj3Decompress8(handle, jpegBuf, jpegSize,
-                                    (unsigned char *)dstBuf, 0, pf));
+      TRY_TJ(handle, tj3Decompress12(handle, jpegBuf, jpegSize,
+                                     (short *)dstBuf, 0, pf));
     } else if (precision == 12) {
       TRY_TJ(handle, tj3Decompress12(handle, jpegBuf, jpegSize,
                                      (short *)dstBuf, 0, pf));
     } else {
-      TRY_TJ(handle, tj3Decompress16(handle, jpegBuf, jpegSize,
-                                     (unsigned short *)dstBuf, 0, pf));
+      // j16XXX hack until I clean up TurboJPEG.
+      TRY_TJ(handle, tj3Decompress12(handle, jpegBuf, jpegSize,
+                                     (short *)dstBuf, 0, pf));
     }
   }
 
@@ -765,13 +767,14 @@ static void bufSizeTest(void)
                                        h, TJPF_BGRX, dstBuf, yuvAlign));
         } else {
           if (precision == 8) {
-            TRY_TJ(handle, tj3Compress8(handle, (unsigned char *)srcBuf, w, 0,
-                                        h, TJPF_BGRX, &dstBuf, &dstSize));
+            TRY_TJ(handle, tj3Compress12(handle, (short *)srcBuf, w, 0, h, 
+                                         TJPF_BGRX, &dstBuf, &dstSize));
           } else if (precision == 12) {
             TRY_TJ(handle, tj3Compress12(handle, (short *)srcBuf, w, 0, h,
                                          TJPF_BGRX, &dstBuf, &dstSize));
           } else {
-            TRY_TJ(handle, tj3Compress16(handle, (unsigned short *)srcBuf, w,
+            // j16XXX hack until I clean up TurboJPEG.
+            TRY_TJ(handle, tj3Compress12(handle, (short *)srcBuf, w,
                                          0, h, TJPF_BGRX, &dstBuf, &dstSize));
           }
         }
@@ -799,13 +802,14 @@ static void bufSizeTest(void)
                                        w, TJPF_BGRX, dstBuf, yuvAlign));
         } else {
           if (precision == 8) {
-            TRY_TJ(handle, tj3Compress8(handle, (unsigned char *)srcBuf, h, 0,
-                                        w, TJPF_BGRX, &dstBuf, &dstSize));
+            TRY_TJ(handle, tj3Compress12(handle, (short *)srcBuf, h, 0, w, 
+                                         TJPF_BGRX, &dstBuf, &dstSize));
           } else if (precision == 12) {
             TRY_TJ(handle, tj3Compress12(handle, (short *)srcBuf, h, 0, w,
                                          TJPF_BGRX, &dstBuf, &dstSize));
           } else {
-            TRY_TJ(handle, tj3Compress16(handle, (unsigned short *)srcBuf, h,
+            // j16XXX hack until I clean up TurboJPEG.
+            TRY_TJ(handle, tj3Compress12(handle, (short *)srcBuf, h,
                                          0, w, TJPF_BGRX, &dstBuf, &dstSize));
           }
         }
@@ -982,14 +986,16 @@ static int doBmpTest(const char *ext, int width, int align, int height, int pf,
   SNPRINTF(filename, 80, "test_bmp%d_%s_%d_%s_%d.%s", precision, pixFormatStr[pf],
            align, bottomUp ? "bu" : "td", getpid(), ext);
   if (precision == 8) {
-    TRY_TJ(handle, tj3SaveImage8(handle, filename, (unsigned char *)buf, width,
-                                 pitch, height, pf));
+    // j16XXX hack until I clean up TurboJPEG.
+    TRY_TJ(handle, tj3SaveImage12(handle, filename, (short *)buf, width,
+                                  pitch, height, pf));
   } else if (precision == 12) {
     TRY_TJ(handle, tj3SaveImage12(handle, filename, (short *)buf, width, pitch,
                                   height, pf));
   } else {
-    TRY_TJ(handle, tj3SaveImage16(handle, filename, (unsigned short *)buf,
-                                  width, pitch, height, pf));
+    // j16XXX hack until I clean up TurboJPEG.
+    TRY_TJ(handle, tj3SaveImage12(handle, filename, (short *)buf, width, pitch, 
+                                  height, pf));
   }
   md5sum = MD5File(filename, md5buf);
   if (!md5sum) {
@@ -1001,15 +1007,16 @@ static int doBmpTest(const char *ext, int width, int align, int height, int pf,
 
   tj3Free(buf);  buf = NULL;
   if (precision == 8) {
-    if ((buf = tj3LoadImage8(handle, filename, &loadWidth, align, &loadHeight,
-                             &pf)) == NULL)
+    if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align, &loadHeight,
+                              &pf)) == NULL)
       THROW_TJ(handle);
   } else if (precision == 12) {
     if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align, &loadHeight,
                               &pf)) == NULL)
       THROW_TJ(handle);
   } else {
-    if ((buf = tj3LoadImage16(handle, filename, &loadWidth, align, &loadHeight,
+    // j16XXX hack until I clean up TurboJPEG.
+    if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align, &loadHeight,
                               &pf)) == NULL)
       THROW_TJ(handle);
   }
@@ -1025,15 +1032,16 @@ static int doBmpTest(const char *ext, int width, int align, int height, int pf,
     tj3Free(buf);  buf = NULL;
     pf = TJPF_XBGR;
     if (precision == 8) {
-      if ((buf = tj3LoadImage8(handle, filename, &loadWidth, align,
-                               &loadHeight, &pf)) == NULL)
+      if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align,
+                                &loadHeight, &pf)) == NULL)
         THROW_TJ(handle);
     } else if (precision == 12) {
       if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align,
                                 &loadHeight, &pf)) == NULL)
         THROW_TJ(handle);
     } else {
-      if ((buf = tj3LoadImage16(handle, filename, &loadWidth, align,
+      // j16XXX hack until I clean up TurboJPEG.
+      if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align,
                                 &loadHeight, &pf)) == NULL)
         THROW_TJ(handle);
     }
@@ -1046,15 +1054,16 @@ static int doBmpTest(const char *ext, int width, int align, int height, int pf,
     tj3Free(buf);  buf = NULL;
     pf = TJPF_CMYK;
     if (precision == 8) {
-      if ((buf = tj3LoadImage8(handle, filename, &loadWidth, align,
-                               &loadHeight, &pf)) == NULL)
+      if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align,
+                                &loadHeight, &pf)) == NULL)
         THROW_TJ(handle);
     } else if (precision == 12) {
       if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align,
                                 &loadHeight, &pf)) == NULL)
         THROW_TJ(handle);
     } else {
-      if ((buf = tj3LoadImage16(handle, filename, &loadWidth, align,
+      // j16XXX hack until I clean up TurboJPEG.
+      if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align,
                                 &loadHeight, &pf)) == NULL)
         THROW_TJ(handle);
     }
@@ -1070,15 +1079,16 @@ static int doBmpTest(const char *ext, int width, int align, int height, int pf,
   pf = pixelFormat;
   pixelFormat = TJPF_UNKNOWN;
   if (precision == 8) {
-    if ((buf = tj3LoadImage8(handle, filename, &loadWidth, align, &loadHeight,
-                             &pixelFormat)) == NULL)
+    if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align, &loadHeight,
+                              &pixelFormat)) == NULL)
       THROW_TJ(handle);
   } else if (precision == 12) {
     if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align, &loadHeight,
                               &pixelFormat)) == NULL)
       THROW_TJ(handle);
   } else {
-    if ((buf = tj3LoadImage16(handle, filename, &loadWidth, align, &loadHeight,
+    // j16XXX hack until I clean up TurboJPEG.
+    if ((buf = tj3LoadImage12(handle, filename, &loadWidth, align, &loadHeight,
                               &pixelFormat)) == NULL)
       THROW_TJ(handle);
   }
@@ -1087,7 +1097,7 @@ static int doBmpTest(const char *ext, int width, int align, int height, int pf,
        pixelFormat != TJPF_BGR) ||
       (pf != TJPF_GRAY && !strcasecmp(ext, "ppm") &&
        pixelFormat != TJPF_RGB)) {
-    printf("\n   tj3LoadImage8() returned unexpected pixel format: %s\n",
+    printf("\n   tj3LoadImage8() [hacked into tj3LoadImage12()] returned unexpected pixel format: %s\n",
            pixFormatStr[pixelFormat]);
     retval = -1;
   }

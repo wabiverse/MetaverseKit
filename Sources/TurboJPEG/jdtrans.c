@@ -133,7 +133,8 @@ transdecode_master_selection(j_decompress_ptr cinfo)
   if (cinfo->data_precision == 12)
     j12init_d_coef_controller(cinfo, TRUE);
   else
-    jinit_d_coef_controller(cinfo, TRUE);
+    // j16XXX hack until I clean up TurboJPEG.
+    j12init_d_coef_controller(cinfo, TRUE);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
   (*cinfo->mem->realize_virt_arrays) ((j_common_ptr)cinfo);

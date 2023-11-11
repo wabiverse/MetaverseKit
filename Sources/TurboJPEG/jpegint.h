@@ -470,59 +470,72 @@ struct jpeg_color_quantizer {
 EXTERN(void) jinit_compress_master(j_compress_ptr cinfo);
 EXTERN(void) jinit_c_master_control(j_compress_ptr cinfo,
                                     boolean transcode_only);
-EXTERN(void) jinit_c_main_controller(j_compress_ptr cinfo,
-                                     boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_c_main_controller(j_compress_ptr cinfo,
+//                                      boolean need_full_buffer);
 EXTERN(void) j12init_c_main_controller(j_compress_ptr cinfo,
                                        boolean need_full_buffer);
-EXTERN(void) jinit_c_prep_controller(j_compress_ptr cinfo,
-                                     boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_c_prep_controller(j_compress_ptr cinfo,
+//                                      boolean need_full_buffer);
 EXTERN(void) j12init_c_prep_controller(j_compress_ptr cinfo,
                                        boolean need_full_buffer);
-EXTERN(void) jinit_c_coef_controller(j_compress_ptr cinfo,
-                                     boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_c_coef_controller(j_compress_ptr cinfo,
+//                                      boolean need_full_buffer);
 EXTERN(void) j12init_c_coef_controller(j_compress_ptr cinfo,
                                        boolean need_full_buffer);
-EXTERN(void) jinit_color_converter(j_compress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_color_converter(j_compress_ptr cinfo);
 EXTERN(void) j12init_color_converter(j_compress_ptr cinfo);
-EXTERN(void) jinit_downsampler(j_compress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_downsampler(j_compress_ptr cinfo);
 EXTERN(void) j12init_downsampler(j_compress_ptr cinfo);
-EXTERN(void) jinit_forward_dct(j_compress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_forward_dct(j_compress_ptr cinfo);
 EXTERN(void) j12init_forward_dct(j_compress_ptr cinfo);
 EXTERN(void) jinit_huff_encoder(j_compress_ptr cinfo);
 EXTERN(void) jinit_phuff_encoder(j_compress_ptr cinfo);
 EXTERN(void) jinit_arith_encoder(j_compress_ptr cinfo);
 EXTERN(void) jinit_marker_writer(j_compress_ptr cinfo);
 #ifdef C_LOSSLESS_SUPPORTED
-EXTERN(void) j16init_c_main_controller(j_compress_ptr cinfo,
-                                       boolean need_full_buffer);
-EXTERN(void) j16init_c_prep_controller(j_compress_ptr cinfo,
-                                       boolean need_full_buffer);
-EXTERN(void) j16init_color_converter(j_compress_ptr cinfo);
-EXTERN(void) j16init_downsampler(j_compress_ptr cinfo);
-EXTERN(void) jinit_c_diff_controller(j_compress_ptr cinfo,
-                                     boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) j16init_c_main_controller(j_compress_ptr cinfo,
+//                                        boolean need_full_buffer);
+// EXTERN(void) j16init_c_prep_controller(j_compress_ptr cinfo,
+//                                        boolean need_full_buffer);
+// EXTERN(void) j16init_color_converter(j_compress_ptr cinfo);
+// EXTERN(void) j16init_downsampler(j_compress_ptr cinfo);
+// EXTERN(void) jinit_c_diff_controller(j_compress_ptr cinfo,
+//                                      boolean need_full_buffer);
 EXTERN(void) j12init_c_diff_controller(j_compress_ptr cinfo,
                                        boolean need_full_buffer);
-EXTERN(void) j16init_c_diff_controller(j_compress_ptr cinfo,
-                                       boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) j16init_c_diff_controller(j_compress_ptr cinfo,
+//                                        boolean need_full_buffer);
 EXTERN(void) jinit_lhuff_encoder(j_compress_ptr cinfo);
-EXTERN(void) jinit_lossless_compressor(j_compress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_lossless_compressor(j_compress_ptr cinfo);
 EXTERN(void) j12init_lossless_compressor(j_compress_ptr cinfo);
-EXTERN(void) j16init_lossless_compressor(j_compress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) j16init_lossless_compressor(j_compress_ptr cinfo);
 #endif
 
 /* Decompression module initialization routines */
 EXTERN(void) jinit_master_decompress(j_decompress_ptr cinfo);
-EXTERN(void) jinit_d_main_controller(j_decompress_ptr cinfo,
-                                     boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_d_main_controller(j_decompress_ptr cinfo,
+//                                      boolean need_full_buffer);
 EXTERN(void) j12init_d_main_controller(j_decompress_ptr cinfo,
                                        boolean need_full_buffer);
-EXTERN(void) jinit_d_coef_controller(j_decompress_ptr cinfo,
-                                     boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_d_coef_controller(j_decompress_ptr cinfo,
+//                                      boolean need_full_buffer);
 EXTERN(void) j12init_d_coef_controller(j_decompress_ptr cinfo,
                                        boolean need_full_buffer);
-EXTERN(void) jinit_d_post_controller(j_decompress_ptr cinfo,
-                                     boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_d_post_controller(j_decompress_ptr cinfo,
+//                                      boolean need_full_buffer);
 EXTERN(void) j12init_d_post_controller(j_decompress_ptr cinfo,
                                        boolean need_full_buffer);
 EXTERN(void) jinit_input_controller(j_decompress_ptr cinfo);
@@ -530,35 +543,47 @@ EXTERN(void) jinit_marker_reader(j_decompress_ptr cinfo);
 EXTERN(void) jinit_huff_decoder(j_decompress_ptr cinfo);
 EXTERN(void) jinit_phuff_decoder(j_decompress_ptr cinfo);
 EXTERN(void) jinit_arith_decoder(j_decompress_ptr cinfo);
-EXTERN(void) jinit_inverse_dct(j_decompress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_inverse_dct(j_decompress_ptr cinfo);
 EXTERN(void) j12init_inverse_dct(j_decompress_ptr cinfo);
-EXTERN(void) jinit_upsampler(j_decompress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_upsampler(j_decompress_ptr cinfo);
 EXTERN(void) j12init_upsampler(j_decompress_ptr cinfo);
-EXTERN(void) jinit_color_deconverter(j_decompress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_color_deconverter(j_decompress_ptr cinfo);
 EXTERN(void) j12init_color_deconverter(j_decompress_ptr cinfo);
-EXTERN(void) jinit_1pass_quantizer(j_decompress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_1pass_quantizer(j_decompress_ptr cinfo);
 EXTERN(void) j12init_1pass_quantizer(j_decompress_ptr cinfo);
-EXTERN(void) jinit_2pass_quantizer(j_decompress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_2pass_quantizer(j_decompress_ptr cinfo);
 EXTERN(void) j12init_2pass_quantizer(j_decompress_ptr cinfo);
-EXTERN(void) jinit_merged_upsampler(j_decompress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_merged_upsampler(j_decompress_ptr cinfo);
 EXTERN(void) j12init_merged_upsampler(j_decompress_ptr cinfo);
 #ifdef D_LOSSLESS_SUPPORTED
-EXTERN(void) j16init_d_main_controller(j_decompress_ptr cinfo,
-                                       boolean need_full_buffer);
-EXTERN(void) j16init_d_post_controller(j_decompress_ptr cinfo,
-                                       boolean need_full_buffer);
-EXTERN(void) j16init_upsampler(j_decompress_ptr cinfo);
-EXTERN(void) j16init_color_deconverter(j_decompress_ptr cinfo);
-EXTERN(void) jinit_d_diff_controller(j_decompress_ptr cinfo,
-                                     boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) j16init_d_main_controller(j_decompress_ptr cinfo,
+//                                        boolean need_full_buffer);
+// EXTERN(void) j16init_d_post_controller(j_decompress_ptr cinfo,
+//                                        boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) j16init_upsampler(j_decompress_ptr cinfo);
+// EXTERN(void) j16init_color_deconverter(j_decompress_ptr cinfo);
+// EXTERN(void) jinit_d_diff_controller(j_decompress_ptr cinfo,
+//                                      boolean need_full_buffer);
 EXTERN(void) j12init_d_diff_controller(j_decompress_ptr cinfo,
                                        boolean need_full_buffer);
-EXTERN(void) j16init_d_diff_controller(j_decompress_ptr cinfo,
-                                       boolean need_full_buffer);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) j16init_d_diff_controller(j_decompress_ptr cinfo,
+//                                        boolean need_full_buffer);
 EXTERN(void) jinit_lhuff_decoder(j_decompress_ptr cinfo);
-EXTERN(void) jinit_lossless_decompressor(j_decompress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jinit_lossless_decompressor(j_decompress_ptr cinfo);
+
 EXTERN(void) j12init_lossless_decompressor(j_decompress_ptr cinfo);
-EXTERN(void) j16init_lossless_decompressor(j_decompress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) j16init_lossless_decompressor(j_decompress_ptr cinfo);
 #endif
 
 /* Memory manager initialization */
@@ -567,16 +592,18 @@ EXTERN(void) jinit_memory_mgr(j_common_ptr cinfo);
 /* Utility routines in jutils.c */
 EXTERN(long) jdiv_round_up(long a, long b);
 EXTERN(long) jround_up(long a, long b);
-EXTERN(void) jcopy_sample_rows(JSAMPARRAY input_array, int source_row,
-                               JSAMPARRAY output_array, int dest_row,
-                               int num_rows, JDIMENSION num_cols);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jcopy_sample_rows(JSAMPARRAY input_array, int source_row,
+//                                JSAMPARRAY output_array, int dest_row,
+//                                int num_rows, JDIMENSION num_cols);
 EXTERN(void) j12copy_sample_rows(J12SAMPARRAY input_array, int source_row,
                                  J12SAMPARRAY output_array, int dest_row,
                                  int num_rows, JDIMENSION num_cols);
 #if defined(C_LOSSLESS_SUPPORTED) || defined(D_LOSSLESS_SUPPORTED)
-EXTERN(void) j16copy_sample_rows(J16SAMPARRAY input_array, int source_row,
-                                 J16SAMPARRAY output_array, int dest_row,
-                                 int num_rows, JDIMENSION num_cols);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) j16copy_sample_rows(J16SAMPARRAY input_array, int source_row,
+//                                  J16SAMPARRAY output_array, int dest_row,
+//                                  int num_rows, JDIMENSION num_cols);
 #endif
 EXTERN(void) jcopy_block_row(JBLOCKROW input_row, JBLOCKROW output_row,
                              JDIMENSION num_blocks);

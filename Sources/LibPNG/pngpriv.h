@@ -128,7 +128,7 @@
     * or put -DPNG_ARM_NEON_OPT=0 in CPPFLAGS.
     */
 #  if (defined(__ARM_NEON__) || defined(__ARM_NEON)) && \
-   defined(PNG_ALIGNED_MEMORY_SUPPORTED)
+   (defined(PNG_ALIGNED_MEMORY_SUPPORTED) || defined(WITH_ARM))
 #     define PNG_ARM_NEON_OPT 2
 #  else
 #     define PNG_ARM_NEON_OPT 0
@@ -2089,7 +2089,7 @@ PNG_INTERNAL_FUNCTION(void, PNG_FILTER_OPTIMIZATIONS, (png_structp png_ptr,
     * the builder of libpng passes the definition of PNG_FILTER_OPTIMIZATIONS in
     * CFLAGS in place of CPPFLAGS *and* uses symbol prefixing.
     */
-#  if PNG_ARM_NEON_OPT > 0
+#  if PNG_ARM_NEON_OPT > 0 || defined(WITH_NEON)
 PNG_INTERNAL_FUNCTION(void, png_init_filter_functions_neon,
    (png_structp png_ptr, unsigned int bpp), PNG_EMPTY);
 #endif
@@ -2099,7 +2099,7 @@ PNG_INTERNAL_FUNCTION(void, png_init_filter_functions_msa,
    (png_structp png_ptr, unsigned int bpp), PNG_EMPTY);
 #endif
 
-#  if PNG_INTEL_SSE_IMPLEMENTATION > 0
+#  if PNG_INTEL_SSE_IMPLEMENTATION > 0 || defined(WITH_INTEL)
 PNG_INTERNAL_FUNCTION(void, png_init_filter_functions_sse2,
    (png_structp png_ptr, unsigned int bpp), PNG_EMPTY);
 #  endif

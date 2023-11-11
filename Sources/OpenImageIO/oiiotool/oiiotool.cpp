@@ -7348,128 +7348,128 @@ handle_sequence(Oiiotool& ot, int argc, const char** argv)
 
 
 
-int
-main(int argc, char* argv[])
-{
-#if OIIO_SIMD_SSE && !OIIO_F16C_ENABLED
-    // We've found old versions of libopenjpeg (either by itself, or
-    // pulled in by ffmpeg libraries that link against it) that upon its
-    // dso load will turn on the cpu mode that causes floating point
-    // denormals get crushed to 0.0 in certain ops, and leave it that
-    // way! This can give us the wrong results for the particular
-    // sequence of SSE intrinsics we use to convert half->float for exr
-    // files containing pixels with denorm values. Can't fix everywhere,
-    // but at least for oiiotool we know it's safe to just fix the flag
-    // for our app. We only need to do this if using sse instructions and
-    // the f16c hardware half<->float ops are not enabled. This does not
-    // seem to be a problem in libopenjpeg > 1.5.
-    simd::set_denorms_zero_mode(false);
-#endif
-    {
-        // DEBUG -- this checks some problematic half->float values if the
-        // denorms zero mode is not set correctly. Leave this fragment in
-        // case we ever need to check it again.
-        // using namespace OIIO::simd;
-        const unsigned short bad[] = { 59, 12928, 2146, 32805 };
-        const half* h              = (half*)bad;
-        simd::vfloat4 vf(h);
-        if (vf[0] == 0.0f || *h != vf[0])
-            Strutil::print(stderr,
-                           "Bad half conversion, code {} {} -> {} "
-                           "(suspect badly set DENORMS_ZERO_MODE)\n",
-                           bad[0], float(h[0]), vf[0]);
-    }
+// int
+// main(int argc, char* argv[])
+// {
+// #if OIIO_SIMD_SSE && !OIIO_F16C_ENABLED
+//     // We've found old versions of libopenjpeg (either by itself, or
+//     // pulled in by ffmpeg libraries that link against it) that upon its
+//     // dso load will turn on the cpu mode that causes floating point
+//     // denormals get crushed to 0.0 in certain ops, and leave it that
+//     // way! This can give us the wrong results for the particular
+//     // sequence of SSE intrinsics we use to convert half->float for exr
+//     // files containing pixels with denorm values. Can't fix everywhere,
+//     // but at least for oiiotool we know it's safe to just fix the flag
+//     // for our app. We only need to do this if using sse instructions and
+//     // the f16c hardware half<->float ops are not enabled. This does not
+//     // seem to be a problem in libopenjpeg > 1.5.
+//     simd::set_denorms_zero_mode(false);
+// #endif
+//     {
+//         // DEBUG -- this checks some problematic half->float values if the
+//         // denorms zero mode is not set correctly. Leave this fragment in
+//         // case we ever need to check it again.
+//         // using namespace OIIO::simd;
+//         const unsigned short bad[] = { 59, 12928, 2146, 32805 };
+//         const half* h              = (half*)bad;
+//         simd::vfloat4 vf(h);
+//         if (vf[0] == 0.0f || *h != vf[0])
+//             Strutil::print(stderr,
+//                            "Bad half conversion, code {} {} -> {} "
+//                            "(suspect badly set DENORMS_ZERO_MODE)\n",
+//                            bad[0], float(h[0]), vf[0]);
+//     }
 
-    // Helpful for debugging to make sure that any crashes dump a stack
-    // trace.
-    Sysutil::setup_crash_stacktrace("stdout");
+//     // Helpful for debugging to make sure that any crashes dump a stack
+//     // trace.
+//     Sysutil::setup_crash_stacktrace("stdout");
 
-    // Globally force classic "C" locale, and turn off all formatting
-    // internationalization, for the entire oiiotool application.
-    std::locale::global(std::locale::classic());
+//     // Globally force classic "C" locale, and turn off all formatting
+//     // internationalization, for the entire oiiotool application.
+//     std::locale::global(std::locale::classic());
 
-    Oiiotool ot;
+//     Oiiotool ot;
 
-    ot.imagecache = ImageCache::create();
-    OIIO_DASSERT(ot.imagecache);
-    ot.imagecache->attribute("forcefloat", 1);
-    ot.imagecache->attribute("max_memory_MB", float(ot.cachesize));
-    ot.imagecache->attribute("autotile", ot.autotile);
-    ot.imagecache->attribute("autoscanline", int(ot.autotile ? 1 : 0));
+//     ot.imagecache = ImageCache::create();
+//     OIIO_DASSERT(ot.imagecache);
+//     ot.imagecache->attribute("forcefloat", 1);
+//     ot.imagecache->attribute("max_memory_MB", float(ot.cachesize));
+//     ot.imagecache->attribute("autotile", ot.autotile);
+//     ot.imagecache->attribute("autoscanline", int(ot.autotile ? 1 : 0));
 
-    Filesystem::convert_native_arguments(argc, (const char**)argv);
-    if (handle_sequence(ot, argc, (const char**)argv)) {
-        // Deal with sequence
+//     Filesystem::convert_native_arguments(argc, (const char**)argv);
+//     if (handle_sequence(ot, argc, (const char**)argv)) {
+//         // Deal with sequence
 
-    } else {
-        // Not a sequence
-        ot.getargs(argc, argv);
-        if (!ot.ap.aborted()) {
-            ot.process_pending();
-            if (ot.pending_callback())
-                ot.warning(ot.pending_callback_name(),
-                           "pending command never executed");
-            if (!ot.control_stack.empty())
-                ot.warningfmt(ot.control_stack.top().command, "unterminated {}",
-                              ot.control_stack.top().command);
-        }
-    }
+//     } else {
+//         // Not a sequence
+//         ot.getargs(argc, argv);
+//         if (!ot.ap.aborted()) {
+//             ot.process_pending();
+//             if (ot.pending_callback())
+//                 ot.warning(ot.pending_callback_name(),
+//                            "pending command never executed");
+//             if (!ot.control_stack.empty())
+//                 ot.warningfmt(ot.control_stack.top().command, "unterminated {}",
+//                               ot.control_stack.top().command);
+//         }
+//     }
 
-    if (!ot.printinfo && !ot.printstats && !ot.dumpdata && !ot.dryrun
-        && !ot.printed_info && !ot.ap.aborted()) {
-        if (ot.curimg && !ot.curimg->was_output()
-            && (ot.curimg->metadata_modified() || ot.curimg->pixels_modified()))
-            ot.warning(
-                "",
-                "modified images without outputting them. Did you forget -o?");
-        else if (ot.num_outputs == 0)
-            ot.warning("", "oiiotool produced no output. Did you forget -o?");
-    }
+//     if (!ot.printinfo && !ot.printstats && !ot.dumpdata && !ot.dryrun
+//         && !ot.printed_info && !ot.ap.aborted()) {
+//         if (ot.curimg && !ot.curimg->was_output()
+//             && (ot.curimg->metadata_modified() || ot.curimg->pixels_modified()))
+//             ot.warning(
+//                 "",
+//                 "modified images without outputting them. Did you forget -o?");
+//         else if (ot.num_outputs == 0)
+//             ot.warning("", "oiiotool produced no output. Did you forget -o?");
+//     }
 
-    if (ot.runstats) {
-        double total_time  = ot.total_runtime();
-        double unaccounted = total_time;
-        print("\n");
-        print("Threads: {}\n", OIIO::get_int_attribute("threads"));
-        print("oiiotool runtime statistics:\n");
-        print("  Total time: {}\n", Strutil::timeintervalformat(total_time, 2));
-        for (auto& func : ot.function_times) {
-            double t = func.second;
-            if (t > 0.0) {
-                Strutil::print("      {:<12} : {:5.2f}\n", func.first, t);
-                unaccounted -= t;
-            }
-        }
-        if (unaccounted > 0.0)
-            Strutil::print("      {:<12} : {:5.2f}\n", "unaccounted",
-                           unaccounted);
-        ot.check_peak_memory();
-        print("  Peak memory:    {}\n", Strutil::memformat(ot.peak_memory));
-        print("  Current memory: {}\n",
-              Strutil::memformat(Sysutil::memory_used()));
-        {
-            int64_t current = 0, peak = 0;
-            OIIO::getattribute("IB_local_mem_current", TypeInt64, &current);
-            OIIO::getattribute("IB_local_mem_peak", TypeInt64, &peak);
-            print("\nImageBuf local memory: current {}, peak {}\n",
-                  Strutil::memformat(current), Strutil::memformat(peak));
-            float opentime = OIIO::get_float_attribute("IB_total_open_time");
-            float readtime = OIIO::get_float_attribute(
-                "IB_total_image_read_time");
-            print("ImageBuf direct read time: {}, open time {}\n",
-                  Strutil::timeintervalformat(readtime, 2),
-                  Strutil::timeintervalformat(opentime, 2));
-        }
-        print("\n{}\n", ot.imagecache->getstats(2));
-    }
+//     if (ot.runstats) {
+//         double total_time  = ot.total_runtime();
+//         double unaccounted = total_time;
+//         print("\n");
+//         print("Threads: {}\n", OIIO::get_int_attribute("threads"));
+//         print("oiiotool runtime statistics:\n");
+//         print("  Total time: {}\n", Strutil::timeintervalformat(total_time, 2));
+//         for (auto& func : ot.function_times) {
+//             double t = func.second;
+//             if (t > 0.0) {
+//                 Strutil::print("      {:<12} : {:5.2f}\n", func.first, t);
+//                 unaccounted -= t;
+//             }
+//         }
+//         if (unaccounted > 0.0)
+//             Strutil::print("      {:<12} : {:5.2f}\n", "unaccounted",
+//                            unaccounted);
+//         ot.check_peak_memory();
+//         print("  Peak memory:    {}\n", Strutil::memformat(ot.peak_memory));
+//         print("  Current memory: {}\n",
+//               Strutil::memformat(Sysutil::memory_used()));
+//         {
+//             int64_t current = 0, peak = 0;
+//             OIIO::getattribute("IB_local_mem_current", TypeInt64, &current);
+//             OIIO::getattribute("IB_local_mem_peak", TypeInt64, &peak);
+//             print("\nImageBuf local memory: current {}, peak {}\n",
+//                   Strutil::memformat(current), Strutil::memformat(peak));
+//             float opentime = OIIO::get_float_attribute("IB_total_open_time");
+//             float readtime = OIIO::get_float_attribute(
+//                 "IB_total_image_read_time");
+//             print("ImageBuf direct read time: {}, open time {}\n",
+//                   Strutil::timeintervalformat(readtime, 2),
+//                   Strutil::timeintervalformat(opentime, 2));
+//         }
+//         print("\n{}\n", ot.imagecache->getstats(2));
+//     }
 
-    // Release references of images that might hold onto a shared
-    // image cache. Otherwise they would get released at static destruction
-    // time, at which point due to undefined destruction order the shared
-    // cache might be already gone.
-    ot.curimg = nullptr;
-    ot.image_stack.clear();
-    ot.image_labels.clear();
-    shutdown();
-    return ot.return_value;
-}
+//     // Release references of images that might hold onto a shared
+//     // image cache. Otherwise they would get released at static destruction
+//     // time, at which point due to undefined destruction order the shared
+//     // cache might be already gone.
+//     ot.curimg = nullptr;
+//     ot.image_stack.clear();
+//     ot.image_labels.clear();
+//     shutdown();
+//     return ot.return_value;
+// }

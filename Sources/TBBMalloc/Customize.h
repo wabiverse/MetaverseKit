@@ -70,7 +70,7 @@ inline void do_yield() {
 #define USE_DEFAULT_MEMORY_MAPPING 1
 
 // To support malloc replacement
-#include "../tbbmalloc_proxy/proxy.h"
+#include "proxy.h"
 
 #if MALLOC_UNIXLIKE_OVERLOAD_ENABLED
 #define malloc_proxy __TBB_malloc_proxy
@@ -94,31 +94,31 @@ namespace tbb {
 namespace detail {
 namespace d1 {
     // already defined in "oneapi/tbb/profiling.h" above??
-    // enum notify_type {prepare=0, cancel, acquired, releasing};
+    enum notify_type {prepare=0, cancel, acquired, releasing};
 
 #if TBB_USE_PROFILING_TOOLS
     // already defined in "oneapi/tbb/profiling.h" above??
-    // inline void call_itt_notify(notify_type t, void *ptr) {
-    //     // unreferenced formal parameter warning
-    //     detail::suppress_unused_warning(ptr);
-    //     switch ( t ) {
-    //     case prepare:
-    //         MALLOC_ITT_SYNC_PREPARE( ptr );
-    //         break;
-    //     case cancel:
-    //         MALLOC_ITT_SYNC_CANCEL( ptr );
-    //         break;
-    //     case acquired:
-    //         MALLOC_ITT_SYNC_ACQUIRED( ptr );
-    //         break;
-    //     case releasing:
-    //         MALLOC_ITT_SYNC_RELEASING( ptr );
-    //         break;
-    //     }
-    // }
+    inline void call_itt_notify(notify_type t, void *ptr) {
+        // unreferenced formal parameter warning
+        detail::suppress_unused_warning(ptr);
+        switch ( t ) {
+        case prepare:
+            MALLOC_ITT_SYNC_PREPARE( ptr );
+            break;
+        case cancel:
+            MALLOC_ITT_SYNC_CANCEL( ptr );
+            break;
+        case acquired:
+            MALLOC_ITT_SYNC_ACQUIRED( ptr );
+            break;
+        case releasing:
+            MALLOC_ITT_SYNC_RELEASING( ptr );
+            break;
+        }
+    }
 #else
     // already defined in "oneapi/tbb/profiling.h" above??
-    // inline void call_itt_notify(notify_type /*t*/, void * /*ptr*/) {}
+    inline void call_itt_notify(notify_type /*t*/, void * /*ptr*/) {}
 #endif // TBB_USE_PROFILING_TOOLS
 
 } // namespace d1

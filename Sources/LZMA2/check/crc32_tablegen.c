@@ -102,16 +102,16 @@ print_lz_table(void)
 }
 
 
-int
-main(void)
-{
-	init_crc32_table();
+// int
+// main(void)
+// {
+// 	init_crc32_table();
 
-#ifdef LZ_HASH_TABLE
-	print_lz_table();
-#else
-	print_crc32_table();
-#endif
+// #ifdef LZ_HASH_TABLE
+// 	print_lz_table();
+// #else
+// 	print_crc32_table();
+// #endif
 
-	return 0;
-}
+// 	return 0;
+// }

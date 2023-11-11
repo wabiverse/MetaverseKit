@@ -22,8 +22,8 @@
 #include "jpeglib.h"
 #include "jsamplecomp.h"
 
-
-#if BITS_IN_JSAMPLE == 8
+// j16XXX hack until I clean up TurboJPEG.
+// #if BITS_IN_JSAMPLE == 8
 
 /*
  * Compression initialization.
@@ -63,7 +63,7 @@ jpeg_start_compress(j_compress_ptr cinfo, boolean write_all_tables)
   cinfo->global_state = (cinfo->raw_data_in ? CSTATE_RAW_OK : CSTATE_SCANNING);
 }
 
-#endif
+// #endif /* BITS_IN_JSAMPLE == 8 */
 
 
 /*

@@ -14,11 +14,13 @@
     limitations under the License.
 */
 
+#if defined(_WIN32)
+
 #include "oneapi/tbb/detail/_config.h"
 #include "oneapi/tbb/detail/_assert.h"
 #include "../tbb/assert_impl.h"
 
-#if !__TBB_WIN8UI_SUPPORT && defined(_WIN32)
+#if !__TBB_WIN8UI_SUPPORT
 
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE 1
@@ -580,3 +582,5 @@ extern "C" __declspec(dllexport) int TBB_malloc_replacement_log(char *** functio
 }
 
 #endif /* !__TBB_WIN8UI_SUPPORT && defined(_WIN32) */
+
+#endif /* _WIN32 */

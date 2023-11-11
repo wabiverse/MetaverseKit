@@ -276,16 +276,18 @@ static int decomp(unsigned char **jpegBufs, size_t *jpegSizes, void *dstBuf,
           if (iter >= 0) elapsedDecode += getTime() - startDecode;
         } else {
           if (precision == 8) {
-            if (tj3Decompress8(handle, jpegBufs[tile], jpegSizes[tile],
-                               dstPtr2, pitch, pf) == -1)
+            // j16XXX hack until I clean up TurboJPEG.
+            if (tj3Decompress12(handle, jpegBufs[tile], jpegSizes[tile],
+                                (short *)dstPtr2, pitch, pf) == -1)
               THROW_TJ();
           } else if (precision == 12) {
             if (tj3Decompress12(handle, jpegBufs[tile], jpegSizes[tile],
                                 (short *)dstPtr2, pitch, pf) == -1)
               THROW_TJ();
           } else {
-            if (tj3Decompress16(handle, jpegBufs[tile], jpegSizes[tile],
-                                (unsigned short *)dstPtr2, pitch, pf) == -1)
+            // j16XXX hack until I clean up TurboJPEG.
+            if (tj3Decompress12(handle, jpegBufs[tile], jpegSizes[tile],
+                                (short *)dstPtr2, pitch, pf) == -1)
               THROW_TJ();
           }
         }
@@ -339,15 +341,16 @@ static int decomp(unsigned char **jpegBufs, size_t *jpegSizes, void *dstBuf,
              lossless ? "LOSSLS" : subName[subsamp], qualStr, sizeStr, ext);
 
   if (precision == 8) {
-    if (tj3SaveImage8(handle, tempStr, (unsigned char *)dstBuf, scaledw, 0,
-                      scaledh, pf) == -1)
+    if (tj3SaveImage12(handle, tempStr, (short *)dstBuf, scaledw, 0,
+                       scaledh, pf) == -1)
       THROW_TJ();
   } else if (precision == 12) {
     if (tj3SaveImage12(handle, tempStr, (short *)dstBuf, scaledw, 0, scaledh,
                        pf) == -1)
       THROW_TJ();
   } else {
-    if (tj3SaveImage16(handle, tempStr, (unsigned short *)dstBuf, scaledw, 0,
+    // j16XXX hack until I clean up TurboJPEG.
+    if (tj3SaveImage12(handle, tempStr, (short *)dstBuf, scaledw, 0,
                       scaledh, pf) == -1)
       THROW_TJ();
   }
@@ -491,15 +494,17 @@ static int fullTest(tjhandle handle, void *srcBuf, int w, int h, int subsamp,
               THROW_TJ();
           } else {
             if (precision == 8) {
-              if (tj3Compress8(handle, srcPtr2, width, pitch, height, pf,
-                               &jpegBufs[tile], &jpegSizes[tile]) == -1)
+              if (tj3Compress12(handle, (short *)srcPtr2, width, pitch, height,
+                                pf, &jpegBufs[tile], &jpegSizes[tile]) == -1)
                 THROW_TJ();
             } else if (precision == 12) {
+              
               if (tj3Compress12(handle, (short *)srcPtr2, width, pitch, height,
                                 pf, &jpegBufs[tile], &jpegSizes[tile]) == -1)
                 THROW_TJ();
             } else {
-              if (tj3Compress16(handle, (unsigned short *)srcPtr2, width,
+              // j16XXX hack until I clean up TurboJPEG.
+              if (tj3Compress12(handle, (short *)srcPtr2, width,
                                 pitch, height, pf, &jpegBufs[tile],
                                 &jpegSizes[tile]) == -1)
                 THROW_TJ();
@@ -975,313 +980,315 @@ static void usage(char *progName)
 }
 
 
-int main(int argc, char *argv[])
-{
-  void *srcBuf = NULL;
-  int w = 0, h = 0, i, j, minQual = -1, maxQual = -1;
-  char *temp;
-  int minArg = 2, retval = 0, subsamp = -1;
-  tjhandle handle = NULL;
+// int main(int argc, char *argv[])
+// {
+//   void *srcBuf = NULL;
+//   int w = 0, h = 0, i, j, minQual = -1, maxQual = -1;
+//   char *temp;
+//   int minArg = 2, retval = 0, subsamp = -1;
+//   tjhandle handle = NULL;
 
-  if ((scalingFactors = tj3GetScalingFactors(&nsf)) == NULL || nsf == 0)
-    THROW("executing tj3GetScalingFactors()", tj3GetErrorStr(NULL));
+//   if ((scalingFactors = tj3GetScalingFactors(&nsf)) == NULL || nsf == 0)
+//     THROW("executing tj3GetScalingFactors()", tj3GetErrorStr(NULL));
 
-  if (argc < minArg) usage(argv[0]);
+//   if (argc < minArg) usage(argv[0]);
 
-  temp = strrchr(argv[1], '.');
-  if (temp != NULL) {
-    if (!strcasecmp(temp, ".bmp")) ext = "bmp";
-    if (!strcasecmp(temp, ".jpg") || !strcasecmp(temp, ".jpeg"))
-      decompOnly = 1;
-  }
+//   temp = strrchr(argv[1], '.');
+//   if (temp != NULL) {
+//     if (!strcasecmp(temp, ".bmp")) ext = "bmp";
+//     if (!strcasecmp(temp, ".jpg") || !strcasecmp(temp, ".jpeg"))
+//       decompOnly = 1;
+//   }
 
-  printf("\n");
+//   printf("\n");
 
-  if (!decompOnly) {
-    minArg = 3;
-    if (argc < minArg) usage(argv[0]);
-    minQual = atoi(argv[2]);
-    if ((temp = strchr(argv[2], '-')) != NULL && strlen(temp) > 1 &&
-        sscanf(&temp[1], "%d", &maxQual) == 1 && maxQual > minQual) {}
-    else maxQual = minQual;
-  }
+//   if (!decompOnly) {
+//     minArg = 3;
+//     if (argc < minArg) usage(argv[0]);
+//     minQual = atoi(argv[2]);
+//     if ((temp = strchr(argv[2], '-')) != NULL && strlen(temp) > 1 &&
+//         sscanf(&temp[1], "%d", &maxQual) == 1 && maxQual > minQual) {}
+//     else maxQual = minQual;
+//   }
 
-  if (argc > minArg) {
-    for (i = minArg; i < argc; i++) {
-      if (!strcasecmp(argv[i], "-tile")) {
-        doTile = 1;  xformOpt |= TJXOPT_CROP;
-      } else if (!strcasecmp(argv[i], "-precision") && i < argc - 1) {
-        int tempi = atoi(argv[++i]);
+//   if (argc > minArg) {
+//     for (i = minArg; i < argc; i++) {
+//       if (!strcasecmp(argv[i], "-tile")) {
+//         doTile = 1;  xformOpt |= TJXOPT_CROP;
+//       } else if (!strcasecmp(argv[i], "-precision") && i < argc - 1) {
+//         int tempi = atoi(argv[++i]);
 
-        if (tempi != 8 && tempi != 12 && tempi != 16)
-          usage(argv[0]);
-        precision = tempi;
-      } else if (!strcasecmp(argv[i], "-fastupsample")) {
-        printf("Using fastest upsampling algorithm\n\n");
-        fastUpsample = 1;
-      } else if (!strcasecmp(argv[i], "-fastdct")) {
-        printf("Using fastest DCT/IDCT algorithm\n\n");
-        fastDCT = 1;
-      } else if (!strcasecmp(argv[i], "-optimize")) {
-        printf("Using optimized baseline entropy coding\n\n");
-        optimize = 1;
-        xformOpt |= TJXOPT_OPTIMIZE;
-      } else if (!strcasecmp(argv[i], "-progressive")) {
-        printf("Using progressive entropy coding\n\n");
-        progressive = 1;
-        xformOpt |= TJXOPT_PROGRESSIVE;
-      } else if (!strcasecmp(argv[i], "-arithmetic")) {
-        printf("Using arithmetic entropy coding\n\n");
-        arithmetic = 1;
-        xformOpt |= TJXOPT_ARITHMETIC;
-      } else if (!strcasecmp(argv[i], "-lossless")) {
-        lossless = 1;
-        subsamp = TJSAMP_444;
-      } else if (!strcasecmp(argv[i], "-rgb"))
-        pf = TJPF_RGB;
-      else if (!strcasecmp(argv[i], "-rgbx"))
-        pf = TJPF_RGBX;
-      else if (!strcasecmp(argv[i], "-bgr"))
-        pf = TJPF_BGR;
-      else if (!strcasecmp(argv[i], "-bgrx"))
-        pf = TJPF_BGRX;
-      else if (!strcasecmp(argv[i], "-xbgr"))
-        pf = TJPF_XBGR;
-      else if (!strcasecmp(argv[i], "-xrgb"))
-        pf = TJPF_XRGB;
-      else if (!strcasecmp(argv[i], "-cmyk"))
-        pf = TJPF_CMYK;
-      else if (!strcasecmp(argv[i], "-bottomup"))
-        bottomUp = 1;
-      else if (!strcasecmp(argv[i], "-quiet"))
-        quiet = 1;
-      else if (!strcasecmp(argv[i], "-qq"))
-        quiet = 2;
-      else if (!strcasecmp(argv[i], "-scale") && i < argc - 1) {
-        int temp1 = 0, temp2 = 0, match = 0;
+//         if (tempi != 8 && tempi != 12 && tempi != 16)
+//           usage(argv[0]);
+//         precision = tempi;
+//       } else if (!strcasecmp(argv[i], "-fastupsample")) {
+//         printf("Using fastest upsampling algorithm\n\n");
+//         fastUpsample = 1;
+//       } else if (!strcasecmp(argv[i], "-fastdct")) {
+//         printf("Using fastest DCT/IDCT algorithm\n\n");
+//         fastDCT = 1;
+//       } else if (!strcasecmp(argv[i], "-optimize")) {
+//         printf("Using optimized baseline entropy coding\n\n");
+//         optimize = 1;
+//         xformOpt |= TJXOPT_OPTIMIZE;
+//       } else if (!strcasecmp(argv[i], "-progressive")) {
+//         printf("Using progressive entropy coding\n\n");
+//         progressive = 1;
+//         xformOpt |= TJXOPT_PROGRESSIVE;
+//       } else if (!strcasecmp(argv[i], "-arithmetic")) {
+//         printf("Using arithmetic entropy coding\n\n");
+//         arithmetic = 1;
+//         xformOpt |= TJXOPT_ARITHMETIC;
+//       } else if (!strcasecmp(argv[i], "-lossless")) {
+//         lossless = 1;
+//         subsamp = TJSAMP_444;
+//       } else if (!strcasecmp(argv[i], "-rgb"))
+//         pf = TJPF_RGB;
+//       else if (!strcasecmp(argv[i], "-rgbx"))
+//         pf = TJPF_RGBX;
+//       else if (!strcasecmp(argv[i], "-bgr"))
+//         pf = TJPF_BGR;
+//       else if (!strcasecmp(argv[i], "-bgrx"))
+//         pf = TJPF_BGRX;
+//       else if (!strcasecmp(argv[i], "-xbgr"))
+//         pf = TJPF_XBGR;
+//       else if (!strcasecmp(argv[i], "-xrgb"))
+//         pf = TJPF_XRGB;
+//       else if (!strcasecmp(argv[i], "-cmyk"))
+//         pf = TJPF_CMYK;
+//       else if (!strcasecmp(argv[i], "-bottomup"))
+//         bottomUp = 1;
+//       else if (!strcasecmp(argv[i], "-quiet"))
+//         quiet = 1;
+//       else if (!strcasecmp(argv[i], "-qq"))
+//         quiet = 2;
+//       else if (!strcasecmp(argv[i], "-scale") && i < argc - 1) {
+//         int temp1 = 0, temp2 = 0, match = 0;
 
-        if (sscanf(argv[++i], "%d/%d", &temp1, &temp2) == 2) {
-          for (j = 0; j < nsf; j++) {
-            if (temp1 == scalingFactors[j].num &&
-                temp2 == scalingFactors[j].denom) {
-              sf = scalingFactors[j];
-              match = 1;  break;
-            }
-          }
-          if (!match) usage(argv[0]);
-        } else usage(argv[0]);
-      } else if (!strcasecmp(argv[i], "-crop") && i < argc - 1) {
-        int temp1 = -1, temp2 = -1, temp3 = -1, temp4 = -1;
+//         if (sscanf(argv[++i], "%d/%d", &temp1, &temp2) == 2) {
+//           for (j = 0; j < nsf; j++) {
+//             if (temp1 == scalingFactors[j].num &&
+//                 temp2 == scalingFactors[j].denom) {
+//               sf = scalingFactors[j];
+//               match = 1;  break;
+//             }
+//           }
+//           if (!match) usage(argv[0]);
+//         } else usage(argv[0]);
+//       } else if (!strcasecmp(argv[i], "-crop") && i < argc - 1) {
+//         int temp1 = -1, temp2 = -1, temp3 = -1, temp4 = -1;
 
-        if (sscanf(argv[++i], "%dx%d+%d+%d", &temp1, &temp2, &temp3,
-                   &temp4) == 4 && temp1 >= 0 && temp2 >= 0 && temp3 >= 0 &&
-                   temp4 >= 0) {
-          cr.w = temp1;  cr.h = temp2;  cr.x = temp3;  cr.y = temp4;
-        } else usage(argv[0]);
-      } else if (!strcasecmp(argv[i], "-hflip"))
-        xformOp = TJXOP_HFLIP;
-      else if (!strcasecmp(argv[i], "-vflip"))
-        xformOp = TJXOP_VFLIP;
-      else if (!strcasecmp(argv[i], "-transpose"))
-        xformOp = TJXOP_TRANSPOSE;
-      else if (!strcasecmp(argv[i], "-transverse"))
-        xformOp = TJXOP_TRANSVERSE;
-      else if (!strcasecmp(argv[i], "-rot90"))
-        xformOp = TJXOP_ROT90;
-      else if (!strcasecmp(argv[i], "-rot180"))
-        xformOp = TJXOP_ROT180;
-      else if (!strcasecmp(argv[i], "-rot270"))
-        xformOp = TJXOP_ROT270;
-      else if (!strcasecmp(argv[i], "-grayscale"))
-        xformOpt |= TJXOPT_GRAY;
-      else if (!strcasecmp(argv[i], "-custom"))
-        customFilter = dummyDCTFilter;
-      else if (!strcasecmp(argv[i], "-nooutput"))
-        xformOpt |= TJXOPT_NOOUTPUT;
-      else if (!strcasecmp(argv[i], "-copynone"))
-        xformOpt |= TJXOPT_COPYNONE;
-      else if (!strcasecmp(argv[i], "-benchtime") && i < argc - 1) {
-        double tempd = atof(argv[++i]);
+//         if (sscanf(argv[++i], "%dx%d+%d+%d", &temp1, &temp2, &temp3,
+//                    &temp4) == 4 && temp1 >= 0 && temp2 >= 0 && temp3 >= 0 &&
+//                    temp4 >= 0) {
+//           cr.w = temp1;  cr.h = temp2;  cr.x = temp3;  cr.y = temp4;
+//         } else usage(argv[0]);
+//       } else if (!strcasecmp(argv[i], "-hflip"))
+//         xformOp = TJXOP_HFLIP;
+//       else if (!strcasecmp(argv[i], "-vflip"))
+//         xformOp = TJXOP_VFLIP;
+//       else if (!strcasecmp(argv[i], "-transpose"))
+//         xformOp = TJXOP_TRANSPOSE;
+//       else if (!strcasecmp(argv[i], "-transverse"))
+//         xformOp = TJXOP_TRANSVERSE;
+//       else if (!strcasecmp(argv[i], "-rot90"))
+//         xformOp = TJXOP_ROT90;
+//       else if (!strcasecmp(argv[i], "-rot180"))
+//         xformOp = TJXOP_ROT180;
+//       else if (!strcasecmp(argv[i], "-rot270"))
+//         xformOp = TJXOP_ROT270;
+//       else if (!strcasecmp(argv[i], "-grayscale"))
+//         xformOpt |= TJXOPT_GRAY;
+//       else if (!strcasecmp(argv[i], "-custom"))
+//         customFilter = dummyDCTFilter;
+//       else if (!strcasecmp(argv[i], "-nooutput"))
+//         xformOpt |= TJXOPT_NOOUTPUT;
+//       else if (!strcasecmp(argv[i], "-copynone"))
+//         xformOpt |= TJXOPT_COPYNONE;
+//       else if (!strcasecmp(argv[i], "-benchtime") && i < argc - 1) {
+//         double tempd = atof(argv[++i]);
 
-        if (tempd > 0.0) benchTime = tempd;
-        else usage(argv[0]);
-      } else if (!strcasecmp(argv[i], "-warmup") && i < argc - 1) {
-        double tempd = atof(argv[++i]);
+//         if (tempd > 0.0) benchTime = tempd;
+//         else usage(argv[0]);
+//       } else if (!strcasecmp(argv[i], "-warmup") && i < argc - 1) {
+//         double tempd = atof(argv[++i]);
 
-        if (tempd >= 0.0) warmup = tempd;
-        else usage(argv[0]);
-        printf("Warmup time = %.1f seconds\n\n", warmup);
-      } else if (!strcasecmp(argv[i], "-alloc"))
-        noRealloc = 0;
-      else if (!strcasecmp(argv[i], "-bmp"))
-        ext = "bmp";
-      else if (!strcasecmp(argv[i], "-yuv")) {
-        printf("Testing planar YUV encoding/decoding\n\n");
-        doYUV = 1;
-      } else if (!strcasecmp(argv[i], "-yuvpad") && i < argc - 1) {
-        int tempi = atoi(argv[++i]);
+//         if (tempd >= 0.0) warmup = tempd;
+//         else usage(argv[0]);
+//         printf("Warmup time = %.1f seconds\n\n", warmup);
+//       } else if (!strcasecmp(argv[i], "-alloc"))
+//         noRealloc = 0;
+//       else if (!strcasecmp(argv[i], "-bmp"))
+//         ext = "bmp";
+//       else if (!strcasecmp(argv[i], "-yuv")) {
+//         printf("Testing planar YUV encoding/decoding\n\n");
+//         doYUV = 1;
+//       } else if (!strcasecmp(argv[i], "-yuvpad") && i < argc - 1) {
+//         int tempi = atoi(argv[++i]);
 
-        if (tempi >= 1 && (tempi & (tempi - 1)) == 0) yuvAlign = tempi;
-        else usage(argv[0]);
-      } else if (!strcasecmp(argv[i], "-subsamp") && i < argc - 1) {
-        i++;
-        if (toupper(argv[i][0]) == 'G') subsamp = TJSAMP_GRAY;
-        else {
-          int tempi = atoi(argv[i]);
+//         if (tempi >= 1 && (tempi & (tempi - 1)) == 0) yuvAlign = tempi;
+//         else usage(argv[0]);
+//       } else if (!strcasecmp(argv[i], "-subsamp") && i < argc - 1) {
+//         i++;
+//         if (toupper(argv[i][0]) == 'G') subsamp = TJSAMP_GRAY;
+//         else {
+//           int tempi = atoi(argv[i]);
 
-          switch (tempi) {
-          case 444:  subsamp = TJSAMP_444;  break;
-          case 422:  subsamp = TJSAMP_422;  break;
-          case 440:  subsamp = TJSAMP_440;  break;
-          case 420:  subsamp = TJSAMP_420;  break;
-          case 411:  subsamp = TJSAMP_411;  break;
-          case 441:  subsamp = TJSAMP_441;  break;
-          default:  usage(argv[0]);
-          }
-        }
-      } else if (!strcasecmp(argv[i], "-componly"))
-        compOnly = 1;
-      else if (!strcasecmp(argv[i], "-nowrite"))
-        doWrite = 0;
-      else if (!strcasecmp(argv[i], "-limitscans"))
-        limitScans = 1;
-      else if (!strcasecmp(argv[i], "-restart") && i < argc - 1) {
-        int tempi = -1, nscan;  char tempc = 0;
+//           switch (tempi) {
+//           case 444:  subsamp = TJSAMP_444;  break;
+//           case 422:  subsamp = TJSAMP_422;  break;
+//           case 440:  subsamp = TJSAMP_440;  break;
+//           case 420:  subsamp = TJSAMP_420;  break;
+//           case 411:  subsamp = TJSAMP_411;  break;
+//           case 441:  subsamp = TJSAMP_441;  break;
+//           default:  usage(argv[0]);
+//           }
+//         }
+//       } else if (!strcasecmp(argv[i], "-componly"))
+//         compOnly = 1;
+//       else if (!strcasecmp(argv[i], "-nowrite"))
+//         doWrite = 0;
+//       else if (!strcasecmp(argv[i], "-limitscans"))
+//         limitScans = 1;
+//       else if (!strcasecmp(argv[i], "-restart") && i < argc - 1) {
+//         int tempi = -1, nscan;  char tempc = 0;
 
-        if ((nscan = sscanf(argv[++i], "%d%c", &tempi, &tempc)) < 1 ||
-            tempi < 0 || tempi > 65535 ||
-            (nscan == 2 && tempc != 'B' && tempc != 'b'))
-          usage(argv[0]);
+//         if ((nscan = sscanf(argv[++i], "%d%c", &tempi, &tempc)) < 1 ||
+//             tempi < 0 || tempi > 65535 ||
+//             (nscan == 2 && tempc != 'B' && tempc != 'b'))
+//           usage(argv[0]);
 
-        if (tempc == 'B' || tempc == 'b')
-          restartIntervalBlocks = tempi;
-        else
-          restartIntervalRows = tempi;
-      } else if (!strcasecmp(argv[i], "-stoponwarning"))
-        stopOnWarning = 1;
-      else usage(argv[0]);
-    }
-  }
+//         if (tempc == 'B' || tempc == 'b')
+//           restartIntervalBlocks = tempi;
+//         else
+//           restartIntervalRows = tempi;
+//       } else if (!strcasecmp(argv[i], "-stoponwarning"))
+//         stopOnWarning = 1;
+//       else usage(argv[0]);
+//     }
+//   }
 
-  if (precision == 16 && !lossless) {
-    printf("ERROR: -lossless must be specified along with -precision 16\n");
-    retval = -1;  goto bailout;
-  }
-  if (precision != 8 && doYUV) {
-    printf("ERROR: -yuv requires 8-bit data precision\n");
-    retval = -1;  goto bailout;
-  }
-  if (lossless && doYUV) {
-    printf("ERROR: -lossless and -yuv are incompatible\n");
-    retval = -1;  goto bailout;
-  }
-  sampleSize = (precision == 8 ? sizeof(unsigned char) : sizeof(short));
+//   if (precision == 16 && !lossless) {
+//     printf("ERROR: -lossless must be specified along with -precision 16\n");
+//     retval = -1;  goto bailout;
+//   }
+//   if (precision != 8 && doYUV) {
+//     printf("ERROR: -yuv requires 8-bit data precision\n");
+//     retval = -1;  goto bailout;
+//   }
+//   if (lossless && doYUV) {
+//     printf("ERROR: -lossless and -yuv are incompatible\n");
+//     retval = -1;  goto bailout;
+//   }
+//   sampleSize = (precision == 8 ? sizeof(unsigned char) : sizeof(short));
 
-  if ((sf.num != 1 || sf.denom != 1) && doTile) {
-    printf("Disabling tiled compression/decompression tests, because those tests do not\n");
-    printf("work when scaled decompression is enabled.\n\n");
-    doTile = 0;  xformOpt &= (~TJXOPT_CROP);
-  }
+//   if ((sf.num != 1 || sf.denom != 1) && doTile) {
+//     printf("Disabling tiled compression/decompression tests, because those tests do not\n");
+//     printf("work when scaled decompression is enabled.\n\n");
+//     doTile = 0;  xformOpt &= (~TJXOPT_CROP);
+//   }
 
-  if (IS_CROPPED(cr)) {
-    if (!decompOnly) {
-      printf("ERROR: Partial image decompression can only be enabled for JPEG input images\n");
-      retval = -1;  goto bailout;
-    }
-    if (doTile) {
-      printf("Disabling tiled compression/decompression tests, because those tests do not\n");
-      printf("work when partial image decompression is enabled.\n\n");
-      doTile = 0;  xformOpt &= (~TJXOPT_CROP);
-    }
-    if (doYUV) {
-      printf("ERROR: -crop and -yuv are incompatible\n");
-      retval = -1;  goto bailout;
-    }
-  }
+//   if (IS_CROPPED(cr)) {
+//     if (!decompOnly) {
+//       printf("ERROR: Partial image decompression can only be enabled for JPEG input images\n");
+//       retval = -1;  goto bailout;
+//     }
+//     if (doTile) {
+//       printf("Disabling tiled compression/decompression tests, because those tests do not\n");
+//       printf("work when partial image decompression is enabled.\n\n");
+//       doTile = 0;  xformOpt &= (~TJXOPT_CROP);
+//     }
+//     if (doYUV) {
+//       printf("ERROR: -crop and -yuv are incompatible\n");
+//       retval = -1;  goto bailout;
+//     }
+//   }
 
-  if (!noRealloc && doTile) {
-    printf("Disabling tiled compression/decompression tests, because those tests do not\n");
-    printf("work when dynamic JPEG buffer allocation is enabled.\n\n");
-    doTile = 0;  xformOpt &= (~TJXOPT_CROP);
-  }
+//   if (!noRealloc && doTile) {
+//     printf("Disabling tiled compression/decompression tests, because those tests do not\n");
+//     printf("work when dynamic JPEG buffer allocation is enabled.\n\n");
+//     doTile = 0;  xformOpt &= (~TJXOPT_CROP);
+//   }
 
-  if (!decompOnly) {
-    if ((handle = tj3Init(TJINIT_COMPRESS)) == NULL)
-      THROW_TJG();
-    if (tj3Set(handle, TJPARAM_STOPONWARNING, stopOnWarning) == -1)
-      THROW_TJ();
-    if (tj3Set(handle, TJPARAM_BOTTOMUP, bottomUp) == -1)
-      THROW_TJ();
+//   if (!decompOnly) {
+//     if ((handle = tj3Init(TJINIT_COMPRESS)) == NULL)
+//       THROW_TJG();
+//     if (tj3Set(handle, TJPARAM_STOPONWARNING, stopOnWarning) == -1)
+//       THROW_TJ();
+//     if (tj3Set(handle, TJPARAM_BOTTOMUP, bottomUp) == -1)
+//       THROW_TJ();
 
-    if (precision == 8) {
-      if ((srcBuf = tj3LoadImage8(handle, argv[1], &w, 1, &h, &pf)) == NULL)
-        THROW_TJ();
-    } else if (precision == 12) {
-      if ((srcBuf = tj3LoadImage12(handle, argv[1], &w, 1, &h, &pf)) == NULL)
-        THROW_TJ();
-    } else {
-      if ((srcBuf = tj3LoadImage16(handle, argv[1], &w, 1, &h, &pf)) == NULL)
-        THROW_TJ();
-    }
-    temp = strrchr(argv[1], '.');
-    if (temp != NULL) *temp = '\0';
-  }
+//     if (precision == 8) {
+//       // j16XXX hack until I clean up TurboJPEG.
+//       if ((srcBuf = tj3LoadImage12(handle, argv[1], &w, 1, &h, &pf)) == NULL)
+//         THROW_TJ();
+//     } else if (precision == 12) {
+//       if ((srcBuf = tj3LoadImage12(handle, argv[1], &w, 1, &h, &pf)) == NULL)
+//         THROW_TJ();
+//     } else {
+//       // j16XXX hack until I clean up TurboJPEG.
+//       if ((srcBuf = tj3LoadImage12(handle, argv[1], &w, 1, &h, &pf)) == NULL)
+//         THROW_TJ();
+//     }
+//     temp = strrchr(argv[1], '.');
+//     if (temp != NULL) *temp = '\0';
+//   }
 
-  if (quiet == 1 && !decompOnly) {
-    printf("All performance values in Mpixels/sec\n\n");
-    printf("Pixel     JPEG      JPEG  %s  %s   ",
-           doTile ? "Tile " : "Image", doTile ? "Tile " : "Image");
-    if (doYUV) printf("Encode  ");
-    printf("Comp    Comp    Decomp  ");
-    if (doYUV) printf("Decode");
-    printf("\n");
-    printf("Format    Format    %s  Width  Height  ",
-           lossless ? "PSV " : "Qual");
-    if (doYUV) printf("Perf    ");
-    printf("Perf    Ratio   Perf    ");
-    if (doYUV) printf("Perf");
-    printf("\n\n");
-  }
+//   if (quiet == 1 && !decompOnly) {
+//     printf("All performance values in Mpixels/sec\n\n");
+//     printf("Pixel     JPEG      JPEG  %s  %s   ",
+//            doTile ? "Tile " : "Image", doTile ? "Tile " : "Image");
+//     if (doYUV) printf("Encode  ");
+//     printf("Comp    Comp    Decomp  ");
+//     if (doYUV) printf("Decode");
+//     printf("\n");
+//     printf("Format    Format    %s  Width  Height  ",
+//            lossless ? "PSV " : "Qual");
+//     if (doYUV) printf("Perf    ");
+//     printf("Perf    Ratio   Perf    ");
+//     if (doYUV) printf("Perf");
+//     printf("\n\n");
+//   }
 
-  if (decompOnly) {
-    decompTest(argv[1]);
-    printf("\n");
-    goto bailout;
-  }
-  if (lossless) {
-    if (minQual < 1 || minQual > 7 || maxQual < 1 || maxQual > 7) {
-      puts("ERROR: PSV must be between 1 and 7.");
-      exit(1);
-    }
-  } else {
-    if (minQual < 1 || minQual > 100 || maxQual < 1 || maxQual > 100) {
-      puts("ERROR: Quality must be between 1 and 100.");
-      exit(1);
-    }
-  }
-  if (subsamp >= 0 && subsamp < TJ_NUMSAMP) {
-    for (i = maxQual; i >= minQual; i--)
-      fullTest(handle, srcBuf, w, h, subsamp, i, argv[1]);
-    printf("\n");
-  } else {
-    if (pf != TJPF_CMYK) {
-      for (i = maxQual; i >= minQual; i--)
-        fullTest(handle, srcBuf, w, h, TJSAMP_GRAY, i, argv[1]);
-      printf("\n");
-    }
-    for (i = maxQual; i >= minQual; i--)
-      fullTest(handle, srcBuf, w, h, TJSAMP_420, i, argv[1]);
-    printf("\n");
-    for (i = maxQual; i >= minQual; i--)
-      fullTest(handle, srcBuf, w, h, TJSAMP_422, i, argv[1]);
-    printf("\n");
-    for (i = maxQual; i >= minQual; i--)
-      fullTest(handle, srcBuf, w, h, TJSAMP_444, i, argv[1]);
-    printf("\n");
-  }
+//   if (decompOnly) {
+//     decompTest(argv[1]);
+//     printf("\n");
+//     goto bailout;
+//   }
+//   if (lossless) {
+//     if (minQual < 1 || minQual > 7 || maxQual < 1 || maxQual > 7) {
+//       puts("ERROR: PSV must be between 1 and 7.");
+//       exit(1);
+//     }
+//   } else {
+//     if (minQual < 1 || minQual > 100 || maxQual < 1 || maxQual > 100) {
+//       puts("ERROR: Quality must be between 1 and 100.");
+//       exit(1);
+//     }
+//   }
+//   if (subsamp >= 0 && subsamp < TJ_NUMSAMP) {
+//     for (i = maxQual; i >= minQual; i--)
+//       fullTest(handle, srcBuf, w, h, subsamp, i, argv[1]);
+//     printf("\n");
+//   } else {
+//     if (pf != TJPF_CMYK) {
+//       for (i = maxQual; i >= minQual; i--)
+//         fullTest(handle, srcBuf, w, h, TJSAMP_GRAY, i, argv[1]);
+//       printf("\n");
+//     }
+//     for (i = maxQual; i >= minQual; i--)
+//       fullTest(handle, srcBuf, w, h, TJSAMP_420, i, argv[1]);
+//     printf("\n");
+//     for (i = maxQual; i >= minQual; i--)
+//       fullTest(handle, srcBuf, w, h, TJSAMP_422, i, argv[1]);
+//     printf("\n");
+//     for (i = maxQual; i >= minQual; i--)
+//       fullTest(handle, srcBuf, w, h, TJSAMP_444, i, argv[1]);
+//     printf("\n");
+//   }
 
-bailout:
-  tj3Destroy(handle);
-  tj3Free(srcBuf);
-  return retval;
-}
+// bailout:
+//   tj3Destroy(handle);
+//   tj3Free(srcBuf);
+//   return retval;
+// }

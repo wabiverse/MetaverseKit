@@ -419,74 +419,74 @@ print_info(const std::string& filename, size_t namefieldlength,
 
 
 
-int
-main(int argc, const char* argv[])
-{
-    // Helpful for debugging to make sure that any crashes dump a stack
-    // trace.
-    Sysutil::setup_crash_stacktrace("stdout");
+// int
+// main(int argc, const char* argv[])
+// {
+//     // Helpful for debugging to make sure that any crashes dump a stack
+//     // trace.
+//     Sysutil::setup_crash_stacktrace("stdout");
 
-    Filesystem::convert_native_arguments(argc, (const char**)argv);
-    ArgParse ap;
-    // clang-format off
-    ap.intro("iinfo -- print information about images\n" OIIO_INTRO_STRING)
-      .usage("iinfo [options] filename...")
-      .add_version(OIIO_VERSION_STRING);
-    ap.arg("filename")
-      .hidden()
-      .action([&](cspan<const char*> argv){ filenames.emplace_back(argv[0]); });
-    ap.arg("-v", &verbose)
-      .help("Verbose output");
-    ap.arg("-m %s:NAMES", &metamatch)
-      .help("Metadata names to print (default: all)");
-    ap.arg("-f", &filenameprefix)
-      .help("Prefix each line with the filename");
-    ap.arg("-s", &sum)
-      .help("Sum the image sizes");
-    ap.arg("-a", &subimages)
-      .help("Print info about all subimages")
-      .action(ArgParse::store_true());
-    ap.arg("--hash", &compute_sha1)
-      .help("Print SHA-1 hash of pixel values")
-      .action(ArgParse::store_true());
-    ap.arg("--stats", &compute_stats)
-      .help("Print image pixel statistics (data window)");
-    // clang-format on
-    if (ap.parse(argc, argv) < 0 || filenames.empty()) {
-        std::cerr << ap.geterror() << std::endl;
-        ap.print_help();
-        return help ? EXIT_SUCCESS : EXIT_FAILURE;
-    }
+//     Filesystem::convert_native_arguments(argc, (const char**)argv);
+//     ArgParse ap;
+//     // clang-format off
+//     ap.intro("iinfo -- print information about images\n" OIIO_INTRO_STRING)
+//       .usage("iinfo [options] filename...")
+//       .add_version(OIIO_VERSION_STRING);
+//     ap.arg("filename")
+//       .hidden()
+//       .action([&](cspan<const char*> argv){ filenames.emplace_back(argv[0]); });
+//     ap.arg("-v", &verbose)
+//       .help("Verbose output");
+//     ap.arg("-m %s:NAMES", &metamatch)
+//       .help("Metadata names to print (default: all)");
+//     ap.arg("-f", &filenameprefix)
+//       .help("Prefix each line with the filename");
+//     ap.arg("-s", &sum)
+//       .help("Sum the image sizes");
+//     ap.arg("-a", &subimages)
+//       .help("Print info about all subimages")
+//       .action(ArgParse::store_true());
+//     ap.arg("--hash", &compute_sha1)
+//       .help("Print SHA-1 hash of pixel values")
+//       .action(ArgParse::store_true());
+//     ap.arg("--stats", &compute_stats)
+//       .help("Print image pixel statistics (data window)");
+//     // clang-format on
+//     if (ap.parse(argc, argv) < 0 || filenames.empty()) {
+//         std::cerr << ap.geterror() << std::endl;
+//         ap.print_help();
+//         return help ? EXIT_SUCCESS : EXIT_FAILURE;
+//     }
 
-    if (!metamatch.empty()) {
-        field_re.assign(metamatch, std::regex_constants::extended
-                                       | std::regex_constants::icase);
-    }
+//     if (!metamatch.empty()) {
+//         field_re.assign(metamatch, std::regex_constants::extended
+//                                        | std::regex_constants::icase);
+//     }
 
-    // Find the longest filename
-    size_t longestname = 0;
-    for (auto&& s : filenames)
-        longestname = std::max(longestname, s.length());
-    longestname = std::min(longestname, (size_t)40);
+//     // Find the longest filename
+//     size_t longestname = 0;
+//     for (auto&& s : filenames)
+//         longestname = std::max(longestname, s.length());
+//     longestname = std::min(longestname, (size_t)40);
 
-    int returncode      = EXIT_SUCCESS;
-    long long totalsize = 0;
-    for (auto&& s : filenames) {
-        auto in = ImageInput::open(s);
-        if (!in) {
-            std::string err = geterror();
-            print(std::cerr, "iinfo ERROR: \"{}\" : {}\n", s,
-                  err.size() ? err : std::string("Could not open file."));
-            returncode = EXIT_FAILURE;
-            continue;
-        }
-        ImageSpec spec = in->spec();
-        print_info(s, longestname, in.get(), spec, verbose, sum, totalsize);
-    }
+//     int returncode      = EXIT_SUCCESS;
+//     long long totalsize = 0;
+//     for (auto&& s : filenames) {
+//         auto in = ImageInput::open(s);
+//         if (!in) {
+//             std::string err = geterror();
+//             print(std::cerr, "iinfo ERROR: \"{}\" : {}\n", s,
+//                   err.size() ? err : std::string("Could not open file."));
+//             returncode = EXIT_FAILURE;
+//             continue;
+//         }
+//         ImageSpec spec = in->spec();
+//         print_info(s, longestname, in.get(), spec, verbose, sum, totalsize);
+//     }
 
-    if (sum)
-        print("Total size: {}\n", Strutil::memformat(totalsize));
+//     if (sum)
+//         print("Total size: {}\n", Strutil::memformat(totalsize));
 
-    shutdown();
-    return returncode;
-}
+//     shutdown();
+//     return returncode;
+// }

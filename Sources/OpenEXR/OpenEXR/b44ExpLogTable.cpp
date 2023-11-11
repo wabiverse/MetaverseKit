@@ -31,75 +31,75 @@ using namespace std;
 // Main - prints the half-to-float lookup table
 //---------------------------------------------
 
-int
-main ()
-{
-#ifndef HAVE_IOS_BASE
-    cout.setf (ios::hex, ios::basefield);
-#else
-    cout.setf (ios_base::hex, ios_base::basefield);
-#endif
+// int
+// main ()
+// {
+// #ifndef HAVE_IOS_BASE
+//     cout.setf (ios::hex, ios::basefield);
+// #else
+//     cout.setf (ios_base::hex, ios_base::basefield);
+// #endif
 
-    cout << "//\n"
-            "// This is an automatically generated file.\n"
-            "// Do not edit.\n"
-            "//\n\n";
+//     cout << "//\n"
+//             "// This is an automatically generated file.\n"
+//             "// Do not edit.\n"
+//             "//\n\n";
 
-    const int iMax = (1 << 16);
+//     const int iMax = (1 << 16);
 
-    cout << "const unsigned short expTable[] =\n"
-            "{\n"
-            "    ";
+//     cout << "const unsigned short expTable[] =\n"
+//             "{\n"
+//             "    ";
 
-    for (int i = 0; i < iMax; i++)
-    {
-        half h;
-        h.setBits (i);
+//     for (int i = 0; i < iMax; i++)
+//     {
+//         half h;
+//         h.setBits (i);
 
-        if (!h.isFinite ())
-            h = 0;
-        else if (h >= 8 * log (HALF_MAX))
-            h = HALF_MAX;
-        else
-            h = exp (h / 8);
+//         if (!h.isFinite ())
+//             h = 0;
+//         else if (h >= 8 * log (HALF_MAX))
+//             h = HALF_MAX;
+//         else
+//             h = exp (h / 8);
 
-        cout << "0x" << setfill ('0') << setw (4) << h.bits () << ", ";
+//         cout << "0x" << setfill ('0') << setw (4) << h.bits () << ", ";
 
-        if (i % 8 == 7)
-        {
-            cout << "\n";
+//         if (i % 8 == 7)
+//         {
+//             cout << "\n";
 
-            if (i < iMax - 1) cout << "    ";
-        }
-    }
+//             if (i < iMax - 1) cout << "    ";
+//         }
+//     }
 
-    cout << "};\n\n";
+//     cout << "};\n\n";
 
-    cout << "const unsigned short logTable[] =\n"
-            "{\n"
-            "    ";
+//     cout << "const unsigned short logTable[] =\n"
+//             "{\n"
+//             "    ";
 
-    for (int i = 0; i < iMax; i++)
-    {
-        half h;
-        h.setBits (i);
+//     for (int i = 0; i < iMax; i++)
+//     {
+//         half h;
+//         h.setBits (i);
 
-        if (!h.isFinite () || h < 0)
-            h = 0;
-        else
-            h = 8 * log (h);
+//         if (!h.isFinite () || h < 0)
+//             h = 0;
+//         else
+//             h = 8 * log (h);
 
-        cout << "0x" << setfill ('0') << setw (4) << h.bits () << ", ";
+//         cout << "0x" << setfill ('0') << setw (4) << h.bits () << ", ";
 
-        if (i % 8 == 7)
-        {
-            cout << "\n";
+//         if (i % 8 == 7)
+//         {
+//             cout << "\n";
 
-            if (i < iMax - 1) cout << "    ";
-        }
-    }
+//             if (i < iMax - 1) cout << "    ";
+//         }
+//     }
 
-    cout << "};\n";
+//     cout << "};\n";
 
-    return 0;
-}
+//     return 0;
+// }

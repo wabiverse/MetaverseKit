@@ -345,9 +345,9 @@ int main(int argc, char **argv)
          (unsigned char *)malloc(sizeof(unsigned char) * width * height *
                                  tjPixelSize[pixelFormat])) == NULL)
       THROW_UNIX("allocating uncompressed image buffer");
-
-    if (tj3Decompress8(tjInstance, jpegBuf, jpegSize, imgBuf, 0,
-                       pixelFormat) < 0)
+    // j16XXX hack until I clean up TurboJPEG.
+    if (tj3Decompress12(tjInstance, jpegBuf, jpegSize, (short *)imgBuf, 0,
+                        pixelFormat) < 0)
       THROW_TJ("decompressing JPEG image");
     tj3Free(jpegBuf);  jpegBuf = NULL;
     tj3Destroy(tjInstance);  tjInstance = NULL;
@@ -355,8 +355,8 @@ int main(int argc, char **argv)
     /* Input image is not a JPEG image.  Load it into memory. */
     if ((tjInstance = tj3Init(TJINIT_COMPRESS)) == NULL)
       THROW_TJ("initializing compressor");
-    if ((imgBuf = tj3LoadImage8(tjInstance, argv[1], &width, 1, &height,
-                                &pixelFormat)) == NULL)
+    if ((imgBuf = (unsigned char *)tj3LoadImage12(tjInstance, argv[1], &width, 1, &height,
+                                                  &pixelFormat)) == NULL)
       THROW_TJ("loading input image");
     if (outSubsamp < 0) {
       if (pixelFormat == TJPF_GRAY)
@@ -388,8 +388,12 @@ int main(int argc, char **argv)
       THROW_TJ("setting TJPARAM_QUALITY");
     if (tj3Set(tjInstance, TJPARAM_FASTDCT, fastDCT) < 0)
       THROW_TJ("setting TJPARAM_FASTDCT");
-    if (tj3Compress8(tjInstance, imgBuf, width, 0, height, pixelFormat,
-                     &jpegBuf, &jpegSize) < 0)
+    // j16XXX hack until I clean up TurboJPEG.
+    // if (tj3Compress8(tjInstance, imgBuf, width, 0, height, pixelFormat,
+    //                  &jpegBuf, &jpegSize) < 0)
+    //   THROW_TJ("compressing image");
+    if (tj3Compress12(tjInstance, (short *)imgBuf, width, 0, height, pixelFormat,
+                      &jpegBuf, &jpegSize) < 0)
       THROW_TJ("compressing image");
     tj3Destroy(tjInstance);  tjInstance = NULL;
 
@@ -405,8 +409,8 @@ int main(int argc, char **argv)
     /* Output image format is not JPEG.  Save the uncompressed image
        directly to disk. */
     printf("\n");
-    if (tj3SaveImage8(tjInstance, argv[2], imgBuf, width, 0, height,
-                      pixelFormat) < 0)
+    if (tj3SaveImage12(tjInstance, argv[2], (short *)imgBuf, width, 0, height,
+                       pixelFormat) < 0)
       THROW_TJ("saving output image");
   }
 

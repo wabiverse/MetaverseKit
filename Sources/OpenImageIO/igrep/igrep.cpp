@@ -134,64 +134,64 @@ parse_files(int argc, const char* argv[])
 
 
 
-int
-main(int argc, const char* argv[])
-{
-    // Helpful for debugging to make sure that any crashes dump a stack
-    // trace.
-    Sysutil::setup_crash_stacktrace("stdout");
+// int
+// main(int argc, const char* argv[])
+// {
+//     // Helpful for debugging to make sure that any crashes dump a stack
+//     // trace.
+//     Sysutil::setup_crash_stacktrace("stdout");
 
-    Filesystem::convert_native_arguments(argc, argv);
-    // clang-format off
-    ArgParse ap;
-    ap.intro("igrep -- search images for matching metadata\n"
-             OIIO_INTRO_STRING)
-      .usage("igrep [options] pattern filename...")
-      .add_version(OIIO_VERSION_STRING);
-    ap.arg("filename")
-      .hidden()
-      .action(parse_files);
-    ap.arg("-i")
-      .help("Ignore upper/lower case distinctions");
-    ap.arg("-v", &invert_match)
-      .help("Invert match (select non-matching files)");
-    ap.arg("-E")
-      .help( "Pattern is an extended regular expression");
-    ap.arg("-f", &file_match)
-      .help("Match against file name as well as metadata");
-    ap.arg("-l", &list_files)
-      .help("List the matching files (no detail)");
-    ap.arg("-r", &recursive)
-      .help("Recurse into directories");
-    ap.arg("-d", &print_dirs)
-      .help("Print directories (when recursive)");
-    ap.arg("-a", &all_subimages)
-      .help("Search all subimages of each file");
+//     Filesystem::convert_native_arguments(argc, argv);
+//     // clang-format off
+//     ArgParse ap;
+//     ap.intro("igrep -- search images for matching metadata\n"
+//              OIIO_INTRO_STRING)
+//       .usage("igrep [options] pattern filename...")
+//       .add_version(OIIO_VERSION_STRING);
+//     ap.arg("filename")
+//       .hidden()
+//       .action(parse_files);
+//     ap.arg("-i")
+//       .help("Ignore upper/lower case distinctions");
+//     ap.arg("-v", &invert_match)
+//       .help("Invert match (select non-matching files)");
+//     ap.arg("-E")
+//       .help( "Pattern is an extended regular expression");
+//     ap.arg("-f", &file_match)
+//       .help("Match against file name as well as metadata");
+//     ap.arg("-l", &list_files)
+//       .help("List the matching files (no detail)");
+//     ap.arg("-r", &recursive)
+//       .help("Recurse into directories");
+//     ap.arg("-d", &print_dirs)
+//       .help("Print directories (when recursive)");
+//     ap.arg("-a", &all_subimages)
+//       .help("Search all subimages of each file");
 
-    // clang-format on
-    ap.parse(argc, argv);
-    if (pattern.empty() || filenames.empty()) {
-        std::cerr << ap.geterror() << std::endl;
-        ap.usage();
-        return help ? EXIT_SUCCESS : EXIT_FAILURE;
-    }
+//     // clang-format on
+//     ap.parse(argc, argv);
+//     if (pattern.empty() || filenames.empty()) {
+//         std::cerr << ap.geterror() << std::endl;
+//         ap.usage();
+//         return help ? EXIT_SUCCESS : EXIT_FAILURE;
+//     }
 
-    auto flag = std::regex_constants::grep;
-    if (ap["E"].get<int>())
-        flag = std::regex_constants::extended;
-    if (ap["i"].get<int>())
-        flag |= std::regex_constants::icase;
+//     auto flag = std::regex_constants::grep;
+//     if (ap["E"].get<int>())
+//         flag = std::regex_constants::extended;
+//     if (ap["i"].get<int>())
+//         flag |= std::regex_constants::icase;
 
-    bool ok = true;
+//     bool ok = true;
 
-    try {
-        std::regex re(pattern, flag);
-        for (auto&& s : filenames)
-            grep_file(s, re);
-    } catch (const std::regex_error& e) {
-        std::cerr << "igrep: " << e.what() << "\n";
-        ok = false;
-    }
-    shutdown();
-    return ok ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+//     try {
+//         std::regex re(pattern, flag);
+//         for (auto&& s : filenames)
+//             grep_file(s, re);
+//     } catch (const std::regex_error& e) {
+//         std::cerr << "igrep: " << e.what() << "\n";
+//         ok = false;
+//     }
+//     shutdown();
+//     return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+// }

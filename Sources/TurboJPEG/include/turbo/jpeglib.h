@@ -1008,15 +1008,18 @@ EXTERN(JHUFF_TBL *) jpeg_alloc_huff_table(j_common_ptr cinfo);
 /* Main entry points for compression */
 EXTERN(void) jpeg_start_compress(j_compress_ptr cinfo,
                                  boolean write_all_tables);
-EXTERN(JDIMENSION) jpeg_write_scanlines(j_compress_ptr cinfo,
-                                        JSAMPARRAY scanlines,
-                                        JDIMENSION num_lines);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(JDIMENSION) jpeg_write_scanlines(j_compress_ptr cinfo,
+//                                         JSAMPARRAY scanlines,
+//                                         JDIMENSION num_lines);
 EXTERN(JDIMENSION) jpeg12_write_scanlines(j_compress_ptr cinfo,
                                           J12SAMPARRAY scanlines,
                                           JDIMENSION num_lines);
-EXTERN(JDIMENSION) jpeg16_write_scanlines(j_compress_ptr cinfo,
-                                          J16SAMPARRAY scanlines,
-                                          JDIMENSION num_lines);
+#define jpeg_write_scanlines jpeg12_write_scanlines
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(JDIMENSION) jpeg16_write_scanlines(j_compress_ptr cinfo,
+//                                           J16SAMPARRAY scanlines,
+//                                           JDIMENSION num_lines);
 EXTERN(void) jpeg_finish_compress(j_compress_ptr cinfo);
 
 #if JPEG_LIB_VERSION >= 70
@@ -1025,12 +1028,13 @@ EXTERN(void) jpeg_calc_jpeg_dimensions(j_compress_ptr cinfo);
 #endif
 
 /* Replaces jpeg_write_scanlines when writing raw downsampled data. */
-EXTERN(JDIMENSION) jpeg_write_raw_data(j_compress_ptr cinfo, JSAMPIMAGE data,
-                                       JDIMENSION num_lines);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(JDIMENSION) jpeg_write_raw_data(j_compress_ptr cinfo, JSAMPIMAGE data,
+//                                        JDIMENSION num_lines);
 EXTERN(JDIMENSION) jpeg12_write_raw_data(j_compress_ptr cinfo,
                                          J12SAMPIMAGE data,
                                          JDIMENSION num_lines);
-
+#define jpeg_write_raw_data jpeg12_write_raw_data
 /* Write a special marker.  See libjpeg.txt concerning safe usage. */
 EXTERN(void) jpeg_write_marker(j_compress_ptr cinfo, int marker,
                                const JOCTET *dataptr, unsigned int datalen);
@@ -1062,32 +1066,40 @@ EXTERN(int) jpeg_read_header(j_decompress_ptr cinfo, boolean require_image);
 
 /* Main entry points for decompression */
 EXTERN(boolean) jpeg_start_decompress(j_decompress_ptr cinfo);
-EXTERN(JDIMENSION) jpeg_read_scanlines(j_decompress_ptr cinfo,
-                                       JSAMPARRAY scanlines,
-                                       JDIMENSION max_lines);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(JDIMENSION) jpeg_read_scanlines(j_decompress_ptr cinfo,
+//                                        JSAMPARRAY scanlines,
+//                                        JDIMENSION max_lines);
 EXTERN(JDIMENSION) jpeg12_read_scanlines(j_decompress_ptr cinfo,
                                          J12SAMPARRAY scanlines,
                                          JDIMENSION max_lines);
-EXTERN(JDIMENSION) jpeg16_read_scanlines(j_decompress_ptr cinfo,
-                                         J16SAMPARRAY scanlines,
-                                         JDIMENSION max_lines);
-EXTERN(JDIMENSION) jpeg_skip_scanlines(j_decompress_ptr cinfo,
-                                       JDIMENSION num_lines);
+#define jpeg_read_scanlines jpeg12_read_scanlines
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(JDIMENSION) jpeg16_read_scanlines(j_decompress_ptr cinfo,
+//                                          J16SAMPARRAY scanlines,
+//
+// j16XXX hack until I clean up TurboJPEG.                                       JDIMENSION max_lines);
+// EXTERN(JDIMENSION) jpeg_skip_scanlines(j_decompress_ptr cinfo,
+//                                        JDIMENSION num_lines);
 EXTERN(JDIMENSION) jpeg12_skip_scanlines(j_decompress_ptr cinfo,
                                          JDIMENSION num_lines);
-EXTERN(void) jpeg_crop_scanline(j_decompress_ptr cinfo, JDIMENSION *xoffset,
-                                JDIMENSION *width);
+#define jpeg_skip_scanlines jpeg12_skip_scanlines
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) jpeg_crop_scanline(j_decompress_ptr cinfo, JDIMENSION *xoffset,
+//                                 JDIMENSION *width);
 EXTERN(void) jpeg12_crop_scanline(j_decompress_ptr cinfo, JDIMENSION *xoffset,
                                   JDIMENSION *width);
+#define jpeg_crop_scanline jpeg12_crop_scanline
 EXTERN(boolean) jpeg_finish_decompress(j_decompress_ptr cinfo);
 
 /* Replaces jpeg_read_scanlines when reading raw downsampled data. */
-EXTERN(JDIMENSION) jpeg_read_raw_data(j_decompress_ptr cinfo, JSAMPIMAGE data,
-                                      JDIMENSION max_lines);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(JDIMENSION) jpeg_read_raw_data(j_decompress_ptr cinfo, JSAMPIMAGE data,
+//                                       JDIMENSION max_lines);
 EXTERN(JDIMENSION) jpeg12_read_raw_data(j_decompress_ptr cinfo,
                                         J12SAMPIMAGE data,
                                         JDIMENSION max_lines);
-
+#define jpeg_read_raw_data jpeg12_read_raw_data
 /* Additional entry points for buffered-image mode. */
 EXTERN(boolean) jpeg_has_multiple_scans(j_decompress_ptr cinfo);
 EXTERN(boolean) jpeg_start_output(j_decompress_ptr cinfo, int scan_number);

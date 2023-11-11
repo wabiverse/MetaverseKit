@@ -246,9 +246,9 @@ static jint TJCompressor_compress
   BAILIF0NOEC(jpegBuf = (*env)->GetPrimitiveArrayCritical(env, dst, 0));
 
   if (precision == 8) {
-    if (tj3Compress8(handle, &((unsigned char *)srcBuf)[y * actualPitch +
-                                                        x * tjPixelSize[pf]],
-                     width, pitch, height, pf, &jpegBuf, &jpegSize) == -1) {
+    if (tj3Compress12(handle, &((short *)srcBuf)[y * actualPitch +
+                                                 x * tjPixelSize[pf]],
+                      width, pitch, height, pf, &jpegBuf, &jpegSize) == -1) {
       SAFE_RELEASE(dst, jpegBuf);
       SAFE_RELEASE(src, srcBuf);
       THROW_TJ();
@@ -262,7 +262,8 @@ static jint TJCompressor_compress
       THROW_TJ();
     }
   } else {
-    if (tj3Compress16(handle, &((unsigned short *)srcBuf)[y * actualPitch +
+    // j16XXX hack until I clean up TurboJPEG.
+    if (tj3Compress12(handle, &((short *)srcBuf)[y * actualPitch +
                                                           x * tjPixelSize[pf]],
                       width, pitch, height, pf, &jpegBuf, &jpegSize) == -1) {
       SAFE_RELEASE(dst, jpegBuf);
@@ -750,9 +751,9 @@ static void TJDecompressor_decompress
   BAILIF0NOEC(dstBuf = (*env)->GetPrimitiveArrayCritical(env, dst, 0));
 
   if (precision == 8) {
-    if (tj3Decompress8(handle, jpegBuf, (size_t)jpegSize,
-                       &((unsigned char *)dstBuf)[y * actualPitch +
-                                                  x * tjPixelSize[pf]],
+    if (tj3Decompress12(handle, jpegBuf, (size_t)jpegSize,
+                       &((short *)dstBuf)[y * actualPitch +
+                                          x * tjPixelSize[pf]],
                        pitch, pf) == -1) {
       SAFE_RELEASE(dst, dstBuf);
       SAFE_RELEASE(src, jpegBuf);
@@ -768,8 +769,9 @@ static void TJDecompressor_decompress
       THROW_TJ();
     }
   } else {
-    if (tj3Decompress16(handle, jpegBuf, (size_t)jpegSize,
-                        &((unsigned short *)dstBuf)[y * actualPitch +
+    // j16XXX hack until I clean up TurboJPEG.
+    if (tj3Decompress12(handle, jpegBuf, (size_t)jpegSize,
+                        &((short *)dstBuf)[y * actualPitch +
                                                     x * tjPixelSize[pf]],
                         pitch, pf) == -1) {
       SAFE_RELEASE(dst, dstBuf);
@@ -1300,15 +1302,16 @@ JNIEXPORT jobject JNICALL Java_org_libjpegturbo_turbojpeg_TJCompressor_loadImage
   BAILIF0(filename = (*env)->GetStringUTFChars(env, jfilename, &isCopy));
 
   if (precision == 8) {
-    if ((dstBuf = tj3LoadImage8(handle, filename, &width, align, &height,
-                                &pixelFormat)) == NULL)
+    if ((dstBuf = tj3LoadImage12(handle, filename, &width, align, &height,
+                                 &pixelFormat)) == NULL)
       THROW_TJ();
   } else if (precision == 12) {
     if ((dstBuf = tj3LoadImage12(handle, filename, &width, align, &height,
                                  &pixelFormat)) == NULL)
       THROW_TJ();
   } else {
-    if ((dstBuf = tj3LoadImage16(handle, filename, &width, align, &height,
+    // j16XXX hack until I clean up TurboJPEG.
+    if ((dstBuf = tj3LoadImage12(handle, filename, &width, align, &height,
                                  &pixelFormat)) == NULL)
       THROW_TJ();
   }
@@ -1381,15 +1384,16 @@ JNIEXPORT void JNICALL Java_org_libjpegturbo_turbojpeg_TJDecompressor_saveImage
   BAILIF0(filename = (*env)->GetStringUTFChars(env, jfilename, &isCopy));
 
   if (precision == 8) {
-    if (tj3SaveImage8(handle, filename, srcBuf, width, pitch, height,
-                      pixelFormat) == -1)
+    if (tj3SaveImage12(handle, filename, srcBuf, width, pitch, height,
+                       pixelFormat) == -1)
       THROW_TJ();
   } else if (precision == 12) {
     if (tj3SaveImage12(handle, filename, srcBuf, width, pitch, height,
                        pixelFormat) == -1)
       THROW_TJ();
   } else {
-    if (tj3SaveImage16(handle, filename, srcBuf, width, pitch, height,
+    // j16XXX hack until I clean up TurboJPEG.
+    if (tj3SaveImage12(handle, filename, srcBuf, width, pitch, height,
                        pixelFormat) == -1)
       THROW_TJ();
   }

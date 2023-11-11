@@ -102,5 +102,5 @@ extern "C++" {
 //module : private;
 #endif
 
-#include "format.cc"
-#include "os.cc"
+//#include "format.cc"
+//#include "os.cc"

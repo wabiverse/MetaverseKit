@@ -1775,264 +1775,264 @@ make_test_files()
 
 
 
-int
-main(int argc, const char* argv[])
-{
-    Filesystem::convert_native_arguments(argc, argv);
-    getargs(argc, argv);
+// int
+// main(int argc, const char* argv[])
+// {
+//     Filesystem::convert_native_arguments(argc, argv);
+//     getargs(argc, argv);
 
-    // environment variable TESTTEX_BATCH can force batch mode
-    string_view testtex_batch = Sysutil::getenv("TESTTEX_BATCH");
-    if (testtex_batch.size())
-        batch = Strutil::from_string<int>(testtex_batch);
+//     // environment variable TESTTEX_BATCH can force batch mode
+//     string_view testtex_batch = Sysutil::getenv("TESTTEX_BATCH");
+//     if (testtex_batch.size())
+//         batch = Strutil::from_string<int>(testtex_batch);
 
-    OIIO::attribute("threads", nthreads);
+//     OIIO::attribute("threads", nthreads);
 
-    texsys = TextureSystem::create();
-    Strutil::sync::print("Created texture system\n");
-    if (texoptions.size())
-        texsys->attribute("options", texoptions);
-    texsys->attribute("autotile", autotile);
-    texsys->attribute("automip", (int)automip);
-    texsys->attribute("deduplicate", (int)dedup);
-    if (cachesize >= 0)
-        texsys->attribute("max_memory_MB", cachesize);
-    else
-        texsys->getattribute("max_memory_MB", TypeFloat, &cachesize);
-    if (maxfiles >= 0)
-        texsys->attribute("max_open_files", maxfiles);
-    if (searchpath.length())
-        texsys->attribute("searchpath", searchpath);
-    if (nountiled)
-        texsys->attribute("accept_untiled", 0);
-    if (nounmipped)
-        texsys->attribute("accept_unmipped", 0);
-    texsys->attribute("gray_to_rgb", gray_to_rgb);
-    texsys->attribute("flip_t", flip_t);
-    texsys->attribute("stochastic", stochastic);
-    texcolortransform_id
-        = std::max(0, texsys->get_colortransform_id(ustring(texcolorspace),
-                                                    ustring("scene_linear")));
-    if (texcolortransform_id > 0)
-        print("Treating texture as if it is in colorspace {}\n", texcolorspace);
+//     texsys = TextureSystem::create();
+//     Strutil::sync::print("Created texture system\n");
+//     if (texoptions.size())
+//         texsys->attribute("options", texoptions);
+//     texsys->attribute("autotile", autotile);
+//     texsys->attribute("automip", (int)automip);
+//     texsys->attribute("deduplicate", (int)dedup);
+//     if (cachesize >= 0)
+//         texsys->attribute("max_memory_MB", cachesize);
+//     else
+//         texsys->getattribute("max_memory_MB", TypeFloat, &cachesize);
+//     if (maxfiles >= 0)
+//         texsys->attribute("max_open_files", maxfiles);
+//     if (searchpath.length())
+//         texsys->attribute("searchpath", searchpath);
+//     if (nountiled)
+//         texsys->attribute("accept_untiled", 0);
+//     if (nounmipped)
+//         texsys->attribute("accept_unmipped", 0);
+//     texsys->attribute("gray_to_rgb", gray_to_rgb);
+//     texsys->attribute("flip_t", flip_t);
+//     texsys->attribute("stochastic", stochastic);
+//     texcolortransform_id
+//         = std::max(0, texsys->get_colortransform_id(ustring(texcolorspace),
+//                                                     ustring("scene_linear")));
+//     if (texcolortransform_id > 0)
+//         print("Treating texture as if it is in colorspace {}\n", texcolorspace);
 
-    if (test_construction) {
-        Timer t;
-        for (int i = 0; i < 1000000000; ++i) {
-            TextureOpt opt;
-            dummyptr = &opt;  // This forces the optimizer to keep the loop
-        }
-        Strutil::print("TextureOpt construction: {} ns\n", t());
-        TextureOpt canonical, copy;
-        t.reset();
-        t.start();
-        for (int i = 0; i < 1000000000; ++i) {
-            copy     = canonical;
-            dummyptr = &copy;  // This forces the optimizer to keep the loop
-        }
-        Strutil::print("TextureOpt copy: {} ns\n", t());
-    }
+//     if (test_construction) {
+//         Timer t;
+//         for (int i = 0; i < 1000000000; ++i) {
+//             TextureOpt opt;
+//             dummyptr = &opt;  // This forces the optimizer to keep the loop
+//         }
+//         Strutil::print("TextureOpt construction: {} ns\n", t());
+//         TextureOpt canonical, copy;
+//         t.reset();
+//         t.start();
+//         for (int i = 0; i < 1000000000; ++i) {
+//             copy     = canonical;
+//             dummyptr = &copy;  // This forces the optimizer to keep the loop
+//         }
+//         Strutil::print("TextureOpt copy: {} ns\n", t());
+//     }
 
-    if (maketest_template.size()
-        && Strutil::contains(maketest_template, "<UDIM>"))
-        udim_tests = true;
+//     if (maketest_template.size()
+//         && Strutil::contains(maketest_template, "<UDIM>"))
+//         udim_tests = true;
 
-    if (num_test_files > 0) {
-        make_test_files();
-    }
+//     if (num_test_files > 0) {
+//         make_test_files();
+//     }
 
-    if (testicwrite && filenames.size()) {
-        test_icwrite(testicwrite);
-    }
+//     if (testicwrite && filenames.size()) {
+//         test_icwrite(testicwrite);
+//     }
 
-    if (test_getimagespec) {
-        ImageSpec spec;
-        for (int i = 0; i < iters; ++i) {
-            texsys->get_imagespec(filenames[0], 0, spec);
-        }
-        iters = 0;
-    }
+//     if (test_getimagespec) {
+//         ImageSpec spec;
+//         for (int i = 0; i < iters; ++i) {
+//             texsys->get_imagespec(filenames[0], 0, spec);
+//         }
+//         iters = 0;
+//     }
 
-    if (gtiname.size()) {
-        const char* attrib = nullptr;
-        bool result        = texsys->get_texture_info(filenames[0], 0,
-                                               ustring(gtiname), TypeString,
-                                               &attrib);
-        if (result)
-            Strutil::print("Image \"{}\" attrib \"{}\" = \"{}\"\n",
-                           filenames[0], gtiname, attrib);
-        else
-            Strutil::print("Image \"{}\" attrib \"{}\" -> not found\n",
-                           filenames[0], gtiname, attrib);
-    }
+//     if (gtiname.size()) {
+//         const char* attrib = nullptr;
+//         bool result        = texsys->get_texture_info(filenames[0], 0,
+//                                                ustring(gtiname), TypeString,
+//                                                &attrib);
+//         if (result)
+//             Strutil::print("Image \"{}\" attrib \"{}\" = \"{}\"\n",
+//                            filenames[0], gtiname, attrib);
+//         else
+//             Strutil::print("Image \"{}\" attrib \"{}\" -> not found\n",
+//                            filenames[0], gtiname, attrib);
+//     }
 
-    if (test_gettexels) {
-        test_getimagespec_gettexels(filenames[0]);
-        iters = 0;
-    }
+//     if (test_gettexels) {
+//         test_getimagespec_gettexels(filenames[0]);
+//         iters = 0;
+//     }
 
-    if (testhash) {
-        TextureSystem::unit_test_hash();
-    }
+//     if (testhash) {
+//         TextureSystem::unit_test_hash();
+//     }
 
-    Imath::M33f scale;
-    scale.scale(Imath::V2f(0.3, 0.3));
-    Imath::M33f rot;
-    rot.rotate(radians(25.0f));
-    Imath::M33f trans;
-    trans.translate(Imath::V2f(0.75f, 0.25f));
-    Imath::M33f persp(2, 0, 0, 0, 0.8, -0.55, 0, 0, 1);
-    xform = persp * rot * trans * scale;
-    xform.invert();
+//     Imath::M33f scale;
+//     scale.scale(Imath::V2f(0.3, 0.3));
+//     Imath::M33f rot;
+//     rot.rotate(radians(25.0f));
+//     Imath::M33f trans;
+//     trans.translate(Imath::V2f(0.75f, 0.25f));
+//     Imath::M33f persp(2, 0, 0, 0, 0.8, -0.55, 0, 0, 1);
+//     xform = persp * rot * trans * scale;
+//     xform.invert();
 
-    for (auto f : filenames) {
-        texture_handles.emplace_back(texsys->get_texture_handle(f));
-        // Strutil::print("tex {} -> {:p}\n", f, (void*)texture_handles.back());
-    }
+//     for (auto f : filenames) {
+//         texture_handles.emplace_back(texsys->get_texture_handle(f));
+//         // Strutil::print("tex {} -> {:p}\n", f, (void*)texture_handles.back());
+//     }
 
-    if (threadtimes) {
-        // If the --iters flag was used, do that number of iterations total
-        // (divided among the threads). If not supplied (iters will be 1),
-        // then use a large constant *per thread*.
-        const int iterations = iters > 1 ? iters : 2000000;
-        Strutil::print("Workload: {}\n", workload_names[threadtimes]);
-        Strutil::print("texture cache size = {} MB\n", cachesize);
-        Strutil::print("hw threads = {}\n", Sysutil::hardware_concurrency());
-        Strutil::print("times are best of {} trials\n\n", ntrials);
-        Strutil::print("threads  time (s)   speedup efficiency\n");
-        Strutil::print("-------- -------- --------- ----------\n");
+//     if (threadtimes) {
+//         // If the --iters flag was used, do that number of iterations total
+//         // (divided among the threads). If not supplied (iters will be 1),
+//         // then use a large constant *per thread*.
+//         const int iterations = iters > 1 ? iters : 2000000;
+//         Strutil::print("Workload: {}\n", workload_names[threadtimes]);
+//         Strutil::print("texture cache size = {} MB\n", cachesize);
+//         Strutil::print("hw threads = {}\n", Sysutil::hardware_concurrency());
+//         Strutil::print("times are best of {} trials\n\n", ntrials);
+//         Strutil::print("threads  time (s)   speedup efficiency\n");
+//         Strutil::print("-------- -------- --------- ----------\n");
 
-        if (nthreads == 0)
-            nthreads = Sysutil::hardware_concurrency();
-        static int threadcounts[] = { 1,  2,  4,  8,   12,   16,
-                                      24, 32, 64, 128, 1024, 1 << 30 };
-        float single_thread_time  = 0.0f;
-        for (int i = 0; threadcounts[i] <= nthreads; ++i) {
-            if (threadcounts[i] < minthreads)
-                continue;
-            int nt    = wedge ? threadcounts[i] : nthreads;
-            int its   = iters > 1 ? (std::max(1, iters / nt)) : iterations;
-            int tries = nt <= 2 ? std::min(lowtrials, ntrials) : ntrials;
-            double range;
-            float t = (float)time_trial(std::bind(launch_tex_threads, nt, its),
-                                        tries, &range);
-            if (single_thread_time == 0.0f)
-                single_thread_time = t * nt;
-            float speedup    = single_thread_time / t;
-            float efficiency = speedup / nt;
-            Strutil::print(
-                "{:3}     {:8.2f}   {:6.1f}x  {:6.1f}%    range {:.2f}\t({} iters/thread)\n",
-                nt, t, speedup, efficiency * 100.0f, range, its);
-            fflush(stdout);
-            if (!wedge)
-                break;  // don't loop if we're not wedging
-        }
-        Strutil::print("\n");
-    } else if (iters > 0 && filenames.size()) {
-        ustring filename(filenames[0]);
-        if (do_gettextureinfo)
-            test_gettextureinfo(filenames[0]);
-        const char* texturetype = "Plain Texture";
-        texsys->get_texture_info(filename, 0, ustring("texturetype"),
-                                 TypeDesc::STRING, &texturetype);
-        Timer timer;
-        if (!strcmp(texturetype, "Plain Texture")) {
-            if (batch) {
-                if (nowarp)
-                    test_plain_texture_batch(map_default);
-                else if (tube)
-                    test_plain_texture_batch(map_tube);
-                else if (filtertest)
-                    test_plain_texture_batch(map_filtertest);
-                else
-                    test_plain_texture_batch(map_warp);
+//         if (nthreads == 0)
+//             nthreads = Sysutil::hardware_concurrency();
+//         static int threadcounts[] = { 1,  2,  4,  8,   12,   16,
+//                                       24, 32, 64, 128, 1024, 1 << 30 };
+//         float single_thread_time  = 0.0f;
+//         for (int i = 0; threadcounts[i] <= nthreads; ++i) {
+//             if (threadcounts[i] < minthreads)
+//                 continue;
+//             int nt    = wedge ? threadcounts[i] : nthreads;
+//             int its   = iters > 1 ? (std::max(1, iters / nt)) : iterations;
+//             int tries = nt <= 2 ? std::min(lowtrials, ntrials) : ntrials;
+//             double range;
+//             float t = (float)time_trial(std::bind(launch_tex_threads, nt, its),
+//                                         tries, &range);
+//             if (single_thread_time == 0.0f)
+//                 single_thread_time = t * nt;
+//             float speedup    = single_thread_time / t;
+//             float efficiency = speedup / nt;
+//             Strutil::print(
+//                 "{:3}     {:8.2f}   {:6.1f}x  {:6.1f}%    range {:.2f}\t({} iters/thread)\n",
+//                 nt, t, speedup, efficiency * 100.0f, range, its);
+//             fflush(stdout);
+//             if (!wedge)
+//                 break;  // don't loop if we're not wedging
+//         }
+//         Strutil::print("\n");
+//     } else if (iters > 0 && filenames.size()) {
+//         ustring filename(filenames[0]);
+//         if (do_gettextureinfo)
+//             test_gettextureinfo(filenames[0]);
+//         const char* texturetype = "Plain Texture";
+//         texsys->get_texture_info(filename, 0, ustring("texturetype"),
+//                                  TypeDesc::STRING, &texturetype);
+//         Timer timer;
+//         if (!strcmp(texturetype, "Plain Texture")) {
+//             if (batch) {
+//                 if (nowarp)
+//                     test_plain_texture_batch(map_default);
+//                 else if (tube)
+//                     test_plain_texture_batch(map_tube);
+//                 else if (filtertest)
+//                     test_plain_texture_batch(map_filtertest);
+//                 else
+//                     test_plain_texture_batch(map_warp);
 
-            } else {
-                if (nowarp)
-                    test_plain_texture(map_default);
-                else if (tube)
-                    test_plain_texture(map_tube);
-                else if (filtertest)
-                    test_plain_texture(map_filtertest);
-                else
-                    test_plain_texture(map_warp);
-            }
-        }
-        if (!strcmp(texturetype, "Volume Texture")) {
-            if (batch) {
-                test_texture3d_batch(filename, map_default_3D);
-            } else {
-                test_texture3d(filename, map_default_3D);
-            }
-        }
-        if (!strcmp(texturetype, "Shadow")) {
-            test_shadow(filename);
-        }
-        if (!strcmp(texturetype, "Environment")) {
-            if (batch) {
-                test_environment_batch(filename, map_env_latlong);
-            } else {
-                test_environment(filename, map_env_latlong);
-            }
-        }
-        test_getimagespec_gettexels(filename);
-        if (runstats || verbose)
-            Strutil::print("Time: {}\n", Strutil::timeintervalformat(timer()));
-    }
+//             } else {
+//                 if (nowarp)
+//                     test_plain_texture(map_default);
+//                 else if (tube)
+//                     test_plain_texture(map_tube);
+//                 else if (filtertest)
+//                     test_plain_texture(map_filtertest);
+//                 else
+//                     test_plain_texture(map_warp);
+//             }
+//         }
+//         if (!strcmp(texturetype, "Volume Texture")) {
+//             if (batch) {
+//                 test_texture3d_batch(filename, map_default_3D);
+//             } else {
+//                 test_texture3d(filename, map_default_3D);
+//             }
+//         }
+//         if (!strcmp(texturetype, "Shadow")) {
+//             test_shadow(filename);
+//         }
+//         if (!strcmp(texturetype, "Environment")) {
+//             if (batch) {
+//                 test_environment_batch(filename, map_env_latlong);
+//             } else {
+//                 test_environment(filename, map_env_latlong);
+//             }
+//         }
+//         test_getimagespec_gettexels(filename);
+//         if (runstats || verbose)
+//             Strutil::print("Time: {}\n", Strutil::timeintervalformat(timer()));
+//     }
 
-    if (test_statquery) {
-        Strutil::print("Testing statistics queries:\n");
-        int total_files = 0;
-        texsys->getattribute("total_files", total_files);
-        Strutil::print("  Total files: {}\n", total_files);
-        std::vector<ustring> all_filenames(total_files);
-        Strutil::print("{}\n", TypeDesc(TypeDesc::STRING, total_files));
-        texsys->getattribute("all_filenames",
-                             TypeDesc(TypeDesc::STRING, total_files),
-                             &all_filenames[0]);
-        for (int i = 0; i < total_files; ++i) {
-            int timesopened   = 0;
-            int64_t bytesread = 0;
-            float iotime      = 0.0f;
-            int64_t data_size = 0, file_size = 0;
-            texsys->get_texture_info(all_filenames[i], 0,
-                                     ustring("stat:timesopened"), TypeDesc::INT,
-                                     &timesopened);
-            texsys->get_texture_info(all_filenames[i], 0,
-                                     ustring("stat:bytesread"), TypeDesc::INT64,
-                                     &bytesread);
-            texsys->get_texture_info(all_filenames[i], 0,
-                                     ustring("stat:iotime"), TypeDesc::FLOAT,
-                                     &iotime);
-            texsys->get_texture_info(all_filenames[i], 0,
-                                     ustring("stat:image_size"),
-                                     TypeDesc::INT64, &data_size);
-            texsys->get_texture_info(all_filenames[i], 0,
-                                     ustring("stat:file_size"), TypeDesc::INT64,
-                                     &file_size);
-            Strutil::print(
-                "  {}: {}  opens={}, read={}, time={}, data={}, file={}\n", i,
-                all_filenames[i], timesopened, Strutil::memformat(bytesread),
-                Strutil::timeintervalformat(iotime, 2),
-                Strutil::memformat(data_size), Strutil::memformat(file_size));
-        }
-    }
+//     if (test_statquery) {
+//         Strutil::print("Testing statistics queries:\n");
+//         int total_files = 0;
+//         texsys->getattribute("total_files", total_files);
+//         Strutil::print("  Total files: {}\n", total_files);
+//         std::vector<ustring> all_filenames(total_files);
+//         Strutil::print("{}\n", TypeDesc(TypeDesc::STRING, total_files));
+//         texsys->getattribute("all_filenames",
+//                              TypeDesc(TypeDesc::STRING, total_files),
+//                              &all_filenames[0]);
+//         for (int i = 0; i < total_files; ++i) {
+//             int timesopened   = 0;
+//             int64_t bytesread = 0;
+//             float iotime      = 0.0f;
+//             int64_t data_size = 0, file_size = 0;
+//             texsys->get_texture_info(all_filenames[i], 0,
+//                                      ustring("stat:timesopened"), TypeDesc::INT,
+//                                      &timesopened);
+//             texsys->get_texture_info(all_filenames[i], 0,
+//                                      ustring("stat:bytesread"), TypeDesc::INT64,
+//                                      &bytesread);
+//             texsys->get_texture_info(all_filenames[i], 0,
+//                                      ustring("stat:iotime"), TypeDesc::FLOAT,
+//                                      &iotime);
+//             texsys->get_texture_info(all_filenames[i], 0,
+//                                      ustring("stat:image_size"),
+//                                      TypeDesc::INT64, &data_size);
+//             texsys->get_texture_info(all_filenames[i], 0,
+//                                      ustring("stat:file_size"), TypeDesc::INT64,
+//                                      &file_size);
+//             Strutil::print(
+//                 "  {}: {}  opens={}, read={}, time={}, data={}, file={}\n", i,
+//                 all_filenames[i], timesopened, Strutil::memformat(bytesread),
+//                 Strutil::timeintervalformat(iotime, 2),
+//                 Strutil::memformat(data_size), Strutil::memformat(file_size));
+//         }
+//     }
 
-    if (runstats || verbose) {
-        Strutil::print("Memory use: {}\n",
-                       Strutil::memformat(Sysutil::memory_used(true)));
-        Strutil::print("{}\n", texsys->getstats(verbose ? 2 : 1));
-    }
-    TextureSystem::destroy(texsys);
+//     if (runstats || verbose) {
+//         Strutil::print("Memory use: {}\n",
+//                        Strutil::memformat(Sysutil::memory_used(true)));
+//         Strutil::print("{}\n", texsys->getstats(verbose ? 2 : 1));
+//     }
+//     TextureSystem::destroy(texsys);
 
-    if (verbose)
-        Strutil::print("\nustrings: {}\n\n", ustring::getstats(false));
+//     if (verbose)
+//         Strutil::print("\nustrings: {}\n\n", ustring::getstats(false));
 
-    // Delete any temporary files we created
-    for (auto&& f : filenames_to_delete) {
-        std::string err;
-        Filesystem::remove(f, err);
-    }
-    shutdown();
-    return 0;
-}
+//     // Delete any temporary files we created
+//     for (auto&& f : filenames_to_delete) {
+//         std::string err;
+//         Filesystem::remove(f, err);
+//     }
+//     shutdown();
+//     return 0;
+// }

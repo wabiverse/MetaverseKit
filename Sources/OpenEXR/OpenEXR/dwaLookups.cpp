@@ -533,24 +533,24 @@ generateLutHeader ()
     }
 }
 
-int
-main (int argc, char** argv)
-{
-    printf ("\n\n\n");
+// int
+// main (int argc, char** argv)
+// {
+//     printf ("\n\n\n");
 
-    generateNoop ();
+//     generateNoop ();
 
-    printf ("\n\n\n");
+//     printf ("\n\n\n");
 
-    generateToLinear ();
+//     generateToLinear ();
 
-    printf ("\n\n\n");
+//     printf ("\n\n\n");
 
-    generateToNonlinear ();
+//     generateToNonlinear ();
 
-    printf ("\n\n\n");
+//     printf ("\n\n\n");
 
-    generateLutHeader ();
+//     generateLutHeader ();
 
-    return 0;
-}
+//     return 0;
+// }

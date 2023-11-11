@@ -450,279 +450,279 @@ my_emit_message(j_common_ptr cinfo, int msg_level)
  * The main program.
  */
 
-int
-main(int argc, char **argv)
-{
-  struct jpeg_decompress_struct srcinfo;
-#if TRANSFORMS_SUPPORTED
-  struct jpeg_decompress_struct dropinfo;
-  struct jpeg_error_mgr jdroperr;
-  FILE *drop_file;
-#endif
-  struct jpeg_compress_struct dstinfo;
-  struct jpeg_error_mgr jsrcerr, jdsterr;
-  struct cdjpeg_progress_mgr src_progress, dst_progress;
-  jvirt_barray_ptr *src_coef_arrays;
-  jvirt_barray_ptr *dst_coef_arrays;
-  int file_index;
-  /* We assume all-in-memory processing and can therefore use only a
-   * single file pointer for sequential input and output operation.
-   */
-  FILE *fp;
-  FILE *icc_file;
-  JOCTET *icc_profile = NULL;
-  long icc_len = 0;
+// int
+// main(int argc, char **argv)
+// {
+//   struct jpeg_decompress_struct srcinfo;
+// #if TRANSFORMS_SUPPORTED
+//   struct jpeg_decompress_struct dropinfo;
+//   struct jpeg_error_mgr jdroperr;
+//   FILE *drop_file;
+// #endif
+//   struct jpeg_compress_struct dstinfo;
+//   struct jpeg_error_mgr jsrcerr, jdsterr;
+//   struct cdjpeg_progress_mgr src_progress, dst_progress;
+//   jvirt_barray_ptr *src_coef_arrays;
+//   jvirt_barray_ptr *dst_coef_arrays;
+//   int file_index;
+//   /* We assume all-in-memory processing and can therefore use only a
+//    * single file pointer for sequential input and output operation.
+//    */
+//   FILE *fp;
+//   FILE *icc_file;
+//   JOCTET *icc_profile = NULL;
+//   long icc_len = 0;
 
-  progname = argv[0];
-  if (progname == NULL || progname[0] == 0)
-    progname = "jpegtran";      /* in case C library doesn't provide it */
+//   progname = argv[0];
+//   if (progname == NULL || progname[0] == 0)
+//     progname = "jpegtran";      /* in case C library doesn't provide it */
 
-  /* Initialize the JPEG decompression object with default error handling. */
-  srcinfo.err = jpeg_std_error(&jsrcerr);
-  jpeg_create_decompress(&srcinfo);
-  /* Initialize the JPEG compression object with default error handling. */
-  dstinfo.err = jpeg_std_error(&jdsterr);
-  jpeg_create_compress(&dstinfo);
+//   /* Initialize the JPEG decompression object with default error handling. */
+//   srcinfo.err = jpeg_std_error(&jsrcerr);
+//   jpeg_create_decompress(&srcinfo);
+//   /* Initialize the JPEG compression object with default error handling. */
+//   dstinfo.err = jpeg_std_error(&jdsterr);
+//   jpeg_create_compress(&dstinfo);
 
-  /* Scan command line to find file names.
-   * It is convenient to use just one switch-parsing routine, but the switch
-   * values read here are mostly ignored; we will rescan the switches after
-   * opening the input file.  Also note that most of the switches affect the
-   * destination JPEG object, so we parse into that and then copy over what
-   * needs to affect the source too.
-   */
+//   /* Scan command line to find file names.
+//    * It is convenient to use just one switch-parsing routine, but the switch
+//    * values read here are mostly ignored; we will rescan the switches after
+//    * opening the input file.  Also note that most of the switches affect the
+//    * destination JPEG object, so we parse into that and then copy over what
+//    * needs to affect the source too.
+//    */
 
-  file_index = parse_switches(&dstinfo, argc, argv, 0, FALSE);
-  jsrcerr.trace_level = jdsterr.trace_level;
-  srcinfo.mem->max_memory_to_use = dstinfo.mem->max_memory_to_use;
+//   file_index = parse_switches(&dstinfo, argc, argv, 0, FALSE);
+//   jsrcerr.trace_level = jdsterr.trace_level;
+//   srcinfo.mem->max_memory_to_use = dstinfo.mem->max_memory_to_use;
 
-  if (strict)
-    jsrcerr.emit_message = my_emit_message;
+//   if (strict)
+//     jsrcerr.emit_message = my_emit_message;
 
-#ifdef TWO_FILE_COMMANDLINE
-  /* Must have either -outfile switch or explicit output file name */
-  if (outfilename == NULL) {
-    if (file_index != argc - 2) {
-      fprintf(stderr, "%s: must name one input and one output file\n",
-              progname);
-      usage();
-    }
-    outfilename = argv[file_index + 1];
-  } else {
-    if (file_index != argc - 1) {
-      fprintf(stderr, "%s: must name one input and one output file\n",
-              progname);
-      usage();
-    }
-  }
-#else
-  /* Unix style: expect zero or one file name */
-  if (file_index < argc - 1) {
-    fprintf(stderr, "%s: only one input file\n", progname);
-    usage();
-  }
-#endif /* TWO_FILE_COMMANDLINE */
+// #ifdef TWO_FILE_COMMANDLINE
+//   /* Must have either -outfile switch or explicit output file name */
+//   if (outfilename == NULL) {
+//     if (file_index != argc - 2) {
+//       fprintf(stderr, "%s: must name one input and one output file\n",
+//               progname);
+//       usage();
+//     }
+//     outfilename = argv[file_index + 1];
+//   } else {
+//     if (file_index != argc - 1) {
+//       fprintf(stderr, "%s: must name one input and one output file\n",
+//               progname);
+//       usage();
+//     }
+//   }
+// #else
+//   /* Unix style: expect zero or one file name */
+//   if (file_index < argc - 1) {
+//     fprintf(stderr, "%s: only one input file\n", progname);
+//     usage();
+//   }
+// #endif /* TWO_FILE_COMMANDLINE */
 
-  /* Open the input file. */
-  if (file_index < argc) {
-    if ((fp = fopen(argv[file_index], READ_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open %s for reading\n", progname,
-              argv[file_index]);
-      exit(EXIT_FAILURE);
-    }
-  } else {
-    /* default input file is stdin */
-    fp = read_stdin();
-  }
+//   /* Open the input file. */
+//   if (file_index < argc) {
+//     if ((fp = fopen(argv[file_index], READ_BINARY)) == NULL) {
+//       fprintf(stderr, "%s: can't open %s for reading\n", progname,
+//               argv[file_index]);
+//       exit(EXIT_FAILURE);
+//     }
+//   } else {
+//     /* default input file is stdin */
+//     fp = read_stdin();
+//   }
 
-  if (icc_filename != NULL) {
-    if ((icc_file = fopen(icc_filename, READ_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open %s\n", progname, icc_filename);
-      exit(EXIT_FAILURE);
-    }
-    if (fseek(icc_file, 0, SEEK_END) < 0 ||
-        (icc_len = ftell(icc_file)) < 1 ||
-        fseek(icc_file, 0, SEEK_SET) < 0) {
-      fprintf(stderr, "%s: can't determine size of %s\n", progname,
-              icc_filename);
-      exit(EXIT_FAILURE);
-    }
-    if ((icc_profile = (JOCTET *)malloc(icc_len)) == NULL) {
-      fprintf(stderr, "%s: can't allocate memory for ICC profile\n", progname);
-      fclose(icc_file);
-      exit(EXIT_FAILURE);
-    }
-    if (fread(icc_profile, icc_len, 1, icc_file) < 1) {
-      fprintf(stderr, "%s: can't read ICC profile from %s\n", progname,
-              icc_filename);
-      free(icc_profile);
-      fclose(icc_file);
-      exit(EXIT_FAILURE);
-    }
-    fclose(icc_file);
-    if (copyoption == JCOPYOPT_ALL)
-      copyoption = JCOPYOPT_ALL_EXCEPT_ICC;
-    if (copyoption == JCOPYOPT_ICC)
-      copyoption = JCOPYOPT_NONE;
-  }
+//   if (icc_filename != NULL) {
+//     if ((icc_file = fopen(icc_filename, READ_BINARY)) == NULL) {
+//       fprintf(stderr, "%s: can't open %s\n", progname, icc_filename);
+//       exit(EXIT_FAILURE);
+//     }
+//     if (fseek(icc_file, 0, SEEK_END) < 0 ||
+//         (icc_len = ftell(icc_file)) < 1 ||
+//         fseek(icc_file, 0, SEEK_SET) < 0) {
+//       fprintf(stderr, "%s: can't determine size of %s\n", progname,
+//               icc_filename);
+//       exit(EXIT_FAILURE);
+//     }
+//     if ((icc_profile = (JOCTET *)malloc(icc_len)) == NULL) {
+//       fprintf(stderr, "%s: can't allocate memory for ICC profile\n", progname);
+//       fclose(icc_file);
+//       exit(EXIT_FAILURE);
+//     }
+//     if (fread(icc_profile, icc_len, 1, icc_file) < 1) {
+//       fprintf(stderr, "%s: can't read ICC profile from %s\n", progname,
+//               icc_filename);
+//       free(icc_profile);
+//       fclose(icc_file);
+//       exit(EXIT_FAILURE);
+//     }
+//     fclose(icc_file);
+//     if (copyoption == JCOPYOPT_ALL)
+//       copyoption = JCOPYOPT_ALL_EXCEPT_ICC;
+//     if (copyoption == JCOPYOPT_ICC)
+//       copyoption = JCOPYOPT_NONE;
+//   }
 
-  if (report) {
-    start_progress_monitor((j_common_ptr)&dstinfo, &dst_progress);
-    dst_progress.report = report;
-  }
-  if (report || max_scans != 0) {
-    start_progress_monitor((j_common_ptr)&srcinfo, &src_progress);
-    src_progress.report = report;
-    src_progress.max_scans = max_scans;
-  }
-#if TRANSFORMS_SUPPORTED
-  /* Open the drop file. */
-  if (dropfilename != NULL) {
-    if ((drop_file = fopen(dropfilename, READ_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open %s for reading\n", progname,
-              dropfilename);
-      exit(EXIT_FAILURE);
-    }
-    dropinfo.err = jpeg_std_error(&jdroperr);
-    jpeg_create_decompress(&dropinfo);
-    jpeg_stdio_src(&dropinfo, drop_file);
-  } else {
-    drop_file = NULL;
-  }
-#endif
+//   if (report) {
+//     start_progress_monitor((j_common_ptr)&dstinfo, &dst_progress);
+//     dst_progress.report = report;
+//   }
+//   if (report || max_scans != 0) {
+//     start_progress_monitor((j_common_ptr)&srcinfo, &src_progress);
+//     src_progress.report = report;
+//     src_progress.max_scans = max_scans;
+//   }
+// #if TRANSFORMS_SUPPORTED
+//   /* Open the drop file. */
+//   if (dropfilename != NULL) {
+//     if ((drop_file = fopen(dropfilename, READ_BINARY)) == NULL) {
+//       fprintf(stderr, "%s: can't open %s for reading\n", progname,
+//               dropfilename);
+//       exit(EXIT_FAILURE);
+//     }
+//     dropinfo.err = jpeg_std_error(&jdroperr);
+//     jpeg_create_decompress(&dropinfo);
+//     jpeg_stdio_src(&dropinfo, drop_file);
+//   } else {
+//     drop_file = NULL;
+//   }
+// #endif
 
-  /* Specify data source for decompression */
-  jpeg_stdio_src(&srcinfo, fp);
+//   /* Specify data source for decompression */
+//   jpeg_stdio_src(&srcinfo, fp);
 
-  /* Enable saving of extra markers that we want to copy */
-  jcopy_markers_setup(&srcinfo, copyoption);
+//   /* Enable saving of extra markers that we want to copy */
+//   jcopy_markers_setup(&srcinfo, copyoption);
 
-  /* Read file header */
-  (void)jpeg_read_header(&srcinfo, TRUE);
+//   /* Read file header */
+//   (void)jpeg_read_header(&srcinfo, TRUE);
 
-#if TRANSFORMS_SUPPORTED
-  if (dropfilename != NULL) {
-    (void)jpeg_read_header(&dropinfo, TRUE);
-    transformoption.crop_width = dropinfo.image_width;
-    transformoption.crop_width_set = JCROP_POS;
-    transformoption.crop_height = dropinfo.image_height;
-    transformoption.crop_height_set = JCROP_POS;
-    transformoption.drop_ptr = &dropinfo;
-  }
-#endif
+// #if TRANSFORMS_SUPPORTED
+//   if (dropfilename != NULL) {
+//     (void)jpeg_read_header(&dropinfo, TRUE);
+//     transformoption.crop_width = dropinfo.image_width;
+//     transformoption.crop_width_set = JCROP_POS;
+//     transformoption.crop_height = dropinfo.image_height;
+//     transformoption.crop_height_set = JCROP_POS;
+//     transformoption.drop_ptr = &dropinfo;
+//   }
+// #endif
 
-  /* Any space needed by a transform option must be requested before
-   * jpeg_read_coefficients so that memory allocation will be done right.
-   */
-#if TRANSFORMS_SUPPORTED
-  /* Fail right away if -perfect is given and transformation is not perfect.
-   */
-  if (!jtransform_request_workspace(&srcinfo, &transformoption)) {
-    fprintf(stderr, "%s: transformation is not perfect\n", progname);
-    exit(EXIT_FAILURE);
-  }
-#endif
+//   /* Any space needed by a transform option must be requested before
+//    * jpeg_read_coefficients so that memory allocation will be done right.
+//    */
+// #if TRANSFORMS_SUPPORTED
+//   /* Fail right away if -perfect is given and transformation is not perfect.
+//    */
+//   if (!jtransform_request_workspace(&srcinfo, &transformoption)) {
+//     fprintf(stderr, "%s: transformation is not perfect\n", progname);
+//     exit(EXIT_FAILURE);
+//   }
+// #endif
 
-  /* Read source file as DCT coefficients */
-  src_coef_arrays = jpeg_read_coefficients(&srcinfo);
+//   /* Read source file as DCT coefficients */
+//   src_coef_arrays = jpeg_read_coefficients(&srcinfo);
 
-#if TRANSFORMS_SUPPORTED
-  if (dropfilename != NULL) {
-    transformoption.drop_coef_arrays = jpeg_read_coefficients(&dropinfo);
-  }
-#endif
+// #if TRANSFORMS_SUPPORTED
+//   if (dropfilename != NULL) {
+//     transformoption.drop_coef_arrays = jpeg_read_coefficients(&dropinfo);
+//   }
+// #endif
 
-  /* Initialize destination compression parameters from source values */
-  jpeg_copy_critical_parameters(&srcinfo, &dstinfo);
+//   /* Initialize destination compression parameters from source values */
+//   jpeg_copy_critical_parameters(&srcinfo, &dstinfo);
 
-  /* Adjust destination parameters if required by transform options;
-   * also find out which set of coefficient arrays will hold the output.
-   */
-#if TRANSFORMS_SUPPORTED
-  dst_coef_arrays = jtransform_adjust_parameters(&srcinfo, &dstinfo,
-                                                 src_coef_arrays,
-                                                 &transformoption);
-#else
-  dst_coef_arrays = src_coef_arrays;
-#endif
+//   /* Adjust destination parameters if required by transform options;
+//    * also find out which set of coefficient arrays will hold the output.
+//    */
+// #if TRANSFORMS_SUPPORTED
+//   dst_coef_arrays = jtransform_adjust_parameters(&srcinfo, &dstinfo,
+//                                                  src_coef_arrays,
+//                                                  &transformoption);
+// #else
+//   dst_coef_arrays = src_coef_arrays;
+// #endif
 
-  /* Close input file, if we opened it.
-   * Note: we assume that jpeg_read_coefficients consumed all input
-   * until JPEG_REACHED_EOI, and that jpeg_finish_decompress will
-   * only consume more while (!cinfo->inputctl->eoi_reached).
-   * We cannot call jpeg_finish_decompress here since we still need the
-   * virtual arrays allocated from the source object for processing.
-   */
-  if (fp != stdin)
-    fclose(fp);
+//   /* Close input file, if we opened it.
+//    * Note: we assume that jpeg_read_coefficients consumed all input
+//    * until JPEG_REACHED_EOI, and that jpeg_finish_decompress will
+//    * only consume more while (!cinfo->inputctl->eoi_reached).
+//    * We cannot call jpeg_finish_decompress here since we still need the
+//    * virtual arrays allocated from the source object for processing.
+//    */
+//   if (fp != stdin)
+//     fclose(fp);
 
-  /* Open the output file. */
-  if (outfilename != NULL) {
-    if ((fp = fopen(outfilename, WRITE_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open %s for writing\n", progname,
-              outfilename);
-      exit(EXIT_FAILURE);
-    }
-  } else {
-    /* default output file is stdout */
-    fp = write_stdout();
-  }
+//   /* Open the output file. */
+//   if (outfilename != NULL) {
+//     if ((fp = fopen(outfilename, WRITE_BINARY)) == NULL) {
+//       fprintf(stderr, "%s: can't open %s for writing\n", progname,
+//               outfilename);
+//       exit(EXIT_FAILURE);
+//     }
+//   } else {
+//     /* default output file is stdout */
+//     fp = write_stdout();
+//   }
 
-  /* Adjust default compression parameters by re-parsing the options */
-  file_index = parse_switches(&dstinfo, argc, argv, 0, TRUE);
+//   /* Adjust default compression parameters by re-parsing the options */
+//   file_index = parse_switches(&dstinfo, argc, argv, 0, TRUE);
 
-  /* Specify data destination for compression */
-  jpeg_stdio_dest(&dstinfo, fp);
+//   /* Specify data destination for compression */
+//   jpeg_stdio_dest(&dstinfo, fp);
 
-  /* Start compressor (note no image data is actually written here) */
-  jpeg_write_coefficients(&dstinfo, dst_coef_arrays);
+//   /* Start compressor (note no image data is actually written here) */
+//   jpeg_write_coefficients(&dstinfo, dst_coef_arrays);
 
-  /* Copy to the output file any extra markers that we want to preserve */
-  jcopy_markers_execute(&srcinfo, &dstinfo, copyoption);
+//   /* Copy to the output file any extra markers that we want to preserve */
+//   jcopy_markers_execute(&srcinfo, &dstinfo, copyoption);
 
-  if (icc_profile != NULL)
-    jpeg_write_icc_profile(&dstinfo, icc_profile, (unsigned int)icc_len);
+//   if (icc_profile != NULL)
+//     jpeg_write_icc_profile(&dstinfo, icc_profile, (unsigned int)icc_len);
 
-  /* Execute image transformation, if any */
-#if TRANSFORMS_SUPPORTED
-  jtransform_execute_transformation(&srcinfo, &dstinfo, src_coef_arrays,
-                                    &transformoption);
-#endif
+//   /* Execute image transformation, if any */
+// #if TRANSFORMS_SUPPORTED
+//   jtransform_execute_transformation(&srcinfo, &dstinfo, src_coef_arrays,
+//                                     &transformoption);
+// #endif
 
-  /* Finish compression and release memory */
-  jpeg_finish_compress(&dstinfo);
-  jpeg_destroy_compress(&dstinfo);
-#if TRANSFORMS_SUPPORTED
-  if (dropfilename != NULL) {
-    (void)jpeg_finish_decompress(&dropinfo);
-    jpeg_destroy_decompress(&dropinfo);
-  }
-#endif
-  (void)jpeg_finish_decompress(&srcinfo);
-  jpeg_destroy_decompress(&srcinfo);
+//   /* Finish compression and release memory */
+//   jpeg_finish_compress(&dstinfo);
+//   jpeg_destroy_compress(&dstinfo);
+// #if TRANSFORMS_SUPPORTED
+//   if (dropfilename != NULL) {
+//     (void)jpeg_finish_decompress(&dropinfo);
+//     jpeg_destroy_decompress(&dropinfo);
+//   }
+// #endif
+//   (void)jpeg_finish_decompress(&srcinfo);
+//   jpeg_destroy_decompress(&srcinfo);
 
-  /* Close output file, if we opened it */
-  if (fp != stdout)
-    fclose(fp);
-#if TRANSFORMS_SUPPORTED
-  if (drop_file != NULL)
-    fclose(drop_file);
-#endif
+//   /* Close output file, if we opened it */
+//   if (fp != stdout)
+//     fclose(fp);
+// #if TRANSFORMS_SUPPORTED
+//   if (drop_file != NULL)
+//     fclose(drop_file);
+// #endif
 
-  if (report)
-    end_progress_monitor((j_common_ptr)&dstinfo);
-  if (report || max_scans != 0)
-    end_progress_monitor((j_common_ptr)&srcinfo);
+//   if (report)
+//     end_progress_monitor((j_common_ptr)&dstinfo);
+//   if (report || max_scans != 0)
+//     end_progress_monitor((j_common_ptr)&srcinfo);
 
-  free(icc_profile);
+//   free(icc_profile);
 
-  /* All done. */
-#if TRANSFORMS_SUPPORTED
-  if (dropfilename != NULL)
-    exit(jsrcerr.num_warnings + jdroperr.num_warnings +
-         jdsterr.num_warnings ? EXIT_WARNING : EXIT_SUCCESS);
-#endif
-  exit(jsrcerr.num_warnings + jdsterr.num_warnings ?
-       EXIT_WARNING : EXIT_SUCCESS);
-  return 0;                     /* suppress no-return-value warnings */
-}
+//   /* All done. */
+// #if TRANSFORMS_SUPPORTED
+//   if (dropfilename != NULL)
+//     exit(jsrcerr.num_warnings + jdroperr.num_warnings +
+//          jdsterr.num_warnings ? EXIT_WARNING : EXIT_SUCCESS);
+// #endif
+//   exit(jsrcerr.num_warnings + jdsterr.num_warnings ?
+//        EXIT_WARNING : EXIT_SUCCESS);
+//   return 0;                     /* suppress no-return-value warnings */
+// }

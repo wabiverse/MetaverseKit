@@ -78,10 +78,10 @@ print_price_table(void)
 }
 
 
-int
-main(void)
-{
-	init_price_table();
-	print_price_table();
-	return 0;
-}
+// int
+// main(void)
+// {
+// 	init_price_table();
+// 	print_price_table();
+// 	return 0;
+// }

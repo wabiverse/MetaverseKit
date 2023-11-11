@@ -3199,7 +3199,7 @@ PNG_EXPORT(245, int, png_image_write_to_memory, (png_imagep image, void *memory,
  *           selected at run time.
  */
 #ifdef PNG_SET_OPTION_SUPPORTED
-#ifdef PNG_ARM_NEON_API_SUPPORTED
+#if defined(PNG_ARM_NEON_API_SUPPORTED) || defined(WITH_ARM)
 #  define PNG_ARM_NEON   0 /* HARDWARE: ARM Neon SIMD instructions supported */
 #endif
 #define PNG_MAXIMUM_INFLATE_WINDOW 2 /* SOFTWARE: force maximum window */
@@ -3208,7 +3208,7 @@ PNG_EXPORT(245, int, png_image_write_to_memory, (png_imagep image, void *memory,
 #  define PNG_MIPS_MSA   6 /* HARDWARE: MIPS Msa SIMD instructions supported */
 #endif
 #define PNG_IGNORE_ADLER32 8
-#ifdef PNG_POWERPC_VSX_API_SUPPORTED
+#if defined(PNG_POWERPC_VSX_API_SUPPORTED) || defined(WITH_POWERPC)
 #  define PNG_POWERPC_VSX   10 /* HARDWARE: PowerPC VSX SIMD instructions supported */
 #endif
 #define PNG_OPTION_NEXT  12 /* Next option - numbers must be even */

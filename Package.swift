@@ -26,6 +26,32 @@ struct Arch
     }
   }
 
+  enum CPU: String
+  {
+    case arm = "arm"
+    case arm64 = "arm64"
+    case x86_64 = "x86_64"
+    case i386 = "i386"
+    case powerpc = "powerpc"
+    case powerpc64 = "powerpc64"
+    case powerpc64le = "powerpc64le"
+    case s390x = "s390x"
+    case wasm32 = "wasm32"
+    case arm64_32 = "arm64_32"
+
+    public var family: [CPU]
+    {
+      switch self
+      {
+        case .arm, .arm64, .arm64_32: [.arm, .arm64, .arm64_32]
+        case .x86_64, .i386: [.x86_64, .i386]
+        case .powerpc, .powerpc64, .powerpc64le: [.powerpc, .powerpc64, .powerpc64le]
+        case .s390x: [.s390x]
+        case .wasm32: [.wasm32]
+      }
+    }
+  }
+
   /* -------------------------------------------------------------------------
    * To detect platform triplets, we need to know the OS and CPU architecture.
    * -------------------------------------------------------------------------*/
@@ -59,26 +85,59 @@ struct Arch
   #endif
 
   #if arch(arm64)
-    static let cpuArch: String = "arm64"
+    static let cpuArch: CPU = .arm64
   #elseif arch(x86_64)
-    static let cpuArch: String = "x86_64"
+    static let cpuArch: CPU = .x86_64
   #elseif arch(i386)
-    static let cpuArch: String = "i386"
+    static let cpuArch: CPU = .i386
   #elseif arch(arm)
-    static let cpuArch: String = "arm"
+    static let cpuArch: CPU = .arm
   #elseif arch(powerpc64)
-    static let cpuArch: String = "powerpc64"
+    static let cpuArch: CPU = .powerpc64
   #elseif arch(powerpc64le)
-    static let cpuArch: String = "powerpc64le"
+    static let cpuArch: CPU = .powerpc64le
   #elseif arch(powerpc)
-    static let cpuArch: String = "powerpc"
+    static let cpuArch: CPU = .powerpc
   #elseif arch(s390x)
-    static let cpuArch: String = "s390x"
+    static let cpuArch: CPU = .s390x
   #elseif arch(wasm32)
-    static let cpuArch: String = "wasm32"
+    static let cpuArch: CPU = .wasm32
   #elseif arch(arm64_32)
-    static let cpuArch: String = "arm64_32"
+    static let cpuArch: CPU = .arm64_32
   #endif
+}
+
+var chipsetExcludeDirs: [String] = []
+var chipsetDefinesC: [CSetting] = []
+var chipsetDefinesCXX: [CXXSetting] = []
+if (Arch.cpuArch.family.contains(.arm))
+{
+  chipsetExcludeDirs.append("intel")
+  chipsetExcludeDirs.append("powerpc")
+  chipsetDefinesC.append(.define("WITH_ARM", to: "1"))
+  chipsetDefinesCXX.append(.define("WITH_ARM", to: "1"))
+}
+else if (Arch.cpuArch.family.contains(.x86_64))
+{
+  chipsetExcludeDirs.append("arm")
+  chipsetExcludeDirs.append("powerpc")
+  chipsetDefinesC.append(.define("WITH_INTEL", to: "1"))
+  chipsetDefinesCXX.append(.define("WITH_INTEL", to: "1"))
+}
+else if (Arch.cpuArch.family.contains(.powerpc))
+{
+  chipsetExcludeDirs.append("arm")
+  chipsetExcludeDirs.append("intel")
+  chipsetDefinesC.append(.define("WITH_POWERPC", to: "1"))
+  chipsetDefinesCXX.append(.define("WITH_POWERPC", to: "1"))
+}
+else /* a unicorn! 🦄 */
+{
+  chipsetExcludeDirs.append("arm")
+  chipsetExcludeDirs.append("intel")
+  chipsetExcludeDirs.append("powerpc")
+  chipsetDefinesC.append(.define("WITH_UNICORNS", to: "1"))
+  chipsetDefinesCXX.append(.define("WITH_UNICORNS", to: "1"))
 }
 
 #if os(Windows)
@@ -317,6 +376,8 @@ struct Arch
   let platformTurboJPEGExcludes: [String] = [
     "turbojpeg-jni.c",
     "tjunittest.c",
+    "tjexample.c",
+    "example.c"
   ]
 #endif /* os(macOS) || os(Linux) */
 
@@ -337,6 +398,18 @@ let package = Package(
     .library(
       name: "OneTBB",
       targets: ["OneTBB"]
+    ),
+    .library(
+      name: "MetaTBB",
+      targets: ["MetaTBB"]
+    ),
+    .library(
+      name: "TBBMalloc",
+      targets: ["TBBMalloc"]
+    ),
+    .library(
+      name: "TBBMallocProxy",
+      targets: ["TBBMallocProxy"]
     ),
     .library(
       name: "Python",
@@ -588,10 +661,57 @@ let package = Package(
     ),
 
     .target(
-      name: "OneTBB",
-      dependencies: [],
+      name: "TBBMallocProxy",
+      dependencies: [
+        .target(name: "OneTBB"),
+      ],
       exclude: [],
+      publicHeadersPath: ".",
+      cxxSettings: [
+        .define("_XOPEN_SOURCE"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "TBBMalloc",
+      dependencies: [
+        .target(name: "OneTBB"),
+        .target(name: "TBBMallocProxy"),
+      ],
+      exclude: [],
+      publicHeadersPath: ".",
+      cxxSettings: [
+        .define("_XOPEN_SOURCE"),
+        .define("__TBBMALLOC_BUILD", to: "1"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "OneTBB",
       publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_XOPEN_SOURCE"),
+        .define("TBB_USE_PROFILING_TOOLS", to: "2"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "MetaTBB",
+      dependencies: [
+        .target(name: "OneTBB"),
+        .target(name: "TBBMalloc"),
+        .target(name: "TBBMallocProxy"),
+      ],
+      exclude: [],
       cxxSettings: [
         .define("_XOPEN_SOURCE"),
         .define("TBB_USE_PROFILING_TOOLS", to: "2"),
@@ -758,11 +878,14 @@ let package = Package(
       dependencies: [
         .target(name: "ZLibDataCompression"),
       ],
-      exclude: [],
+      exclude: [
+        "example.c",
+        "pngtest.c"
+      ] + chipsetExcludeDirs,
       publicHeadersPath: "include",
       cSettings: [
         .headerSearchPath("."),
-      ],
+      ] + chipsetDefinesC,
       swiftSettings: [
         .interoperabilityMode(.C),
       ]
@@ -776,7 +899,11 @@ let package = Package(
       exclude: platformTurboJPEGExcludes,
       publicHeadersPath: "include/turbo",
       cSettings: [
-        .headerSearchPath(".")
+        .headerSearchPath("."),
+        .define("C_LOSSLESS_SUPPORTED", to: "1"),
+        .define("D_LOSSLESS_SUPPORTED", to: "1"),
+        .define("PPM_SUPPORTED", to: "1"),
+        .define("BITS_IN_JSAMPLE", to: "12")
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -794,7 +921,9 @@ let package = Package(
       exclude: platformTIFFExcludes,
       publicHeadersPath: "include",
       cxxSettings: [
+        .define("FROM_TIF_JPEG_12", to: "1"),
         .define("HAVE_JPEGTURBO_DUAL_MODE_8_12", to: "1"),
+        .define("BITS_IN_JSAMPLE", to: "12")
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -955,7 +1084,7 @@ let package = Package(
     .target(
       name: "OpenSubdiv",
       dependencies: [
-        .target(name: "OneTBB"),
+        .target(name: "MetaTBB"),
         .target(name: "OpenMP"),
         .target(name: "GPUShaders"),
       ],
@@ -1141,7 +1270,7 @@ let package = Package(
       name: "OpenVDB",
       dependencies: [
         .target(name: "Boost"),
-        .target(name: "OneTBB"),
+        .target(name: "MetaTBB"),
         .target(name: "Blosc"),
         .target(name: "Python"),
         .target(name: "PyBind11"),

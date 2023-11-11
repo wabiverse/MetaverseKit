@@ -40,19 +40,19 @@ crc64_init(void)
 }
 
 
-extern LZMA_API(uint64_t)
-lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
-{
-#ifndef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
-	mythread_once(crc64_init);
-#endif
+// extern LZMA_API(uint64_t)
+// lzma_crc64(const uint8_t *buf, size_t size, uint64_t crc)
+// {
+// #ifndef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
+// 	mythread_once(crc64_init);
+// #endif
 
-	crc = ~crc;
+// 	crc = ~crc;
 
-	while (size != 0) {
-		crc = crc64_table[*buf++ ^ (crc & 0xFF)] ^ (crc >> 8);
-		--size;
-	}
+// 	while (size != 0) {
+// 		crc = crc64_table[*buf++ ^ (crc & 0xFF)] ^ (crc >> 8);
+// 		--size;
+// 	}
 
-	return ~crc;
-}
+// 	return ~crc;
+// }

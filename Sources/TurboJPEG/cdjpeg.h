@@ -110,28 +110,37 @@ typedef struct cdjpeg_progress_mgr *cd_progress_ptr;
 
 
 /* Module selection routines for I/O modules. */
-
+#ifdef BMP_SUPPORTED
 EXTERN(cjpeg_source_ptr) jinit_read_bmp(j_compress_ptr cinfo,
                                         boolean use_inversion_array);
 EXTERN(djpeg_dest_ptr) jinit_write_bmp(j_decompress_ptr cinfo, boolean is_os2,
                                        boolean use_inversion_array);
+#endif /* BMP_SUPPORTED */
+#ifdef GIF_SUPPORTED
 EXTERN(cjpeg_source_ptr) jinit_read_gif(j_compress_ptr cinfo);
 EXTERN(cjpeg_source_ptr) j12init_read_gif(j_compress_ptr cinfo);
+#endif /* GIF_SUPPORTED */
 #ifdef C_LOSSLESS_SUPPORTED
-EXTERN(cjpeg_source_ptr) j16init_read_gif(j_compress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(cjpeg_source_ptr) j16init_read_gif(j_compress_ptr cinfo);
 #endif
+#ifdef GIF_SUPPORTED
 EXTERN(djpeg_dest_ptr) jinit_write_gif(j_decompress_ptr cinfo, boolean is_lzw);
 EXTERN(djpeg_dest_ptr) j12init_write_gif(j_decompress_ptr cinfo,
                                          boolean is_lzw);
-EXTERN(cjpeg_source_ptr) jinit_read_ppm(j_compress_ptr cinfo);
+#endif /* GIF_SUPPORTED */
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(cjpeg_source_ptr) jinit_read_ppm(j_compress_ptr cinfo);
 EXTERN(cjpeg_source_ptr) j12init_read_ppm(j_compress_ptr cinfo);
 #ifdef C_LOSSLESS_SUPPORTED
-EXTERN(cjpeg_source_ptr) j16init_read_ppm(j_compress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(cjpeg_source_ptr) j16init_read_ppm(j_compress_ptr cinfo);
 #endif
 EXTERN(djpeg_dest_ptr) jinit_write_ppm(j_decompress_ptr cinfo);
 EXTERN(djpeg_dest_ptr) j12init_write_ppm(j_decompress_ptr cinfo);
 #ifdef D_LOSSLESS_SUPPORTED
-EXTERN(djpeg_dest_ptr) j16init_write_ppm(j_decompress_ptr cinfo);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(djpeg_dest_ptr) j16init_write_ppm(j_decompress_ptr cinfo);
 #endif
 EXTERN(cjpeg_source_ptr) jinit_read_targa(j_compress_ptr cinfo);
 EXTERN(djpeg_dest_ptr) jinit_write_targa(j_decompress_ptr cinfo);
@@ -148,8 +157,10 @@ EXTERN(boolean) set_sample_factors(j_compress_ptr cinfo, char *arg);
 
 /* djpeg support routines (in rdcolmap.c) */
 
-EXTERN(void) read_color_map(j_decompress_ptr cinfo, FILE *infile);
+// j16XXX hack until I clean up TurboJPEG.
+// EXTERN(void) read_color_map(j_decompress_ptr cinfo, FILE *infile);
 EXTERN(void) read_color_map_12(j_decompress_ptr cinfo, FILE *infile);
+#define read_color_map read_color_map_12
 
 /* common support routines (in cdjpeg.c) */
 

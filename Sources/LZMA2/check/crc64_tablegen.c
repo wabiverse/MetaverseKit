@@ -79,10 +79,10 @@ print_crc64_table(void)
 }
 
 
-int
-main(void)
-{
-	init_crc64_table();
-	print_crc64_table();
-	return 0;
-}
+// int
+// main(void)
+// {
+// 	init_crc64_table();
+// 	print_crc64_table();
+// 	return 0;
+// }

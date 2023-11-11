@@ -53,118 +53,118 @@ void invalid_parameter_handler(const wchar_t *expression,
 #endif
 
 
-int main(int argc, char **argv)
-{
-#if !defined(NO_GETENV) || !defined(NO_PUTENV)
-  int err;
-#endif
-#ifndef NO_GETENV
-  char env[3];
-#endif
+// int main(int argc, char **argv)
+// {
+// #if !defined(NO_GETENV) || !defined(NO_PUTENV)
+//   int err;
+// #endif
+// #ifndef NO_GETENV
+//   char env[3];
+// #endif
 
-#ifdef _MSC_VER
-  _set_invalid_parameter_handler(invalid_parameter_handler);
-#endif
+// #ifdef _MSC_VER
+//   _set_invalid_parameter_handler(invalid_parameter_handler);
+// #endif
 
-  /***************************************************************************/
+//   /***************************************************************************/
 
-#ifndef NO_PUTENV
+// #ifndef NO_PUTENV
 
-  printf("PUTENV_S():\n");
+//   printf("PUTENV_S():\n");
 
-  errno = 0;
-  err = PUTENV_S(NULL, "12");
-  CHECK_ERRNO(err, EINVAL);
+//   errno = 0;
+//   err = PUTENV_S(NULL, "12");
+//   CHECK_ERRNO(err, EINVAL);
 
-  errno = 0;
-  err = PUTENV_S("TESTENV", NULL);
-  CHECK_ERRNO(err, EINVAL);
+//   errno = 0;
+//   err = PUTENV_S("TESTENV", NULL);
+//   CHECK_ERRNO(err, EINVAL);
 
-  errno = 0;
-  err = PUTENV_S("TESTENV", "12");
-  CHECK_ERRNO(err, 0);
+//   errno = 0;
+//   err = PUTENV_S("TESTENV", "12");
+//   CHECK_ERRNO(err, 0);
 
-  printf("SUCCESS!\n\n");
+//   printf("SUCCESS!\n\n");
 
-#endif
+// #endif
 
-  /***************************************************************************/
+//   /***************************************************************************/
 
-#ifndef NO_GETENV
+// #ifndef NO_GETENV
 
-  printf("GETENV_S():\n");
+//   printf("GETENV_S():\n");
 
-  errno = 0;
-  env[0] = 1;
-  env[1] = 2;
-  env[2] = 3;
-  err = GETENV_S(env, 3, NULL);
-  CHECK_ERRNO(err, 0);
-  CHECK_VALUE(env[0], 0, "env[0]");
-  CHECK_VALUE(env[1], 2, "env[1]");
-  CHECK_VALUE(env[2], 3, "env[2]");
+//   errno = 0;
+//   env[0] = 1;
+//   env[1] = 2;
+//   env[2] = 3;
+//   err = GETENV_S(env, 3, NULL);
+//   CHECK_ERRNO(err, 0);
+//   CHECK_VALUE(env[0], 0, "env[0]");
+//   CHECK_VALUE(env[1], 2, "env[1]");
+//   CHECK_VALUE(env[2], 3, "env[2]");
 
-  errno = 0;
-  env[0] = 1;
-  env[1] = 2;
-  env[2] = 3;
-  err = GETENV_S(env, 3, "TESTENV2");
-  CHECK_ERRNO(err, 0);
-  CHECK_VALUE(env[0], 0, "env[0]");
-  CHECK_VALUE(env[1], 2, "env[1]");
-  CHECK_VALUE(env[2], 3, "env[2]");
+//   errno = 0;
+//   env[0] = 1;
+//   env[1] = 2;
+//   env[2] = 3;
+//   err = GETENV_S(env, 3, "TESTENV2");
+//   CHECK_ERRNO(err, 0);
+//   CHECK_VALUE(env[0], 0, "env[0]");
+//   CHECK_VALUE(env[1], 2, "env[1]");
+//   CHECK_VALUE(env[2], 3, "env[2]");
 
-  errno = 0;
-  err = GETENV_S(NULL, 3, "TESTENV");
-  CHECK_ERRNO(err, EINVAL);
+//   errno = 0;
+//   err = GETENV_S(NULL, 3, "TESTENV");
+//   CHECK_ERRNO(err, EINVAL);
 
-  errno = 0;
-  err = GETENV_S(NULL, 0, "TESTENV");
-  CHECK_ERRNO(err, 0);
+//   errno = 0;
+//   err = GETENV_S(NULL, 0, "TESTENV");
+//   CHECK_ERRNO(err, 0);
 
-  errno = 0;
-  env[0] = 1;
-  err = GETENV_S(env, 0, "TESTENV");
-  CHECK_ERRNO(err, EINVAL);
-  CHECK_VALUE(env[0], 1, "env[0]");
+//   errno = 0;
+//   env[0] = 1;
+//   err = GETENV_S(env, 0, "TESTENV");
+//   CHECK_ERRNO(err, EINVAL);
+//   CHECK_VALUE(env[0], 1, "env[0]");
 
-  errno = 0;
-  env[0] = 1;
-  env[1] = 2;
-  env[2] = 3;
-  err = GETENV_S(env, 1, "TESTENV");
-  CHECK_VALUE(err, ERANGE, "Return value");
-  CHECK_VALUE(errno, 0, "errno");
-  CHECK_VALUE(env[0], 0, "env[0]");
-  CHECK_VALUE(env[1], 2, "env[1]");
-  CHECK_VALUE(env[2], 3, "env[2]");
+//   errno = 0;
+//   env[0] = 1;
+//   env[1] = 2;
+//   env[2] = 3;
+//   err = GETENV_S(env, 1, "TESTENV");
+//   CHECK_VALUE(err, ERANGE, "Return value");
+//   CHECK_VALUE(errno, 0, "errno");
+//   CHECK_VALUE(env[0], 0, "env[0]");
+//   CHECK_VALUE(env[1], 2, "env[1]");
+//   CHECK_VALUE(env[2], 3, "env[2]");
 
-  errno = 0;
-  env[0] = 1;
-  env[1] = 2;
-  env[2] = 3;
-  err = GETENV_S(env, 2, "TESTENV");
-  CHECK_VALUE(err, ERANGE, "Return value");
-  CHECK_VALUE(errno, 0, "errno");
-  CHECK_VALUE(env[0], 0, "env[0]");
-  CHECK_VALUE(env[1], 2, "env[1]");
-  CHECK_VALUE(env[2], 3, "env[2]");
+//   errno = 0;
+//   env[0] = 1;
+//   env[1] = 2;
+//   env[2] = 3;
+//   err = GETENV_S(env, 2, "TESTENV");
+//   CHECK_VALUE(err, ERANGE, "Return value");
+//   CHECK_VALUE(errno, 0, "errno");
+//   CHECK_VALUE(env[0], 0, "env[0]");
+//   CHECK_VALUE(env[1], 2, "env[1]");
+//   CHECK_VALUE(env[2], 3, "env[2]");
 
-  errno = 0;
-  env[0] = 1;
-  env[1] = 2;
-  env[2] = 3;
-  err = GETENV_S(env, 3, "TESTENV");
-  CHECK_ERRNO(err, 0);
-  CHECK_VALUE(env[0], '1', "env[0]");
-  CHECK_VALUE(env[1], '2', "env[1]");
-  CHECK_VALUE(env[2], 0, "env[2]");
+//   errno = 0;
+//   env[0] = 1;
+//   env[1] = 2;
+//   env[2] = 3;
+//   err = GETENV_S(env, 3, "TESTENV");
+//   CHECK_ERRNO(err, 0);
+//   CHECK_VALUE(env[0], '1', "env[0]");
+//   CHECK_VALUE(env[1], '2', "env[1]");
+//   CHECK_VALUE(env[2], 0, "env[2]");
 
-  printf("SUCCESS!\n\n");
+//   printf("SUCCESS!\n\n");
 
-#endif
+// #endif
 
-  /***************************************************************************/
+//   /***************************************************************************/
 
-  return 0;
-}
+//   return 0;
+// }

@@ -31,7 +31,8 @@
 #include "jdsample.h"
 #include "jmemsys.h"
 
-#if BITS_IN_JSAMPLE == 8
+// j16XXX hack until I clean up TurboJPEG.
+// #if BITS_IN_JSAMPLE == 8
 
 /* Forward declarations */
 LOCAL(boolean) output_pass_setup(j_decompress_ptr cinfo);
@@ -160,7 +161,7 @@ output_pass_setup(j_decompress_ptr cinfo)
   return TRUE;
 }
 
-#endif /* BITS_IN_JSAMPLE == 8 */
+// #endif /* BITS_IN_JSAMPLE == 8 */
 
 
 #if BITS_IN_JSAMPLE != 16

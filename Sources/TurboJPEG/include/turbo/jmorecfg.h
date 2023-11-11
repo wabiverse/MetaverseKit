@@ -45,12 +45,16 @@
 
 /* JSAMPLE should be the smallest type that will hold the values 0..255. */
 
-typedef unsigned char JSAMPLE;
+// j16XXX hack until I clean up TurboJPEG.
+// typedef unsigned char JSAMPLE;
+typedef short JSAMPLE;
 #define GETJSAMPLE(value)  ((int)(value))
 
-#define MAXJSAMPLE       255
-#define CENTERJSAMPLE    128
-
+// j16XXX hack until I clean up TurboJPEG.
+//#define MAXJSAMPLE       255
+//#define CENTERJSAMPLE    128
+#define MAXJSAMPLE     4095
+#define CENTERJSAMPLE  2048
 
 /* J12SAMPLE should be the smallest type that will hold the values 0..4095. */
 

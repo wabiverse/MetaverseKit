@@ -504,28 +504,28 @@ convert_file(const std::string& in_filename, const std::string& out_filename)
 
 
 
-int
-main(int argc, char* argv[])
-{
-    // Helpful for debugging to make sure that any crashes dump a stack
-    // trace.
-    Sysutil::setup_crash_stacktrace("stdout");
+// int
+// main(int argc, char* argv[])
+// {
+//     // Helpful for debugging to make sure that any crashes dump a stack
+//     // trace.
+//     Sysutil::setup_crash_stacktrace("stdout");
 
-    Filesystem::convert_native_arguments(argc, (const char**)argv);
-    getargs(argc, argv);
-    if (ap.aborted())
-        return return_code;
+//     Filesystem::convert_native_arguments(argc, (const char**)argv);
+//     getargs(argc, argv);
+//     if (ap.aborted())
+//         return return_code;
 
-    OIIO::attribute("threads", nthreads);
+//     OIIO::attribute("threads", nthreads);
 
-    bool ok = true;
+//     bool ok = true;
 
-    if (inplace) {
-        for (auto&& s : filenames)
-            ok &= convert_file(s, s);
-    } else {
-        ok = convert_file(filenames[0], filenames[1]);
-    }
-    shutdown();
-    return ok ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+//     if (inplace) {
+//         for (auto&& s : filenames)
+//             ok &= convert_file(s, s);
+//     } else {
+//         ok = convert_file(filenames[0], filenames[1]);
+//     }
+//     shutdown();
+//     return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+// }

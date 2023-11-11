@@ -509,7 +509,8 @@ do_read_JPEG_file(struct jpeg_decompress_struct *cinfo, char *infilename,
        * Here the array is only one element long, but you could ask for
        * more than one scanline at a time if that's more convenient.
        */
-      (void)jpeg_read_scanlines(cinfo, buffer, 1);
+      // j16XXX hack until I clean up TurboJPEG.
+      (void)jpeg12_read_scanlines(cinfo, buffer, 1);
       fwrite(buffer[0], 1, row_stride, outfile);
     }
   }

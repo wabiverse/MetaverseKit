@@ -52,7 +52,7 @@
  */
 
 #ifndef BITS_IN_JSAMPLE
-#define BITS_IN_JSAMPLE  8      /* use 8 or 12 */
+#define BITS_IN_JSAMPLE  12      /* use 8 or 12 */
 #endif
 
 #undef C_ARITH_CODING_SUPPORTED

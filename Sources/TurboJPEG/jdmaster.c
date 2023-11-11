@@ -25,7 +25,6 @@
 #include "jpegapicomp.h"
 #include "jdmaster.h"
 
-
 /*
  * Determine whether merged upsample/color conversion should be used.
  * CRUCIAL: this must match the actual capabilities of jdmerge.c!
@@ -575,7 +574,8 @@ master_selection(j_decompress_ptr cinfo)
       else if (cinfo->data_precision == 12)
         j12init_1pass_quantizer(cinfo);
       else
-        jinit_1pass_quantizer(cinfo);
+        // j16XXX hack until I clean up TurboJPEG.
+        j12init_1pass_quantizer(cinfo);
       master->quantizer_1pass = cinfo->cquantize;
 #else
       ERREXIT(cinfo, JERR_NOT_COMPILED);
@@ -590,7 +590,8 @@ master_selection(j_decompress_ptr cinfo)
       else if (cinfo->data_precision == 12)
         j12init_2pass_quantizer(cinfo);
       else
-        jinit_2pass_quantizer(cinfo);
+        // j16XXX hack until I clean up TurboJPEG.
+        j12init_2pass_quantizer(cinfo);
       master->quantizer_2pass = cinfo->cquantize;
 #else
       ERREXIT(cinfo, JERR_NOT_COMPILED);
@@ -610,15 +611,17 @@ master_selection(j_decompress_ptr cinfo)
       else if (cinfo->data_precision == 12)
         j12init_merged_upsampler(cinfo); /* does color conversion too */
       else
-        jinit_merged_upsampler(cinfo); /* does color conversion too */
+        // j16XXX hack until I clean up TurboJPEG.
+        j12init_merged_upsampler(cinfo); /* does color conversion too */
 #else
       ERREXIT(cinfo, JERR_NOT_COMPILED);
 #endif
     } else {
       if (cinfo->data_precision == 16) {
 #ifdef D_LOSSLESS_SUPPORTED
-        j16init_color_deconverter(cinfo);
-        j16init_upsampler(cinfo);
+        // j16XXX hack until I clean up TurboJPEG.
+        j12init_color_deconverter(cinfo);
+        j12init_upsampler(cinfo);
 #else
         ERREXIT1(cinfo, JERR_BAD_PRECISION, cinfo->data_precision);
 #endif
@@ -626,20 +629,23 @@ master_selection(j_decompress_ptr cinfo)
         j12init_color_deconverter(cinfo);
         j12init_upsampler(cinfo);
       } else {
-        jinit_color_deconverter(cinfo);
-        jinit_upsampler(cinfo);
+        // j16XXX hack until I clean up TurboJPEG.
+        j12init_color_deconverter(cinfo);
+        j12init_upsampler(cinfo);
       }
     }
     if (cinfo->data_precision == 16)
 #ifdef D_LOSSLESS_SUPPORTED
-      j16init_d_post_controller(cinfo, cinfo->enable_2pass_quant);
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_d_post_controller(cinfo, cinfo->enable_2pass_quant);
 #else
       ERREXIT1(cinfo, JERR_BAD_PRECISION, cinfo->data_precision);
 #endif
     else if (cinfo->data_precision == 12)
       j12init_d_post_controller(cinfo, cinfo->enable_2pass_quant);
     else
-      jinit_d_post_controller(cinfo, cinfo->enable_2pass_quant);
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_d_post_controller(cinfo, cinfo->enable_2pass_quant);
   }
 
   if (cinfo->master->lossless) {
@@ -648,11 +654,13 @@ master_selection(j_decompress_ptr cinfo)
      * scaling
      */
     if (cinfo->data_precision == 16)
-      j16init_lossless_decompressor(cinfo);
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_lossless_decompressor(cinfo);
     else if (cinfo->data_precision == 12)
       j12init_lossless_decompressor(cinfo);
     else
-      jinit_lossless_decompressor(cinfo);
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_lossless_decompressor(cinfo);
     /* Entropy decoding: either Huffman or arithmetic coding. */
     if (cinfo->arith_code) {
       ERREXIT(cinfo, JERR_ARITH_NOTIMPL);
@@ -664,11 +672,13 @@ master_selection(j_decompress_ptr cinfo)
     use_c_buffer = cinfo->inputctl->has_multiple_scans ||
                    cinfo->buffered_image;
     if (cinfo->data_precision == 16)
-      j16init_d_diff_controller(cinfo, use_c_buffer);
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_d_diff_controller(cinfo, use_c_buffer);
     else if (cinfo->data_precision == 12)
       j12init_d_diff_controller(cinfo, use_c_buffer);
     else
-      jinit_d_diff_controller(cinfo, use_c_buffer);
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_d_diff_controller(cinfo, use_c_buffer);
 #else
     ERREXIT(cinfo, JERR_NOT_COMPILED);
 #endif
@@ -679,7 +689,8 @@ master_selection(j_decompress_ptr cinfo)
     if (cinfo->data_precision == 12)
       j12init_inverse_dct(cinfo);
     else
-      jinit_inverse_dct(cinfo);
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_inverse_dct(cinfo);
     /* Entropy decoding: either Huffman or arithmetic coding. */
     if (cinfo->arith_code) {
 #ifdef D_ARITH_CODING_SUPPORTED
@@ -704,13 +715,15 @@ master_selection(j_decompress_ptr cinfo)
     if (cinfo->data_precision == 12)
       j12init_d_coef_controller(cinfo, use_c_buffer);
     else
-      jinit_d_coef_controller(cinfo, use_c_buffer);
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_d_coef_controller(cinfo, use_c_buffer);
   }
 
   if (!cinfo->raw_data_out) {
     if (cinfo->data_precision == 16)
 #ifdef D_LOSSLESS_SUPPORTED
-      j16init_d_main_controller(cinfo,
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_d_main_controller(cinfo,
                                 FALSE /* never need full buffer here */);
 #else
       ERREXIT1(cinfo, JERR_BAD_PRECISION, cinfo->data_precision);
@@ -719,7 +732,8 @@ master_selection(j_decompress_ptr cinfo)
       j12init_d_main_controller(cinfo,
                                 FALSE /* never need full buffer here */);
     else
-      jinit_d_main_controller(cinfo, FALSE /* never need full buffer here */);
+      // j16XXX hack until I clean up TurboJPEG.
+      j12init_d_main_controller(cinfo, FALSE /* never need full buffer here */);
   }
 
   /* We can now tell the memory manager to allocate virtual arrays. */
