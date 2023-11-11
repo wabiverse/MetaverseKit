@@ -82,6 +82,36 @@ struct Arch
 }
 
 #if os(Windows)
+  let platformGLFWExcludes: [String] = [
+    "xkb_unicode.c",
+    "x11_init.c",
+    "x11_monitor.c",
+    "x11_window.c",
+    "posix_thread.c",
+    "wl_init.c",
+    "wl_window.c",
+    "wl_monitor.c",
+    "linux_joystick.c",
+    "nsgl_context.m",
+    "cocoa_init.m",
+  ]
+  let platformImGuiExcludes: [String] = [
+    // no wgpu (for now)
+    "backends/imgui_impl_wgpu.cpp",
+    // no allegro
+    "backends/imgui_impl_allegro5.cpp",
+    // no android
+    "backends/imgui_impl_android.cpp",
+    // no sdl
+    "backends/imgui_impl_sdl2.cpp",
+    "backends/imgui_impl_sdl3.cpp",
+    "backends/imgui_impl_sdlrenderer2.cpp",
+    "backends/imgui_impl_sdlrenderer3.cpp",
+    // no metal
+    "backends/imgui_impl_metal.mm",
+    // no apple os
+    "backends/imgui_impl_osx.mm",
+  ]
   let platformBloscExcludes: [String] = []
   let platformMetaPyExcludes: [String] = []
   let platformMiniZipExcludes: [String] = [
@@ -129,6 +159,51 @@ struct Arch
   ]
 #else /* os(Windows) */
   #if os(macOS)
+    let platformGLFWExcludes: [String] = [
+      "xkb_unicode.c",
+      "x11_init.c",
+      "x11_monitor.c",
+      "x11_window.c",
+      "win32_init.c",
+      "win32_joystick.c",
+      "win32_monitor.c",
+      "win32_thread.c",
+      "win32_time.c",
+      "win32_window.c",
+      "posix_time.c",
+      "wl_init.c",
+      "wl_window.c",
+      "wl_monitor.c",
+      "wgl_context.c",
+      "glx_context.c",
+      "linux_joystick.c",
+      "null_init.c",
+      "null_joystick.c",
+      "null_monitor.c",
+      "null_window.c",
+    ]
+    let platformImGuiExcludes: [String] = [
+      // no win32
+      "backends/imgui_impl_win32.cpp",
+      // no wgpu (for now)
+      "backends/imgui_impl_wgpu.cpp",
+      // no allegro
+      "backends/imgui_impl_allegro5.cpp",
+      // no android
+      "backends/imgui_impl_android.cpp",
+      // no directx (for now)
+      "backends/imgui_impl_dx9.cpp",
+      "backends/imgui_impl_dx10.cpp",
+      "backends/imgui_impl_dx11.cpp",
+      "backends/imgui_impl_dx12.cpp",
+      // no sdl
+      "backends/imgui_impl_sdl2.cpp",
+      "backends/imgui_impl_sdl3.cpp",
+      "backends/imgui_impl_sdlrenderer2.cpp",
+      "backends/imgui_impl_sdlrenderer3.cpp",
+      // no opengl2
+      "backends/imgui_impl_opengl2.cpp"
+    ]
     let platformOCIOExcludes: [String] = [
       "SystemMonitor_windows.cpp",
     ]
@@ -158,6 +233,36 @@ struct Arch
       "osd/CudaVertexBuffer.cpp",
     ]
   #elseif os(Linux)
+    let platformGLFWExcludes: [String] = [
+      "win32_init.c",
+      "win32_joystick.c",
+      "win32_monitor.c",
+      "win32_thread.c",
+      "win32_time.c",
+      "win32_window.c",
+      "wgl_context.c",
+      "nsgl_context.m",
+      "cocoa_init.m",
+    ]
+    let platformImGuiExcludes: [String] = [
+      // no win32
+      "backends/imgui_impl_win32.cpp",
+      // no wgpu (for now)
+      "backends/imgui_impl_wgpu.cpp",
+      // no allegro
+      "backends/imgui_impl_allegro5.cpp",
+      // no android (for now)
+      "backends/imgui_impl_android.cpp",
+      // no directx
+      "backends/imgui_impl_dx9.cpp",
+      "backends/imgui_impl_dx10.cpp",
+      "backends/imgui_impl_dx11.cpp",
+      "backends/imgui_impl_dx12.cpp",
+      // no metal
+      "backends/imgui_impl_metal.mm",
+      // no apple os
+      "backends/imgui_impl_osx.mm",
+    ]
     let platformOCIOExcludes: [String] = [
       "SystemMonitor_macos.cpp",
       "SystemMonitor_windows.cpp",
@@ -222,7 +327,7 @@ struct Arch
 let package = Package(
   name: "MetaverseKit",
   platforms: [
-    .macOS(.v11),
+    .macOS(.v12),
     .visionOS(.v1),
     .iOS(.v12),
     .tvOS(.v12),
@@ -234,12 +339,12 @@ let package = Package(
       targets: ["OneTBB"]
     ),
     .library(
-      name: "Boost",
-      targets: ["Boost"]
-    ),
-    .library(
       name: "Python",
       targets: ["Python"]
+    ),
+    .library(
+      name: "Apple",
+      targets: ["Apple"]
     ),
     .library(
       name: "MetaPy",
@@ -276,6 +381,22 @@ let package = Package(
     .library(
       name: "OpenMP",
       targets: ["OpenMP"]
+    ),
+    .library(
+      name: "GLFW",
+      targets: ["GLFW"]
+    ),
+    .library(
+      name: "ImGui",
+      targets: ["ImGui"]
+    ),
+    .library(
+      name: "MXResources",
+      targets: ["MXResources"]
+    ),
+    .library(
+      name: "MaterialX",
+      targets: ["MaterialX"]
     ),
     .library(
       name: "WebP",
@@ -364,6 +485,10 @@ let package = Package(
     .library(
       name: "SPIRVCross",
       targets: ["SPIRVCross"]
+    ),
+    .executable(
+      name: "MXGraphEditor",
+      targets: ["MXGraphEditor"]
     ),
   ],
   targets: [
@@ -651,7 +776,7 @@ let package = Package(
       exclude: platformTurboJPEGExcludes,
       publicHeadersPath: "include/turbo",
       cSettings: [
-        .headerSearchPath("."),
+        .headerSearchPath(".")
       ],
       swiftSettings: [
         .interoperabilityMode(.C),
@@ -668,6 +793,9 @@ let package = Package(
       ],
       exclude: platformTIFFExcludes,
       publicHeadersPath: "include",
+      cxxSettings: [
+        .define("HAVE_JPEGTURBO_DUAL_MODE_8_12", to: "1"),
+      ],
       swiftSettings: [
         .interoperabilityMode(.C),
       ]
@@ -707,6 +835,112 @@ let package = Package(
     ),
 
     .target(
+      name: "Apple",
+      dependencies: [],
+      publicHeadersPath: "include",
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "GLFW",
+      dependencies: [
+        .target(name: "Apple"),
+        .target(name: "MoltenVK"),
+      ],
+      exclude: platformGLFWExcludes,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("."),
+        .define("_GLFW_COCOA", to: "1", .when(platforms: Arch.OS.apple.platform)),
+        .define("_GLFW_X11", to: "1", .when(platforms: Arch.OS.linux.platform)),
+        .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
+        .define("GL_SILENCE_DEPRECATION", to: "1"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "ImGui",
+      dependencies: [
+        .target(name: "GLFW"),
+      ],
+      exclude: platformImGuiExcludes,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("."),
+        .headerSearchPath("backends"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ],
+      linkerSettings: [
+        .linkedFramework("Cocoa", .when(platforms: Arch.OS.apple.platform)),
+        .linkedFramework("GLUT", .when(platforms: Arch.OS.apple.platform)),
+        .linkedFramework("GameController", .when(platforms: Arch.OS.apple.platform))
+      ]
+    ),
+
+    .target(
+      name: "MXResources",
+      dependencies: [],
+      resources: [
+        .copy("libraries"),
+        .process("Resources"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "MaterialX",
+      dependencies: [
+        .target(name: "Apple"),
+        .target(name: "ImGui"),
+        .target(name: "OpenImageIO"),
+        .target(name: "Python"),
+        .target(name: "PyBind11"),
+        .target(name: "MXResources"),
+      ],
+      exclude: [
+        "source/JsMaterialX",
+        "source/MaterialXView",
+        "source/MaterialXTest",
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("include/MaterialXGenGlsl"),
+        .headerSearchPath("include/MaterialXGenMdl"),
+        .headerSearchPath("include/MaterialXGenMsl"),
+        .headerSearchPath("include/MaterialXGenOsl"),
+        .headerSearchPath("include/MaterialXGenShader"),
+        .headerSearchPath("include/MaterialXRenderGlsl"),
+        .headerSearchPath("include/MaterialXRenderHw"),
+        .headerSearchPath("include/MaterialXRenderMsl"),
+        .headerSearchPath("include/MaterialXRenderOsl"),
+        .headerSearchPath("include/MaterialXRenderGlsl/External/Glad"),
+        .headerSearchPath("include/MaterialXFormat/External/PugiXML"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .executableTarget(
+      name: "MXGraphEditor",
+      dependencies: [
+        .target(name: "MaterialX")
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
       name: "GPUShaders",
       resources: [
         .process("Metal"),
@@ -723,7 +957,7 @@ let package = Package(
       dependencies: [
         .target(name: "OneTBB"),
         .target(name: "OpenMP"),
-        .target(name: "GPUShaders")
+        .target(name: "GPUShaders"),
       ],
       exclude: platformOsdExcludes,
       publicHeadersPath: "include",
@@ -731,7 +965,7 @@ let package = Package(
         .headerSearchPath("glLoader"),
         /* autogenerated shader headers. */
         .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../../.build/\(Arch.hostTriplet)/debug/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .debug)),
-        .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../../.build/\(Arch.hostTriplet)/release/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .release))
+        .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../../.build/\(Arch.hostTriplet)/release/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .release)),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -810,11 +1044,13 @@ let package = Package(
     .target(
       name: "MetaPy",
       dependencies: [
-        .target(name: "Python"),
         .target(name: "Boost"),
+        .target(name: "Python"),
         .target(name: "OpenEXR"),
+        .target(name: "OpenVDB"),
         .target(name: "Alembic"),
         .target(name: "OpenImageIO"),
+        .target(name: "MaterialX"),
       ],
       exclude: platformMetaPyExcludes,
       publicHeadersPath: "include/python",
@@ -822,6 +1058,7 @@ let package = Package(
         .headerSearchPath("include/python/PyImath"),
         .headerSearchPath("include/python/PyAlembic"),
         .headerSearchPath("include/python/PyOIIO"),
+        .headerSearchPath("include/python/PyOpenVDB"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -903,19 +1140,35 @@ let package = Package(
     .target(
       name: "OpenVDB",
       dependencies: [
-        .target(name: "OneTBB"),
         .target(name: "Boost"),
+        .target(name: "OneTBB"),
         .target(name: "Blosc"),
         .target(name: "Python"),
         .target(name: "PyBind11"),
         .target(name: "OpenEXR"),
-      ],
-      exclude: [
-        "include/openvdb/unittest",
-        "include/openvdb/unittest/notmain.cc",
+        .target(name: "ZLibDataCompression"),
       ],
       publicHeadersPath: "include",
-      cxxSettings: [],
+      cxxSettings: [
+        .headerSearchPath("include/openvdb/io"),
+        .headerSearchPath("include/openvdb/points"),
+        .headerSearchPath("include/openvdb/thread"),
+        .headerSearchPath("include/openvdb/tools"),
+        .headerSearchPath("include/openvdb/tree"),
+        .headerSearchPath("include/openvdb/util"),
+        /* -------------------------------------------
+         NOTICE: the lack of the math dir search path
+         otherwise, openvdbs math.h header will clash
+         with the system stdlib math.h header. Source
+         files within openvdb (***.cc) which included
+         math have been prefixed to math/(***.h), and
+         original openvdb headers remain unchanged.
+        ------------------------------------------- */
+        .headerSearchPath("include/openvdb"),
+        .define("OPENVDB_USE_DELAYED_LOADING", to: "1"),
+        .define("OPENVDB_USE_BLOSC", to: "1"),
+        .define("OPENVDB_USE_ZLIB", to: "1"),
+      ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
@@ -923,8 +1176,8 @@ let package = Package(
 
     .binaryTarget(
       name: "Boost",
-      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.2/boost.xcframework.zip",
-      checksum: "a4846beef0b8f335a0fd0de5711aec07674e9c804c066e0090d864a31b99e9de"
+      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.3/boost.xcframework.zip",
+      checksum: "05025cdac9f49ca8a30a2c9c56f30b85df98e338c12a0dc0ed8e7c8700f2a728"
     ),
 
     .binaryTarget(
