@@ -6,10 +6,10 @@
 #ifndef OPENVDB_MATH_OPERATORS_HAS_BEEN_INCLUDED
 #define OPENVDB_MATH_OPERATORS_HAS_BEEN_INCLUDED
 
-#include "math/FiniteDifference.h"
-#include "math/Stencils.h"
-#include "math/Maps.h"
-#include "math/Transform.h"
+#include "openvdb/math/FiniteDifference.h"
+#include "openvdb/math/Stencils.h"
+#include "openvdb/math/Maps.h"
+#include "openvdb/math/Transform.h"
 #include <cmath> // for std::sqrt()
 
 
