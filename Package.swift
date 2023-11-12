@@ -400,6 +400,10 @@ let package = Package(
       targets: ["OneTBB"]
     ),
     .library(
+      name: "Boost",
+      targets: ["Boost"]
+    ),
+    .library(
       name: "MetaTBB",
       targets: ["MetaTBB"]
     ),
