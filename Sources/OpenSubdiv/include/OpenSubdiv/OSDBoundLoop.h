@@ -29,7 +29,7 @@
 #include <assert.h>
 #include <cmath>
 
-#include "../OpenSubdiv/OSDBoundsubdivision.h"
+#include "../OpenSubdiv/OSDBoundSubdivision.h"
 
 #include "OpenSubdiv/OSDVersion.h"
 

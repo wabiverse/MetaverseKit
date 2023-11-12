@@ -26,7 +26,7 @@
 #define OPENSUBDIV3_HBRBILINEAR_H
 
 /*#define HBR_DEBUG */
-#include "../OpenSubdiv/OSDBoundsubdivision.h"
+#include "../OpenSubdiv/OSDBoundSubdivision.h"
 
 #include "OpenSubdiv/OSDVersion.h"
 
