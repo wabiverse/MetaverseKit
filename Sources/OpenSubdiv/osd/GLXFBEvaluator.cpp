@@ -24,9 +24,15 @@
 
 #include "glLoader.h"
 
+#if __has_include("GPUShaders/GPUShaders-Swift.h")
+  #include "GPUShaders/GPUShaders-Swift.h"
+#else
+  #define GPU_SHADERS_INC <GPU_SHADERS_SWIFT_OSD_H>
+  #include GPU_SHADERS_INC
+#endif
+
 #include "OpenSubdiv/OSDSurfaceGLXFBEvaluator.h"
 #include "OpenSubdiv/OSDSurfaceGLSLPatchShaderSource.h"
-#include "OpenSubdiv/OSDSurfaceGpuShaders.h"
 
 #include <cstdio>
 #include <sstream>

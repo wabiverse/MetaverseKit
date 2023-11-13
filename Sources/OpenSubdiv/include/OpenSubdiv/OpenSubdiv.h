@@ -118,7 +118,6 @@
 #include <OpenSubdiv/OSDSurfaceOpenCLGLVertexBuffer.h>
 #include <OpenSubdiv/OSDSurfaceOpenCLPatchTable.h>
 #include <OpenSubdiv/OSDSurfaceOpenCLVertexBuffer.h>
-#include <OpenSubdiv/OSDSurfaceGpuShaders.h>
 #ifdef __CUDA__
 #include <OpenSubdiv/OSDSurfaceCudaGLVertexBuffer.h>
 #include <OpenSubdiv/OSDSurfaceCudaPatchTable.h>

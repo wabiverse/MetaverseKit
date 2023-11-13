@@ -22,15 +22,19 @@
 //   language governing permissions and limitations under the Apache License.
 //
 
+#if __has_include("GPUShaders/GPUShaders-Swift.h")
+  #import "GPUShaders/GPUShaders-Swift.h"
+#else
+  #define GPU_SHADERS_INC <GPU_SHADERS_SWIFT_OSD_H>
+  #import GPU_SHADERS_INC
+#endif
+
 #include "OpenSubdiv/OSDAdaptiveError.h"
 #include "OpenSubdiv/OSDSurfaceMTLPatchShaderSource.h"
-#include "OpenSubdiv/OSDSurfaceGpuShaders.h"
 
 #include <TargetConditionals.h>
 #include <sstream>
 #include <string>
-
-#include GPU_SHADERS_INC
 
 namespace OpenSubdiv {
 namespace OPENSUBDIV_VERSION {
