@@ -574,10 +574,7 @@ let package = Package(
       dependencies: [],
       exclude: [],
       publicHeadersPath: "include",
-      cxxSettings: [],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
+      cxxSettings: []
     ),
 
     .target(
@@ -636,10 +633,7 @@ let package = Package(
         "include/draco/tools",
       ],
       publicHeadersPath: "include",
-      cxxSettings: [],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
+      cxxSettings: []
     ),
 
     .target(
@@ -658,9 +652,6 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .define("ENABLE_HLSL", to: "1"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -673,9 +664,6 @@ let package = Package(
       publicHeadersPath: ".",
       cxxSettings: [
         .define("_XOPEN_SOURCE"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -690,9 +678,6 @@ let package = Package(
       cxxSettings: [
         .define("_XOPEN_SOURCE"),
         .define("__TBBMALLOC_BUILD", to: "1"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -702,9 +687,6 @@ let package = Package(
       cxxSettings: [
         .define("_XOPEN_SOURCE"),
         .define("TBB_USE_PROFILING_TOOLS", to: "2"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -753,9 +735,6 @@ let package = Package(
       cxxSettings: [
         .headerSearchPath("include/shaderc"),
         .define("ENABLE_HLSL", to: "1"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -764,20 +743,14 @@ let package = Package(
       dependencies: [],
       exclude: [],
       publicHeadersPath: "include/spirv_cross",
-      cxxSettings: [],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
+      cxxSettings: []
     ),
 
     .target(
       name: "ZStandard",
       dependencies: [],
       exclude: [],
-      publicHeadersPath: ".",
-      swiftSettings: [
-        .interoperabilityMode(.C),
-      ]
+      publicHeadersPath: "."
     ),
 
     .target(
@@ -799,9 +772,6 @@ let package = Package(
         .define("HAVE_STDBOOL_H", to: "1"),
         .define("MYTHREAD_POSIX", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
         .define("MYTHREAD_VISTA", to: "1", .when(platforms: Arch.OS.windows.platform)),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.C),
       ]
     ),
 
@@ -809,10 +779,7 @@ let package = Package(
       name: "Yaml",
       dependencies: [],
       exclude: [],
-      publicHeadersPath: "include",
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
+      publicHeadersPath: "include"
     ),
 
     .target(
@@ -822,9 +789,6 @@ let package = Package(
       publicHeadersPath: "include",
       cSettings: [
         .define("BORINGSSL_NO_STATIC_INITIALIZER", to: "1"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.C),
       ]
     ),
 
@@ -841,9 +805,6 @@ let package = Package(
       cSettings: [
         .define("HAVE_ZLIB", to: "1"),
         .define("ZLIB_COMPAT", to: "1"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.C),
       ]
     ),
 
@@ -858,9 +819,6 @@ let package = Package(
         .define("WITH_GZFILEOP", to: "1"),
         .define("HAVE_UNISTD_H", to: "1"),
         .define("Z_HAVE_STDARG_H", to: "1"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.C),
       ]
     ),
 
@@ -871,9 +829,6 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -889,10 +844,7 @@ let package = Package(
       publicHeadersPath: "include",
       cSettings: [
         .headerSearchPath("."),
-      ] + chipsetDefinesC,
-      swiftSettings: [
-        .interoperabilityMode(.C),
-      ]
+      ] + chipsetDefinesC
     ),
 
     .target(
@@ -908,9 +860,6 @@ let package = Package(
         .define("D_LOSSLESS_SUPPORTED", to: "1"),
         .define("PPM_SUPPORTED", to: "1"),
         .define("BITS_IN_JSAMPLE", to: "12")
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.C),
       ]
     ),
 
@@ -928,9 +877,6 @@ let package = Package(
         .define("FROM_TIF_JPEG_12", to: "1"),
         .define("HAVE_JPEGTURBO_DUAL_MODE_8_12", to: "1"),
         .define("BITS_IN_JSAMPLE", to: "12")
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.C),
       ]
     ),
 
@@ -941,9 +887,6 @@ let package = Package(
       publicHeadersPath: "include",
       cSettings: [
         .headerSearchPath("."),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.C),
       ]
     ),
 
@@ -961,19 +904,13 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("runtime"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
     .target(
       name: "Apple",
       dependencies: [],
-      publicHeadersPath: "include",
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
+      publicHeadersPath: "include"
     ),
 
     .target(
@@ -990,9 +927,6 @@ let package = Package(
         .define("_GLFW_X11", to: "1", .when(platforms: Arch.OS.linux.platform)),
         .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
         .define("GL_SILENCE_DEPRECATION", to: "1"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -1006,9 +940,6 @@ let package = Package(
       cxxSettings: [
         .headerSearchPath("."),
         .headerSearchPath("backends"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ],
       linkerSettings: [
         .linkedFramework("Cocoa", .when(platforms: Arch.OS.apple.platform)),
@@ -1057,9 +988,6 @@ let package = Package(
         .headerSearchPath("include/MaterialXRenderOsl"),
         .headerSearchPath("include/MaterialXRenderGlsl/External/Glad"),
         .headerSearchPath("include/MaterialXFormat/External/PugiXML"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -1067,9 +995,6 @@ let package = Package(
       name: "MXGraphEditor",
       dependencies: [
         .target(name: "MaterialX")
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -1099,9 +1024,6 @@ let package = Package(
         /* autogenerated shader headers. */
         .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../.build/\(Arch.hostTriplet)/debug/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .debug)),
         .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../.build/\(Arch.hostTriplet)/release/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .release)),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -1116,9 +1038,6 @@ let package = Package(
         .headerSearchPath("."),
         .headerSearchPath("OpenEXRCore"),
         .headerSearchPath("include/OpenEXR"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -1150,9 +1069,6 @@ let package = Package(
         .headerSearchPath("."),
         .headerSearchPath("include/OpenImageIO/detail"),
         .headerSearchPath("libOpenImageIO"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -1168,9 +1084,6 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -1192,19 +1105,13 @@ let package = Package(
         .headerSearchPath("include/python/PyAlembic"),
         .headerSearchPath("include/python/PyOIIO"),
         .headerSearchPath("include/python/PyOpenVDB"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
     .target(
       name: "Ptex",
       publicHeadersPath: "include",
-      cxxSettings: [],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
+      cxxSettings: []
     ),
 
     .target(
@@ -1214,9 +1121,6 @@ let package = Package(
         .define("H5_HAVE_C99_FUNC", to: "1"),
         .define("H5_USE_18_API", to: "1"),
         .define("H5_BUILT_AS_DYNAMIC_LIB", to: "1"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.C),
       ]
     ),
 
@@ -1231,19 +1135,13 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("include/Alembic/AbcMaterial"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
     .target(
       name: "PyBind11",
       publicHeadersPath: "include",
-      cxxSettings: [],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
+      cxxSettings: []
     ),
 
     .target(
@@ -1251,9 +1149,6 @@ let package = Package(
       publicHeadersPath: "include",
       cSettings: [
         .headerSearchPath("."),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.C),
       ]
     ),
 
@@ -1264,10 +1159,7 @@ let package = Package(
         .target(name: "ZStandard"),
       ],
       exclude: platformBloscExcludes,
-      publicHeadersPath: "include/blosc",
-      swiftSettings: [
-        .interoperabilityMode(.C),
-      ]
+      publicHeadersPath: "include/blosc"
     ),
 
     .target(
@@ -1301,9 +1193,6 @@ let package = Package(
         .define("OPENVDB_USE_DELAYED_LOADING", to: "1"),
         .define("OPENVDB_USE_BLOSC", to: "1"),
         .define("OPENVDB_USE_ZLIB", to: "1"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
       ]
     ),
 
