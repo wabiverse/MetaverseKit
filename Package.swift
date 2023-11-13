@@ -193,6 +193,9 @@ else /* a unicorn! 🦄 */
     /* disabled for now. */
     "osd/OpenCLD3D11VertexBuffer.cpp",
     "osd/OpenCLEvaluator.cpp",
+    "osd/OpenCLPatchTable.cpp",
+    "osd/OpenCLVertexBuffer.cpp",
+    "osd/OpenCLGLVertexBuffer.cpp",
     /* disabled DX3D for now. */
     /* I have lots of TODOs on windows... */
     "osd/D3D11ComputeEvaluator.cpp",
@@ -276,6 +279,9 @@ else /* a unicorn! 🦄 */
       /* disabled for now */
       "osd/OpenCLD3D11VertexBuffer.cpp",
       "osd/OpenCLEvaluator.cpp",
+      "osd/OpenCLPatchTable.cpp",
+      "osd/OpenCLVertexBuffer.cpp",
+      "osd/OpenCLGLVertexBuffer.cpp",
       /* peek into apple's late DX3D work
         on macOS, we may want to tap into this. */
       "osd/D3D11ComputeEvaluator.cpp",
@@ -337,6 +343,9 @@ else /* a unicorn! 🦄 */
       /* disabled for now. */
       "osd/OpenCLD3D11VertexBuffer.cpp",
       "osd/OpenCLEvaluator.cpp",
+      "osd/OpenCLPatchTable.cpp",
+      "osd/OpenCLVertexBuffer.cpp",
+      "osd/OpenCLGLVertexBuffer.cpp",
       /* no DirectX3D for linux. */
       "osd/D3D11ComputeEvaluator.cpp",
       "osd/D3D11LegacyGregoryPatchTable.cpp",
