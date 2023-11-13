@@ -24,12 +24,14 @@
 
 #include "glLoader.h"
 
-#if __has_include("GPUShaders/GPUShaders-Swift.h")
+#if 0
+# if __has_include("GPUShaders/GPUShaders-Swift.h")
   #include "GPUShaders/GPUShaders-Swift.h"
-#else
+# else
   #define GPU_SHADERS_INC <GPU_SHADERS_SWIFT_OSD_H>
   #include GPU_SHADERS_INC
-#endif
+# endif
+#endif // 0
 
 #include "OpenSubdiv/OSDSurfaceGLXFBEvaluator.h"
 #include "OpenSubdiv/OSDSurfaceGLSLPatchShaderSource.h"
@@ -42,8 +44,6 @@
 #include "OpenSubdiv/OSDAdaptiveError.h"
 #include "OpenSubdiv/OSDAdaptiveStencilTable.h"
 
-#include GPU_SHADERS_INC
-
 #if _MSC_VER
 #define snprintf _snprintf
 #endif
@@ -53,6 +53,7 @@ namespace OPENSUBDIV_VERSION {
 
 namespace Osd {
 
+#if 0
 /* and here, we use our Swift implementation right out of the box, in cxx. magic. */
 static GPUShaders::GPUShaders glXShaders = GPUShaders::GPUShaders::init();
 static swift::String glXCode = glXShaders.setupMetal();
@@ -65,6 +66,11 @@ static const char *getShaderCode() {
   ss.str().copy(source, bufSize);
   return &source[bufSize];
 }
+#else // 0
+static const char *getShaderCode() {
+  return "";
+}
+#endif
 
 static const char *shaderSource = getShaderCode();
 

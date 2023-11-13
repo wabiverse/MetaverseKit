@@ -22,12 +22,14 @@
 //   language governing permissions and limitations under the Apache License.
 //
 
-#if __has_include("GPUShaders/GPUShaders-Swift.h")
+#if 0
+# if __has_include("GPUShaders/GPUShaders-Swift.h")
   #import "GPUShaders/GPUShaders-Swift.h"
-#else
+# else
   #define GPU_SHADERS_INC <GPU_SHADERS_SWIFT_OSD_H>
   #import GPU_SHADERS_INC
-#endif
+# endif
+#endif // 0
 
 #include "OpenSubdiv/OSDAdaptiveError.h"
 #include "OpenSubdiv/OSDSurfaceMTLPatchShaderSource.h"
@@ -41,6 +43,7 @@ namespace OPENSUBDIV_VERSION {
 
 namespace Osd {
 
+#if 0
 /* and here, we use our Swift implementation right out of the box, in cxx. magic. */
 static GPUShaders::GPUShaders mtlShaders = GPUShaders::GPUShaders::init();
 static swift::String shaderCode = mtlShaders.setupMetal();
@@ -55,6 +58,18 @@ static std::string boxSplineTriangleShaderSource([shaderCode UTF8String]);
 static std::string gregoryShaderSource([shaderCode UTF8String]);
 static std::string gregoryBasisShaderSource([shaderCode UTF8String]);
 static std::string gregoryTriangleShaderSource([shaderCode UTF8String]);
+#else // 0
+static std::string commonShaderSource("");
+static std::string commonTessShaderSource("");
+static std::string patchLegacyShaderSource("");
+static std::string patchBasisTypesShaderSource("");
+static std::string patchBasisShaderSource("");
+static std::string bsplineShaderSource("");
+static std::string boxSplineTriangleShaderSource("");
+static std::string gregoryShaderSource("");
+static std::string gregoryBasisShaderSource("");
+static std::string gregoryTriangleShaderSource("");
+#endif
 
 static std::string GetPatchTypeDefine(
     Far::PatchDescriptor::Type type,

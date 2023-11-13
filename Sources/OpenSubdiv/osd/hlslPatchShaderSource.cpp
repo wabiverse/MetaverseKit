@@ -22,12 +22,14 @@
 //   language governing permissions and limitations under the Apache License.
 //
 
-#if __has_include("GPUShaders/GPUShaders-Swift.h")
+#if 0
+# if __has_include("GPUShaders/GPUShaders-Swift.h")
   #include "GPUShaders/GPUShaders-Swift.h"
-#else
+# else
   #define GPU_SHADERS_INC <GPU_SHADERS_SWIFT_OSD_H>
   #include GPU_SHADERS_INC
-#endif
+# endif
+#endif // 0
 
 #include "OpenSubdiv/OSDAdaptiveError.h"
 #include "OpenSubdiv/OSDSurfaceHLSLPatchShaderSource.h"
@@ -40,6 +42,7 @@ namespace OPENSUBDIV_VERSION {
 
 namespace Osd {
 
+#if 0
 /* and here, we use our Swift implementation right out of the box, in cxx. magic. */
 static GPUShaders::GPUShaders hlslShaders = GPUShaders::GPUShaders::init();
 static swift::String hlslCode = hlslShaders.setupMetal();
@@ -52,7 +55,6 @@ static const char *getShaderCode() {
   ss.str().copy(source, bufSize);
   return &source[bufSize];
 }
-
 static const char *commonShaderSource = getShaderCode();
 static const char *commonTessShaderSource = getShaderCode();
 static const char *patchLegacyShaderSource = getShaderCode();
@@ -63,6 +65,18 @@ static const char *bsplineShaderSource = getShaderCode();
 static const char *gregoryShaderSource = getShaderCode();
 static const char *gregoryBasisShaderSource = getShaderCode();
 static const char *gregoryTriangleShaderSource = getShaderCode();
+#else // 0
+static const char *commonShaderSource = "";
+static const char *commonTessShaderSource = "";
+static const char *patchLegacyShaderSource = "";
+static const char *patchBasisTypesShaderSource = "";
+static const char *patchBasisShaderSource = "";
+static const char *boxSplineTriangleShaderSource = "";
+static const char *bsplineShaderSource = "";
+static const char *gregoryShaderSource = "";
+static const char *gregoryBasisShaderSource = "";
+static const char *gregoryTriangleShaderSource = "";
+#endif // 0
 
 /*static*/
 std::string HLSLPatchShaderSource::GetPatchDrawingShaderSource() {
