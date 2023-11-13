@@ -58,6 +58,6 @@ public class MXResourceManager
 {
   public static let shared = MXResourceManager()
 
-  public init()
+  private init()
   {}
 }

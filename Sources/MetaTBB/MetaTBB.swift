@@ -30,6 +30,6 @@ public class MetaTBB
 {
   public static let shared = MetaTBB()
 
-  public init()
+  private init()
   {}
 }
