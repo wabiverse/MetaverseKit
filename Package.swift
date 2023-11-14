@@ -814,6 +814,9 @@ let package = Package(
       cSettings: [
         .define("HAVE_ZLIB", to: "1"),
         .define("ZLIB_COMPAT", to: "1"),
+      ],
+      linkerSettings: [
+        .linkedLibrary("bz2", .when(platforms: Arch.OS.apple.platform)),
       ]
     ),
 
@@ -936,6 +939,9 @@ let package = Package(
         .define("_GLFW_X11", to: "1", .when(platforms: Arch.OS.linux.platform)),
         .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
         .define("GL_SILENCE_DEPRECATION", to: "1"),
+      ],
+      linkerSettings: [
+        .linkedLibrary("vulkan", .when(platforms: Arch.OS.apple.platform)),
       ]
     ),
 
