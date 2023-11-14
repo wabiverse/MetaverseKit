@@ -1152,8 +1152,8 @@ let package = Package(
 
     .binaryTarget(
       name: "Boost",
-      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.3/boost.xcframework.zip",
-      checksum: "05025cdac9f49ca8a30a2c9c56f30b85df98e338c12a0dc0ed8e7c8700f2a728"
+      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
+      checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
     ),
 
     .binaryTarget(
