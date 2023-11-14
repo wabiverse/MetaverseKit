@@ -1135,7 +1135,7 @@ let package = Package(
       cSettings: [
         .define("H5_HAVE_C99_FUNC", to: "1"),
         .define("H5_USE_18_API", to: "1"),
-        .define("H5_BUILT_AS_DYNAMIC_LIB", to: "1"),
+        .define("H5_BUILT_AS_DYNAMIC_LIB", to: "0"),
       ]
     ),
 
@@ -1228,6 +1228,56 @@ let package = Package(
       url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/MoltenVK.xcframework.zip",
       checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
     ),
+
+    .testTarget(
+      name: "MetaverseKitTests",
+      dependencies: [
+        /* link everything, a solid test. */
+        "Alembic",
+        "Apple",
+        "Blosc",
+        "DEFLATE",
+        "Draco",
+        "Eigen",
+        "GLFW",
+        "GPUShaders",
+        "Glslang",
+        "HDF5",
+        "ImGui",
+        "LZMA2",
+        "LibPNG",
+        "MXGraphEditor",
+        "MXResources",
+        "MaterialX",
+        "MetaPy",
+        "MetaTBB",
+        "MiniZip",
+        "OneTBB",
+        "OpenColorIO",
+        "OpenEXR",
+        "OpenImageIO",
+        "OpenMP",
+        "OpenSSL",
+        "OpenSubdiv",
+        "OpenVDB",
+        "Ptex",
+        "PyBind11",
+        "Raw",
+        "SPIRVCross",
+        "Shaderc",
+        "TBBMalloc",
+        "TBBMallocProxy",
+        "TIFF",
+        "TurboJPEG",
+        "WebP",
+        "Yaml",
+        "ZLibDataCompression",
+        "ZStandard",
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    )
   ],
   cLanguageStandard: .gnu17,
   cxxLanguageStandard: .cxx17
