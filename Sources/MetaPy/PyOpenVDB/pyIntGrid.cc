@@ -4,7 +4,7 @@
 /// @file pyIntGrid.cc
 /// @brief pybind11 wrappers for scalar, integer-valued openvdb::Grid types
 
-#include "PyGrid.h"
+#include <openvdb/python/PyGrid.h>
 
 void
 exportIntGrid(py::module_ m)

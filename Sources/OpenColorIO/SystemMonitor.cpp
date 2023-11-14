@@ -27,11 +27,11 @@ void SystemMonitorsImpl::getAllMonitors()
 
 #elif __APPLE__
 
-#include "SystemMonitor_macos.cpp"
+/* do nothing, we compiled the source from the tree. */
 
 #elif _WIN32
 
-#include "SystemMonitor_windows.cpp"
+/* do nothing, we compiled the source from the tree. */
 
 #else // i.e. Linux
 

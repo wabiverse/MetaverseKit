@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
+#if defined(__APPLE__)
+
 #include <PyMaterialX/PyMaterialX.h>
 
 #include <MaterialXRenderMsl/TextureBaker.h>
@@ -45,3 +47,5 @@ void bindPyTextureBaker(py::module& mod)
         .def("bakeAllMaterials", &mx::TextureBakerMsl::bakeAllMaterials)
         .def("writeDocumentPerMaterial", &mx::TextureBakerMsl::writeDocumentPerMaterial);
 }
+
+#endif /* defined(__APPLE__) */

@@ -10,9 +10,9 @@
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 #include <openvdb/openvdb.h>
-#include "PyGrid.h"
-#include "PyUtil.h"
-#include "PyTypeCasters.h"
+#include <openvdb/python/PyGrid.h>
+#include <openvdb/python/PyUtil.h>
+#include <openvdb/python/PyTypeCasters.h>
 
 #ifdef PY_OPENVDB_USE_AX
 #include <openvdb_ax/ax.h>

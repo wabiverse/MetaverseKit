@@ -522,144 +522,144 @@ int32_t minizip_erase(const char *src_path, const char *target_path, int32_t arg
 
 /***************************************************************************/
 
-#if !defined(MZ_ZIP_NO_MAIN)
-int main(int argc, const char *argv[]) {
-    minizip_opt options;
-    int32_t path_arg = 0;
-    int32_t err = 0;
-    int32_t i = 0;
-    uint8_t do_list = 0;
-    uint8_t do_extract = 0;
-    uint8_t do_erase = 0;
-    const char *path = NULL;
-    const char *password = NULL;
-    const char *destination = NULL;
-    const char *filename_to_extract = NULL;
+// #if !defined(MZ_ZIP_NO_MAIN)
+// int main(int argc, const char *argv[]) {
+//     minizip_opt options;
+//     int32_t path_arg = 0;
+//     int32_t err = 0;
+//     int32_t i = 0;
+//     uint8_t do_list = 0;
+//     uint8_t do_extract = 0;
+//     uint8_t do_erase = 0;
+//     const char *path = NULL;
+//     const char *password = NULL;
+//     const char *destination = NULL;
+//     const char *filename_to_extract = NULL;
 
-    minizip_banner();
-    if (argc == 1) {
-        minizip_help();
-        return 0;
-    }
+//     minizip_banner();
+//     if (argc == 1) {
+//         minizip_help();
+//         return 0;
+//     }
 
-    memset(&options, 0, sizeof(options));
+//     memset(&options, 0, sizeof(options));
 
-    options.compress_method = MZ_COMPRESS_METHOD_DEFLATE;
-    options.compress_level = MZ_COMPRESS_LEVEL_DEFAULT;
+//     options.compress_method = MZ_COMPRESS_METHOD_DEFLATE;
+//     options.compress_level = MZ_COMPRESS_LEVEL_DEFAULT;
 
-    /* Parse command line options */
-    for (i = 1; i < argc; i += 1) {
-        printf("%s ", argv[i]);
-        if (argv[i][0] == '-') {
-            char c = argv[i][1];
-            if ((c == 'l') || (c == 'L'))
-                do_list = 1;
-            else if ((c == 'x') || (c == 'X'))
-                do_extract = 1;
-            else if ((c == 'e') || (c == 'E'))
-                do_erase = 1;
-            else if ((c == 'a') || (c == 'A'))
-                options.append = 1;
-            else if ((c == 'o') || (c == 'O'))
-                options.overwrite = 1;
-            else if ((c == 'f') || (c == 'F'))
-                options.follow_links = 1;
-            else if ((c == 'y') || (c == 'Y'))
-                options.store_links = 1;
-            else if ((c == 'i') || (c == 'I'))
-                options.include_path = 1;
-            else if ((c == 'z') || (c == 'Z'))
-                options.zip_cd = 1;
-            else if ((c == 'v') || (c == 'V'))
-                options.verbose = 1;
-            else if ((c >= '0') && (c <= '9')) {
-                options.compress_level = (c - '0');
-                if (options.compress_level == 0)
-                    options.compress_method = MZ_COMPRESS_METHOD_STORE;
-            } else if ((c == 'b') || (c == 'B'))
-#ifdef HAVE_BZIP2
-                options.compress_method = MZ_COMPRESS_METHOD_BZIP2;
-#else
-                err = MZ_SUPPORT_ERROR;
-#endif
-            else if ((c == 'm') || (c == 'M'))
-#ifdef HAVE_LZMA
-                options.compress_method = MZ_COMPRESS_METHOD_LZMA;
-#else
-                err = MZ_SUPPORT_ERROR;
-#endif
-            else if ((c == 'n') || (c == 'N'))
-#if defined(HAVE_LZMA) || defined(HAVE_LIBCOMP)
-                options.compress_method = MZ_COMPRESS_METHOD_XZ;
-#else
-                err = MZ_SUPPORT_ERROR;
-#endif
-            else if ((c == 't') || (c == 'T'))
-#ifdef HAVE_ZSTD
-                options.compress_method = MZ_COMPRESS_METHOD_ZSTD;
-#else
-                err = MZ_SUPPORT_ERROR;
-#endif
-            else if ((c == 's') || (c == 'S'))
-#ifdef HAVE_WZAES
-                options.aes = 1;
-#else
-                err = MZ_SUPPORT_ERROR;
-#endif
-            else if (((c == 'c') || (c == 'C')) && (i + 1 < argc)) {
-                options.encoding = (int32_t)atoi(argv[i + 1]);
-                i += 1;
-            } else if (((c == 'k') || (c == 'K')) && (i + 1 < argc)) {
-                options.disk_size = (int64_t)atoi(argv[i + 1]) * 1024;
-                printf("%s ", argv[i + 1]);
-                i += 1;
-            } else if (((c == 'd') || (c == 'D')) && (i + 1 < argc)) {
-                destination = argv[i + 1];
-                printf("%s ", argv[i + 1]);
-                i += 1;
-            } else if (((c == 'p') || (c == 'P')) && (i + 1 < argc)) {
-#ifndef MZ_ZIP_NO_ENCRYPTION
-                password = argv[i + 1];
-                printf("*** ");
-#else
-                err = MZ_SUPPORT_ERROR;
-#endif
-                i += 1;
-            }
-        } else if (path_arg == 0)
-            path_arg = i;
-    }
-    printf("\n");
+//     /* Parse command line options */
+//     for (i = 1; i < argc; i += 1) {
+//         printf("%s ", argv[i]);
+//         if (argv[i][0] == '-') {
+//             char c = argv[i][1];
+//             if ((c == 'l') || (c == 'L'))
+//                 do_list = 1;
+//             else if ((c == 'x') || (c == 'X'))
+//                 do_extract = 1;
+//             else if ((c == 'e') || (c == 'E'))
+//                 do_erase = 1;
+//             else if ((c == 'a') || (c == 'A'))
+//                 options.append = 1;
+//             else if ((c == 'o') || (c == 'O'))
+//                 options.overwrite = 1;
+//             else if ((c == 'f') || (c == 'F'))
+//                 options.follow_links = 1;
+//             else if ((c == 'y') || (c == 'Y'))
+//                 options.store_links = 1;
+//             else if ((c == 'i') || (c == 'I'))
+//                 options.include_path = 1;
+//             else if ((c == 'z') || (c == 'Z'))
+//                 options.zip_cd = 1;
+//             else if ((c == 'v') || (c == 'V'))
+//                 options.verbose = 1;
+//             else if ((c >= '0') && (c <= '9')) {
+//                 options.compress_level = (c - '0');
+//                 if (options.compress_level == 0)
+//                     options.compress_method = MZ_COMPRESS_METHOD_STORE;
+//             } else if ((c == 'b') || (c == 'B'))
+// #ifdef HAVE_BZIP2
+//                 options.compress_method = MZ_COMPRESS_METHOD_BZIP2;
+// #else
+//                 err = MZ_SUPPORT_ERROR;
+// #endif
+//             else if ((c == 'm') || (c == 'M'))
+// #ifdef HAVE_LZMA
+//                 options.compress_method = MZ_COMPRESS_METHOD_LZMA;
+// #else
+//                 err = MZ_SUPPORT_ERROR;
+// #endif
+//             else if ((c == 'n') || (c == 'N'))
+// #if defined(HAVE_LZMA) || defined(HAVE_LIBCOMP)
+//                 options.compress_method = MZ_COMPRESS_METHOD_XZ;
+// #else
+//                 err = MZ_SUPPORT_ERROR;
+// #endif
+//             else if ((c == 't') || (c == 'T'))
+// #ifdef HAVE_ZSTD
+//                 options.compress_method = MZ_COMPRESS_METHOD_ZSTD;
+// #else
+//                 err = MZ_SUPPORT_ERROR;
+// #endif
+//             else if ((c == 's') || (c == 'S'))
+// #ifdef HAVE_WZAES
+//                 options.aes = 1;
+// #else
+//                 err = MZ_SUPPORT_ERROR;
+// #endif
+//             else if (((c == 'c') || (c == 'C')) && (i + 1 < argc)) {
+//                 options.encoding = (int32_t)atoi(argv[i + 1]);
+//                 i += 1;
+//             } else if (((c == 'k') || (c == 'K')) && (i + 1 < argc)) {
+//                 options.disk_size = (int64_t)atoi(argv[i + 1]) * 1024;
+//                 printf("%s ", argv[i + 1]);
+//                 i += 1;
+//             } else if (((c == 'd') || (c == 'D')) && (i + 1 < argc)) {
+//                 destination = argv[i + 1];
+//                 printf("%s ", argv[i + 1]);
+//                 i += 1;
+//             } else if (((c == 'p') || (c == 'P')) && (i + 1 < argc)) {
+// #ifndef MZ_ZIP_NO_ENCRYPTION
+//                 password = argv[i + 1];
+//                 printf("*** ");
+// #else
+//                 err = MZ_SUPPORT_ERROR;
+// #endif
+//                 i += 1;
+//             }
+//         } else if (path_arg == 0)
+//             path_arg = i;
+//     }
+//     printf("\n");
 
-    if (err == MZ_SUPPORT_ERROR) {
-        printf("Feature not supported\n");
-        return err;
-    }
+//     if (err == MZ_SUPPORT_ERROR) {
+//         printf("Feature not supported\n");
+//         return err;
+//     }
 
-    if (path_arg == 0) {
-        minizip_help();
-        return 0;
-    }
+//     if (path_arg == 0) {
+//         minizip_help();
+//         return 0;
+//     }
 
-    path = argv[path_arg];
+//     path = argv[path_arg];
 
-    if (do_list) {
-        /* List archive contents */
-        err = minizip_list(path);
-    } else if (do_extract) {
-        if (argc > path_arg + 1)
-            filename_to_extract = argv[path_arg + 1];
+//     if (do_list) {
+//         /* List archive contents */
+//         err = minizip_list(path);
+//     } else if (do_extract) {
+//         if (argc > path_arg + 1)
+//             filename_to_extract = argv[path_arg + 1];
 
-        /* Extract archive */
-        err = minizip_extract(path, filename_to_extract, destination, password, &options);
-    } else if (do_erase) {
-        /* Erase file in archive */
-        err = minizip_erase(path, NULL, argc - (path_arg + 1), &argv[path_arg + 1]);
-    } else {
-        /* Add files to archive */
-        err = minizip_add(path, password, &options, argc - (path_arg + 1), &argv[path_arg + 1]);
-    }
+//         /* Extract archive */
+//         err = minizip_extract(path, filename_to_extract, destination, password, &options);
+//     } else if (do_erase) {
+//         /* Erase file in archive */
+//         err = minizip_erase(path, NULL, argc - (path_arg + 1), &argv[path_arg + 1]);
+//     } else {
+//         /* Add files to archive */
+//         err = minizip_add(path, password, &options, argc - (path_arg + 1), &argv[path_arg + 1]);
+//     }
 
-    return err;
-}
-#endif
+//     return err;
+// }
+// #endif

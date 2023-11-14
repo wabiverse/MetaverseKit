@@ -6,7 +6,7 @@
 #include <pybind11/cast.h>
 #include <pybind11/stl.h>
 #include <openvdb/openvdb.h>
-#include "PyTypeCasters.h"
+#include <openvdb/python/PyTypeCasters.h>
 
 namespace py = pybind11;
 using namespace openvdb::OPENVDB_VERSION_NAME;

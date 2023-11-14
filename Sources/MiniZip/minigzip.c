@@ -122,58 +122,58 @@ int32_t minigzip_copy(const char *path, const char *destination, int16_t operati
 
 /***************************************************************************/
 
-#if !defined(MZ_ZIP_NO_MAIN)
-int main(int argc, const char *argv[]) {
-    int16_t operation_level = MZ_COMPRESS_LEVEL_DEFAULT;
-    int32_t path_arg = 0;
-    int32_t err = 0;
-    int32_t i = 0;
-    uint8_t operation = MZ_GZIP_COMPRESS;
-    const char *path = NULL;
-    const char *destination = NULL;
+// #if !defined(MZ_ZIP_NO_MAIN)
+// int main(int argc, const char *argv[]) {
+//     int16_t operation_level = MZ_COMPRESS_LEVEL_DEFAULT;
+//     int32_t path_arg = 0;
+//     int32_t err = 0;
+//     int32_t i = 0;
+//     uint8_t operation = MZ_GZIP_COMPRESS;
+//     const char *path = NULL;
+//     const char *destination = NULL;
 
-    minigzip_banner();
-    if (argc == 1) {
-        minigzip_help();
-        return 0;
-    }
+//     minigzip_banner();
+//     if (argc == 1) {
+//         minigzip_help();
+//         return 0;
+//     }
 
-    /* Parse command line options */
-    for (i = 1; i < argc; i += 1) {
-        printf("%s ", argv[i]);
-        if (argv[i][0] == '-') {
-            char c = argv[i][1];
-            if ((c == 'x') || (c == 'X'))
-                operation = MZ_GZIP_DECOMPRESS;
-            else if ((c >= '0') && (c <= '9'))
-                operation_level = (c - '0');
-            else if (((c == 'd') || (c == 'D')) && (i + 1 < argc)) {
-                destination = argv[i + 1];
-                printf("%s ", argv[i + 1]);
-                i += 1;
-            } else {
-                err = MZ_SUPPORT_ERROR;
-            }
-        } else if (path_arg == 0) {
-            path_arg = i;
-            break;
-        }
-    }
-    printf("\n");
+//     /* Parse command line options */
+//     for (i = 1; i < argc; i += 1) {
+//         printf("%s ", argv[i]);
+//         if (argv[i][0] == '-') {
+//             char c = argv[i][1];
+//             if ((c == 'x') || (c == 'X'))
+//                 operation = MZ_GZIP_DECOMPRESS;
+//             else if ((c >= '0') && (c <= '9'))
+//                 operation_level = (c - '0');
+//             else if (((c == 'd') || (c == 'D')) && (i + 1 < argc)) {
+//                 destination = argv[i + 1];
+//                 printf("%s ", argv[i + 1]);
+//                 i += 1;
+//             } else {
+//                 err = MZ_SUPPORT_ERROR;
+//             }
+//         } else if (path_arg == 0) {
+//             path_arg = i;
+//             break;
+//         }
+//     }
+//     printf("\n");
 
-    if (err == MZ_SUPPORT_ERROR) {
-        printf("Feature not supported\n");
-        return err;
-    }
+//     if (err == MZ_SUPPORT_ERROR) {
+//         printf("Feature not supported\n");
+//         return err;
+//     }
 
-    if (path_arg == 0) {
-        minigzip_help();
-        return 0;
-    }
+//     if (path_arg == 0) {
+//         minigzip_help();
+//         return 0;
+//     }
 
-    path = argv[path_arg];
-    err = minigzip_copy(path, destination, operation, operation_level);
+//     path = argv[path_arg];
+//     err = minigzip_copy(path, destination, operation, operation_level);
 
-    return err;
-}
-#endif
+//     return err;
+// }
+// #endif

@@ -3,7 +3,7 @@
 import PackageDescription
 
 /** Platforms, grouped by OS. */
-struct Arch
+enum Arch
 {
   static let hostTriplet: String = "\(cpuArch)-\(host)-\(device)"
 
@@ -28,16 +28,16 @@ struct Arch
 
   enum CPU: String
   {
-    case arm = "arm"
-    case arm64 = "arm64"
-    case x86_64 = "x86_64"
-    case i386 = "i386"
-    case powerpc = "powerpc"
-    case powerpc64 = "powerpc64"
-    case powerpc64le = "powerpc64le"
-    case s390x = "s390x"
-    case wasm32 = "wasm32"
-    case arm64_32 = "arm64_32"
+    case arm
+    case arm64
+    case x86_64
+    case i386
+    case powerpc
+    case powerpc64
+    case powerpc64le
+    case s390x
+    case wasm32
+    case arm64_32
 
     public var family: [CPU]
     {
@@ -110,21 +110,21 @@ struct Arch
 var chipsetExcludeDirs: [String] = []
 var chipsetDefinesC: [CSetting] = []
 var chipsetDefinesCXX: [CXXSetting] = []
-if (Arch.cpuArch.family.contains(.arm))
+if Arch.cpuArch.family.contains(.arm)
 {
   chipsetExcludeDirs.append("intel")
   chipsetExcludeDirs.append("powerpc")
   chipsetDefinesC.append(.define("WITH_ARM", to: "1"))
   chipsetDefinesCXX.append(.define("WITH_ARM", to: "1"))
 }
-else if (Arch.cpuArch.family.contains(.x86_64))
+else if Arch.cpuArch.family.contains(.x86_64)
 {
   chipsetExcludeDirs.append("arm")
   chipsetExcludeDirs.append("powerpc")
   chipsetDefinesC.append(.define("WITH_INTEL", to: "1"))
   chipsetDefinesCXX.append(.define("WITH_INTEL", to: "1"))
 }
-else if (Arch.cpuArch.family.contains(.powerpc))
+else if Arch.cpuArch.family.contains(.powerpc)
 {
   chipsetExcludeDirs.append("arm")
   chipsetExcludeDirs.append("intel")
@@ -172,7 +172,10 @@ else /* a unicorn! 🦄 */
     "backends/imgui_impl_osx.mm",
   ]
   let platformBloscExcludes: [String] = []
-  let platformMetaPyExcludes: [String] = []
+  let platformMetaPyExcludes: [String] = [
+    "PyOpenVDB",
+    "PyMaterialX",
+  ]
   let platformMiniZipExcludes: [String] = [
     "mz_strm_os_posix.c",
     "mz_os_posix.c",
@@ -264,7 +267,7 @@ else /* a unicorn! 🦄 */
       "backends/imgui_impl_sdlrenderer2.cpp",
       "backends/imgui_impl_sdlrenderer3.cpp",
       // no opengl2
-      "backends/imgui_impl_opengl2.cpp"
+      "backends/imgui_impl_opengl2.cpp",
     ]
     let platformOCIOExcludes: [String] = [
       "SystemMonitor_windows.cpp",
@@ -272,6 +275,7 @@ else /* a unicorn! 🦄 */
     let platformMiniZipExcludes: [String] = [
       "mz_strm_os_win32.c",
       "mz_os_win32.c",
+      "mz_crypt_openssl.c",
       "mz_crypt_winvista.c",
       "mz_crypt_winxp.c",
     ]
@@ -377,6 +381,8 @@ else /* a unicorn! 🦄 */
   ]
   let platformMetaPyExcludes: [String] = [
     "PyAlembic/msvc14fixes.cpp",
+    "PyOpenVDB",
+    "PyMaterialX",
   ]
   let platformTIFFExcludes: [String] = [
     "tif_win32.c",
@@ -386,7 +392,7 @@ else /* a unicorn! 🦄 */
     "turbojpeg-jni.c",
     "tjunittest.c",
     "tjexample.c",
-    "example.c"
+    "example.c",
   ]
 #endif /* os(macOS) || os(Linux) */
 
@@ -560,18 +566,6 @@ let package = Package(
       name: "MoltenVK",
       targets: ["MoltenVK"]
     ),
-    .library(
-      name: "Glslang",
-      targets: ["Glslang"]
-    ),
-    .library(
-      name: "Shaderc",
-      targets: ["Shaderc"]
-    ),
-    .library(
-      name: "SPIRVCross",
-      targets: ["SPIRVCross"]
-    ),
     .executable(
       name: "MXGraphEditor",
       targets: ["MXGraphEditor"]
@@ -646,25 +640,6 @@ let package = Package(
     ),
 
     .target(
-      name: "Glslang",
-      exclude: [
-        "include/glslang/CMakeLists.txt",
-        "include/glslang/ExtensionHeaders/GL_EXT_shader_realtime_clock.glsl",
-        "include/glslang/MachineIndependent/glslang.m4",
-        "include/glslang/MachineIndependent/glslang.y",
-        "include/glslang/OSDependent/Unix/CMakeLists.txt",
-        "include/glslang/OSDependent/Web",
-        "include/glslang/OSDependent/Windows",
-        "include/glslang/updateGrammar",
-        "include/SPIRV/CMakeLists.txt",
-      ],
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .define("ENABLE_HLSL", to: "1"),
-      ]
-    ),
-
-    .target(
       name: "TBBMallocProxy",
       dependencies: [
         .target(name: "OneTBB"),
@@ -714,45 +689,6 @@ let package = Package(
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
-    ),
-
-    .target(
-      name: "Shaderc",
-      dependencies: [
-        .target(name: "Glslang"),
-      ],
-      exclude: [
-        "include/shaderc/shaderc_test.cc",
-        "include/shaderc/libshaderc_util/string_piece_test.cc",
-        "include/shaderc/libshaderc_util/version_profile_test.cc",
-        "include/shaderc/shaderc_private_test.cc",
-        "include/shaderc/shaderc_cpp_test.cc",
-        "include/shaderc/libshaderc_util/message_test.cc",
-        "include/shaderc/libshaderc_util/mutex_test.cc",
-        "include/shaderc/libshaderc_util/file_finder_test.cc",
-        "include/shaderc/libshaderc_util/io_shaderc_test.cc",
-        "include/shaderc/libshaderc_util/format_test.cc",
-        "include/shaderc/libshaderc_util/counting_includer_test.cc",
-        "include/shaderc/libshaderc_util/compiler_test.cc",
-        "include/shaderc/glslc/stage_test.cc",
-        "include/shaderc/glslc/resource_parse_test.cc",
-        "include/shaderc/glslc/file_test.cc",
-        "include/shaderc/glslc/notmain.cc",
-        "include/shaderc/shaderc_c_smoke_test.c",
-      ],
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("include/shaderc"),
-        .define("ENABLE_HLSL", to: "1"),
-      ]
-    ),
-
-    .target(
-      name: "SPIRVCross",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "include/spirv_cross",
-      cxxSettings: []
     ),
 
     .target(
@@ -814,6 +750,7 @@ let package = Package(
       cSettings: [
         .define("HAVE_ZLIB", to: "1"),
         .define("ZLIB_COMPAT", to: "1"),
+        .define("HAVE_WZAES", to: "1"),
       ],
       linkerSettings: [
         .linkedLibrary("bz2", .when(platforms: Arch.OS.apple.platform)),
@@ -851,7 +788,7 @@ let package = Package(
       ],
       exclude: [
         "example.c",
-        "pngtest.c"
+        "pngtest.c",
       ] + chipsetExcludeDirs,
       publicHeadersPath: "include",
       cSettings: [
@@ -871,7 +808,7 @@ let package = Package(
         .define("C_LOSSLESS_SUPPORTED", to: "1"),
         .define("D_LOSSLESS_SUPPORTED", to: "1"),
         .define("PPM_SUPPORTED", to: "1"),
-        .define("BITS_IN_JSAMPLE", to: "12")
+        .define("BITS_IN_JSAMPLE", to: "12"),
       ]
     ),
 
@@ -888,7 +825,7 @@ let package = Package(
       cxxSettings: [
         .define("FROM_TIF_JPEG_12", to: "1"),
         .define("HAVE_JPEGTURBO_DUAL_MODE_8_12", to: "1"),
-        .define("BITS_IN_JSAMPLE", to: "12")
+        .define("BITS_IN_JSAMPLE", to: "12"),
       ]
     ),
 
@@ -912,6 +849,9 @@ let package = Package(
         "runtime/z_Windows_NT_util.cpp",
         "runtime/z_Windows_NT-586_util.cpp",
         "runtime/z_Windows_NT-586_asm.asm",
+        "runtime/kmp_stub.cpp",
+        "runtime/kmp_import.cpp",
+        "runtime/test-touch.c",
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -939,9 +879,6 @@ let package = Package(
         .define("_GLFW_X11", to: "1", .when(platforms: Arch.OS.linux.platform)),
         .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
         .define("GL_SILENCE_DEPRECATION", to: "1"),
-      ],
-      linkerSettings: [
-        .linkedLibrary("vulkan", .when(platforms: Arch.OS.apple.platform)),
       ]
     ),
 
@@ -959,7 +896,7 @@ let package = Package(
       linkerSettings: [
         .linkedFramework("Cocoa", .when(platforms: Arch.OS.apple.platform)),
         .linkedFramework("GLUT", .when(platforms: Arch.OS.apple.platform)),
-        .linkedFramework("GameController", .when(platforms: Arch.OS.apple.platform))
+        .linkedFramework("GameController", .when(platforms: Arch.OS.apple.platform)),
       ]
     ),
 
@@ -1009,7 +946,7 @@ let package = Package(
     .executableTarget(
       name: "MXGraphEditor",
       dependencies: [
-        .target(name: "MaterialX")
+        .target(name: "MaterialX"),
       ]
     ),
 
@@ -1099,6 +1036,9 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
+      ],
+      linkerSettings: [
+        .linkedLibrary("expat", .when(platforms: Arch.OS.apple.platform)),
       ]
     ),
 
@@ -1119,7 +1059,6 @@ let package = Package(
         .headerSearchPath("include/python/PyImath"),
         .headerSearchPath("include/python/PyAlembic"),
         .headerSearchPath("include/python/PyOIIO"),
-        .headerSearchPath("include/python/PyOpenVDB"),
       ]
     ),
 
@@ -1135,7 +1074,7 @@ let package = Package(
       cSettings: [
         .define("H5_HAVE_C99_FUNC", to: "1"),
         .define("H5_USE_18_API", to: "1"),
-        .define("H5_BUILT_AS_DYNAMIC_LIB", to: "0"),
+        .define("H5_BUILT_AS_DYNAMIC_LIB", to: "1"),
       ]
     ),
 
@@ -1197,13 +1136,13 @@ let package = Package(
         .headerSearchPath("include/openvdb/tree"),
         .headerSearchPath("include/openvdb/util"),
         /* -------------------------------------------
-         NOTICE: the lack of the math dir search path
-         otherwise, openvdbs math.h header will clash
-         with the system stdlib math.h header. Source
-         files within openvdb (***.cc) which included
-         math have been prefixed to math/(***.h), and
-         original openvdb headers remain unchanged.
-        ------------------------------------------- */
+           NOTICE: the lack of the math dir search path
+           otherwise, openvdbs math.h header will clash
+           with the system stdlib math.h header. Source
+           files within openvdb (***.cc) which included
+           math have been prefixed to math/(***.h), and
+           original openvdb headers remain unchanged.
+          ------------------------------------------- */
         .headerSearchPath("include/openvdb"),
         .define("OPENVDB_USE_DELAYED_LOADING", to: "1"),
         .define("OPENVDB_USE_BLOSC", to: "1"),
@@ -1241,7 +1180,6 @@ let package = Package(
         "Eigen",
         "GLFW",
         "GPUShaders",
-        "Glslang",
         "HDF5",
         "ImGui",
         "LZMA2",
@@ -1263,8 +1201,6 @@ let package = Package(
         "Ptex",
         "PyBind11",
         "Raw",
-        "SPIRVCross",
-        "Shaderc",
         "TBBMalloc",
         "TBBMallocProxy",
         "TIFF",
@@ -1277,7 +1213,7 @@ let package = Package(
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
-    )
+    ),
   ],
   cLanguageStandard: .gnu17,
   cxxLanguageStandard: .cxx17

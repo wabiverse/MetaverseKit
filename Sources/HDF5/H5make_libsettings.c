@@ -284,15 +284,16 @@ print_footer(void)
  *
  *-------------------------------------------------------------------------
  */
-int
-main(void)
-{
-    print_header();
+// int
+// main(void)
+// {
+//     print_header();
 
-    /* Generate embedded library information variable definition */
-    make_libinfo();
+//     /* Generate embedded library information variable definition */
+//     make_libinfo();
 
-    print_footer();
+//     print_footer();
 
-    HDexit(0);
-}
+//     HDexit(0);
+// }
+

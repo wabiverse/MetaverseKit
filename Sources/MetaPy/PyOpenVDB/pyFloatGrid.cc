@@ -5,7 +5,7 @@
 /// @author Peter Cucka
 /// @brief pybind11 wrappers for scalar, floating-point openvdb::Grid types
 
-#include "PyGrid.h"
+#include <openvdb/python/PyGrid.h>
 
 /// Create a Python wrapper for each supported Grid type.
 void

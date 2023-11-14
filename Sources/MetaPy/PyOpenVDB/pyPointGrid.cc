@@ -6,7 +6,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "PyGrid.h"
+#include <openvdb/python/PyGrid.h>
 
 namespace py = pybind11;
 

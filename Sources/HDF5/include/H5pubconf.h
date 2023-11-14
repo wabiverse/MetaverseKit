@@ -122,7 +122,7 @@
 #define H5_HAVE_FILTER_DEFLATE 1
 
 /* Define if support for szip filter is enabled */
-#define H5_HAVE_FILTER_SZIP 1
+//#undef H5_HAVE_FILTER_SZIP
 
 /* Determine if __float128 is available */
 /* #undef H5_HAVE_FLOAT128 */
@@ -329,7 +329,7 @@
 #define H5_HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <szlib.h> header file. */
-#define H5_HAVE_SZLIB_H 1
+#define H5_HAVE_SZLIB_H 0
 
 /* Define if we have thread safe support */
 /* #undef H5_HAVE_THREADSAFE */

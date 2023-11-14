@@ -1732,62 +1732,62 @@ static int verify_signal_handlers(int signum, void (*handler)(int))
  *
  *-------------------------------------------------------------------------
  */
-int
-main(void)
-{
+// int
+// main(void)
+// {
 
-#if defined(H5_HAVE_SETSYSINFO) && defined(SSI_NVPAIRS)
-#if defined(UAC_NOPRINT) && defined(UAC_SIGBUS)
-    /*
-     * Make sure unaligned access generates SIGBUS and doesn't print warning
-     * messages so that we can detect alignment constraints on the DEC Alpha.
-     */
-    int			nvpairs[2];
-    nvpairs[0] = SSIN_UACPROC;
-    nvpairs[1] = UAC_NOPRINT | UAC_SIGBUS;
-    if (setsysinfo(SSI_NVPAIRS, nvpairs, 1, 0, 0)<0) {
-	fprintf(stderr, "H5detect: unable to turn off UAC handling: %s\n",
-		HDstrerror(errno));
-    }
-#endif
-#endif
+// #if defined(H5_HAVE_SETSYSINFO) && defined(SSI_NVPAIRS)
+// #if defined(UAC_NOPRINT) && defined(UAC_SIGBUS)
+//     /*
+//      * Make sure unaligned access generates SIGBUS and doesn't print warning
+//      * messages so that we can detect alignment constraints on the DEC Alpha.
+//      */
+//     int			nvpairs[2];
+//     nvpairs[0] = SSIN_UACPROC;
+//     nvpairs[1] = UAC_NOPRINT | UAC_SIGBUS;
+//     if (setsysinfo(SSI_NVPAIRS, nvpairs, 1, 0, 0)<0) {
+// 	fprintf(stderr, "H5detect: unable to turn off UAC handling: %s\n",
+// 		HDstrerror(errno));
+//     }
+// #endif
+// #endif
 
-#if defined(H5SETJMP) && defined(H5_HAVE_SIGNAL)
-    /* verify the SIGBUS and SIGSEGV handlers work properly */
-    if (verify_signal_handlers(SIGBUS, sigbus_handler) != 0) {
-        fprintf(stderr, "Signal handler %s for signal %d failed\n",
-                "sigbus_handler", SIGBUS);
-    }
-    if (verify_signal_handlers(SIGSEGV, sigsegv_handler) != 0) {
-        fprintf(stderr, "Signal handler %s for signal %d failed\n",
-                "sigsegv_handler", SIGSEGV);
-    }
-    if (verify_signal_handlers(SIGILL, sigill_handler) != 0) {
-        fprintf(stderr, "Signal handler %s for signal %d failed\n",
-                "sigill_handler", SIGILL);
-    }
-#else
-    align_status_g |= STA_NoHandlerVerify;
-#endif
+// #if defined(H5SETJMP) && defined(H5_HAVE_SIGNAL)
+//     /* verify the SIGBUS and SIGSEGV handlers work properly */
+//     if (verify_signal_handlers(SIGBUS, sigbus_handler) != 0) {
+//         fprintf(stderr, "Signal handler %s for signal %d failed\n",
+//                 "sigbus_handler", SIGBUS);
+//     }
+//     if (verify_signal_handlers(SIGSEGV, sigsegv_handler) != 0) {
+//         fprintf(stderr, "Signal handler %s for signal %d failed\n",
+//                 "sigsegv_handler", SIGSEGV);
+//     }
+//     if (verify_signal_handlers(SIGILL, sigill_handler) != 0) {
+//         fprintf(stderr, "Signal handler %s for signal %d failed\n",
+//                 "sigill_handler", SIGILL);
+//     }
+// #else
+//     align_status_g |= STA_NoHandlerVerify;
+// #endif
 
-    print_header();
+//     print_header();
 
-    /* C89 integer types */
-    detect_C89_integers();
+//     /* C89 integer types */
+//     detect_C89_integers();
 
-    /* C99 integer types */
-    detect_C99_integers();
+//     /* C99 integer types */
+//     detect_C99_integers();
 
-    /* C89 floating point types */
-    detect_C89_floats();
+//     /* C89 floating point types */
+//     detect_C89_floats();
 
-    /* C99 floating point types */
-    detect_C99_floats();
+//     /* C99 floating point types */
+//     detect_C99_floats();
 
-    /* Detect structure alignment */
-    detect_alignments();
+//     /* Detect structure alignment */
+//     detect_alignments();
 
-    print_results (nd_g, d_g, na_g, m_g);
+//     print_results (nd_g, d_g, na_g, m_g);
 
-    return 0;
-}
+//     return 0;
+// }

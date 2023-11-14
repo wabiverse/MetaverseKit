@@ -4,7 +4,7 @@
 /// @file pyVec3Grid.cc
 /// @brief pybind11 wrappers for vector-valued openvdb::Grid types
 
-#include "PyGrid.h"
+#include <openvdb/python/PyGrid.h>
 
 void
 exportVec3Grid(py::module_ m)

@@ -21,6 +21,9 @@
 #ifndef H5API_ADPT_H
 #define H5API_ADPT_H
 
+#ifndef H5_BUILT_AS_DYNAMIC_LIB
+#define H5_BUILT_AS_DYNAMIC_LIB 1
+#endif /* H5_BUILT_AS_DYNAMIC_LIB */
 
 /* This will only be defined if HDF5 was built with CMake */
 #ifdef H5_BUILT_AS_DYNAMIC_LIB
