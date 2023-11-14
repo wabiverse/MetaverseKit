@@ -1059,6 +1059,7 @@ let package = Package(
         .headerSearchPath("include/python/PyImath"),
         .headerSearchPath("include/python/PyAlembic"),
         .headerSearchPath("include/python/PyOIIO"),
+        .define("BOOST_TEST_NO_MAIN", to: "1"),
       ]
     ),
 
@@ -1089,6 +1090,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("include/Alembic/AbcMaterial"),
+        .define("BOOST_TEST_NO_MAIN", to: "1"),
       ]
     ),
 
@@ -1147,6 +1149,7 @@ let package = Package(
         .define("OPENVDB_USE_DELAYED_LOADING", to: "1"),
         .define("OPENVDB_USE_BLOSC", to: "1"),
         .define("OPENVDB_USE_ZLIB", to: "1"),
+        .define("BOOST_TEST_NO_MAIN", to: "1"),
       ]
     ),
 
