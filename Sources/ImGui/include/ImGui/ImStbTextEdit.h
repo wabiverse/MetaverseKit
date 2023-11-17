@@ -286,6 +286,16 @@
 // and undo state.
 //
 
+namespace ImStb
+{
+  #undef STB_TEXTEDIT_STRING
+  #undef STB_TEXTEDIT_CHARTYPE
+  #define STB_TEXTEDIT_STRING ImGuiInputTextState
+  #define STB_TEXTEDIT_CHARTYPE ImWchar
+  #define STB_TEXTEDIT_GETWIDTH_NEWLINE (-1.0f)
+  #define STB_TEXTEDIT_UNDOSTATECOUNT 99
+  #define STB_TEXTEDIT_UNDOCHARCOUNT 999
+
 #ifndef STB_TEXTEDIT_UNDOSTATECOUNT
 #define STB_TEXTEDIT_UNDOSTATECOUNT   99
 #endif
@@ -371,6 +381,9 @@ typedef struct
    float ymin,ymax;         // height of row above and below baseline
    int num_chars;
 } StbTexteditRow;
+
+} // namespace ImStb
+
 #endif //INCLUDE_STB_TEXTEDIT_H
 
 

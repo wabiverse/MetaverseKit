@@ -22,8 +22,10 @@
 //   language governing permissions and limitations under the Apache License.
 //
 
+#include <metal_stdlib>
+#include <metal_atomic>
+
 using namespace metal;
-#include "mtlShadersCommon.h"
 
 // ----------------------------------------------------------------------------
 // Patch Parameters

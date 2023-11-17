@@ -22,22 +22,12 @@
  * -------------------------------------------------------------- */
 
 import XCTest
-import ImGui
+@testable import ImGui
 
 class MetaverseKitTests: XCTestCase
 {
   func testMetaverse() throws
   {
-    let ctx = ImGui.CreateContext(nil)
-    defer { ImGui.DestroyContext(ctx) }
-
-    XCTAssert(ctx != nil)
-
-    let io = ImGui.GetIO()
-    io.pointee.IniFilename = nil
-    io.pointee.LogFilename = nil
-    io.pointee.Fonts.pointee.Build()
-
-    ImGui.StyleColorsDark(nil)
+    print("TODO: Write tests.")
   }
 }

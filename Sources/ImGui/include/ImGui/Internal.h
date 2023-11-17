@@ -260,18 +260,7 @@ extern IMGUI_API ImGuiContext *GImGui; // Current implicit context pointer
 // [SECTION] STB libraries includes
 //-------------------------------------------------------------------------
 
-namespace ImStb {
-
-#undef STB_TEXTEDIT_STRING
-#undef STB_TEXTEDIT_CHARTYPE
-#define STB_TEXTEDIT_STRING ImGuiInputTextState
-#define STB_TEXTEDIT_CHARTYPE ImWchar
-#define STB_TEXTEDIT_GETWIDTH_NEWLINE (-1.0f)
-#define STB_TEXTEDIT_UNDOSTATECOUNT 99
-#define STB_TEXTEDIT_UNDOCHARCOUNT 999
 #include "ImGui/ImStbTextEdit.h"
-
-} // namespace ImStb
 
 //-----------------------------------------------------------------------------
 // [SECTION] Macros

@@ -1,6 +1,5 @@
 #pragma once
 #include <ImGui/Drawing.h>
-#include <ImGui/ImGui.h>
 
 namespace ax {
 namespace Widgets {

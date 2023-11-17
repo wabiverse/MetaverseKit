@@ -95,6 +95,10 @@ ImFontAtlasFlags, ImFontAtlas, ImFont)
 #define IMGUI_IMPL_API IMGUI_API
 #endif
 
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATORS
+#endif // IMGUI_DEFINE_MATH_OPERATORS
+
 // Helper Macros
 #ifndef IM_ASSERT
 #include <assert.h>
@@ -6441,5 +6445,23 @@ enum ImGuiModFlags_ {
 #ifdef IMGUI_INCLUDE_IMGUI_USER_H
 #include "ImGui/User.h"
 #endif
+
+#include <ImGui/Internal.h>
+
+#include <ImGui/ExtraMath.h>
+
+#include <ImGui/BezierMath.h>
+#include <ImGui/Canvas.h>
+
+#include <ImGui/CrudeJson.h>
+#include <ImGui/ImGuiStdLib.h>
+#include <ImGui/ImStbRectPack.h>
+#include <ImGui/ImStbTrueType.h>
+#include <ImGui/ImplGLFW.h>
+#include <ImGui/ImplOpenGL.h>
+#include <ImGui/NodeEditor.h>
+
+#include <ImGui/Drawing.h>
+#include <ImGui/Widgets.h>
 
 #endif // #ifndef IMGUI_DISABLE

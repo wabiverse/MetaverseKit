@@ -1,6 +1,9 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "ImGui/Drawing.h"
+#include "ImGui/ImGui.h"
+
 #include "ImGui/Internal.h"
+
+#include "ImGui/Drawing.h"
 
 void ax::Drawing::DrawIcon(ImDrawList *drawList, const ImVec2 &a,
                            const ImVec2 &b, IconType type, bool filled,

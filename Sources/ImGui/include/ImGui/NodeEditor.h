@@ -19,8 +19,8 @@
 #include <utility> // std::move
 
 //------------------------------------------------------------------------------
-#define IMGUI_NODE_EDITOR_VERSION "0.9.3"
-#define IMGUI_NODE_EDITOR_VERSION_NUM 000903
+#define IMGUI_NODE_EDITOR_VERSION "1.9.3"
+#define IMGUI_NODE_EDITOR_VERSION_NUM 100903
 
 //------------------------------------------------------------------------------
 #ifndef IMGUI_NODE_EDITOR_API

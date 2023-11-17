@@ -1,7 +1,7 @@
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include "ImGui/canvas.h"
+#include "ImGui/Canvas.h"
 #include <type_traits>
 
 // https://stackoverflow.com/a/36079786
