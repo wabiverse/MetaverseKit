@@ -2,6 +2,1049 @@
 
 import PackageDescription
 
+/* ------------------------------------------------------
+ *  :: :  💫 The Open Source Metaverse  :   ::
+ * ------------------------------------------------------ */
+
+let package = Package(
+  name: "MetaverseKit",
+  platforms: [
+    .macOS(.v12),
+    .visionOS(.v1),
+    .iOS(.v12),
+    .tvOS(.v12),
+    .watchOS(.v4),
+  ],
+  products: getConfig(for: .all).products,
+  targets: [
+    .target(
+      name: "Eigen",
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "Draco",
+      dependencies: [
+        .target(name: "Eigen"),
+      ],
+      exclude: getConfig(for: .draco).exclude,
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "TBBMallocProxy",
+      dependencies: [
+        .target(name: "OneTBB"),
+      ],
+      publicHeadersPath: ".",
+      cxxSettings: [
+        .define("_XOPEN_SOURCE"),
+      ]
+    ),
+
+    .target(
+      name: "TBBMalloc",
+      dependencies: [
+        .target(name: "OneTBB"),
+        .target(name: "TBBMallocProxy"),
+      ],
+      exclude: [],
+      publicHeadersPath: ".",
+      cxxSettings: [
+        .define("_XOPEN_SOURCE"),
+        .define("__TBBMALLOC_BUILD", to: "1"),
+      ]
+    ),
+
+    .target(
+      name: "OneTBB",
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_XOPEN_SOURCE"),
+        .define("TBB_USE_PROFILING_TOOLS", to: "2"),
+      ]
+    ),
+
+    .target(
+      name: "MetaTBB",
+      dependencies: [
+        .target(name: "OneTBB"),
+        .target(name: "TBBMalloc"),
+        .target(name: "TBBMallocProxy"),
+      ],
+      exclude: [],
+      cxxSettings: [
+        .define("_XOPEN_SOURCE"),
+        .define("TBB_USE_PROFILING_TOOLS", to: "2"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "ZStandard",
+      publicHeadersPath: "."
+    ),
+
+    .target(
+      name: "LZMA2",
+      dependencies: [],
+      exclude: getConfig(for: .lzma2).exclude,
+      publicHeadersPath: "include",
+      cSettings: getConfig(for: .lzma2).cSettings
+    ),
+
+    .target(
+      name: "Yaml",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "OpenSSL",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include",
+      cSettings: [
+        .define("BORINGSSL_NO_STATIC_INITIALIZER", to: "1"),
+      ]
+    ),
+
+    .target(
+      name: "MiniZip",
+      dependencies: [
+        .target(name: "LZMA2"),
+        .target(name: "ZLibDataCompression"),
+        .target(name: "ZStandard"),
+        .target(name: "OpenSSL"),
+      ],
+      exclude: getConfig(for: .minizip).exclude,
+      publicHeadersPath: "include",
+      cSettings: [
+        .define("HAVE_ZLIB", to: "1"),
+        .define("ZLIB_COMPAT", to: "1"),
+        .define("HAVE_WZAES", to: "1"),
+      ],
+      linkerSettings: [
+        .linkedLibrary("bz2", .when(platforms: Arch.OS.apple.platform)),
+      ]
+    ),
+
+    .target(
+      name: "ZLibDataCompression",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath("."),
+        .define("HAVE_ATTRIBUTE_ALIGNED", to: "1"),
+        .define("WITH_GZFILEOP", to: "1"),
+        .define("HAVE_UNISTD_H", to: "1"),
+        .define("Z_HAVE_STDARG_H", to: "1"),
+      ]
+    ),
+
+    .target(
+      name: "Raw",
+      dependencies: [],
+      exclude: [],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("."),
+      ]
+    ),
+
+    .target(
+      name: "LibPNG",
+      dependencies: [
+        .target(name: "ZLibDataCompression"),
+      ],
+      exclude: getConfig(for: .png).exclude,
+      publicHeadersPath: "include",
+      cSettings: getConfig(for: .png).cSettings
+    ),
+
+    .target(
+      name: "TurboJPEG",
+      dependencies: [
+        .target(name: "OpenSSL"),
+      ],
+      exclude: getConfig(for: .turbojpeg).exclude,
+      publicHeadersPath: "include/turbo",
+      cSettings: [
+        .headerSearchPath("."),
+        .define("C_LOSSLESS_SUPPORTED", to: "1"),
+        .define("D_LOSSLESS_SUPPORTED", to: "1"),
+        .define("PPM_SUPPORTED", to: "1"),
+        .define("BITS_IN_JSAMPLE", to: "12"),
+      ]
+    ),
+
+    .target(
+      name: "TIFF",
+      dependencies: [
+        .target(name: "WebP"),
+        .target(name: "LZMA2"),
+        .target(name: "ZStandard"),
+        .target(name: "TurboJPEG"),
+      ],
+      exclude: getConfig(for: .tiff).exclude,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("FROM_TIF_JPEG_12", to: "1"),
+        .define("HAVE_JPEGTURBO_DUAL_MODE_8_12", to: "1"),
+        .define("BITS_IN_JSAMPLE", to: "12"),
+      ]
+    ),
+
+    .target(
+      name: "WebP",
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath("."),
+      ]
+    ),
+
+    .target(
+      name: "OpenMP",
+      dependencies: [
+        .target(name: "Python"),
+      ],
+      exclude: getConfig(for: .openmp).exclude,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("runtime"),
+      ]
+    ),
+
+    .target(
+      name: "Apple",
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "GLFW",
+      dependencies: [
+        .target(name: "Apple"),
+        .target(name: "MoltenVK"),
+      ],
+      exclude: getConfig(for: .glfw).exclude,
+      publicHeadersPath: "include",
+      cxxSettings: getConfig(for: .glfw).cxxSettings
+    ),
+
+    .target(
+      name: "ImGui",
+      dependencies: [
+        .target(name: "GLFW"),
+      ],
+      exclude: getConfig(for: .imgui).exclude,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("."),
+        .headerSearchPath("backends"),
+      ],
+      linkerSettings: [
+        .linkedFramework("Cocoa", .when(platforms: Arch.OS.apple.platform)),
+        .linkedFramework("GLUT", .when(platforms: Arch.OS.apple.platform)),
+        .linkedFramework("GameController", .when(platforms: Arch.OS.apple.platform)),
+      ]
+    ),
+
+    // .target(
+    //   name: "MXResources",
+    //   dependencies: [],
+    //   resources: [
+    //     .copy("libraries"),
+    //     .process("Resources"),
+    //   ],
+    //   swiftSettings: [
+    //     .interoperabilityMode(.Cxx),
+    //   ]
+    // ),
+
+    .target(
+      name: "MaterialX",
+      dependencies: [
+        .target(name: "Apple"),
+        .target(name: "ImGui"),
+        .target(name: "OpenImageIO"),
+        .target(name: "Python"),
+        .target(name: "PyBind11"),
+        //.target(name: "MXResources"),
+      ],
+      exclude: [
+        "source/JsMaterialX",
+        "source/MaterialXView",
+      ],
+      publicHeadersPath: "include"
+    ),
+
+    .executableTarget(
+      name: "MXGraphEditor",
+      dependencies: [
+        .target(name: "MaterialX"),
+      ]
+    ),
+
+    .target(
+      name: "GPUShaders",
+      resources: [
+        .process("Metal"),
+        .process("GL"),
+        .process("DX3D"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .target(
+      name: "OpenSubdiv",
+      dependencies: [
+        .target(name: "MetaTBB"),
+        .target(name: "OpenMP"),
+        .target(name: "GPUShaders"),
+      ],
+      exclude: getConfig(for: .osd).exclude,
+      publicHeadersPath: "include",
+      cxxSettings: getConfig(for: .osd).cxxSettings
+    ),
+
+    .target(
+      name: "OpenEXR",
+      dependencies: [
+        .target(name: "DEFLATE"),
+      ],
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath("."),
+        .headerSearchPath("OpenEXRCore"),
+        .headerSearchPath("include/OpenEXR"),
+      ]
+    ),
+
+    .target(
+      name: "OpenImageIO",
+      dependencies: [
+        .target(name: "WebP"),
+        .target(name: "TIFF"),
+        .target(name: "Raw"),
+        .target(name: "Ptex"),
+        .target(name: "LibPNG"),
+        .target(name: "OpenVDB"),
+        .target(name: "OpenEXR"),
+        .target(name: "PyBind11"),
+      ],
+      exclude: getConfig(for: .oiio).exclude,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("."),
+        .headerSearchPath("include/OpenImageIO/detail"),
+        .headerSearchPath("libOpenImageIO"),
+      ]
+    ),
+
+    .target(
+      name: "OpenColorIO",
+      dependencies: [
+        .target(name: "OpenEXR"),
+        .target(name: "Python"),
+        .target(name: "MiniZip"),
+        .target(name: "Yaml"),
+      ],
+      exclude: getConfig(for: .ocio).exclude,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("."),
+      ],
+      linkerSettings: [
+        .linkedLibrary("expat", .when(platforms: Arch.OS.apple.platform)),
+      ]
+    ),
+
+    .target(
+      name: "MetaPy",
+      dependencies: [
+        .target(name: "Boost"),
+        .target(name: "Python"),
+        .target(name: "OpenEXR"),
+        .target(name: "OpenVDB"),
+        .target(name: "Alembic"),
+        .target(name: "OpenImageIO"),
+        .target(name: "MaterialX"),
+      ],
+      exclude: getConfig(for: .mpy).exclude,
+      publicHeadersPath: "include/python",
+      cxxSettings: [
+        .headerSearchPath("include/python/PyImath"),
+        .headerSearchPath("include/python/PyAlembic"),
+        .headerSearchPath("include/python/PyOIIO"),
+      ]
+    ),
+
+    .target(
+      name: "Ptex",
+      publicHeadersPath: "include",
+      cxxSettings: []
+    ),
+
+    .target(
+      name: "HDF5",
+      publicHeadersPath: "include",
+      cSettings: [
+        .define("H5_HAVE_C99_FUNC", to: "1"),
+        .define("H5_USE_18_API", to: "1"),
+        .define("H5_BUILT_AS_DYNAMIC_LIB", to: "1"),
+      ]
+    ),
+
+    .target(
+      name: "Alembic",
+      dependencies: [
+        .target(name: "Boost"),
+        .target(name: "Python"),
+        .target(name: "HDF5"),
+        .target(name: "OpenEXR"),
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("include/Alembic/AbcMaterial"),
+      ]
+    ),
+
+    .target(
+      name: "PyBind11",
+      publicHeadersPath: "include",
+      cxxSettings: []
+    ),
+
+    .target(
+      name: "DEFLATE",
+      publicHeadersPath: "include",
+      cSettings: [
+        .headerSearchPath("."),
+      ]
+    ),
+
+    .target(
+      name: "Blosc",
+      dependencies: [
+        .target(name: "ZLibDataCompression"),
+        .target(name: "ZStandard"),
+      ],
+      exclude: getConfig(for: .blosc).exclude,
+      publicHeadersPath: "include/blosc"
+    ),
+
+    .target(
+      name: "OpenVDB",
+      dependencies: [
+        .target(name: "Boost"),
+        .target(name: "MetaTBB"),
+        .target(name: "Blosc"),
+        .target(name: "Python"),
+        .target(name: "PyBind11"),
+        .target(name: "OpenEXR"),
+        .target(name: "ZLibDataCompression"),
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: getConfig(for: .openvdb).cxxSettings
+    ),
+
+    .binaryTarget(
+      name: "Boost",
+      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
+      checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
+    ),
+
+    .binaryTarget(
+      name: "Python",
+      url: "https://github.com/wabiverse/MetaversePythonFramework/releases/download/3.11-b3/Python.xcframework.zip",
+      checksum: "f709ee01166f6945f77db821d8462e5f7c1d31d1ebf3c5f7c58004b13e07fd14"
+    ),
+
+    .binaryTarget(
+      name: "MoltenVK",
+      url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/MoltenVK.xcframework.zip",
+      checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
+    ),
+
+    /**
+     * Run this from the command line via:
+     *
+     * swift bundler run -p macOS MetaversalDemo
+     *
+     * It is pending a pull request which I have submitted here:
+     * https://github.com/stackotter/swift-bundler/issues/34
+     * 
+     * Once that is merged, the swift bundler will be included
+     * as a swift plugin to all packages that transitively depend
+     * on this package, the bundler now also supports the bundling
+     * of visionOS and iOS targets, in addition to macOS all from
+     * the command line. */
+    .executableTarget(
+      name: "MetaversalDemo",
+      dependencies: [
+        .target(name: "ImGui"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+
+    .testTarget(
+      name: "MetaverseKitTests",
+      dependencies: getConfig(for: .all).dependencies,
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
+  ],
+  cLanguageStandard: .gnu17,
+  cxxLanguageStandard: .cxx17
+)
+
+
+/* ------------------------------------------------- 
+ * Platform specific, or more lengthy configurations
+ * are in the dedicated function below. This is to
+ * keep the main package file clean and readable.
+ * ------------------------------------------------- */
+
+
+func getConfig(for target: PkgTarget) -> TargetInfo
+{
+  var chipsetExcludeDirs: [String] = []
+  var chipsetDefinesC: [CSetting] = []
+  var chipsetDefinesCXX: [CXXSetting] = []
+  if Arch.cpuArch.family.contains(.arm)
+  {
+    chipsetExcludeDirs.append("intel")
+    chipsetExcludeDirs.append("powerpc")
+    chipsetDefinesC.append(.define("WITH_ARM", to: "1"))
+    chipsetDefinesCXX.append(.define("WITH_ARM", to: "1"))
+  }
+  else if Arch.cpuArch.family.contains(.x86_64)
+  {
+    chipsetExcludeDirs.append("arm")
+    chipsetExcludeDirs.append("powerpc")
+    chipsetDefinesC.append(.define("WITH_INTEL", to: "1"))
+    chipsetDefinesCXX.append(.define("WITH_INTEL", to: "1"))
+  }
+  else if Arch.cpuArch.family.contains(.powerpc)
+  {
+    chipsetExcludeDirs.append("arm")
+    chipsetExcludeDirs.append("intel")
+    chipsetDefinesC.append(.define("WITH_POWERPC", to: "1"))
+    chipsetDefinesCXX.append(.define("WITH_POWERPC", to: "1"))
+  }
+  else /* a unicorn! 🦄 */
+  {
+    chipsetExcludeDirs.append("arm")
+    chipsetExcludeDirs.append("intel")
+    chipsetExcludeDirs.append("powerpc")
+    chipsetDefinesC.append(.define("WITH_UNICORNS", to: "1"))
+    chipsetDefinesCXX.append(.define("WITH_UNICORNS", to: "1"))
+  }
+
+  var config = TargetInfo()
+
+  switch target
+  {
+    case .draco:
+      config.exclude = [
+        "include/draco/animation/keyframe_animation_encoding_test.cc",
+        "include/draco/animation/keyframe_animation_test.cc",
+        "include/draco/attributes/point_attribute_test.cc",
+        "include/draco/point_cloud/point_cloud_test.cc",
+        "include/draco/metadata/metadata_test.cc",
+        "include/draco/metadata/metadata_encoder_test.cc",
+        "include/draco/point_cloud/point_cloud_builder_test.cc",
+        "include/draco/unity/draco_unity_plugin_test.cc",
+        "include/draco/mesh/mesh_test.cc",
+        "include/draco/mesh/triangle_soup_mesh_builder_test.cc",
+        "include/draco/mesh/mesh_are_equivalent_test.cc",
+        "include/draco/mesh/corner_table_test.cc",
+        "include/draco/mesh/mesh_cleanup_test.cc",
+        "include/draco/io/stdio_file_writer_test.cc",
+        "include/draco/io/stdio_file_reader_test.cc",
+        "include/draco/io/stl_decoder_test.cc",
+        "include/draco/io/ply_reader_test.cc",
+        "include/draco/io/point_cloud_io_test.cc",
+        "include/draco/io/stl_encoder_test.cc",
+        "include/draco/io/obj_decoder_test.cc",
+        "include/draco/io/obj_encoder_test.cc",
+        "include/draco/io/ply_decoder_test.cc",
+        "include/draco/io/file_reader_factory_test.cc",
+        "include/draco/io/file_writer_factory_test.cc",
+        "include/draco/io/file_utils_test.cc",
+        "include/draco/io/file_writer_utils_test.cc",
+        "include/draco/core/status_test.cc",
+        "include/draco/core/vector_d_test.cc",
+        "include/draco/core/math_utils_test.cc",
+        "include/draco/core/quantization_utils_test.cc",
+        "include/draco/core/buffer_bit_coding_test.cc",
+        "include/draco/core/draco_test_utils.cc",
+        "include/draco/compression/point_cloud/point_cloud_kd_tree_encoding_test.cc",
+        "include/draco/compression/point_cloud/point_cloud_sequential_encoding_test.cc",
+        "include/draco/compression/mesh/mesh_encoder_test.cc",
+        "include/draco/compression/mesh/mesh_edgebreaker_encoding_test.cc",
+        "include/draco/compression/entropy/symbol_coding_test.cc",
+        "include/draco/compression/entropy/shannon_entropy_test.cc",
+        "include/draco/compression/encode_test.cc",
+        "include/draco/compression/decode_test.cc",
+        "include/draco/compression/config/decoder_options_test.cc",
+        "include/draco/compression/bit_coders/rans_coding_test.cc",
+        "include/draco/compression/attributes/sequential_integer_attribute_encoding_test.cc",
+        "include/draco/compression/attributes/prediction_schemes/prediction_scheme_normal_octahedron_canonicalized_transform_test.cc",
+        "include/draco/compression/attributes/prediction_schemes/prediction_scheme_normal_octahedron_transform_test.cc",
+        "include/draco/compression/attributes/point_d_vector_test.cc",
+        "include/draco/javascript",
+        "include/draco/tools",
+      ]
+    case .tbbMallocProxy:
+      break
+    case .tbbMalloc:
+      break
+    case .oneTbb:
+      break
+    case .metaTbb:
+      break
+    case .zstd:
+      break
+    case .lzma2:
+      config.exclude = ["check/crc32_small.c"]
+      config.cSettings = [
+        .headerSearchPath("common"),
+        .headerSearchPath("lzmacommon"),
+        .headerSearchPath("check"),
+        .headerSearchPath("delta"),
+        .headerSearchPath("lz"),
+        .headerSearchPath("lzma"),
+        .headerSearchPath("rangecoder"),
+        .headerSearchPath("simple"),
+        .define("HAVE_STDBOOL_H", to: "1"),
+        .define("MYTHREAD_POSIX", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
+        .define("MYTHREAD_VISTA", to: "1", .when(platforms: Arch.OS.windows.platform)),
+      ]
+    case .yaml:
+      break
+    case .openssl:
+      break
+    case .minizip:
+      config.exclude = [
+        "mz_crypt_winxp.c",
+        "mz_crypt_openssl.c",
+      ]
+      #if !os(Windows)
+        config.exclude += [
+          "mz_strm_os_win32.c",
+          "mz_os_win32.c",
+          "mz_crypt_winvista.c",
+        ]
+      #endif
+    case .zlib:
+      break
+    case .raw:
+      break
+    case .png:
+      config.exclude = ["example.c", "pngtest.c"] + chipsetExcludeDirs
+      config.cSettings = [.headerSearchPath(".")] + chipsetDefinesC
+    case .turbojpeg:
+      config.exclude = [
+        "turbojpeg-jni.c",
+        "tjunittest.c",
+        "tjexample.c",
+        "example.c",
+      ]
+    case .tiff:
+      config.exclude = ["tif_win32.c", "mkg3states.c"]
+    case .webp:
+      break
+    case .openmp:
+      config.exclude = [
+        "runtime/extractExternal.cpp",
+        "runtime/z_Windows_NT_util.cpp",
+        "runtime/z_Windows_NT-586_util.cpp",
+        "runtime/z_Windows_NT-586_asm.asm",
+        "runtime/kmp_stub.cpp",
+        "runtime/kmp_import.cpp",
+        "runtime/test-touch.c",
+      ]
+    case .apple:
+      break
+    case .glfw:
+      config.exclude = [
+        "wl_init.c",
+        "wl_window.c",
+        "wl_monitor.c",
+        "wgl_context.c",
+        "null_init.c",
+        "null_joystick.c",
+        "null_monitor.c",
+        "null_window.c",
+      ]
+      #if !os(Windows)
+        config.exclude += [
+          "win32_init.c",
+          "win32_joystick.c",
+          "win32_monitor.c",
+          "win32_thread.c",
+          "win32_time.c",
+          "win32_window.c",
+        ]
+      #endif /* !os(Windows) */
+      #if !os(macOS)
+        config.exclude += [
+          "nsgl_context.m",
+          "cocoa_init.m",
+        ]
+      #endif /* !os(macOS) */
+      #if !os(Linux)
+        config.exclude += [
+          "xkb_unicode.c",
+          "x11_init.c",
+          "x11_monitor.c",
+          "x11_window.c",
+          "posix_time.c",
+          "glx_context.c",
+          "linux_joystick.c",
+        ]
+      #endif /* !os(Linux) */
+      config.cxxSettings = [
+        .headerSearchPath("."),
+        .define("_GLFW_COCOA", to: "1", .when(platforms: Arch.OS.apple.platform)),
+        .define("_GLFW_X11", to: "1", .when(platforms: Arch.OS.linux.platform)),
+        .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
+        .define("GL_SILENCE_DEPRECATION", to: "1"),
+      ]
+    case .imgui:
+      config.exclude = [
+        // no wgpu (for now)
+        "backends/ImplWGPU.cpp",
+        // no allegro
+        "backends/ImplAllegro5.cpp",
+        // no android
+        "backends/ImplAndroid.cpp",
+        // no directx (for now)
+        "backends/ImplDX9.cpp",
+        "backends/ImplDX10.cpp",
+        "backends/ImplDX11.cpp",
+        "backends/ImplDX12.cpp",
+        // no sdl
+        "backends/ImplSDL.cpp",
+        "backends/ImplSDLRenderer.cpp",
+      ]
+      #if !os(Windows)
+        config.exclude += [
+          // no win32
+          "backends/ImplWin32.cpp",
+        ]
+      #endif /* !os(Windows) */
+      #if !os(macOS)
+        config.exclude += [
+          // no metal
+          "backends/ImplMetal.mm",
+          // no apple os
+          "backends/ImplMacOS.mm",
+        ]
+      #endif /* !os(macOS) */
+    // case .mxResources:
+    //   break
+    case .materialx:
+      break
+    case .gpuShaders:
+      break
+    case .osd:
+      config.exclude = [
+        /* disabled for now */
+        "osd/OpenCLD3D11VertexBuffer.cpp",
+        "osd/OpenCLEvaluator.cpp",
+        "osd/OpenCLPatchTable.cpp",
+        "osd/OpenCLVertexBuffer.cpp",
+        "osd/OpenCLGLVertexBuffer.cpp",
+        /* peek into apple's late DX3D work
+          on macOS, we may want to tap into this. */
+        "osd/D3D11ComputeEvaluator.cpp",
+        "osd/D3D11LegacyGregoryPatchTable.cpp",
+        "osd/D3D11PatchTable.cpp",
+        "osd/D3D11VertexBuffer.cpp",
+        "osd/CpuD3D11VertexBuffer.cpp",
+        /* no CUDA support on macOS */
+        "osd/CudaD3D11VertexBuffer.cpp",
+        "osd/CudaEvaluator.cpp",
+        "osd/CudaGLVertexBuffer.cpp",
+        "osd/CudaKernel.cu",
+        "osd/CudaPatchTable.cpp",
+        "osd/CudaVertexBuffer.cpp",
+      ]
+      #if !os(macOS)
+        /* metal is only for darwin. */
+        config.exclude += [
+          "MTLComputeEvaluator.mm",
+          "MTLLegacyGregoryPatchTable.mm",
+          "MTLMesh.mm",
+          "MTLPatchShaderSource.mm",
+          "MTLPatchTable.mm",
+          "MTLVertexBuffer.mm",
+        ]
+      #endif /* !os(macOS) */
+      config.cxxSettings = [
+        .headerSearchPath("glLoader"),
+        /* autogenerated shader headers. */
+        .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../.build/\(Arch.hostTriplet)/debug/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .debug)),
+        .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../.build/\(Arch.hostTriplet)/release/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .release)),
+      ]
+    case .exr:
+      break
+    case .oiio:
+      config.exclude = [
+        "nuke",
+        "jpeg2000.imageio",
+        "iv",
+        "heif.imageio",
+        "gif.imageio",
+        "ffmpeg.imageio",
+        "dicom.imageio",
+        "cineon.imageio",
+      ]
+    case .ocio:
+      #if !os(macOS)
+        config.exclude = [
+          "SystemMonitor_macos.cpp",
+        ]
+      #endif
+      #if !os(Windows)
+        config.exclude += [
+          "SystemMonitor_windows.cpp",
+        ]
+      #endif
+    case .mpy:
+      config.exclude = [
+        "PyAlembic/msvc14fixes.cpp",
+        "PyOpenVDB",
+        "PyMaterialX",
+      ]
+    case .ptex:
+      break
+    case .hdf5:
+      break
+    case .alembic:
+      break
+    case .pybind11:
+      break
+    case .deflate:
+      break
+    case .blosc:
+      #if !os(Windows)
+        config.exclude = ["include/win32"]
+      #endif
+    case .openvdb:
+      config.cxxSettings = [
+        .headerSearchPath("include/openvdb/io"),
+        .headerSearchPath("include/openvdb/points"),
+        .headerSearchPath("include/openvdb/thread"),
+        .headerSearchPath("include/openvdb/tools"),
+        .headerSearchPath("include/openvdb/tree"),
+        .headerSearchPath("include/openvdb/util"),
+        /* -------------------------------------------
+           NOTICE: the lack of the math dir search path
+           otherwise, openvdbs math.h header will clash
+           with the system stdlib math.h header. Source
+           files within openvdb (***.cc) which included
+           math have been prefixed to math/(***.h), and
+           original openvdb headers remain unchanged.
+          ------------------------------------------- */
+        .headerSearchPath("include/openvdb"),
+        .define("OPENVDB_USE_DELAYED_LOADING", to: "1"),
+        .define("OPENVDB_USE_BLOSC", to: "1"),
+        .define("OPENVDB_USE_ZLIB", to: "1"),
+      ]
+    case .boost:
+      break
+    case .python:
+      break
+    case .moltenVK:
+      break
+    case .all:
+      config.products = [
+        .library(
+          name: "OneTBB",
+          targets: ["OneTBB"]
+        ),
+        .library(
+          name: "Boost",
+          targets: ["Boost"]
+        ),
+        .library(
+          name: "MetaTBB",
+          targets: ["MetaTBB"]
+        ),
+        .library(
+          name: "TBBMalloc",
+          targets: ["TBBMalloc"]
+        ),
+        .library(
+          name: "TBBMallocProxy",
+          targets: ["TBBMallocProxy"]
+        ),
+        .library(
+          name: "Python",
+          targets: ["Python"]
+        ),
+        .library(
+          name: "Apple",
+          targets: ["Apple"]
+        ),
+        .library(
+          name: "MetaPy",
+          targets: ["MetaPy"]
+        ),
+        .library(
+          name: "HDF5",
+          targets: ["HDF5"]
+        ),
+        .library(
+          name: "OpenVDB",
+          targets: ["OpenVDB"]
+        ),
+        .library(
+          name: "OpenColorIO",
+          targets: ["OpenColorIO"]
+        ),
+        .library(
+          name: "OpenImageIO",
+          targets: ["OpenImageIO"]
+        ),
+        .library(
+          name: "OpenEXR",
+          targets: ["OpenEXR"]
+        ),
+        .library(
+          name: "OpenSubdiv",
+          targets: ["OpenSubdiv"]
+        ),
+        .library(
+          name: "GPUShaders",
+          targets: ["GPUShaders"]
+        ),
+        .library(
+          name: "OpenMP",
+          targets: ["OpenMP"]
+        ),
+        .library(
+          name: "GLFW",
+          targets: ["GLFW"]
+        ),
+        .library(
+          name: "ImGui",
+          targets: ["ImGui"]
+        ),
+        // .library(
+        //   name: "MXResources",
+        //   targets: ["MXResources"]
+        // ),
+        .library(
+          name: "MaterialX",
+          targets: ["MaterialX"]
+        ),
+        .library(
+          name: "WebP",
+          targets: ["WebP"]
+        ),
+        .library(
+          name: "TurboJPEG",
+          targets: ["TurboJPEG"]
+        ),
+        .library(
+          name: "Raw",
+          targets: ["Raw"]
+        ),
+        .library(
+          name: "TIFF",
+          targets: ["TIFF"]
+        ),
+        .library(
+          name: "LibPNG",
+          targets: ["LibPNG"]
+        ),
+        .library(
+          name: "ZStandard",
+          targets: ["ZStandard"]
+        ),
+        .library(
+          name: "ZLibDataCompression",
+          targets: ["ZLibDataCompression"]
+        ),
+        .library(
+          name: "LZMA2",
+          targets: ["LZMA2"]
+        ),
+        .library(
+          name: "MiniZip",
+          targets: ["MiniZip"]
+        ),
+        .library(
+          name: "DEFLATE",
+          targets: ["DEFLATE"]
+        ),
+        .library(
+          name: "Yaml",
+          targets: ["Yaml"]
+        ),
+        .library(
+          name: "OpenSSL",
+          targets: ["OpenSSL"]
+        ),
+        .library(
+          name: "PyBind11",
+          targets: ["PyBind11"]
+        ),
+        .library(
+          name: "Blosc",
+          targets: ["Blosc"]
+        ),
+        .library(
+          name: "Ptex",
+          targets: ["Ptex"]
+        ),
+        .library(
+          name: "Alembic",
+          targets: ["Alembic"]
+        ),
+        .library(
+          name: "Eigen",
+          targets: ["Eigen"]
+        ),
+        .library(
+          name: "Draco",
+          targets: ["Draco"]
+        ),
+        .library(
+          name: "MoltenVK",
+          targets: ["MoltenVK"]
+        ),
+        .executable(
+          name: "MXGraphEditor",
+          targets: ["MXGraphEditor"]
+        ),
+        .executable(
+          name: "MetaversalDemo",
+          targets: ["MetaversalDemo"]
+        ),
+      ]
+      config.dependencies = config.products.map
+      {
+        .init(stringLiteral: $0.name)
+      }
+  }
+
+  return config
+}
+
 /** Platforms, grouped by OS. */
 enum Arch
 {
@@ -107,1095 +1150,58 @@ enum Arch
   #endif
 }
 
-var chipsetExcludeDirs: [String] = []
-var chipsetDefinesC: [CSetting] = []
-var chipsetDefinesCXX: [CXXSetting] = []
-if Arch.cpuArch.family.contains(.arm)
+enum PkgTarget: String
 {
-  chipsetExcludeDirs.append("intel")
-  chipsetExcludeDirs.append("powerpc")
-  chipsetDefinesC.append(.define("WITH_ARM", to: "1"))
-  chipsetDefinesCXX.append(.define("WITH_ARM", to: "1"))
+  case draco = "Draco"
+  case tbbMallocProxy = "TBBMallocProxy"
+  case tbbMalloc = "TBBMalloc"
+  case oneTbb = "OneTBB"
+  case metaTbb = "MetaTBB"
+  case zstd = "ZStandard"
+  case lzma2 = "LZMA2"
+  case yaml = "Yaml"
+  case openssl = "OpenSSL"
+  case minizip = "MiniZip"
+  case zlib = "ZLibDataCompression"
+  case raw = "Raw"
+  case png = "LibPNG"
+  case turbojpeg = "TurboJPEG"
+  case tiff = "TIFF"
+  case webp = "WebP"
+  case openmp = "OpenMP"
+  case apple = "Apple"
+  case glfw = "GLFW"
+  case imgui = "ImGui"
+  //case mxResources = "MXResources"
+  case materialx = "MaterialX"
+  case gpuShaders = "GPUShaders"
+  case osd = "OpenSubdiv"
+  case exr = "OpenEXR"
+  case oiio = "OpenImageIO"
+  case ocio = "OpenColorIO"
+  case mpy = "MetaPy"
+  case ptex = "Ptex"
+  case hdf5 = "HDF5"
+  case alembic = "Alembic"
+  case pybind11 = "PyBind11"
+  case deflate = "DEFLATE"
+  case blosc = "Blosc"
+  case openvdb = "OpenVDB"
+  case boost = "Boost"
+  case python = "Python"
+  case moltenVK = "MoltenVK"
+  case all
 }
-else if Arch.cpuArch.family.contains(.x86_64)
+
+struct TargetInfo
 {
-  chipsetExcludeDirs.append("arm")
-  chipsetExcludeDirs.append("powerpc")
-  chipsetDefinesC.append(.define("WITH_INTEL", to: "1"))
-  chipsetDefinesCXX.append(.define("WITH_INTEL", to: "1"))
+  var dependencies: [Target.Dependency] = []
+  var products: [Product] = []
+  var exclude: [String] = []
+  var publicHeadersPath: String = ""
+  var resources: [Resource] = []
+  var cSettings: [CSetting] = []
+  var cxxSettings: [CXXSetting] = []
+  var swiftSettings: [SwiftSetting] = []
+  var linkerSettings: [LinkerSetting] = []
 }
-else if Arch.cpuArch.family.contains(.powerpc)
-{
-  chipsetExcludeDirs.append("arm")
-  chipsetExcludeDirs.append("intel")
-  chipsetDefinesC.append(.define("WITH_POWERPC", to: "1"))
-  chipsetDefinesCXX.append(.define("WITH_POWERPC", to: "1"))
-}
-else /* a unicorn! 🦄 */
-{
-  chipsetExcludeDirs.append("arm")
-  chipsetExcludeDirs.append("intel")
-  chipsetExcludeDirs.append("powerpc")
-  chipsetDefinesC.append(.define("WITH_UNICORNS", to: "1"))
-  chipsetDefinesCXX.append(.define("WITH_UNICORNS", to: "1"))
-}
-
-#if os(Windows)
-  let platformGLFWExcludes: [String] = [
-    "xkb_unicode.c",
-    "x11_init.c",
-    "x11_monitor.c",
-    "x11_window.c",
-    "posix_thread.c",
-    "wl_init.c",
-    "wl_window.c",
-    "wl_monitor.c",
-    "linux_joystick.c",
-    "nsgl_context.m",
-    "cocoa_init.m",
-  ]
-  let platformImGuiExcludes: [String] = [
-    // no wgpu (for now)
-    "backends/ImplWGPU.cpp",
-    // no allegro
-    "backends/ImplAllegro5.cpp",
-    // no android
-    "backends/ImplAndroid.cpp",
-    // no sdl
-    "backends/ImplSDL.cpp",
-    "backends/ImplSDLRenderer.cpp",
-    // no metal
-    "backends/ImplMetal.mm",
-    // no apple os
-    "backends/ImplMacOS.mm",
-  ]
-  let platformBloscExcludes: [String] = []
-  let platformMetaPyExcludes: [String] = [
-    "PyOpenVDB",
-    "PyMaterialX",
-  ]
-  let platformMiniZipExcludes: [String] = [
-    "mz_strm_os_posix.c",
-    "mz_os_posix.c",
-    "mz_crypt_apple.c",
-  ]
-  let platformOCIOExcludes: [String] = [
-    "SystemMonitor_macos.cpp",
-  ]
-  let platformTIFFExcludes: [String] = [
-    "tif_unix.c",
-    "mkg3states.c",
-  ]
-  let platformTurboJPEGExcludes: [String] = [
-    "turbojpeg-jni.c",
-    "tjunittest.c",
-  ]
-  let platformOsdExcludes: [String] = [
-    /* disabled for now. */
-    "osd/OpenCLD3D11VertexBuffer.cpp",
-    "osd/OpenCLEvaluator.cpp",
-    "osd/OpenCLPatchTable.cpp",
-    "osd/OpenCLVertexBuffer.cpp",
-    "osd/OpenCLGLVertexBuffer.cpp",
-    /* disabled DX3D for now. */
-    /* I have lots of TODOs on windows... */
-    "osd/D3D11ComputeEvaluator.cpp",
-    "osd/D3D11LegacyGregoryPatchTable.cpp",
-    "osd/D3D11PatchTable.cpp",
-    "osd/D3D11VertexBuffer.cpp",
-    "osd/CpuD3D11VertexBuffer.cpp",
-    /* no metal for windows. */
-    "MTLComputeEvaluator.mm",
-    "MTLLegacyGregoryPatchTable.mm",
-    "MTLMesh.mm",
-    "MTLPatchShaderSource.mm",
-    "MTLPatchTable.mm",
-    "MTLVertexBuffer.mm",
-    /* disabled CUDA for now. */
-    /* I have lots of TODOs on windows... */
-    "osd/CudaD3D11VertexBuffer.cpp",
-    "osd/CudaEvaluator.cpp",
-    "osd/CudaGLVertexBuffer.cpp",
-    "osd/CudaKernel.cu",
-    "osd/CudaPatchTable.cpp",
-    "osd/CudaVertexBuffer.cpp",
-  ]
-#else /* os(Windows) */
-  #if os(macOS)
-    let platformGLFWExcludes: [String] = [
-      "xkb_unicode.c",
-      "x11_init.c",
-      "x11_monitor.c",
-      "x11_window.c",
-      "win32_init.c",
-      "win32_joystick.c",
-      "win32_monitor.c",
-      "win32_thread.c",
-      "win32_time.c",
-      "win32_window.c",
-      "posix_time.c",
-      "wl_init.c",
-      "wl_window.c",
-      "wl_monitor.c",
-      "wgl_context.c",
-      "glx_context.c",
-      "linux_joystick.c",
-      "null_init.c",
-      "null_joystick.c",
-      "null_monitor.c",
-      "null_window.c",
-    ]
-    let platformImGuiExcludes: [String] = [
-      // no win32
-      "backends/ImplWin32.cpp",
-      // no wgpu (for now)
-      "backends/ImplWGPU.cpp",
-      // no allegro
-      "backends/ImplAllegro5.cpp",
-      // no android
-      "backends/ImplAndroid.cpp",
-      // no directx (for now)
-      "backends/ImplDX9.cpp",
-      "backends/ImplDX10.cpp",
-      "backends/ImplDX11.cpp",
-      "backends/ImplDX12.cpp",
-      // no sdl
-      "backends/ImplSDL.cpp",
-      "backends/ImplSDLRenderer.cpp",
-    ]
-    let platformOCIOExcludes: [String] = [
-      "SystemMonitor_windows.cpp",
-    ]
-    let platformMiniZipExcludes: [String] = [
-      "mz_strm_os_win32.c",
-      "mz_os_win32.c",
-      "mz_crypt_openssl.c",
-      "mz_crypt_winvista.c",
-      "mz_crypt_winxp.c",
-    ]
-    let platformOsdExcludes: [String] = [
-      /* disabled for now */
-      "osd/OpenCLD3D11VertexBuffer.cpp",
-      "osd/OpenCLEvaluator.cpp",
-      "osd/OpenCLPatchTable.cpp",
-      "osd/OpenCLVertexBuffer.cpp",
-      "osd/OpenCLGLVertexBuffer.cpp",
-      /* peek into apple's late DX3D work
-        on macOS, we may want to tap into this. */
-      "osd/D3D11ComputeEvaluator.cpp",
-      "osd/D3D11LegacyGregoryPatchTable.cpp",
-      "osd/D3D11PatchTable.cpp",
-      "osd/D3D11VertexBuffer.cpp",
-      "osd/CpuD3D11VertexBuffer.cpp",
-      /* no CUDA support on macOS */
-      "osd/CudaD3D11VertexBuffer.cpp",
-      "osd/CudaEvaluator.cpp",
-      "osd/CudaGLVertexBuffer.cpp",
-      "osd/CudaKernel.cu",
-      "osd/CudaPatchTable.cpp",
-      "osd/CudaVertexBuffer.cpp",
-    ]
-  #elseif os(Linux)
-    let platformGLFWExcludes: [String] = [
-      "win32_init.c",
-      "win32_joystick.c",
-      "win32_monitor.c",
-      "win32_thread.c",
-      "win32_time.c",
-      "win32_window.c",
-      "wgl_context.c",
-      "nsgl_context.m",
-      "cocoa_init.m",
-    ]
-    let platformImGuiExcludes: [String] = [
-      // no win32
-      "backends/ImplWin32.cpp",
-      // no wgpu (for now)
-      "backends/ImplWGPU.cpp",
-      // no allegro
-      "backends/ImplAllegro5.cpp",
-      // no android (for now)
-      "backends/ImplAndroid.cpp",
-      // no directx
-      "backends/ImplDX9.cpp",
-      "backends/ImplDX10.cpp",
-      "backends/ImplDX11.cpp",
-      "backends/ImplDX12.cpp",
-      // no metal
-      "backends/ImplMetal.mm",
-      // no apple os
-      "backends/ImplMacOS.mm",
-    ]
-    let platformOCIOExcludes: [String] = [
-      "SystemMonitor_macos.cpp",
-      "SystemMonitor_windows.cpp",
-    ]
-    let platformMiniZipExcludes: [String] = [
-      "mz_strm_os_win32.c",
-      "mz_os_win32.c",
-      "mz_crypt_winvista.c",
-      "mz_crypt_winxp.c",
-      "mz_crypt_apple.c",
-    ]
-    let platformOsdExcludes: [String] = [
-      /* disabled for now. */
-      "osd/OpenCLD3D11VertexBuffer.cpp",
-      "osd/OpenCLEvaluator.cpp",
-      "osd/OpenCLPatchTable.cpp",
-      "osd/OpenCLVertexBuffer.cpp",
-      "osd/OpenCLGLVertexBuffer.cpp",
-      /* no DirectX3D for linux. */
-      "osd/D3D11ComputeEvaluator.cpp",
-      "osd/D3D11LegacyGregoryPatchTable.cpp",
-      "osd/D3D11PatchTable.cpp",
-      "osd/D3D11VertexBuffer.cpp",
-      "osd/CpuD3D11VertexBuffer.cpp",
-      /* no metal for linux. */
-      "MTLComputeEvaluator.mm",
-      "MTLLegacyGregoryPatchTable.mm",
-      "MTLMesh.mm",
-      "MTLPatchShaderSource.mm",
-      "MTLPatchTable.mm",
-      "MTLVertexBuffer.mm",
-      /* disabled CUDA for now. */
-      /* I have lots of TODOs on linux... */
-      "osd/CudaD3D11VertexBuffer.cpp",
-      "osd/CudaEvaluator.cpp",
-      "osd/CudaGLVertexBuffer.cpp",
-      "osd/CudaKernel.cu",
-      "osd/CudaPatchTable.cpp",
-      "osd/CudaVertexBuffer.cpp",
-    ]
-  #endif /* os(Linux) */
-  /** ---------------------------------- *
-   * Same excludes for macOS and Linux. *
-   * ---------------------------------- */
-  let platformBloscExcludes: [String] = [
-    "include/win32",
-  ]
-  let platformMetaPyExcludes: [String] = [
-    "PyAlembic/msvc14fixes.cpp",
-    "PyOpenVDB",
-    "PyMaterialX",
-  ]
-  let platformTIFFExcludes: [String] = [
-    "tif_win32.c",
-    "mkg3states.c",
-  ]
-  let platformTurboJPEGExcludes: [String] = [
-    "turbojpeg-jni.c",
-    "tjunittest.c",
-    "tjexample.c",
-    "example.c",
-  ]
-#endif /* os(macOS) || os(Linux) */
-
-/* ------------------------------------------------------
- *  :: :  💫 The Open Source Metaverse  :   ::
- * ------------------------------------------------------ */
-
-let package = Package(
-  name: "MetaverseKit",
-  platforms: [
-    .macOS(.v12),
-    .visionOS(.v1),
-    .iOS(.v12),
-    .tvOS(.v12),
-    .watchOS(.v4),
-  ],
-  products: [
-    .library(
-      name: "OneTBB",
-      targets: ["OneTBB"]
-    ),
-    .library(
-      name: "Boost",
-      targets: ["Boost"]
-    ),
-    .library(
-      name: "MetaTBB",
-      targets: ["MetaTBB"]
-    ),
-    .library(
-      name: "TBBMalloc",
-      targets: ["TBBMalloc"]
-    ),
-    .library(
-      name: "TBBMallocProxy",
-      targets: ["TBBMallocProxy"]
-    ),
-    .library(
-      name: "Python",
-      targets: ["Python"]
-    ),
-    .library(
-      name: "Apple",
-      targets: ["Apple"]
-    ),
-    .library(
-      name: "MetaPy",
-      targets: ["MetaPy"]
-    ),
-    .library(
-      name: "HDF5",
-      targets: ["HDF5"]
-    ),
-    .library(
-      name: "OpenVDB",
-      targets: ["OpenVDB"]
-    ),
-    .library(
-      name: "OpenColorIO",
-      targets: ["OpenColorIO"]
-    ),
-    .library(
-      name: "OpenImageIO",
-      targets: ["OpenImageIO"]
-    ),
-    .library(
-      name: "OpenEXR",
-      targets: ["OpenEXR"]
-    ),
-    .library(
-      name: "OpenSubdiv",
-      targets: ["OpenSubdiv"]
-    ),
-    .library(
-      name: "GPUShaders",
-      targets: ["GPUShaders"]
-    ),
-    .library(
-      name: "OpenMP",
-      targets: ["OpenMP"]
-    ),
-    .library(
-      name: "GLFW",
-      targets: ["GLFW"]
-    ),
-    .library(
-      name: "ImGui",
-      targets: ["ImGui"]
-    ),
-    .library(
-      name: "MXResources",
-      targets: ["MXResources"]
-    ),
-    .library(
-      name: "MaterialX",
-      targets: ["MaterialX"]
-    ),
-    .library(
-      name: "WebP",
-      targets: ["WebP"]
-    ),
-    .library(
-      name: "TurboJPEG",
-      targets: ["TurboJPEG"]
-    ),
-    .library(
-      name: "Raw",
-      targets: ["Raw"]
-    ),
-    .library(
-      name: "TIFF",
-      targets: ["TIFF"]
-    ),
-    .library(
-      name: "LibPNG",
-      targets: ["LibPNG"]
-    ),
-    .library(
-      name: "ZStandard",
-      targets: ["ZStandard"]
-    ),
-    .library(
-      name: "ZLibDataCompression",
-      targets: ["ZLibDataCompression"]
-    ),
-    .library(
-      name: "LZMA2",
-      targets: ["LZMA2"]
-    ),
-    .library(
-      name: "MiniZip",
-      targets: ["MiniZip"]
-    ),
-    .library(
-      name: "DEFLATE",
-      targets: ["DEFLATE"]
-    ),
-    .library(
-      name: "Yaml",
-      targets: ["Yaml"]
-    ),
-    .library(
-      name: "OpenSSL",
-      targets: ["OpenSSL"]
-    ),
-    .library(
-      name: "PyBind11",
-      targets: ["PyBind11"]
-    ),
-    .library(
-      name: "Blosc",
-      targets: ["Blosc"]
-    ),
-    .library(
-      name: "Ptex",
-      targets: ["Ptex"]
-    ),
-    .library(
-      name: "Alembic",
-      targets: ["Alembic"]
-    ),
-    .library(
-      name: "Eigen",
-      targets: ["Eigen"]
-    ),
-    .library(
-      name: "Draco",
-      targets: ["Draco"]
-    ),
-    .library(
-      name: "MoltenVK",
-      targets: ["MoltenVK"]
-    ),
-    .executable(
-      name: "MXGraphEditor",
-      targets: ["MXGraphEditor"]
-    ),
-  ],
-  targets: [
-    .target(
-      name: "Eigen",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "include",
-      cxxSettings: []
-    ),
-
-    .target(
-      name: "Draco",
-      dependencies: [
-        "Eigen",
-      ],
-      exclude: [
-        "include/draco/animation/keyframe_animation_encoding_test.cc",
-        "include/draco/animation/keyframe_animation_test.cc",
-        "include/draco/attributes/point_attribute_test.cc",
-        "include/draco/point_cloud/point_cloud_test.cc",
-        "include/draco/metadata/metadata_test.cc",
-        "include/draco/metadata/metadata_encoder_test.cc",
-        "include/draco/point_cloud/point_cloud_builder_test.cc",
-        "include/draco/unity/draco_unity_plugin_test.cc",
-        "include/draco/mesh/mesh_test.cc",
-        "include/draco/mesh/triangle_soup_mesh_builder_test.cc",
-        "include/draco/mesh/mesh_are_equivalent_test.cc",
-        "include/draco/mesh/corner_table_test.cc",
-        "include/draco/mesh/mesh_cleanup_test.cc",
-        "include/draco/io/stdio_file_writer_test.cc",
-        "include/draco/io/stdio_file_reader_test.cc",
-        "include/draco/io/stl_decoder_test.cc",
-        "include/draco/io/ply_reader_test.cc",
-        "include/draco/io/point_cloud_io_test.cc",
-        "include/draco/io/stl_encoder_test.cc",
-        "include/draco/io/obj_decoder_test.cc",
-        "include/draco/io/obj_encoder_test.cc",
-        "include/draco/io/ply_decoder_test.cc",
-        "include/draco/io/file_reader_factory_test.cc",
-        "include/draco/io/file_writer_factory_test.cc",
-        "include/draco/io/file_utils_test.cc",
-        "include/draco/io/file_writer_utils_test.cc",
-        "include/draco/core/status_test.cc",
-        "include/draco/core/vector_d_test.cc",
-        "include/draco/core/math_utils_test.cc",
-        "include/draco/core/quantization_utils_test.cc",
-        "include/draco/core/buffer_bit_coding_test.cc",
-        "include/draco/core/draco_test_utils.cc",
-        "include/draco/compression/point_cloud/point_cloud_kd_tree_encoding_test.cc",
-        "include/draco/compression/point_cloud/point_cloud_sequential_encoding_test.cc",
-        "include/draco/compression/mesh/mesh_encoder_test.cc",
-        "include/draco/compression/mesh/mesh_edgebreaker_encoding_test.cc",
-        "include/draco/compression/entropy/symbol_coding_test.cc",
-        "include/draco/compression/entropy/shannon_entropy_test.cc",
-        "include/draco/compression/encode_test.cc",
-        "include/draco/compression/decode_test.cc",
-        "include/draco/compression/config/decoder_options_test.cc",
-        "include/draco/compression/bit_coders/rans_coding_test.cc",
-        "include/draco/compression/attributes/sequential_integer_attribute_encoding_test.cc",
-        "include/draco/compression/attributes/prediction_schemes/prediction_scheme_normal_octahedron_canonicalized_transform_test.cc",
-        "include/draco/compression/attributes/prediction_schemes/prediction_scheme_normal_octahedron_transform_test.cc",
-        "include/draco/compression/attributes/point_d_vector_test.cc",
-        "include/draco/javascript",
-        "include/draco/tools",
-      ],
-      publicHeadersPath: "include",
-      cxxSettings: []
-    ),
-
-    .target(
-      name: "TBBMallocProxy",
-      dependencies: [
-        .target(name: "OneTBB"),
-      ],
-      exclude: [],
-      publicHeadersPath: ".",
-      cxxSettings: [
-        .define("_XOPEN_SOURCE"),
-      ]
-    ),
-
-    .target(
-      name: "TBBMalloc",
-      dependencies: [
-        .target(name: "OneTBB"),
-        .target(name: "TBBMallocProxy"),
-      ],
-      exclude: [],
-      publicHeadersPath: ".",
-      cxxSettings: [
-        .define("_XOPEN_SOURCE"),
-        .define("__TBBMALLOC_BUILD", to: "1"),
-      ]
-    ),
-
-    .target(
-      name: "OneTBB",
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .define("_XOPEN_SOURCE"),
-        .define("TBB_USE_PROFILING_TOOLS", to: "2"),
-      ]
-    ),
-
-    .target(
-      name: "MetaTBB",
-      dependencies: [
-        .target(name: "OneTBB"),
-        .target(name: "TBBMalloc"),
-        .target(name: "TBBMallocProxy"),
-      ],
-      exclude: [],
-      cxxSettings: [
-        .define("_XOPEN_SOURCE"),
-        .define("TBB_USE_PROFILING_TOOLS", to: "2"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
-    ),
-
-    .target(
-      name: "ZStandard",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "."
-    ),
-
-    .target(
-      name: "LZMA2",
-      dependencies: [],
-      exclude: [
-        "check/crc32_small.c",
-      ],
-      publicHeadersPath: "include",
-      cSettings: [
-        .headerSearchPath("common"),
-        .headerSearchPath("lzmacommon"),
-        .headerSearchPath("check"),
-        .headerSearchPath("delta"),
-        .headerSearchPath("lz"),
-        .headerSearchPath("lzma"),
-        .headerSearchPath("rangecoder"),
-        .headerSearchPath("simple"),
-        .define("HAVE_STDBOOL_H", to: "1"),
-        .define("MYTHREAD_POSIX", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
-        .define("MYTHREAD_VISTA", to: "1", .when(platforms: Arch.OS.windows.platform)),
-      ]
-    ),
-
-    .target(
-      name: "Yaml",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "include"
-    ),
-
-    .target(
-      name: "OpenSSL",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "include",
-      cSettings: [
-        .define("BORINGSSL_NO_STATIC_INITIALIZER", to: "1"),
-      ]
-    ),
-
-    .target(
-      name: "MiniZip",
-      dependencies: [
-        .target(name: "LZMA2"),
-        .target(name: "ZLibDataCompression"),
-        .target(name: "ZStandard"),
-        .target(name: "OpenSSL"),
-      ],
-      exclude: platformMiniZipExcludes,
-      publicHeadersPath: "include",
-      cSettings: [
-        .define("HAVE_ZLIB", to: "1"),
-        .define("ZLIB_COMPAT", to: "1"),
-        .define("HAVE_WZAES", to: "1"),
-      ],
-      linkerSettings: [
-        .linkedLibrary("bz2", .when(platforms: Arch.OS.apple.platform)),
-      ]
-    ),
-
-    .target(
-      name: "ZLibDataCompression",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "include",
-      cSettings: [
-        .headerSearchPath("."),
-        .define("HAVE_ATTRIBUTE_ALIGNED", to: "1"),
-        .define("WITH_GZFILEOP", to: "1"),
-        .define("HAVE_UNISTD_H", to: "1"),
-        .define("Z_HAVE_STDARG_H", to: "1"),
-      ]
-    ),
-
-    .target(
-      name: "Raw",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("."),
-      ]
-    ),
-
-    .target(
-      name: "LibPNG",
-      dependencies: [
-        .target(name: "ZLibDataCompression"),
-      ],
-      exclude: [
-        "example.c",
-        "pngtest.c",
-      ] + chipsetExcludeDirs,
-      publicHeadersPath: "include",
-      cSettings: [
-        .headerSearchPath("."),
-      ] + chipsetDefinesC
-    ),
-
-    .target(
-      name: "TurboJPEG",
-      dependencies: [
-        .target(name: "OpenSSL"),
-      ],
-      exclude: platformTurboJPEGExcludes,
-      publicHeadersPath: "include/turbo",
-      cSettings: [
-        .headerSearchPath("."),
-        .define("C_LOSSLESS_SUPPORTED", to: "1"),
-        .define("D_LOSSLESS_SUPPORTED", to: "1"),
-        .define("PPM_SUPPORTED", to: "1"),
-        .define("BITS_IN_JSAMPLE", to: "12"),
-      ]
-    ),
-
-    .target(
-      name: "TIFF",
-      dependencies: [
-        .target(name: "WebP"),
-        .target(name: "LZMA2"),
-        .target(name: "ZStandard"),
-        .target(name: "TurboJPEG"),
-      ],
-      exclude: platformTIFFExcludes,
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .define("FROM_TIF_JPEG_12", to: "1"),
-        .define("HAVE_JPEGTURBO_DUAL_MODE_8_12", to: "1"),
-        .define("BITS_IN_JSAMPLE", to: "12"),
-      ]
-    ),
-
-    .target(
-      name: "WebP",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "include",
-      cSettings: [
-        .headerSearchPath("."),
-      ]
-    ),
-
-    .target(
-      name: "OpenMP",
-      dependencies: [
-        .target(name: "Python"),
-      ],
-      exclude: [
-        "runtime/extractExternal.cpp",
-        "runtime/z_Windows_NT_util.cpp",
-        "runtime/z_Windows_NT-586_util.cpp",
-        "runtime/z_Windows_NT-586_asm.asm",
-        "runtime/kmp_stub.cpp",
-        "runtime/kmp_import.cpp",
-        "runtime/test-touch.c",
-      ],
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("runtime"),
-      ]
-    ),
-
-    .target(
-      name: "Apple",
-      dependencies: [],
-      publicHeadersPath: "include"
-    ),
-
-    .target(
-      name: "GLFW",
-      dependencies: [
-        .target(name: "Apple"),
-        .target(name: "MoltenVK"),
-      ],
-      exclude: platformGLFWExcludes,
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("."),
-        .define("_GLFW_COCOA", to: "1", .when(platforms: Arch.OS.apple.platform)),
-        .define("_GLFW_X11", to: "1", .when(platforms: Arch.OS.linux.platform)),
-        .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
-        .define("GL_SILENCE_DEPRECATION", to: "1"),
-      ]
-    ),
-
-    .target(
-      name: "ImGui",
-      dependencies: [
-        .target(name: "GLFW"),
-      ],
-      exclude: platformImGuiExcludes,
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("."),
-        .headerSearchPath("backends"),
-      ],
-      linkerSettings: [
-        .linkedFramework("Cocoa", .when(platforms: Arch.OS.apple.platform)),
-        .linkedFramework("GLUT", .when(platforms: Arch.OS.apple.platform)),
-        .linkedFramework("GameController", .when(platforms: Arch.OS.apple.platform)),
-      ]
-    ),
-
-    .target(
-      name: "MXResources",
-      dependencies: [],
-      resources: [
-        .copy("libraries"),
-        .process("Resources"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
-    ),
-
-    .target(
-      name: "MaterialX",
-      dependencies: [
-        .target(name: "Apple"),
-        .target(name: "ImGui"),
-        .target(name: "OpenImageIO"),
-        .target(name: "Python"),
-        .target(name: "PyBind11"),
-        .target(name: "MXResources"),
-      ],
-      exclude: [
-        "source/JsMaterialX",
-        "source/MaterialXView"
-      ],
-      publicHeadersPath: "include"
-    ),
-
-    .executableTarget(
-      name: "MXGraphEditor",
-      dependencies: [
-        .target(name: "MaterialX"),
-      ]
-    ),
-
-    .target(
-      name: "GPUShaders",
-      resources: [
-        .process("Metal"),
-        .process("GL"),
-        .process("DX3D"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
-    ),
-
-    .target(
-      name: "OpenSubdiv",
-      dependencies: [
-        .target(name: "MetaTBB"),
-        .target(name: "OpenMP"),
-        .target(name: "GPUShaders"),
-      ],
-      exclude: platformOsdExcludes,
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("glLoader"),
-        /* autogenerated shader headers. */
-        .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../.build/\(Arch.hostTriplet)/debug/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .debug)),
-        .define("GPU_SHADERS_SWIFT_OSD_H", to: "../../.build/\(Arch.hostTriplet)/release/GPUShaders.build/GPUShaders-Swift.h", .when(configuration: .release)),
-      ]
-    ),
-
-    .target(
-      name: "OpenEXR",
-      dependencies: [
-        .target(name: "DEFLATE"),
-      ],
-      exclude: [],
-      publicHeadersPath: "include",
-      cSettings: [
-        .headerSearchPath("."),
-        .headerSearchPath("OpenEXRCore"),
-        .headerSearchPath("include/OpenEXR"),
-      ]
-    ),
-
-    .target(
-      name: "OpenImageIO",
-      dependencies: [
-        .target(name: "WebP"),
-        .target(name: "TIFF"),
-        .target(name: "Raw"),
-        .target(name: "Ptex"),
-        .target(name: "LibPNG"),
-        .target(name: "OpenVDB"),
-        .target(name: "OpenEXR"),
-        .target(name: "PyBind11"),
-      ],
-      exclude: [
-        // disabled for now... but always happy to add more in.
-        "nuke",
-        "jpeg2000.imageio",
-        "iv",
-        "heif.imageio",
-        "gif.imageio",
-        "ffmpeg.imageio",
-        "dicom.imageio",
-        "cineon.imageio",
-      ],
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("."),
-        .headerSearchPath("include/OpenImageIO/detail"),
-        .headerSearchPath("libOpenImageIO"),
-      ]
-    ),
-
-    .target(
-      name: "OpenColorIO",
-      dependencies: [
-        .target(name: "OpenEXR"),
-        .target(name: "Python"),
-        .target(name: "MiniZip"),
-        .target(name: "Yaml"),
-      ],
-      exclude: platformOCIOExcludes,
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("."),
-      ],
-      linkerSettings: [
-        .linkedLibrary("expat", .when(platforms: Arch.OS.apple.platform)),
-      ]
-    ),
-
-    .target(
-      name: "MetaPy",
-      dependencies: [
-        .target(name: "Boost"),
-        .target(name: "Python"),
-        .target(name: "OpenEXR"),
-        .target(name: "OpenVDB"),
-        .target(name: "Alembic"),
-        .target(name: "OpenImageIO"),
-        .target(name: "MaterialX"),
-      ],
-      exclude: platformMetaPyExcludes,
-      publicHeadersPath: "include/python",
-      cxxSettings: [
-        .headerSearchPath("include/python/PyImath"),
-        .headerSearchPath("include/python/PyAlembic"),
-        .headerSearchPath("include/python/PyOIIO"),
-      ]
-    ),
-
-    .target(
-      name: "Ptex",
-      publicHeadersPath: "include",
-      cxxSettings: []
-    ),
-
-    .target(
-      name: "HDF5",
-      publicHeadersPath: "include",
-      cSettings: [
-        .define("H5_HAVE_C99_FUNC", to: "1"),
-        .define("H5_USE_18_API", to: "1"),
-        .define("H5_BUILT_AS_DYNAMIC_LIB", to: "1"),
-      ]
-    ),
-
-    .target(
-      name: "Alembic",
-      dependencies: [
-        .target(name: "Boost"),
-        .target(name: "Python"),
-        .target(name: "HDF5"),
-        .target(name: "OpenEXR"),
-      ],
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("include/Alembic/AbcMaterial"),
-      ]
-    ),
-
-    .target(
-      name: "PyBind11",
-      publicHeadersPath: "include",
-      cxxSettings: []
-    ),
-
-    .target(
-      name: "DEFLATE",
-      publicHeadersPath: "include",
-      cSettings: [
-        .headerSearchPath("."),
-      ]
-    ),
-
-    .target(
-      name: "Blosc",
-      dependencies: [
-        .target(name: "ZLibDataCompression"),
-        .target(name: "ZStandard"),
-      ],
-      exclude: platformBloscExcludes,
-      publicHeadersPath: "include/blosc"
-    ),
-
-    .target(
-      name: "OpenVDB",
-      dependencies: [
-        .target(name: "Boost"),
-        .target(name: "MetaTBB"),
-        .target(name: "Blosc"),
-        .target(name: "Python"),
-        .target(name: "PyBind11"),
-        .target(name: "OpenEXR"),
-        .target(name: "ZLibDataCompression"),
-      ],
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("include/openvdb/io"),
-        .headerSearchPath("include/openvdb/points"),
-        .headerSearchPath("include/openvdb/thread"),
-        .headerSearchPath("include/openvdb/tools"),
-        .headerSearchPath("include/openvdb/tree"),
-        .headerSearchPath("include/openvdb/util"),
-        /* -------------------------------------------
-           NOTICE: the lack of the math dir search path
-           otherwise, openvdbs math.h header will clash
-           with the system stdlib math.h header. Source
-           files within openvdb (***.cc) which included
-           math have been prefixed to math/(***.h), and
-           original openvdb headers remain unchanged.
-          ------------------------------------------- */
-        .headerSearchPath("include/openvdb"),
-        .define("OPENVDB_USE_DELAYED_LOADING", to: "1"),
-        .define("OPENVDB_USE_BLOSC", to: "1"),
-        .define("OPENVDB_USE_ZLIB", to: "1"),
-      ]
-    ),
-
-    .binaryTarget(
-      name: "Boost",
-      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
-      checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
-    ),
-
-    .binaryTarget(
-      name: "Python",
-      url: "https://github.com/wabiverse/MetaversePythonFramework/releases/download/3.11-b3/Python.xcframework.zip",
-      checksum: "f709ee01166f6945f77db821d8462e5f7c1d31d1ebf3c5f7c58004b13e07fd14"
-    ),
-
-    .binaryTarget(
-      name: "MoltenVK",
-      url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/MoltenVK.xcframework.zip",
-      checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
-    ),
-
-    .testTarget(
-      name: "MetaverseKitTests",
-      dependencies: [
-        /* link everything, a solid test. */
-        "Alembic",
-        "Apple",
-        "Boost",
-        "Python",
-        "Blosc",
-        "DEFLATE",
-        "Draco",
-        "Eigen",
-        "GLFW",
-        "GPUShaders",
-        "HDF5",
-        "ImGui",
-        "LZMA2",
-        "LibPNG",
-        "MXGraphEditor",
-        "MXResources",
-        "MaterialX",
-        "MetaPy",
-        "MetaTBB",
-        "MiniZip",
-        "OpenColorIO",
-        "OpenEXR",
-        "OpenImageIO",
-        "OpenMP",
-        "OpenSSL",
-        "OpenSubdiv",
-        "OpenVDB",
-        "Ptex",
-        "PyBind11",
-        "Raw",
-        "TBBMalloc",
-        "TBBMallocProxy",
-        "TIFF",
-        "TurboJPEG",
-        "WebP",
-        "Yaml",
-        "ZLibDataCompression",
-        "ZStandard",
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
-    ),
-  ],
-  cLanguageStandard: .gnu17,
-  cxxLanguageStandard: .cxx17
-)
