@@ -5,19 +5,18 @@
 
 #include <PyMaterialX/PyMaterialX.h>
 
-#include <MaterialXGenShader/ShaderGenerator.h>
-#include <MaterialXGenMdl/MdlShaderGenerator.h>
+#include <MaterialX/MXGenMdlShaderGenerator.h>
+#include <MaterialX/MXGenShaderGenerator.h>
 
 #include <string>
 
 namespace py = pybind11;
 namespace mx = MaterialX;
 
-
-void bindPyMdlShaderGenerator(py::module& mod)
-{
-    py::class_<mx::MdlShaderGenerator, mx::ShaderGenerator, mx::MdlShaderGeneratorPtr>(mod, "MdlShaderGenerator")
-        .def_static("create", &mx::MdlShaderGenerator::create)
-        .def(py::init<>())
-        .def("getTarget", &mx::MdlShaderGenerator::getTarget);
+void bindPyMdlShaderGenerator(py::module &mod) {
+  py::class_<mx::MdlShaderGenerator, mx::ShaderGenerator,
+             mx::MdlShaderGeneratorPtr>(mod, "MdlShaderGenerator")
+      .def_static("create", &mx::MdlShaderGenerator::create)
+      .def(py::init<>())
+      .def("getTarget", &mx::MdlShaderGenerator::getTarget);
 }

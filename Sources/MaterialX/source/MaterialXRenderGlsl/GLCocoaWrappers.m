@@ -9,7 +9,7 @@
 
 #import <AppKit/NSApplication.h>
 
-#import "GLCocoaWrappers.h"
+#import <MaterialX/MXRenderGlslGLCocoaWrappers.h>
 
 void *NSOpenGLChoosePixelFormatWrapper(bool allRenders, int bufferType,
                                        int colorSize, int depthFormat,

@@ -3,19 +3,19 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-#include <MaterialXRenderGlsl/TextureBaker.h>
+#include <MaterialX/MXRenderGlslTextureBaker.h>
 
-#include <MaterialXRender/OiioImageLoader.h>
-#include <MaterialXRender/StbImageLoader.h>
-#include <MaterialXRender/Util.h>
+#include <MaterialX/MXRenderOiioImageLoader.h>
+#include <MaterialX/MXRenderStbImageLoader.h>
+#include <MaterialX/MXRenderUtil.h>
 
-#include <MaterialXGenShader/DefaultColorManagementSystem.h>
+#include <MaterialX/MXGenShaderDefaultColorManagementSystem.h>
 
-#include <MaterialXFormat/XmlIo.h>
+#include <MaterialX/MXFormatXmlIo.h>
 
 MATERIALX_NAMESPACE_BEGIN
-TextureBakerGlsl::TextureBakerGlsl(unsigned int width, unsigned int height, Image::BaseType baseType) :
-    TextureBaker<GlslRenderer, GlslShaderGenerator>(width, height, baseType, true)
-{
-}
+TextureBakerGlsl::TextureBakerGlsl(unsigned int width, unsigned int height,
+                                   Image::BaseType baseType)
+    : TextureBaker<GlslRenderer, GlslShaderGenerator>(width, height, baseType,
+                                                      true) {}
 MATERIALX_NAMESPACE_END

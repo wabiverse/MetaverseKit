@@ -3,15 +3,15 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-#include <MaterialXRenderMsl/MetalTextureHandler.h>
-#include <MaterialXView/RenderPipelineMetal.h>
-#include <MaterialXView/Viewer.h>
+#include <MaterialX/MXRenderMslMetalTextureHandler.h>
+#include <MaterialX/MXViewRenderPipelineMetal.h>
+#include <MaterialX/MXViewViewer.h>
 
-#include <MaterialXGenMsl/MslShaderGenerator.h>
-#include <MaterialXRenderMsl/MetalFramebuffer.h>
-#include <MaterialXRenderMsl/MetalState.h>
-#include <MaterialXRenderMsl/MslMaterial.h>
-#include <MaterialXRenderMsl/TextureBaker.h>
+#include <MaterialX/MXGenMslShaderGenerator.h>
+#include <MaterialX/MXRenderMslMaterial.h>
+#include <MaterialX/MXRenderMslMetalFramebuffer.h>
+#include <MaterialX/MXRenderMslMetalState.h>
+#include <MaterialX/MXRenderMslTextureBaker.h>
 
 #include <nanogui/messagedialog.h>
 

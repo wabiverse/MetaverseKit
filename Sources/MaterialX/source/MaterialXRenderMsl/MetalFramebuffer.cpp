@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-#include <MaterialXRenderMsl/MetalFramebuffer.h>
+#include <MaterialX/MXRenderMslMetalFramebuffer.h>
 
-#include <MaterialXRenderMsl/MetalTextureHandler.h>
-#include <MaterialXRenderMsl/MslPipelineStateObject.h>
-#include <MaterialXRenderMsl/MslRenderer.h>
+#include <MaterialX/MXRenderMslMetalTextureHandler.h>
+#include <MaterialX/MXRenderMslPipelineStateObject.h>
+#include <MaterialX/MXRenderMslRenderer.h>
 
 MATERIALX_NAMESPACE_BEGIN
 
@@ -122,7 +122,10 @@ ImagePtr MetalFramebuffer::getColorImage(MTL::CommandQueue *cmdQueue,
   MTL::CommandBuffer *cmdBuffer = cmdQueue->commandBuffer();
 
   MTL::BlitCommandEncoder *blitCmdEncoder = cmdBuffer->blitCommandEncoder();
-  blitCmdEncoder->copyFromTexture(_colorTexture, 0, 0, MTL::Origin::Make(0, 0, 0), MTL::Size::Make(_width, _height, 1), buffer, 0, bytesPerRow, bytesPerImage, MTL::BlitOptionNone);
+  blitCmdEncoder->copyFromTexture(
+      _colorTexture, 0, 0, MTL::Origin::Make(0, 0, 0),
+      MTL::Size::Make(_width, _height, 1), buffer, 0, bytesPerRow,
+      bytesPerImage, MTL::BlitOptionNone);
 
   blitCmdEncoder->endEncoding();
 

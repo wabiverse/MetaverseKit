@@ -9,7 +9,7 @@
 
 #import <AppKit/NSApplication.h>
 #import <Cocoa/Cocoa.h>
-#import <MaterialXRenderHw/WindowCocoaWrappers.h>
+#import <MaterialX/MXRenderHwWindowCocoaWrappers.h>
 
 void *NSUtilGetView(void *pWindow) {
   NSWindow *window = (__bridge NSWindow *)pWindow;
@@ -24,7 +24,8 @@ void *NSUtilCreateWindow(unsigned int width, unsigned int height,
     NSApplicationLoad();
   }
 
-  // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
+  // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is
+  // enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
 #if !__has_feature(objc_arc)
@@ -66,7 +67,8 @@ void NSUtilSetFocus(void *pWindow) {
 }
 
 void NSUtilDisposeWindow(void *pWindow) {
-  // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
+  // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is
+  // enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
 #if !__has_feature(objc_arc)

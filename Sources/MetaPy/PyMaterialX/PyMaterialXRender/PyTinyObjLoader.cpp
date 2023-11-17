@@ -5,15 +5,15 @@
 
 #include <PyMaterialX/PyMaterialX.h>
 
-#include <MaterialXRender/TinyObjLoader.h>
+#include <MaterialX/MXRenderTinyObjLoader.h>
 
 namespace py = pybind11;
 namespace mx = MaterialX;
 
-void bindPyTinyObjLoader(py::module& mod)
-{
-    py::class_<mx::TinyObjLoader, mx::TinyObjLoaderPtr, mx::GeometryLoader>(mod, "TinyObjLoader")
-        .def_static("create", &mx::TinyObjLoader::create)
-        .def(py::init<>())
-        .def("load", &mx::TinyObjLoader::load);
+void bindPyTinyObjLoader(py::module &mod) {
+  py::class_<mx::TinyObjLoader, mx::TinyObjLoaderPtr, mx::GeometryLoader>(
+      mod, "TinyObjLoader")
+      .def_static("create", &mx::TinyObjLoader::create)
+      .def(py::init<>())
+      .def("load", &mx::TinyObjLoader::load);
 }

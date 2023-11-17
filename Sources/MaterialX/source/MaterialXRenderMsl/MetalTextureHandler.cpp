@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-#include <MaterialXRender/ShaderRenderer.h>
-#include <MaterialXRenderMsl/MetalTextureHandler.h>
-#include <MaterialXRenderMsl/MslPipelineStateObject.h>
+#include <MaterialX/MXRenderMslMetalTextureHandler.h>
+#include <MaterialX/MXRenderMslPipelineStateObject.h>
+#include <MaterialX/MXRenderShaderRenderer.h>
 
 #include <iostream>
 

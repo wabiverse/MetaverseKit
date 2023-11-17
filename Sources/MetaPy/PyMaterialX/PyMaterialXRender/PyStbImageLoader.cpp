@@ -5,15 +5,15 @@
 
 #include <PyMaterialX/PyMaterialX.h>
 
-#include <MaterialXRender/StbImageLoader.h>
+#include <MaterialX/MXRenderStbImageLoader.h>
 
 namespace py = pybind11;
 namespace mx = MaterialX;
 
-void bindPyStbImageLoader(py::module& mod)
-{
-    py::class_<mx::StbImageLoader, mx::ImageLoader, mx::StbImageLoaderPtr>(mod, "StbImageLoader")
-        .def_static("create", &mx::StbImageLoader::create)
-        .def("saveImage", &mx::StbImageLoader::saveImage)
-        .def("loadImage", &mx::StbImageLoader::loadImage);
+void bindPyStbImageLoader(py::module &mod) {
+  py::class_<mx::StbImageLoader, mx::ImageLoader, mx::StbImageLoaderPtr>(
+      mod, "StbImageLoader")
+      .def_static("create", &mx::StbImageLoader::create)
+      .def("saveImage", &mx::StbImageLoader::saveImage)
+      .def("loadImage", &mx::StbImageLoader::loadImage);
 }

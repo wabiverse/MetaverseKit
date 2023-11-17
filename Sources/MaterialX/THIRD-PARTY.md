@@ -1,8 +1,9 @@
 # Third-Party Project Licenses
 
-This section documents the licenses of third-party projects that have been imported or incorporated into MaterialX.  All of these are compatible with the [main license](LICENSE) under which the MaterialX project is open-sourced.  Let us know if you notice any errors or omissions and we'd be happy to address them.
+This section documents the licenses of third-party projects that have been imported or incorporated into MaterialX. All of these are compatible with the [main license](LICENSE) under which the MaterialX project is open-sourced. Let us know if you notice any errors or omissions and we'd be happy to address them.
 
 ### [PyBind11](https://pybind11.readthedocs.io/en/latest/)
+
 ```
 Copyright (c) 2016 Wenzel Jakob <wenzel.jakob@epfl.ch>, All rights reserved.
 
@@ -36,6 +37,7 @@ external contributions to this project including patches, pull requests, etc.
 ```
 
 ### [NanoGUI](https://nanogui.readthedocs.io/en/latest/)
+
 ```
 Copyright (c) 2017 Wenzel Jakob <wenzel.jakob@epfl.ch>, All rights reserved.
 
@@ -76,6 +78,7 @@ derivative works thereof, in binary and source code form.
 ```
 
 ### [OpenShadingLanguage](https://github.com/AcademySoftwareFoundation/OpenShadingLanguage)
+
 ```
 Copyright (c) 2009-present Contributors to the Open Shading Language project.
 All Rights Reserved.
@@ -107,6 +110,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
 ### [OpenImageIO](https://openimageio.readthedocs.io/en/latest/)
+
 ```
 Copyright (c) 2008-present by Contributors to the OpenImageIO project.
 All Rights Reserved.
@@ -138,6 +142,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
 ### [Dear ImGui](https://github.com/ocornut/imgui)
+
 ```
 The MIT License (MIT)
 
@@ -163,6 +168,7 @@ SOFTWARE.
 ```
 
 ### [ImGui NodeEditor](https://github.com/thedmd/imgui-node-editor)
+
 ```
 MIT License
 
@@ -188,6 +194,7 @@ SOFTWARE.
 ```
 
 ### [TinyObjLoader](https://github.com/tinyobjloader/tinyobjloader)
+
 ```
 The MIT License (MIT)
 
@@ -213,6 +220,7 @@ THE SOFTWARE.
 ```
 
 ### [Cgltf](https://github.com/jkuhlmann/cgltf)
+
 ```
 Copyright (c) 2018-2021 Johannes Kuhlmann
 
@@ -236,6 +244,7 @@ SOFTWARE.
 ```
 
 ### [StbImage](https://github.com/nothings/stb)
+
 ```
 MIT License
 
@@ -259,7 +268,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### [PugiXML](https://pugixml.org/)
+### [PugiXML](https://PugiXML.org/)
+
 ```
 MIT License
 
@@ -288,6 +298,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 ```
 
 ### [Glad](https://github.com/Dav1dde/glad)
+
 ```
 The MIT License (MIT)
 
@@ -312,6 +323,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
 ### [Glfw](https://www.glfw.org/)
+
 ```
 Copyright (c) 2002-2006 Marcus Geelnard
 
@@ -329,6 +341,7 @@ This notice may not be removed or altered from any source distribution.
 ```
 
 ### [Catch](https://github.com/catchorg)
+
 ```
 Boost Software License - Version 1.0 - August 17th, 2003
 
@@ -356,15 +369,17 @@ DEALINGS IN THE SOFTWARE.
 ```
 
 ### [AmbientCG Assets](https://ambientcg.com/)
+
 ```
 All ambientCG assets are provided under the Creative Commons CC0 1.0 Universal License.
 
 The Creative Commons CC0 license gives you near limitless freedom to use the materials, models and other assets:
- 
+
 "You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission."
 ```
 
 ### [Poly Haven Assets](https://polyhaven.com/)
+
 ```
 Our assets are all licensed as CC0, which is effectively Public Domain even in jurisdictions that do not support the Public Domain.
 

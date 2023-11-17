@@ -4,10 +4,10 @@
 //
 
 #include <Foundation/Foundation.hpp>
-#include <MaterialXGenShader/HwShaderGenerator.h>
-#include <MaterialXRender/TinyObjLoader.h>
-#include <MaterialXRenderHw/SimpleWindow.h>
-#include <MaterialXRenderMsl/MslRenderer.h>
+#include <MaterialX/MXGenShaderHwShaderGenerator.h>
+#include <MaterialX/MXRenderHwSimpleWindow.h>
+#include <MaterialX/MXRenderMslRenderer.h>
+#include <MaterialX/MXRenderTinyObjLoader.h>
 
 #include <iostream>
 
@@ -173,7 +173,8 @@ void MslRenderer::render() {
   depthStencilDesc->setDepthWriteEnabled(!(_program->isTransparent()));
   depthStencilDesc->setDepthCompareFunction(MTL::CompareFunctionLess);
 
-  MTL::DepthStencilState *depthStencilState = _device->newDepthStencilState(depthStencilDesc);
+  MTL::DepthStencilState *depthStencilState =
+      _device->newDepthStencilState(depthStencilDesc);
   renderCmdEncoder->setDepthStencilState(depthStencilState);
 
   renderCmdEncoder->setCullMode(MTL::CullModeBack);
@@ -198,19 +199,15 @@ void MslRenderer::render() {
 
           if (_program->isTransparent()) {
             renderCmdEncoder->setCullMode(MTL::CullModeFront);
-            renderCmdEncoder->drawIndexedPrimitives(MTL::PrimitiveTypeTriangle,
-                                                    (int)indexData.size(),
-                                                    MTL::IndexTypeUInt32,
-                                                    _program->getIndexBuffer(part),
-                                                    0);
+            renderCmdEncoder->drawIndexedPrimitives(
+                MTL::PrimitiveTypeTriangle, (int)indexData.size(),
+                MTL::IndexTypeUInt32, _program->getIndexBuffer(part), 0);
             renderCmdEncoder->setCullMode(MTL::CullModeBack);
           }
 
-          renderCmdEncoder->drawIndexedPrimitives(MTL::PrimitiveTypeTriangle,
-                                                  (int)indexData.size(),
-                                                  MTL::IndexTypeUInt32,
-                                                  _program->getIndexBuffer(part),
-                                                  0);
+          renderCmdEncoder->drawIndexedPrimitives(
+              MTL::PrimitiveTypeTriangle, (int)indexData.size(),
+              MTL::IndexTypeUInt32, _program->getIndexBuffer(part), 0);
         }
       }
     }

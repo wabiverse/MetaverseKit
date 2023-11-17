@@ -3,25 +3,21 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-#include <MaterialXGenShader/DefaultColorManagementSystem.h>
+#include <MaterialX/MXGenShaderDefaultColorManagementSystem.h>
 
-#include <MaterialXGenShader/ShaderGenerator.h>
+#include <MaterialX/MXGenShaderGenerator.h>
 
 MATERIALX_NAMESPACE_BEGIN
 
-namespace
-{
+namespace {
 
 const string CMS_NAME = "default_cms";
 
 // Remap from legacy color space names to their ACES 1.2 equivalents.
-const StringMap COLOR_SPACE_REMAP =
-{
-    { "gamma18", "g18_rec709" },
-    { "gamma22", "g22_rec709" },
-    { "gamma24", "rec709_display" },
-    { "lin_ap1", "acescg" }
-};
+const StringMap COLOR_SPACE_REMAP = {{"gamma18", "g18_rec709"},
+                                     {"gamma22", "g22_rec709"},
+                                     {"gamma24", "rec709_display"},
+                                     {"lin_ap1", "acescg"}};
 
 } // anonymous namespace
 
@@ -29,43 +25,40 @@ const StringMap COLOR_SPACE_REMAP =
 // DefaultColorManagementSystem methods
 //
 
-DefaultColorManagementSystemPtr DefaultColorManagementSystem::create(const string& target)
-{
-    return DefaultColorManagementSystemPtr(new DefaultColorManagementSystem(target));
+DefaultColorManagementSystemPtr
+DefaultColorManagementSystem::create(const string &target) {
+  return DefaultColorManagementSystemPtr(
+      new DefaultColorManagementSystem(target));
 }
 
-DefaultColorManagementSystem::DefaultColorManagementSystem(const string& target) :
-    _target(target)
-{
-}
+DefaultColorManagementSystem::DefaultColorManagementSystem(const string &target)
+    : _target(target) {}
 
-const string& DefaultColorManagementSystem::getName() const
-{
-    return CMS_NAME;
-}
+const string &DefaultColorManagementSystem::getName() const { return CMS_NAME; }
 
-NodeDefPtr DefaultColorManagementSystem::getNodeDef(const ColorSpaceTransform& transform) const
-{
-    if (!_document)
-    {
-        throw ExceptionShaderGenError("No library loaded for color management system");
+NodeDefPtr DefaultColorManagementSystem::getNodeDef(
+    const ColorSpaceTransform &transform) const {
+  if (!_document) {
+    throw ExceptionShaderGenError(
+        "No library loaded for color management system");
+  }
+
+  string sourceSpace = COLOR_SPACE_REMAP.count(transform.sourceSpace)
+                           ? COLOR_SPACE_REMAP.at(transform.sourceSpace)
+                           : transform.sourceSpace;
+  string targetSpace = COLOR_SPACE_REMAP.count(transform.targetSpace)
+                           ? COLOR_SPACE_REMAP.at(transform.targetSpace)
+                           : transform.targetSpace;
+  string nodeName = sourceSpace + "_to_" + targetSpace;
+
+  for (NodeDefPtr nodeDef : _document->getMatchingNodeDefs(nodeName)) {
+    for (OutputPtr output : nodeDef->getOutputs()) {
+      if (output->getType() == transform.type->getName()) {
+        return nodeDef;
+      }
     }
-
-    string sourceSpace = COLOR_SPACE_REMAP.count(transform.sourceSpace) ? COLOR_SPACE_REMAP.at(transform.sourceSpace) : transform.sourceSpace;
-    string targetSpace = COLOR_SPACE_REMAP.count(transform.targetSpace) ? COLOR_SPACE_REMAP.at(transform.targetSpace) : transform.targetSpace;
-    string nodeName = sourceSpace + "_to_" + targetSpace;
-
-    for (NodeDefPtr nodeDef : _document->getMatchingNodeDefs(nodeName))
-    {
-        for (OutputPtr output : nodeDef->getOutputs())
-        {
-            if (output->getType() == transform.type->getName())
-            {
-                return nodeDef;
-            }
-        }
-    }
-    return nullptr;
+  }
+  return nullptr;
 }
 
 MATERIALX_NAMESPACE_END

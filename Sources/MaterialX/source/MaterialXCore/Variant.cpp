@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-#include <MaterialXCore/Variant.h>
+#include <MaterialX/MXCoreVariant.h>
 
 MATERIALX_NAMESPACE_BEGIN
 

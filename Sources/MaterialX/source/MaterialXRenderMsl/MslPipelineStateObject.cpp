@@ -4,17 +4,17 @@
 //
 
 #include <Foundation/Foundation.hpp>
+#include <MaterialX/MXRenderMslMetalFramebuffer.h>
+#include <MaterialX/MXRenderMslMetalTextureHandler.h>
+#include <MaterialX/MXRenderMslPipelineStateObject.h>
 #include <Metal/Metal.hpp>
-#include <MaterialXRenderMsl/MetalFramebuffer.h>
-#include <MaterialXRenderMsl/MetalTextureHandler.h>
-#include <MaterialXRenderMsl/MslPipelineStateObject.h>
 
-#include <MaterialXRender/LightHandler.h>
-#include <MaterialXRender/ShaderRenderer.h>
+#include <MaterialX/MXRenderLightHandler.h>
+#include <MaterialX/MXRenderShaderRenderer.h>
 
-#include <MaterialXGenMsl/MslShaderGenerator.h>
-#include <MaterialXGenShader/HwShaderGenerator.h>
-#include <MaterialXGenShader/Util.h>
+#include <MaterialX/MXGenMslShaderGenerator.h>
+#include <MaterialX/MXGenShaderHwShaderGenerator.h>
+#include <MaterialX/MXGenShaderUtil.h>
 
 #include <iostream>
 
@@ -243,10 +243,12 @@ MTL::RenderPipelineState *MslProgram::build(MTL::Device *device,
     MTL::VertexDescriptor *vd = MTL::VertexDescriptor::alloc()->init();
 
     for (int i = 0; i < vertexShaderId->vertexAttributes()->count(); ++i) {
-      MTL::VertexAttribute *vertexAttrib = vertexShaderId->vertexAttributes()->object<MTL::VertexAttribute>(i);
+      MTL::VertexAttribute *vertexAttrib =
+          vertexShaderId->vertexAttributes()->object<MTL::VertexAttribute>(i);
 
       vd->attributes()->object(i)->setBufferIndex(i);
-      vd->attributes()->object(i)->setFormat(GetMetalFormatFromMetalType(vertexAttrib->attributeType()));
+      vd->attributes()->object(i)->setFormat(
+          GetMetalFormatFromMetalType(vertexAttrib->attributeType()));
       vd->attributes()->object(i)->setOffset(0);
 
       InputPtr inputPtr = std::make_shared<Input>(
@@ -271,16 +273,18 @@ MTL::RenderPipelineState *MslProgram::build(MTL::Device *device,
 
       _attributeList[sattributeName] = inputPtr;
 
-      vd->layouts()->object(i)->setStride(GetStrideOfMetalType(vertexAttrib->attributeType()));
-      vd->layouts()->object(i)->setStepFunction(MTL::VertexStepFunctionPerVertex);
+      vd->layouts()->object(i)->setStride(
+          GetStrideOfMetalType(vertexAttrib->attributeType()));
+      vd->layouts()->object(i)->setStepFunction(
+          MTL::VertexStepFunctionPerVertex);
     }
 
     psoDesc->setVertexDescriptor(vd);
 
-    _pso = device->newRenderPipelineState(psoDesc, 
-                                          MTL::PipelineOptionArgumentInfo | MTL::PipelineOptionBufferTypeInfo, 
-                                          &_psoReflection, 
-                                          &error);
+    _pso = device->newRenderPipelineState(psoDesc,
+                                          MTL::PipelineOptionArgumentInfo |
+                                              MTL::PipelineOptionBufferTypeInfo,
+                                          &_psoReflection, &error);
 
     _pso->retain();
     _psoReflection->retain();
@@ -396,12 +400,12 @@ void MslProgram::bindAttribute(MTL::RenderCommandEncoder *renderCmdEncoder,
       }
 
       // Create a buffer based on attribute type.
-      MTL::Buffer *buffer = _device->newBuffer(bufferData, bufferSize, MTL::ResourceStorageModeShared);
+      MTL::Buffer *buffer = _device->newBuffer(bufferData, bufferSize,
+                                               MTL::ResourceStorageModeShared);
       _attributeBufferIds[input.first] = buffer;
     }
 
-    renderCmdEncoder->setVertexBuffer(_attributeBufferIds[input.first],
-                                      0,
+    renderCmdEncoder->setVertexBuffer(_attributeBufferIds[input.first], 0,
                                       location);
   }
 }
@@ -417,7 +421,9 @@ void MslProgram::bindPartition(MeshPartitionPtr part) {
   if (_indexBufferIds.find(part) == _indexBufferIds.end()) {
     MeshIndexBuffer &indexData = part->getIndices();
     size_t indexBufferSize = indexData.size();
-    MTL::Buffer *indexBuffer = _device->newBuffer(&indexData[0], indexBufferSize * sizeof(uint32_t), MTL::StorageModeShared);
+    MTL::Buffer *indexBuffer =
+        _device->newBuffer(&indexData[0], indexBufferSize * sizeof(uint32_t),
+                           MTL::StorageModeShared);
     _indexBufferIds[part] = indexBuffer;
   }
 }
@@ -543,8 +549,11 @@ void MslProgram::bindTextures(MTL::RenderCommandEncoder *renderCmdEncoder,
                               ImageHandlerPtr imageHandler) {
   const VariableBlock &publicUniforms =
       _shader->getStage(Stage::PIXEL).getUniformBlock(HW::PUBLIC_UNIFORMS);
-  for (NS::UInteger argIdx = 0 ; argIdx < _psoReflection->fragmentArguments()->count() ; argIdx++) {
-    if (_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->type() == MTL::ArgumentTypeTexture) {
+  for (NS::UInteger argIdx = 0;
+       argIdx < _psoReflection->fragmentArguments()->count(); argIdx++) {
+    if (_psoReflection->fragmentArguments()
+            ->object<MTL::Argument>(argIdx)
+            ->type() == MTL::ArgumentTypeTexture) {
       bool found = false;
 
       if (lightHandler) {
@@ -553,7 +562,10 @@ void MslProgram::bindTextures(MTL::RenderCommandEncoder *renderCmdEncoder,
             {HW::ENV_RADIANCE, lightHandler->getEnvRadianceMap()},
             {HW::ENV_IRRADIANCE, lightHandler->getEnvIrradianceMap()}};
         for (const auto &env : envLights) {
-          std::string str(_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->name()->utf8String());
+          std::string str(_psoReflection->fragmentArguments()
+                              ->object<MTL::Argument>(argIdx)
+                              ->name()
+                              ->utf8String());
           size_t loc = str.find(env.first);
           if (loc != std::string::npos && env.second) {
             ImageSamplingProperties samplingProperties;
@@ -564,11 +576,13 @@ void MslProgram::bindTextures(MTL::RenderCommandEncoder *renderCmdEncoder,
             samplingProperties.filterType =
                 ImageSamplingProperties::FilterType::LINEAR;
 
-            static_cast<MaterialX::MetalTextureHandler *>(imageHandler.get())->bindImage(env.second, samplingProperties);
-            bindTexture(renderCmdEncoder, 
-                        (unsigned int)_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->index(), 
-                        env.second,
-                        imageHandler);
+            static_cast<MaterialX::MetalTextureHandler *>(imageHandler.get())
+                ->bindImage(env.second, samplingProperties);
+            bindTexture(renderCmdEncoder,
+                        (unsigned int)_psoReflection->fragmentArguments()
+                            ->object<MTL::Argument>(argIdx)
+                            ->index(),
+                        env.second, imageHandler);
             found = true;
           }
         }
@@ -576,20 +590,32 @@ void MslProgram::bindTextures(MTL::RenderCommandEncoder *renderCmdEncoder,
 
       if (!found) {
         ImagePtr image = nullptr;
-        if (_explicitBoundImages.find(_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->name()->utf8String()) !=
+        if (_explicitBoundImages.find(_psoReflection->fragmentArguments()
+                                          ->object<MTL::Argument>(argIdx)
+                                          ->name()
+                                          ->utf8String()) !=
             _explicitBoundImages.end()) {
-          image = _explicitBoundImages[_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->name()->utf8String()];
+          image = _explicitBoundImages[_psoReflection->fragmentArguments()
+                                           ->object<MTL::Argument>(argIdx)
+                                           ->name()
+                                           ->utf8String()];
         }
 
         if (image && (image->getWidth() > 1 || image->getHeight() > 1)) {
-          bindTexture(renderCmdEncoder, (unsigned int)_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->index(), image,
-                      imageHandler);
+          bindTexture(renderCmdEncoder,
+                      (unsigned int)_psoReflection->fragmentArguments()
+                          ->object<MTL::Argument>(argIdx)
+                          ->index(),
+                      image, imageHandler);
           found = true;
         }
       }
 
       if (!found) {
-        auto uniform = _uniformList.find(_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->name()->utf8String());
+        auto uniform = _uniformList.find(_psoReflection->fragmentArguments()
+                                             ->object<MTL::Argument>(argIdx)
+                                             ->name()
+                                             ->utf8String());
         if (uniform != _uniformList.end()) {
           string fileName = uniform->second->value
                                 ? uniform->second->value->getValueString()
@@ -606,8 +632,11 @@ void MslProgram::bindTextures(MTL::RenderCommandEncoder *renderCmdEncoder,
           samplingProperties.setProperties(uniformNameWithoutPostfix,
                                            publicUniforms);
           samplingProperties.enableMipmaps = _enableMipMapping;
-          bindTexture(renderCmdEncoder, (unsigned int)_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->index(), fileName,
-                      samplingProperties, imageHandler);
+          bindTexture(renderCmdEncoder,
+                      (unsigned int)_psoReflection->fragmentArguments()
+                          ->object<MTL::Argument>(argIdx)
+                          ->index(),
+                      fileName, samplingProperties, imageHandler);
         }
       }
     }
@@ -831,51 +860,124 @@ const MslProgram::InputMap &MslProgram::updateUniformsList() {
     throw ExceptionRenderError(errorType, errors);
   }
 
-  for (NS::UInteger argIdx = 0 ; argIdx < _psoReflection->vertexArguments()->count() ; argIdx++) {
-    if (_psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->bufferDataType() == MTL::DataTypeStruct) {
-      for (NS::UInteger memberIdx = 0 ; memberIdx < _psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->structType()->members()->count() ; memberIdx++) {
-        InputPtr inputPtr = std::make_shared<Input>(
-            _psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->index(), 
-            _psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->dataType(),
-            _psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->bufferDataSize(), 
-            EMPTY_STRING);
-        std::string memberName = _psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->name()->utf8String();
-        std::string uboDotMemberName = std::string(_psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->name()->utf8String()) + "." + _psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->name()->utf8String();
+  for (NS::UInteger argIdx = 0;
+       argIdx < _psoReflection->vertexArguments()->count(); argIdx++) {
+    if (_psoReflection->vertexArguments()
+            ->object<MTL::Argument>(argIdx)
+            ->bufferDataType() == MTL::DataTypeStruct) {
+      for (NS::UInteger memberIdx = 0;
+           memberIdx < _psoReflection->vertexArguments()
+                           ->object<MTL::StructMember>(argIdx)
+                           ->structType()
+                           ->members()
+                           ->count();
+           memberIdx++) {
+        InputPtr inputPtr =
+            std::make_shared<Input>(_psoReflection->vertexArguments()
+                                        ->object<MTL::Argument>(argIdx)
+                                        ->index(),
+                                    _psoReflection->vertexArguments()
+                                        ->object<MTL::StructMember>(argIdx)
+                                        ->dataType(),
+                                    _psoReflection->vertexArguments()
+                                        ->object<MTL::Argument>(argIdx)
+                                        ->bufferDataSize(),
+                                    EMPTY_STRING);
+        std::string memberName = _psoReflection->vertexArguments()
+                                     ->object<MTL::StructMember>(argIdx)
+                                     ->name()
+                                     ->utf8String();
+        std::string uboDotMemberName =
+            std::string(_psoReflection->vertexArguments()
+                            ->object<MTL::Argument>(argIdx)
+                            ->name()
+                            ->utf8String()) +
+            "." +
+            _psoReflection->vertexArguments()
+                ->object<MTL::StructMember>(argIdx)
+                ->name()
+                ->utf8String();
         _uniformList[uboDotMemberName] = inputPtr;
-        _globalUniformNameList[_psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->name()->utf8String()] = uboDotMemberName;
+        _globalUniformNameList[_psoReflection->vertexArguments()
+                                   ->object<MTL::StructMember>(argIdx)
+                                   ->name()
+                                   ->utf8String()] = uboDotMemberName;
       }
     }
   }
-      
-  for (NS::UInteger argIdx = 0 ; argIdx < _psoReflection->fragmentArguments()->count() ; argIdx++) {
-    if (_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->type() == MTL::ArgumentTypeBuffer &&
-        _psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->bufferDataType() == MTL::DataTypeStruct) {
-      for (NS::UInteger memberIdx = 0 ; memberIdx < _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->structType()->members()->count() ; memberIdx++) {
-        std::string uboObjectName = std::string(_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->name()->utf8String());
-        std::string memberName = _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->name()->utf8String();
+
+  for (NS::UInteger argIdx = 0;
+       argIdx < _psoReflection->fragmentArguments()->count(); argIdx++) {
+    if (_psoReflection->fragmentArguments()
+                ->object<MTL::Argument>(argIdx)
+                ->type() == MTL::ArgumentTypeBuffer &&
+        _psoReflection->fragmentArguments()
+                ->object<MTL::Argument>(argIdx)
+                ->bufferDataType() == MTL::DataTypeStruct) {
+      for (NS::UInteger memberIdx = 0;
+           memberIdx < _psoReflection->fragmentArguments()
+                           ->object<MTL::StructMember>(argIdx)
+                           ->structType()
+                           ->members()
+                           ->count();
+           memberIdx++) {
+        std::string uboObjectName =
+            std::string(_psoReflection->fragmentArguments()
+                            ->object<MTL::Argument>(argIdx)
+                            ->name()
+                            ->utf8String());
+        std::string memberName = _psoReflection->fragmentArguments()
+                                     ->object<MTL::StructMember>(argIdx)
+                                     ->name()
+                                     ->utf8String();
         std::string uboDotMemberName = uboObjectName + "." + memberName;
 
-        InputPtr inputPtr = std::make_shared<Input>(
-            _psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->index(), 
-            _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->dataType(), 
-            _psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->bufferDataSize(), 
-            EMPTY_STRING);
+        InputPtr inputPtr =
+            std::make_shared<Input>(_psoReflection->fragmentArguments()
+                                        ->object<MTL::Argument>(argIdx)
+                                        ->index(),
+                                    _psoReflection->fragmentArguments()
+                                        ->object<MTL::StructMember>(argIdx)
+                                        ->dataType(),
+                                    _psoReflection->fragmentArguments()
+                                        ->object<MTL::Argument>(argIdx)
+                                        ->bufferDataSize(),
+                                    EMPTY_STRING);
         _uniformList[uboDotMemberName] = inputPtr;
         _globalUniformNameList[memberName] = uboDotMemberName;
 
-        if (MTL::ArrayType *arrayMember = _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->arrayType()) {
+        if (MTL::ArrayType *arrayMember =
+                _psoReflection->fragmentArguments()
+                    ->object<MTL::StructMember>(argIdx)
+                    ->arrayType()) {
           for (int i = 0; i < arrayMember->arrayLength(); ++i) {
-            for (NS::UInteger arrayStructIdx = 0 ; arrayStructIdx < arrayMember->elementStructType()->members()->count() ; arrayStructIdx++) {
+            for (NS::UInteger arrayStructIdx = 0;
+                 arrayStructIdx <
+                 arrayMember->elementStructType()->members()->count();
+                 arrayStructIdx++) {
               std::string memberNameDotSubmember =
                   memberName + "[" + std::to_string(i) + "]." +
-                  arrayMember->elementStructType()->members()->object<MTL::StructMember>(arrayStructIdx)->name()->utf8String();
+                  arrayMember->elementStructType()
+                      ->members()
+                      ->object<MTL::StructMember>(arrayStructIdx)
+                      ->name()
+                      ->utf8String();
               std::string uboDotMemberNameDotSubmemberName =
                   uboObjectName + "." + memberNameDotSubmember;
 
               InputPtr inputPtr = std::make_shared<Input>(
-                  arrayMember->elementStructType()->members()->object<MTL::StructMember>(arrayStructIdx)->argumentIndex(),
-                  arrayMember->elementStructType()->members()->object<MTL::StructMember>(arrayStructIdx)->dataType(), 
-                  arrayMember->elementStructType()->members()->object<MTL::StructMember>(arrayStructIdx)->offset(),
+                  arrayMember->elementStructType()
+                      ->members()
+                      ->object<MTL::StructMember>(arrayStructIdx)
+                      ->argumentIndex(),
+                  arrayMember->elementStructType()
+                      ->members()
+                      ->object<MTL::StructMember>(arrayStructIdx)
+                      ->dataType(),
+                  arrayMember->elementStructType()
+                      ->members()
+                      ->object<MTL::StructMember>(arrayStructIdx)
+                      ->offset(),
                   EMPTY_STRING);
               _uniformList[uboDotMemberNameDotSubmemberName] = inputPtr;
               _globalUniformNameList[memberNameDotSubmember] =
@@ -886,11 +988,26 @@ const MslProgram::InputMap &MslProgram::updateUniformsList() {
       }
     }
 
-    if (_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->type() == MTL::ArgumentTypeTexture) {
-      if (HW::ENV_RADIANCE != _psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->name()->utf8String() &&
-          HW::ENV_IRRADIANCE != _psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->name()->utf8String()) {
-        std::string texture_name = _psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->name()->utf8String();
-        InputPtr inputPtr = std::make_shared<Input>(_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->index(), 58, -1, EMPTY_STRING);
+    if (_psoReflection->fragmentArguments()
+            ->object<MTL::Argument>(argIdx)
+            ->type() == MTL::ArgumentTypeTexture) {
+      if (HW::ENV_RADIANCE != _psoReflection->fragmentArguments()
+                                  ->object<MTL::Argument>(argIdx)
+                                  ->name()
+                                  ->utf8String() &&
+          HW::ENV_IRRADIANCE != _psoReflection->fragmentArguments()
+                                    ->object<MTL::Argument>(argIdx)
+                                    ->name()
+                                    ->utf8String()) {
+        std::string texture_name = _psoReflection->fragmentArguments()
+                                       ->object<MTL::Argument>(argIdx)
+                                       ->name()
+                                       ->utf8String();
+        InputPtr inputPtr =
+            std::make_shared<Input>(_psoReflection->fragmentArguments()
+                                        ->object<MTL::Argument>(argIdx)
+                                        ->index(),
+                                    58, -1, EMPTY_STRING);
         _uniformList[texture_name] = inputPtr;
       }
     }
@@ -1185,65 +1302,149 @@ void MslProgram::bindUniformBuffers(MTL::RenderCommandEncoder *renderCmdEncoder,
     }
   };
 
-  for (NS::UInteger argIdx = 0 ; argIdx < _psoReflection->vertexArguments()->count() ; argIdx++) {
-    if (_psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->type() == MTL::ArgumentTypeBuffer &&
-        _psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->bufferDataType() == MTL::DataTypeStruct) {
-      std::vector<unsigned char> uniformBufferData(_psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->bufferDataSize());
-      for (NS::UInteger memberIdx = 0 ; memberIdx < _psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->structType()->members()->count() ; memberIdx++) {
-        if (!setCommonUniform(lightHandler, cam, _psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->name()->utf8String(),
-                              uniformBufferData, _psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->offset())) {
-          MaterialX::ValuePtr value = _uniformList[string(_psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->name()->utf8String()) +
-                                                   "." + _psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->name()->utf8String()]->value;
+  for (NS::UInteger argIdx = 0;
+       argIdx < _psoReflection->vertexArguments()->count(); argIdx++) {
+    if (_psoReflection->vertexArguments()
+                ->object<MTL::Argument>(argIdx)
+                ->type() == MTL::ArgumentTypeBuffer &&
+        _psoReflection->vertexArguments()
+                ->object<MTL::Argument>(argIdx)
+                ->bufferDataType() == MTL::DataTypeStruct) {
+      std::vector<unsigned char> uniformBufferData(
+          _psoReflection->vertexArguments()
+              ->object<MTL::Argument>(argIdx)
+              ->bufferDataSize());
+      for (NS::UInteger memberIdx = 0;
+           memberIdx < _psoReflection->vertexArguments()
+                           ->object<MTL::StructMember>(argIdx)
+                           ->structType()
+                           ->members()
+                           ->count();
+           memberIdx++) {
+        if (!setCommonUniform(lightHandler, cam,
+                              _psoReflection->vertexArguments()
+                                  ->object<MTL::StructMember>(argIdx)
+                                  ->name()
+                                  ->utf8String(),
+                              uniformBufferData,
+                              _psoReflection->vertexArguments()
+                                  ->object<MTL::StructMember>(argIdx)
+                                  ->offset())) {
+          MaterialX::ValuePtr value =
+              _uniformList[string(_psoReflection->vertexArguments()
+                                      ->object<MTL::Argument>(argIdx)
+                                      ->name()
+                                      ->utf8String()) +
+                           "." +
+                           _psoReflection->vertexArguments()
+                               ->object<MTL::StructMember>(argIdx)
+                               ->name()
+                               ->utf8String()]
+                  ->value;
           if (value) {
-            setValue(value, uniformBufferData, _psoReflection->vertexArguments()->object<MTL::StructMember>(argIdx)->offset());
+            setValue(value, uniformBufferData,
+                     _psoReflection->vertexArguments()
+                         ->object<MTL::StructMember>(argIdx)
+                         ->offset());
           }
         }
       }
 
-      if (_psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->bufferStructType())
-        renderCmdEncoder->setVertexBytes((void *)uniformBufferData.data(), 
-                                         _psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->bufferDataSize(), 
-                                         _psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->index());
+      if (_psoReflection->vertexArguments()
+              ->object<MTL::Argument>(argIdx)
+              ->bufferStructType())
+        renderCmdEncoder->setVertexBytes((void *)uniformBufferData.data(),
+                                         _psoReflection->vertexArguments()
+                                             ->object<MTL::Argument>(argIdx)
+                                             ->bufferDataSize(),
+                                         _psoReflection->vertexArguments()
+                                             ->object<MTL::Argument>(argIdx)
+                                             ->index());
     }
   }
 
-  for (NS::UInteger argIdx = 0 ; argIdx < _psoReflection->fragmentArguments()->count() ; argIdx++) {
-    if (_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->type() == MTL::ArgumentTypeBuffer &&
-        _psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->bufferDataType() == MTL::DataTypeStruct) {
-      std::vector<unsigned char> uniformBufferData(_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->bufferDataSize());
+  for (NS::UInteger argIdx = 0;
+       argIdx < _psoReflection->fragmentArguments()->count(); argIdx++) {
+    if (_psoReflection->fragmentArguments()
+                ->object<MTL::Argument>(argIdx)
+                ->type() == MTL::ArgumentTypeBuffer &&
+        _psoReflection->fragmentArguments()
+                ->object<MTL::Argument>(argIdx)
+                ->bufferDataType() == MTL::DataTypeStruct) {
+      std::vector<unsigned char> uniformBufferData(
+          _psoReflection->fragmentArguments()
+              ->object<MTL::Argument>(argIdx)
+              ->bufferDataSize());
 
-      for (NS::UInteger memberIdx = 0 ; memberIdx < _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->structType()->members()->count() ; memberIdx++) {
-        string uniformName =
-            string(_psoReflection->fragmentArguments()->object<MTL::Argument>(argIdx)->name()->utf8String()) + "." + _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->name()->utf8String();
+      for (NS::UInteger memberIdx = 0;
+           memberIdx < _psoReflection->fragmentArguments()
+                           ->object<MTL::StructMember>(argIdx)
+                           ->structType()
+                           ->members()
+                           ->count();
+           memberIdx++) {
+        string uniformName = string(_psoReflection->fragmentArguments()
+                                        ->object<MTL::Argument>(argIdx)
+                                        ->name()
+                                        ->utf8String()) +
+                             "." +
+                             _psoReflection->fragmentArguments()
+                                 ->object<MTL::StructMember>(argIdx)
+                                 ->name()
+                                 ->utf8String();
 
-        if (!setCommonUniform(lightHandler, cam, _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->name()->utf8String(),
-                              uniformBufferData, _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->offset())) {
+        if (!setCommonUniform(lightHandler, cam,
+                              _psoReflection->fragmentArguments()
+                                  ->object<MTL::StructMember>(argIdx)
+                                  ->name()
+                                  ->utf8String(),
+                              uniformBufferData,
+                              _psoReflection->fragmentArguments()
+                                  ->object<MTL::StructMember>(argIdx)
+                                  ->offset())) {
           auto uniformInfo = _uniformList.find(uniformName);
           if (uniformInfo != _uniformList.end()) {
             MaterialX::ValuePtr value = uniformInfo->second->value;
             if (value) {
-              setValue(value, 
-                       uniformBufferData, 
-                       _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->offset());
+              setValue(value, uniformBufferData,
+                       _psoReflection->fragmentArguments()
+                           ->object<MTL::StructMember>(argIdx)
+                           ->offset());
             }
           } else {
           }
         }
 
-        if (MTL::ArrayType *arrayMember = _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->arrayType()) {
+        if (MTL::ArrayType *arrayMember =
+                _psoReflection->fragmentArguments()
+                    ->object<MTL::StructMember>(argIdx)
+                    ->arrayType()) {
           for (int i = 0; i < arrayMember->arrayLength(); ++i) {
-            for (NS::UInteger memberIdx = 0 ; memberIdx < arrayMember->elementStructType()->members()->count() ; memberIdx++) {
-              string uniformNameSubArray = uniformName + "[" +
-                                           std::to_string(i) + "]." +
-                                           arrayMember->elementStructType()->members()->object<MTL::StructMember>(memberIdx)->name()->utf8String();
+            for (NS::UInteger memberIdx = 0;
+                 memberIdx <
+                 arrayMember->elementStructType()->members()->count();
+                 memberIdx++) {
+              string uniformNameSubArray =
+                  uniformName + "[" + std::to_string(i) + "]." +
+                  arrayMember->elementStructType()
+                      ->members()
+                      ->object<MTL::StructMember>(memberIdx)
+                      ->name()
+                      ->utf8String();
 
               auto uniformInfo = _uniformList.find(uniformNameSubArray);
               if (uniformInfo != _uniformList.end()) {
                 MaterialX::ValuePtr value = uniformInfo->second->value;
                 if (value) {
                   setValue(value, uniformBufferData,
-                           _psoReflection->fragmentArguments()->object<MTL::StructMember>(argIdx)->offset() + i * arrayMember->stride() +
-                               arrayMember->elementStructType()->members()->object<MTL::StructMember>(memberIdx)->offset());
+                           _psoReflection->fragmentArguments()
+                                   ->object<MTL::StructMember>(argIdx)
+                                   ->offset() +
+                               i * arrayMember->stride() +
+                               arrayMember->elementStructType()
+                                   ->members()
+                                   ->object<MTL::StructMember>(memberIdx)
+                                   ->offset());
                 }
               }
             }
@@ -1251,10 +1452,16 @@ void MslProgram::bindUniformBuffers(MTL::RenderCommandEncoder *renderCmdEncoder,
         }
       }
 
-      if (_psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->bufferStructType())
+      if (_psoReflection->vertexArguments()
+              ->object<MTL::Argument>(argIdx)
+              ->bufferStructType())
         renderCmdEncoder->setFragmentBytes((void *)uniformBufferData.data(),
-                                           _psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->bufferDataSize(),
-                                           _psoReflection->vertexArguments()->object<MTL::Argument>(argIdx)->index());
+                                           _psoReflection->vertexArguments()
+                                               ->object<MTL::Argument>(argIdx)
+                                               ->bufferDataSize(),
+                                           _psoReflection->vertexArguments()
+                                               ->object<MTL::Argument>(argIdx)
+                                               ->index());
     }
   }
 }
