@@ -156,20 +156,18 @@ else /* a unicorn! 🦄 */
   ]
   let platformImGuiExcludes: [String] = [
     // no wgpu (for now)
-    "backends/imgui_impl_wgpu.cpp",
+    "backends/ImplWGPU.cpp",
     // no allegro
-    "backends/imgui_impl_allegro5.cpp",
+    "backends/ImplAllegro5.cpp",
     // no android
-    "backends/imgui_impl_android.cpp",
+    "backends/ImplAndroid.cpp",
     // no sdl
-    "backends/imgui_impl_sdl2.cpp",
-    "backends/imgui_impl_sdl3.cpp",
-    "backends/imgui_impl_sdlrenderer2.cpp",
-    "backends/imgui_impl_sdlrenderer3.cpp",
+    "backends/ImplSDL.cpp",
+    "backends/ImplSDLRenderer.cpp",
     // no metal
-    "backends/imgui_impl_metal.mm",
+    "backends/ImplMetal.mm",
     // no apple os
-    "backends/imgui_impl_osx.mm",
+    "backends/ImplMacOS.mm",
   ]
   let platformBloscExcludes: [String] = []
   let platformMetaPyExcludes: [String] = [
@@ -249,25 +247,21 @@ else /* a unicorn! 🦄 */
     ]
     let platformImGuiExcludes: [String] = [
       // no win32
-      "backends/imgui_impl_win32.cpp",
+      "backends/ImplWin32.cpp",
       // no wgpu (for now)
-      "backends/imgui_impl_wgpu.cpp",
+      "backends/ImplWGPU.cpp",
       // no allegro
-      "backends/imgui_impl_allegro5.cpp",
+      "backends/ImplAllegro5.cpp",
       // no android
-      "backends/imgui_impl_android.cpp",
+      "backends/ImplAndroid.cpp",
       // no directx (for now)
-      "backends/imgui_impl_dx9.cpp",
-      "backends/imgui_impl_dx10.cpp",
-      "backends/imgui_impl_dx11.cpp",
-      "backends/imgui_impl_dx12.cpp",
+      "backends/ImplDX9.cpp",
+      "backends/ImplDX10.cpp",
+      "backends/ImplDX11.cpp",
+      "backends/ImplDX12.cpp",
       // no sdl
-      "backends/imgui_impl_sdl2.cpp",
-      "backends/imgui_impl_sdl3.cpp",
-      "backends/imgui_impl_sdlrenderer2.cpp",
-      "backends/imgui_impl_sdlrenderer3.cpp",
-      // no opengl2
-      "backends/imgui_impl_opengl2.cpp",
+      "backends/ImplSDL.cpp",
+      "backends/ImplSDLRenderer.cpp",
     ]
     let platformOCIOExcludes: [String] = [
       "SystemMonitor_windows.cpp",
@@ -315,22 +309,22 @@ else /* a unicorn! 🦄 */
     ]
     let platformImGuiExcludes: [String] = [
       // no win32
-      "backends/imgui_impl_win32.cpp",
+      "backends/ImplWin32.cpp",
       // no wgpu (for now)
-      "backends/imgui_impl_wgpu.cpp",
+      "backends/ImplWGPU.cpp",
       // no allegro
-      "backends/imgui_impl_allegro5.cpp",
+      "backends/ImplAllegro5.cpp",
       // no android (for now)
-      "backends/imgui_impl_android.cpp",
+      "backends/ImplAndroid.cpp",
       // no directx
-      "backends/imgui_impl_dx9.cpp",
-      "backends/imgui_impl_dx10.cpp",
-      "backends/imgui_impl_dx11.cpp",
-      "backends/imgui_impl_dx12.cpp",
+      "backends/ImplDX9.cpp",
+      "backends/ImplDX10.cpp",
+      "backends/ImplDX11.cpp",
+      "backends/ImplDX12.cpp",
       // no metal
-      "backends/imgui_impl_metal.mm",
+      "backends/ImplMetal.mm",
       // no apple os
-      "backends/imgui_impl_osx.mm",
+      "backends/ImplMacOS.mm",
     ]
     let platformOCIOExcludes: [String] = [
       "SystemMonitor_macos.cpp",
@@ -924,23 +918,9 @@ let package = Package(
       ],
       exclude: [
         "source/JsMaterialX",
-        "source/MaterialXView",
-        "source/MaterialXTest",
+        "source/MaterialXView"
       ],
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .headerSearchPath("include/MaterialXGenGlsl"),
-        .headerSearchPath("include/MaterialXGenMdl"),
-        .headerSearchPath("include/MaterialXGenMsl"),
-        .headerSearchPath("include/MaterialXGenOsl"),
-        .headerSearchPath("include/MaterialXGenShader"),
-        .headerSearchPath("include/MaterialXRenderGlsl"),
-        .headerSearchPath("include/MaterialXRenderHw"),
-        .headerSearchPath("include/MaterialXRenderMsl"),
-        .headerSearchPath("include/MaterialXRenderOsl"),
-        .headerSearchPath("include/MaterialXRenderGlsl/External/Glad"),
-        .headerSearchPath("include/MaterialXFormat/External/PugiXML"),
-      ]
+      publicHeadersPath: "include"
     ),
 
     .executableTarget(
@@ -1158,8 +1138,8 @@ let package = Package(
 
     .binaryTarget(
       name: "Python",
-      url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/Python.xcframework.zip",
-      checksum: "11c2238d09cf559340ce3fd240235b08f227e8b9c6e60f48d4187cd6de52fa7a"
+      url: "https://github.com/wabiverse/MetaversePythonFramework/releases/download/3.11-b3/Python.xcframework.zip",
+      checksum: "f709ee01166f6945f77db821d8462e5f7c1d31d1ebf3c5f7c58004b13e07fd14"
     ),
 
     .binaryTarget(
@@ -1174,6 +1154,8 @@ let package = Package(
         /* link everything, a solid test. */
         "Alembic",
         "Apple",
+        "Boost",
+        "Python",
         "Blosc",
         "DEFLATE",
         "Draco",
@@ -1190,7 +1172,6 @@ let package = Package(
         "MetaPy",
         "MetaTBB",
         "MiniZip",
-        "OneTBB",
         "OpenColorIO",
         "OpenEXR",
         "OpenImageIO",
