@@ -16,6 +16,9 @@ let package = Package(
     .watchOS(.v4),
   ],
   products: getConfig(for: .all).products,
+  dependencies: [
+    .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
+  ],
   targets: [
     .target(
       name: "Eigen",
@@ -210,7 +213,7 @@ let package = Package(
     .target(
       name: "OpenMP",
       dependencies: [
-        .target(name: "Python"),
+        .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       exclude: getConfig(for: .openmp).exclude,
       publicHeadersPath: "include",
@@ -253,17 +256,17 @@ let package = Package(
       ]
     ),
 
-    // .target(
-    //   name: "MXResources",
-    //   dependencies: [],
-    //   resources: [
-    //     .copy("libraries"),
-    //     .process("Resources"),
-    //   ],
-    //   swiftSettings: [
-    //     .interoperabilityMode(.Cxx),
-    //   ]
-    // ),
+    .target(
+      name: "MXResources",
+      dependencies: [],
+      resources: [
+        .copy("libraries"),
+        .process("Resources"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
+      ]
+    ),
 
     .target(
       name: "MaterialX",
@@ -271,9 +274,9 @@ let package = Package(
         .target(name: "Apple"),
         .target(name: "ImGui"),
         .target(name: "OpenImageIO"),
-        .target(name: "Python"),
         .target(name: "PyBind11"),
-        //.target(name: "MXResources"),
+        .target(name: "MXResources"),
+        .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       exclude: [
         "source/JsMaterialX",
@@ -289,24 +292,24 @@ let package = Package(
       ]
     ),
 
-    .target(
-      name: "GPUShaders",
-      resources: [
-        .process("Metal"),
-        .process("GL"),
-        .process("DX3D"),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
-    ),
+    // .target(
+    //   name: "GPUShaders",
+    //   resources: [
+    //     .process("Metal"),
+    //     .process("GL"),
+    //     .process("DX3D"),
+    //   ],
+    //   swiftSettings: [
+    //     .interoperabilityMode(.Cxx),
+    //   ]
+    // ),
 
     .target(
       name: "OpenSubdiv",
       dependencies: [
         .target(name: "MetaTBB"),
         .target(name: "OpenMP"),
-        .target(name: "GPUShaders"),
+        //.target(name: "GPUShaders"),
       ],
       exclude: getConfig(for: .osd).exclude,
       publicHeadersPath: "include",
@@ -351,9 +354,9 @@ let package = Package(
       name: "OpenColorIO",
       dependencies: [
         .target(name: "OpenEXR"),
-        .target(name: "Python"),
         .target(name: "MiniZip"),
         .target(name: "Yaml"),
+        .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       exclude: getConfig(for: .ocio).exclude,
       publicHeadersPath: "include",
@@ -369,12 +372,12 @@ let package = Package(
       name: "MetaPy",
       dependencies: [
         .target(name: "Boost"),
-        .target(name: "Python"),
         .target(name: "OpenEXR"),
         .target(name: "OpenVDB"),
         .target(name: "Alembic"),
         .target(name: "OpenImageIO"),
         .target(name: "MaterialX"),
+        .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       exclude: getConfig(for: .mpy).exclude,
       publicHeadersPath: "include/python",
@@ -405,9 +408,9 @@ let package = Package(
       name: "Alembic",
       dependencies: [
         .target(name: "Boost"),
-        .target(name: "Python"),
         .target(name: "HDF5"),
         .target(name: "OpenEXR"),
+        .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -445,10 +448,10 @@ let package = Package(
         .target(name: "Boost"),
         .target(name: "MetaTBB"),
         .target(name: "Blosc"),
-        .target(name: "Python"),
         .target(name: "PyBind11"),
         .target(name: "OpenEXR"),
         .target(name: "ZLibDataCompression"),
+        .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       publicHeadersPath: "include",
       cxxSettings: getConfig(for: .openvdb).cxxSettings
@@ -461,34 +464,29 @@ let package = Package(
     ),
 
     .binaryTarget(
-      name: "Python",
-      url: "https://github.com/wabiverse/MetaversePythonFramework/releases/download/3.11-b3/Python.xcframework.zip",
-      checksum: "f709ee01166f6945f77db821d8462e5f7c1d31d1ebf3c5f7c58004b13e07fd14"
-    ),
-
-    .binaryTarget(
       name: "MoltenVK",
       url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/MoltenVK.xcframework.zip",
       checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
     ),
 
-    /**
-     * Run this from the command line via:
-     *
-     * swift bundler run -p macOS MetaversalDemo
-     *
-     * It is pending a pull request which I have submitted here:
-     * https://github.com/stackotter/swift-bundler/issues/34
-     * 
-     * Once that is merged, the swift bundler will be included
-     * as a swift plugin to all packages that transitively depend
-     * on this package, the bundler now also supports the bundling
-     * of visionOS and iOS targets, in addition to macOS all from
-     * the command line. */
+    /* 
+      * Run this from the command line via:
+      *
+      * swift bundler run -p macOS MetaversalDemo
+      *
+      * It is pending a pull request which I have submitted here:
+      * https://github.com/stackotter/swift-bundler/issues/34
+      *
+      * Once that is merged, the swift bundler will be included
+      * as a swift plugin to all packages that transitively depend
+      * on this package, the bundler now also supports the bundling
+      * of visionOS and iOS targets, in addition to macOS all from
+      * the command line. */
     .executableTarget(
       name: "MetaversalDemo",
       dependencies: [
         .target(name: "ImGui"),
+        .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -507,13 +505,11 @@ let package = Package(
   cxxLanguageStandard: .cxx17
 )
 
-
-/* ------------------------------------------------- 
+/* -------------------------------------------------
  * Platform specific, or more lengthy configurations
  * are in the dedicated function below. This is to
  * keep the main package file clean and readable.
  * ------------------------------------------------- */
-
 
 func getConfig(for target: PkgTarget) -> TargetInfo
 {
@@ -752,12 +748,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "backends/ImplMacOS.mm",
         ]
       #endif /* !os(macOS) */
-    // case .mxResources:
-    //   break
+    case .mxResources:
+      break
     case .materialx:
       break
-    case .gpuShaders:
-      break
+    // case .gpuShaders:
+    //   break
     case .osd:
       config.exclude = [
         /* disabled for now */
@@ -892,10 +888,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["TBBMallocProxy"]
         ),
         .library(
-          name: "Python",
-          targets: ["Python"]
-        ),
-        .library(
           name: "Apple",
           targets: ["Apple"]
         ),
@@ -927,10 +919,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           name: "OpenSubdiv",
           targets: ["OpenSubdiv"]
         ),
-        .library(
-          name: "GPUShaders",
-          targets: ["GPUShaders"]
-        ),
+        // .library(
+        //   name: "GPUShaders",
+        //   targets: ["GPUShaders"]
+        // ),
         .library(
           name: "OpenMP",
           targets: ["OpenMP"]
@@ -943,10 +935,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           name: "ImGui",
           targets: ["ImGui"]
         ),
-        // .library(
-        //   name: "MXResources",
-        //   targets: ["MXResources"]
-        // ),
+        .library(
+          name: "MXResources",
+          targets: ["MXResources"]
+        ),
         .library(
           name: "MaterialX",
           targets: ["MaterialX"]
@@ -1172,9 +1164,9 @@ enum PkgTarget: String
   case apple = "Apple"
   case glfw = "GLFW"
   case imgui = "ImGui"
-  //case mxResources = "MXResources"
+  case mxResources = "MXResources"
   case materialx = "MaterialX"
-  case gpuShaders = "GPUShaders"
+  /// case gpuShaders = "GPUShaders"
   case osd = "OpenSubdiv"
   case exr = "OpenEXR"
   case oiio = "OpenImageIO"

@@ -22,6 +22,9 @@
  * -------------------------------------------------------------- */
 
 import ImGui
+import Python
+import PyBundle
+
 #if canImport(AppKit) || canImport(UIKit)
   import Metal
   import MetalKit
@@ -51,6 +54,10 @@ class Creator
   static func main()
   {
     let C: Creator
+
+    /* embed & init python. */
+    PyBundle.shared.pyInit()
+    PyBundle.shared.pyInfo()
 
     C = Creator()
     
