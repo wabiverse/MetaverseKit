@@ -17,7 +17,7 @@
 #ifndef __TBB_tbb_allocator_H
 #define __TBB_tbb_allocator_H
 
-#include "oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
 #include "detail/_namespace_injection.h"
 #include <cstdlib>
 #include <utility>

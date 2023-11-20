@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-#include "oneapi/tbb/detail/_config.h"
+#include "OneTBB/oneapi/tbb/detail/_config.h"
 
 #include "main.h"
 #include "governor.h"

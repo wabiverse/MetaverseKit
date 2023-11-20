@@ -16,7 +16,7 @@
 #include "PointMask.h"
 #include "IndexFilter.h"
 
-#include <tbb/parallel_reduce.h>
+#include <OneTBB/tbb/parallel_reduce.h>
 
 #include <vector>
 

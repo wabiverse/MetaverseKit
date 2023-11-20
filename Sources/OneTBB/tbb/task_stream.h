@@ -24,9 +24,9 @@
 //! time it was developed. In addition, it is not clearly seen at the moment that this container
 //! would be suitable for critical tasks due to linear time complexity on its operations.
 
-#include "oneapi/tbb/detail/_utils.h"
-#include "oneapi/tbb/cache_aligned_allocator.h"
-#include "oneapi/tbb/mutex.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/cache_aligned_allocator.h"
+#include "OneTBB/oneapi/tbb/mutex.h"
 
 #include "scheduler_common.h"
 #include "misc.h" // for FastRandom

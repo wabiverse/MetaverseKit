@@ -25,8 +25,8 @@
 #define MALLOC_DEBUG TBB_USE_DEBUG
 #endif
 
-#include "oneapi/tbb/detail/_utils.h"
-#include "oneapi/tbb/detail/_assert.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/detail/_assert.h"
 
 #include "Synchronize.h"
 
@@ -93,11 +93,9 @@ namespace internal {
 namespace tbb {
 namespace detail {
 namespace d1 {
-    // already defined in "oneapi/tbb/profiling.h" above??
     enum notify_type {prepare=0, cancel, acquired, releasing};
 
 #if TBB_USE_PROFILING_TOOLS
-    // already defined in "oneapi/tbb/profiling.h" above??
     inline void call_itt_notify(notify_type t, void *ptr) {
         // unreferenced formal parameter warning
         detail::suppress_unused_warning(ptr);
@@ -117,7 +115,6 @@ namespace d1 {
         }
     }
 #else
-    // already defined in "oneapi/tbb/profiling.h" above??
     inline void call_itt_notify(notify_type /*t*/, void * /*ptr*/) {}
 #endif // TBB_USE_PROFILING_TOOLS
 
@@ -125,7 +122,7 @@ namespace d1 {
 } // namespace detail
 } // namespace tbb
 
-#include "oneapi/tbb/detail/_aggregator.h"
+#include "OneTBB/oneapi/tbb/detail/_aggregator.h"
 
 template <typename OperationType>
 struct MallocAggregator {

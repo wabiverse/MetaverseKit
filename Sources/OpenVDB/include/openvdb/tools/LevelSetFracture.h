@@ -23,8 +23,8 @@
 #include <list>
 #include <vector>
 
-#include <tbb/blocked_range.h>
-#include <tbb/parallel_reduce.h>
+#include <OneTBB/tbb/blocked_range.h>
+#include <OneTBB/tbb/parallel_reduce.h>
 
 
 namespace openvdb {

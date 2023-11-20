@@ -17,12 +17,12 @@
 #ifndef _TBB_tbb_misc_H
 #define _TBB_tbb_misc_H
 
-#include "oneapi/tbb/detail/_config.h"
-#include "oneapi/tbb/detail/_assert.h"
-#include "oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/detail/_config.h"
+#include "OneTBB/oneapi/tbb/detail/_assert.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
 
 #if __TBB_ARENA_BINDING
-#include "oneapi/tbb/info.h"
+#include "OneTBB/oneapi/tbb/info.h"
 #endif /*__TBB_ARENA_BINDING*/
 
 #if __unix__

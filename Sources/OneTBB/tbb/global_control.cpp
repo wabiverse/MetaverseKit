@@ -14,12 +14,12 @@
     limitations under the License.
 */
 
-#include "oneapi/tbb/detail/_config.h"
-#include "oneapi/tbb/detail/_template_helpers.h"
+#include "OneTBB/oneapi/tbb/detail/_config.h"
+#include "OneTBB/oneapi/tbb/detail/_template_helpers.h"
 
-#include "oneapi/tbb/global_control.h"
-#include "oneapi/tbb/tbb_allocator.h"
-#include "oneapi/tbb/spin_mutex.h"
+#include "OneTBB/oneapi/tbb/global_control.h"
+#include "OneTBB/oneapi/tbb/tbb_allocator.h"
+#include "OneTBB/oneapi/tbb/spin_mutex.h"
 
 #include "governor.h"
 #include "market.h"

@@ -17,8 +17,8 @@
 #ifndef __TBB_monitor_mutex_H
 #define __TBB_monitor_mutex_H
 
-#include "oneapi/tbb/detail/_utils.h"
-#include "oneapi/tbb/detail/_aligned_space.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/detail/_aligned_space.h"
 #include "semaphore.h"
 
 #include <mutex>

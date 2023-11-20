@@ -17,9 +17,9 @@
 #ifndef _TBB_task_dispatcher_H
 #define _TBB_task_dispatcher_H
 
-#include "oneapi/tbb/detail/_utils.h"
-#include "oneapi/tbb/detail/_task.h"
-#include "oneapi/tbb/global_control.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/detail/_task.h"
+#include "OneTBB/oneapi/tbb/global_control.h"
 
 #include "scheduler_common.h"
 #include "waiters.h"

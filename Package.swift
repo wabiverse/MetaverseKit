@@ -41,7 +41,7 @@ let package = Package(
       ],
       publicHeadersPath: ".",
       cxxSettings: [
-        .define("_XOPEN_SOURCE"),
+        .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
       ]
     ),
 
@@ -54,7 +54,7 @@ let package = Package(
       exclude: [],
       publicHeadersPath: ".",
       cxxSettings: [
-        .define("_XOPEN_SOURCE"),
+        .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("__TBBMALLOC_BUILD", to: "1"),
       ]
     ),
@@ -63,8 +63,7 @@ let package = Package(
       name: "OneTBB",
       publicHeadersPath: "include",
       cxxSettings: [
-        .define("_XOPEN_SOURCE"),
-        .define("TBB_USE_PROFILING_TOOLS", to: "2"),
+        .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
       ]
     ),
 
@@ -309,7 +308,7 @@ let package = Package(
       dependencies: [
         .target(name: "MetaTBB"),
         .target(name: "OpenMP"),
-        //.target(name: "GPUShaders"),
+        // .target(name: "GPUShaders"),
       ],
       exclude: getConfig(for: .osd).exclude,
       publicHeadersPath: "include",
@@ -469,7 +468,7 @@ let package = Package(
       checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
     ),
 
-    /* 
+    /*
       * Run this from the command line via:
       *
       * swift bundler run -p macOS MetaversalDemo

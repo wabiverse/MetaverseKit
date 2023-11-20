@@ -17,8 +17,8 @@
 #include "dynamic_link.h"
 #include "environment.h"
 
-#include "oneapi/tbb/detail/_template_helpers.h"
-#include "oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/detail/_template_helpers.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
 
 /*
     This file is used by both TBB and OpenMP RTL. Do not use __TBB_ASSERT() macro

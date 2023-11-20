@@ -16,8 +16,8 @@
 
 #if defined(_WIN32)
 
-#include "oneapi/tbb/detail/_config.h"
-#include "oneapi/tbb/detail/_assert.h"
+#include "OneTBB/oneapi/tbb/detail/_config.h"
+#include "OneTBB/oneapi/tbb/detail/_assert.h"
 #include "../tbb/assert_impl.h"
 
 #if !__TBB_WIN8UI_SUPPORT

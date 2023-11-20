@@ -14,9 +14,9 @@
     limitations under the License.
 */
 
-#include "oneapi/tbb/detail/_config.h"
-#include "oneapi/tbb/tbb_allocator.h"
-#include "oneapi/tbb/task_group.h"
+#include "OneTBB/oneapi/tbb/detail/_config.h"
+#include "OneTBB/oneapi/tbb/tbb_allocator.h"
+#include "OneTBB/oneapi/tbb/task_group.h"
 #include "governor.h"
 #include "thread_data.h"
 #include "scheduler_common.h"

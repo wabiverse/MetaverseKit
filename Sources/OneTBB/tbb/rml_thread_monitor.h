@@ -37,7 +37,7 @@
 #endif
 #include <cstdio>
 
-#include "oneapi/tbb/detail/_template_helpers.h"
+#include "OneTBB/oneapi/tbb/detail/_template_helpers.h"
 
 #include "itt_notify.h"
 #include "semaphore.h"

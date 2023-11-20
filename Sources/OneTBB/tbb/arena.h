@@ -20,7 +20,7 @@
 #include <atomic>
 #include <cstring>
 
-#include "oneapi/tbb/detail/_task.h"
+#include "OneTBB/oneapi/tbb/detail/_task.h"
 
 #include "scheduler_common.h"
 #include "intrusive_list.h"
@@ -32,7 +32,7 @@
 #include "governor.h"
 #include "concurrent_monitor.h"
 #include "observer_proxy.h"
-#include "oneapi/tbb/spin_mutex.h"
+#include "OneTBB/oneapi/tbb/spin_mutex.h"
 
 namespace tbb {
 namespace detail {

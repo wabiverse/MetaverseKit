@@ -14,8 +14,8 @@
     limitations under the License.
 */
 
-#include "oneapi/tbb/cache_aligned_allocator.h"
-#include "oneapi/tbb/mutex.h"
+#include "OneTBB/oneapi/tbb/cache_aligned_allocator.h"
+#include "OneTBB/oneapi/tbb/mutex.h"
 
 #include "rml_tbb.h"
 #include "rml_thread_monitor.h"

@@ -17,12 +17,12 @@
 #ifndef _TBB_scheduler_common_H
 #define _TBB_scheduler_common_H
 
-#include "oneapi/tbb/detail/_utils.h"
-#include "oneapi/tbb/detail/_template_helpers.h"
-#include "oneapi/tbb/detail/_task.h"
-#include "oneapi/tbb/detail/_machine.h"
-#include "oneapi/tbb/task_group.h"
-#include "oneapi/tbb/cache_aligned_allocator.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/detail/_template_helpers.h"
+#include "OneTBB/oneapi/tbb/detail/_task.h"
+#include "OneTBB/oneapi/tbb/detail/_machine.h"
+#include "OneTBB/oneapi/tbb/task_group.h"
+#include "OneTBB/oneapi/tbb/cache_aligned_allocator.h"
 #include "itt_notify.h"
 #include "co_context.h"
 #include "misc.h"
@@ -32,8 +32,8 @@
 #define __TBB_SCHEDULER_MUTEX_TYPE tbb::spin_mutex
 #endif
 // TODO: add conditional inclusion based on specified type
-#include "oneapi/tbb/spin_mutex.h"
-#include "oneapi/tbb/mutex.h"
+#include "OneTBB/oneapi/tbb/spin_mutex.h"
+#include "OneTBB/oneapi/tbb/mutex.h"
 
 #if TBB_USE_ASSERT
 #include <atomic>

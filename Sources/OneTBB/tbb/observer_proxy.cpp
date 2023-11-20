@@ -14,8 +14,8 @@
     limitations under the License.
 */
 
-#include "oneapi/tbb/detail/_config.h"
-#include "oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/detail/_config.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
 
 #include "observer_proxy.h"
 #include "arena.h"

@@ -41,9 +41,9 @@
 #include "SignedFloodFill.h"
 #include "ValueTransformer.h"
 
-#include <tbb/blocked_range.h>
-#include <tbb/enumerable_thread_specific.h>
-#include <tbb/parallel_for.h>
+#include <OneTBB/tbb/blocked_range.h>
+#include <OneTBB/tbb/enumerable_thread_specific.h>
+#include <OneTBB/tbb/parallel_for.h>
 
 #include <iostream>
 #include <sstream>

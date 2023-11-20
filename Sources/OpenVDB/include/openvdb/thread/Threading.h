@@ -20,9 +20,9 @@
 ///   called tbb/version.h. We include tbb/blocked_range.h here to indirectly
 ///   access the version defines in a consistent way so that downstream
 ///   software doesn't need to provide compile time defines.
-#include <tbb/blocked_range.h>
-#include <tbb/task.h>
-#include <tbb/task_group.h>
+#include <OneTBB/tbb/blocked_range.h>
+#include <OneTBB/tbb/task.h>
+#include <OneTBB/tbb/task_group.h>
 
 namespace openvdb {
 OPENVDB_USE_VERSION_NAMESPACE

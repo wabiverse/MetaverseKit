@@ -17,8 +17,8 @@
 #ifndef __TBB_thread_data_H
 #define __TBB_thread_data_H
 
-#include "oneapi/tbb/detail/_task.h"
-#include "oneapi/tbb/task.h"
+#include "OneTBB/oneapi/tbb/detail/_task.h"
+#include "OneTBB/oneapi/tbb/task.h"
 
 #include "rml_base.h" // rml::job
 

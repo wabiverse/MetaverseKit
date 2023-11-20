@@ -23,9 +23,9 @@
 #include <iterator>
 #include <algorithm>// std::swap
 #include <atomic>
-#include <tbb/spin_mutex.h>
-#include <tbb/parallel_for.h>
-#include <tbb/parallel_sort.h>
+#include <OneTBB/tbb/spin_mutex.h>
+#include <OneTBB/tbb/parallel_for.h>
+#include <OneTBB/tbb/parallel_sort.h>
 
 namespace openvdb {
 OPENVDB_USE_VERSION_NAMESPACE

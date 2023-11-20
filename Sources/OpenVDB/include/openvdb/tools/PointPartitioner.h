@@ -21,9 +21,9 @@
 #include <openvdb/Types.h>
 #include <openvdb/math/Transform.h>
 
-#include <tbb/blocked_range.h>
-#include <tbb/parallel_for.h>
-#include <tbb/task_arena.h>
+#include <OneTBB/tbb/blocked_range.h>
+#include <OneTBB/tbb/parallel_for.h>
+#include <OneTBB/tbb/task_arena.h>
 
 #include <algorithm>
 #include <cmath> // for std::isfinite()

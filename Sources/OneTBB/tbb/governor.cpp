@@ -22,10 +22,10 @@
 #include "dynamic_link.h"
 #include "concurrent_monitor.h"
 
-#include "oneapi/tbb/task_group.h"
-#include "oneapi/tbb/global_control.h"
-#include "oneapi/tbb/tbb_allocator.h"
-#include "oneapi/tbb/info.h"
+#include "OneTBB/oneapi/tbb/task_group.h"
+#include "OneTBB/oneapi/tbb/global_control.h"
+#include "OneTBB/oneapi/tbb/tbb_allocator.h"
+#include "OneTBB/oneapi/tbb/info.h"
 
 #include "task_dispatcher.h"
 

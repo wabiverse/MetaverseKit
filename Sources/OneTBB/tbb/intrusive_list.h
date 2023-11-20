@@ -17,7 +17,7 @@
 #ifndef _TBB_intrusive_list_H
 #define _TBB_intrusive_list_H
 
-#include "oneapi/tbb/detail/_intrusive_list_node.h"
+#include "OneTBB/oneapi/tbb/detail/_intrusive_list_node.h"
 
 namespace tbb {
 namespace detail {

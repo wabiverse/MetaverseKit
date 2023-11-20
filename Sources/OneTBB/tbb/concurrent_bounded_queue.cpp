@@ -14,9 +14,9 @@
     limitations under the License.
 */
 
-#include "oneapi/tbb/detail/_utils.h"
-#include "oneapi/tbb/concurrent_queue.h"
-#include "oneapi/tbb/cache_aligned_allocator.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/concurrent_queue.h"
+#include "OneTBB/oneapi/tbb/cache_aligned_allocator.h"
 #include "concurrent_monitor.h"
 
 namespace tbb {

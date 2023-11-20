@@ -17,8 +17,8 @@
 #ifndef _TBB_mailbox_H
 #define _TBB_mailbox_H
 
-#include "oneapi/tbb/cache_aligned_allocator.h"
-#include "oneapi/tbb/detail/_small_object_pool.h"
+#include "OneTBB/oneapi/tbb/cache_aligned_allocator.h"
+#include "OneTBB/oneapi/tbb/detail/_small_object_pool.h"
 
 #include "scheduler_common.h"
 

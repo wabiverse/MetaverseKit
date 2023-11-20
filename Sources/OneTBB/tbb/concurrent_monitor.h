@@ -17,9 +17,9 @@
 #ifndef __TBB_concurrent_monitor_H
 #define __TBB_concurrent_monitor_H
 
-#include "oneapi/tbb/spin_mutex.h"
-#include "oneapi/tbb/detail/_exception.h"
-#include "oneapi/tbb/detail/_aligned_space.h"
+#include "OneTBB/oneapi/tbb/spin_mutex.h"
+#include "OneTBB/oneapi/tbb/detail/_exception.h"
+#include "OneTBB/oneapi/tbb/detail/_aligned_space.h"
 #include "concurrent_monitor_mutex.h"
 #include "semaphore.h"
 

@@ -23,9 +23,9 @@
 #include "waiters.h"
 #include "itt_notify.h"
 
-#include "oneapi/tbb/detail/_task.h"
-#include "oneapi/tbb/partitioner.h"
-#include "oneapi/tbb/task.h"
+#include "OneTBB/oneapi/tbb/detail/_task.h"
+#include "OneTBB/oneapi/tbb/partitioner.h"
+#include "OneTBB/oneapi/tbb/task.h"
 
 #include <cstring>
 

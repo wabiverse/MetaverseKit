@@ -14,13 +14,13 @@
     limitations under the License.
 */
 
-#include "oneapi/tbb/version.h"
+#include "OneTBB/oneapi/tbb/version.h"
 
-#include "oneapi/tbb/detail/_exception.h"
-#include "oneapi/tbb/detail/_assert.h"
-#include "oneapi/tbb/detail/_utils.h"
-#include "oneapi/tbb/tbb_allocator.h" // Is this OK?
-#include "oneapi/tbb/cache_aligned_allocator.h"
+#include "OneTBB/oneapi/tbb/detail/_exception.h"
+#include "OneTBB/oneapi/tbb/detail/_assert.h"
+#include "OneTBB/oneapi/tbb/detail/_utils.h"
+#include "OneTBB/oneapi/tbb/tbb_allocator.h" // Is this OK?
+#include "OneTBB/oneapi/tbb/cache_aligned_allocator.h"
 
 #include "dynamic_link.h"
 #include "misc.h"

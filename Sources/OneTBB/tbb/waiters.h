@@ -17,7 +17,7 @@
 #ifndef _TBB_waiters_H
 #define _TBB_waiters_H
 
-#include "oneapi/tbb/detail/_task.h"
+#include "OneTBB/oneapi/tbb/detail/_task.h"
 #include "scheduler_common.h"
 #include "arena.h"
 

@@ -20,9 +20,9 @@
 #include "itt_notify.h"
 #include "semaphore.h"
 #include "waiters.h"
-#include "oneapi/tbb/detail/_task.h"
-#include "oneapi/tbb/info.h"
-#include "oneapi/tbb/tbb_allocator.h"
+#include "OneTBB/oneapi/tbb/detail/_task.h"
+#include "OneTBB/oneapi/tbb/info.h"
+#include "OneTBB/oneapi/tbb/tbb_allocator.h"
 
 #include <atomic>
 #include <cstring>
@@ -361,7 +361,7 @@ void arena::enqueue_task(d1::task& t, d1::task_group_context& ctx, thread_data& 
 } // namespace tbb
 
 // Enable task_arena.h
-#include "oneapi/tbb/task_arena.h" // task_arena_base
+#include "OneTBB/oneapi/tbb/task_arena.h" // task_arena_base
 
 namespace tbb {
 namespace detail {

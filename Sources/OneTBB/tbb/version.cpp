@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-#include "oneapi/tbb/version.h"
+#include "OneTBB/oneapi/tbb/version.h"
 
 extern "C" int TBB_runtime_interface_version() {
     return TBB_INTERFACE_VERSION;

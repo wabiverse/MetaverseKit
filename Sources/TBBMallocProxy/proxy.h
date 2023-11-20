@@ -26,7 +26,7 @@
 #define MALLOC_CHECK_RECURSION 1
 #endif
 
-#include "oneapi/tbb/detail/_config.h"
+#include "OneTBB/oneapi/tbb/detail/_config.h"
 #include <stddef.h>
 
 extern "C" {

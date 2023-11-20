@@ -19,7 +19,7 @@
 #include <new>        /* for placement new */
 #include <string.h>   /* for memset */
 
-#include "oneapi/tbb/version.h"
+#include "OneTBB/oneapi/tbb/version.h"
 #include "../tbb/environment.h"
 #include "../tbb/itt_notify.h" // for __TBB_load_ittnotify()
 

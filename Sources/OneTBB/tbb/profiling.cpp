@@ -14,13 +14,13 @@
     limitations under the License.
 */
 
-#include "oneapi/tbb/detail/_config.h"
-#include "oneapi/tbb/detail/_template_helpers.h"
+#include "OneTBB/oneapi/tbb/detail/_config.h"
+#include "OneTBB/oneapi/tbb/detail/_template_helpers.h"
 
 #include "main.h"
 #include "itt_notify.h"
 
-#include "oneapi/tbb/profiling.h"
+#include "OneTBB/oneapi/tbb/profiling.h"
 
 #include <string.h>
 
@@ -44,7 +44,7 @@ struct resource_string {
 //
 #define TBB_STRING_RESOURCE( index_name, str ) { str, nullptr },
 static resource_string strings_for_itt[] = {
-    #include "oneapi/tbb/detail/_string_resource.h"
+    #include "OneTBB/oneapi/tbb/detail/_string_resource.h"
     { "num_resource_strings", nullptr }
 };
 #undef TBB_STRING_RESOURCE
