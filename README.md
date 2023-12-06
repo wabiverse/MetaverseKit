@@ -17,60 +17,64 @@ releases, and we will provide monolithic releases in accordance with the [**VFX 
   for these foundational libraries through the implementation of Swift Packages. This strategic initiative opens the gateway for developers,
   offering unparalleled opportunity to unleash the full power of industry-grade software, and unlocking its utmost potential.
 
-## Wabi Swift Targets
-- **MetaPy** - Metaversal Python, all the python modules from the below libraries, combined into a single swift target.
-- **MXGraphEditor** - MaterialX Graph Editor, visualizing, creating, and editing MaterialX graphs on the flick of a `swift run MXGraphEditor` command.
-- **MXResources** - MaterialX Resources, adding this target to your swift app or plugin will automatically install the [**MaterialX Standard Library**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/libraries) and [**MaterialX Resources**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/resources) into
-  the `/Resources` directory that is embedded within your swift application bundle or plugin module.
-- With many more coming soon...
+### Wabi Targets
+| Swift Target  | Description                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MetaPy        | Metaversal Python, all the python modules from the below libraries, combined into a single swift target.                                                                                                                                                                                                                                                                                                                          |
+| MXGraphEditor | MaterialX Graph Editor, visualizing, creating, and editing MaterialX graphs on the flick of a `swift run MXGraphEditor` command.                                                                                                                                                                                                                                                                                                  |
+| MXResources   | MaterialX Resources, adding this target to your swift app or plugin will automatically install the [**MaterialX Standard Library**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/libraries) and [**MaterialX Resources**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/resources) into the `/Resources` directory that is embedded within your swift application bundle or plugin module. |
 
-## Industry Swift Targets
-- **OneTBB v2021.10.0** - ([*Official support in progress...*](https://github.com/oneapi-src/oneTBB/issues/1244))
-- **Boost v1.81.2**
-- **Python v3.11.6**
-- **IMath v3.1.9**
-- **Alembic v1.8.5**
-- **MaterialX v1.38.8**
-- **OpenColorIO v2.3.0**
-- **Blosc v1.21.5**
-- **GLFW v3.4.0**
-- **ImGui v1.89.9**
-- **OpenVDB v10.1.0**
-- **OpenEXR v3.2.1**
-- **OpenImageIO v2.5.4.0**
-- **WebP v1.3.2**
-- **TurboJPEG v3.0.1**
-- **Raw v0.21.1**
-- **TIFF v4.6.0**
-- **LibPNG v1.6.40**
-- **Ptex v2.4.2**
-- **Eigen v3.4.0**
-- **Draco v1.5.6**
-- **Glslang v12.3.1**
-- **MoltenVK v1.2.6-rc1** (darwin-based platforms)
-- **Shaderc v2023.2**
-- **SpirvCross v1.3.261.1**
-- **PyBind11 v2.11.1**
-- **HDF5 v1.10.0**
-- **DEFLATE v1.19**
-- **ZStandard v1.5.5**
-- **ZLibDataCompression v1.2.11**
-- **LZMA2 v5.4.4**
-- **MiniZip v4.0.1**
-- **Yaml v0.8.0**
-- **OpenSSL v(BoringSSL `abfd5eb`)**
-- **...growing...**
+> With many more coming soon...
+
+### Industry Swift Targets
+> [!IMPORTANT]
+> Currently, through early development, Wabi is only using (arm64) macOS running on Apple silicon.
+> In the near term we will begin with (aarch64) Linux first, and Microsoft Windows support sometime after.
+
+| Swift Target                                                               | Version           |
+| -------------------------------------------------------------------------- | ----------------- |
+| OneTBB ([in progress](https://github.com/oneapi-src/oneTBB/issues/1244))   | 2021.10.0         |
+| Python                                                                     | 3.11.6            |
+| PyBind11                                                                   | 2.11.1            |
+| Boost                                                                      | 1.81.2            |
+| OpenSubdiv                                                                 | 3.6.0             |
+| OpenImageIO                                                                | 2.5.4.0           |
+| OpenColorIO                                                                | 2.3.0             |
+| OSL                                                                        | 1.12.14.0 (TODO)  |
+| Ptex                                                                       | 2.4.2             |
+| ImGui                                                                      | 1.89.9            |
+| Embree                                                                     | ??? (TODO)        |
+| RenderMan                                                                  | 24.4, 25.0 (TODO) |
+| Alembic                                                                    | 1.8.5             |
+| OpenEXR                                                                    | 3.2.1             |
+| Imath                                                                      | 3.1.9             |
+| MaterialX                                                                  | 1.38.8            |
+| OpenVDB                                                                    | 10.1.0            |
+| HDF5                                                                       | 1.10.0            |
+| Blosc                                                                      | 1.21.5            |
+| Eigen                                                                      | 3.4.0             |
+| Draco                                                                      | 1.5.6             |
+| TurboJPEG                                                                  | 3.0.1             |
+| TIFF                                                                       | 4.6.0             |
+| LibPNG                                                                     | 1.6.40            |
+| WebP                                                                       | 1.3.2             |
+| RAW                                                                        | 0.21.1            |
+| ZStandard                                                                  | 1.5.5             |
+| LZMA2                                                                      | 5.4.4             |
+| MiniZip                                                                    | 4.0.1             |
+| Yaml                                                                       | 0.8.0             |
 
 # Usage
 ##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L85).
 ```swift
 dependencies: [
-  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.2.1"),
+  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.3.0"),
 ]
 ```
 
-> **NOTE:** Swift is an open source programming language that is fully
-supported across **Linux** and [**Swift on Server**](https://www.swift.org/server/),
-the entire **Apple** family of devices: **macOS**, **visionOS**, **iOS**, **tvOS**, **watchOS**,
-as well as support for **Microsoft Windows**. To learn more about Swift, please visit [swift.org](https://www.swift.org).
+> [!NOTE]
+> Swift is an open source programming language that is fully
+> supported across **Linux** and [**Swift on Server**](https://www.swift.org/server/),
+> the entire **Apple** family of devices: **macOS**, **visionOS**, **iOS**, **tvOS**, **watchOS**,
+> as well as support for **Microsoft Windows**. To learn more about Swift, please visit [swift.org](https://www.swift.org).
 <br>
