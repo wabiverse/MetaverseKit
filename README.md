@@ -44,10 +44,9 @@ releases, and we will provide monolithic releases in accordance with the [**VFX 
 | Ptex                                                                       | 2.4.2             |
 | ImGui                                                                      | 1.89.9            |
 | Embree                                                                     | ??? (TODO)        |
-| RenderMan                                                                  | 24.4, 25.0 (TODO) |
 | Alembic                                                                    | 1.8.5             |
 | OpenEXR                                                                    | 3.2.1             |
-| Imath                                                                      | 3.1.9             |
+| IMath                                                                      | 3.1.9             |
 | MaterialX                                                                  | 1.38.8            |
 | OpenVDB                                                                    | 10.1.0            |
 | HDF5                                                                       | 1.10.0            |
