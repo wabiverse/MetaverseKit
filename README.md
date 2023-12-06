@@ -64,6 +64,12 @@ releases, and we will provide monolithic releases in accordance with the [**VFX 
 | MiniZip                                                                    | 4.0.1             |
 | Yaml                                                                       | 0.8.0             |
 
+### Platform Independent
+| Swift Target                                                                                                                                           | Version                              |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Apple ([Metal-cpp]([https://github.com/oneapi-src/oneTBB/issues/1244](https://developer.apple.com/metal/cpp/files/metal-cpp_macOS14.2_iOS17.2.zip)))   | macOS 14.2 / iOS 17.2 / visionOS 1.0 |
+
+
 # Usage
 ##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L85).
 ```swift
