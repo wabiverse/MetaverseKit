@@ -229,8 +229,8 @@ let package = Package(
     .target(
       name: "GLFW",
       dependencies: [
-        .target(name: "Apple"),
-        .target(name: "MoltenVK"),
+        .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
+        .target(name: "MoltenVK", condition: .when(platforms: Arch.OS.apple.platform)),
       ],
       exclude: getConfig(for: .glfw).exclude,
       publicHeadersPath: "include",
@@ -270,7 +270,7 @@ let package = Package(
     .target(
       name: "MaterialX",
       dependencies: [
-        .target(name: "Apple"),
+        .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
         .target(name: "ImGui"),
         .target(name: "OpenImageIO"),
         .target(name: "PyBind11"),
