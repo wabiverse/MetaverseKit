@@ -28,8 +28,9 @@ releases, and we will provide monolithic releases in accordance with the [**VFX 
 
 ### Industry Swift Targets
 > [!IMPORTANT]
-> Currently, through early development, Wabi is only using (arm64) macOS running on Apple silicon.
-> In the near term we will begin with (aarch64) Linux first, and Microsoft Windows support sometime after.
+> Currently, through early development, Wabi is only using **(arm64) macOS** running on Apple silicon.
+> On **December 6th, 2023** the work for **aarch64 Linux** support began,
+> and **Microsoft Windows** support will come sometime soon.
 
 | Swift Target                                                               | Version           |
 | -------------------------------------------------------------------------- | ----------------- |
