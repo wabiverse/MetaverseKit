@@ -1203,7 +1203,7 @@ enum PkgTarget: String
   case python = "Python"
   case moltenVK = "MoltenVK"
   case demo = "MetaversalDemo"
-  case bundlerPlugin = "SwiftBundlerPlugin"
+  case bundlerPlugin = "SwiftBundlerCommandPlugin"
   case all
 }
 
