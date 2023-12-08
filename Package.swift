@@ -17,6 +17,7 @@ let package = Package(
   ],
   products: getConfig(for: .all).products,
   dependencies: [
+    .package(url: "https://github.com/stackotter/swift-bundler", revision: "441927d"),
     .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
   ],
   targets: [
@@ -257,7 +258,6 @@ let package = Package(
 
     .target(
       name: "MXResources",
-      dependencies: [],
       resources: [
         .copy("libraries"),
         .process("Resources"),
@@ -466,6 +466,23 @@ let package = Package(
       name: "MoltenVK",
       url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/MoltenVK.xcframework.zip",
       checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
+    ),
+
+    .plugin(
+      name: "SwiftBundlerCommandPlugin",
+      capability: .command(
+        intent: .custom(
+          verb: "bundler",
+          description: "Run a package as an app."
+        ),
+        permissions: [
+          .allowNetworkConnections(scope: .all(), reason: "Creating an app bundle may require network access."),
+          .writeToPackageDirectory(reason: "Creating an app bundle requires writing to the package directory."),
+        ]
+      ),
+      dependencies: [
+        .product(name: "swift-bundler", package: "swift-bundler"),
+      ]
     ),
 
     /*
@@ -864,6 +881,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       break
     case .moltenVK:
       break
+    case .demo:
+      break
+    case .bundlerPlugin:
+      break
     case .all:
       config.products = [
         .library(
@@ -933,10 +954,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .library(
           name: "ImGui",
           targets: ["ImGui"]
-        ),
-        .library(
-          name: "MXResources",
-          targets: ["MXResources"]
         ),
         .library(
           name: "MaterialX",
@@ -1017,6 +1034,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .library(
           name: "MoltenVK",
           targets: ["MoltenVK"]
+        ),
+        .library(
+          name: "MXResources", 
+          targets: ["MXResources"]
         ),
         .executable(
           name: "MXGraphEditor",
@@ -1181,6 +1202,8 @@ enum PkgTarget: String
   case boost = "Boost"
   case python = "Python"
   case moltenVK = "MoltenVK"
+  case demo = "MetaversalDemo"
+  case bundlerPlugin = "SwiftBundlerPlugin"
   case all
 }
 

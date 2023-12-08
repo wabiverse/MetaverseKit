@@ -1,10 +1,10 @@
 format_version = 2
 
 [apps.MetaversalDemo]
-category = 'public.app-category.graphics-design'
 identifier = 'foundation.wabi.MetaversalDemo'
 product = 'MetaversalDemo'
 version = '1.0.0'
+category = 'public.app-category.graphics-design'
 
 [apps.MetaversalDemo.plist]
 commit = '$(COMMIT_HASH)'
