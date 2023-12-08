@@ -24,7 +24,12 @@ releases, and we will provide monolithic releases in accordance with the [**VFX 
 | MXGraphEditor | MaterialX Graph Editor, visualizing, creating, and editing MaterialX graphs on the flick of a `swift run MXGraphEditor` command.                                                                                                                                                                                                                                                                                                  |
 | MXResources   | MaterialX Resources, adding this target to your swift app or plugin will automatically install the [**MaterialX Standard Library**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/libraries) and [**MaterialX Resources**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/resources) into the `/Resources` directory that is embedded within your swift application bundle or plugin module. |
 
-> With many more coming soon...
+
+
+| Swift Plugins                                                | Description                                                                                                                                                                                         | Usage                                          |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| [SwiftBundler](https://github.com/stackotter/swift-bundler)  | Create cross-platform Swift apps, (Xcode optional!). Turn Swift Packages into fully bundled Swift apps from the comfort of the command line - including **macOS**, **iOS**, and even **visionOS**. | `swift package plugin bundler run -p visionOS` |
+
 
 ### Industry Swift Targets
 > [!IMPORTANT]
