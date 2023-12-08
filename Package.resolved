@@ -93,10 +93,10 @@
     {
       "identity" : "swift-bundler",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/stackotter/swift-bundler",
+      "location" : "https://github.com/furby-tm/swift-bundler",
       "state" : {
-        "branch" : "441927d",
-        "revision" : "441927d244c9f02a2bb1373fc67579dcffc74248"
+        "branch" : "cedd7a2",
+        "revision" : "cedd7a26a16dce0a630bd9a3c3cfd2ab409cafde"
       }
     },
     {

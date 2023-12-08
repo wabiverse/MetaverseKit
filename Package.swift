@@ -17,7 +17,7 @@ let package = Package(
   ],
   products: getConfig(for: .all).products,
   dependencies: [
-    .package(url: "https://github.com/stackotter/swift-bundler", revision: "441927d"),
+    .package(url: "https://github.com/furby-tm/swift-bundler", revision: "cedd7a2"),
     .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
   ],
   targets: [
@@ -468,23 +468,6 @@ let package = Package(
       checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
     ),
 
-    .plugin(
-      name: "SwiftBundlerCommandPlugin",
-      capability: .command(
-        intent: .custom(
-          verb: "bundler",
-          description: "Run a package as an app."
-        ),
-        permissions: [
-          .allowNetworkConnections(scope: .all(), reason: "Creating an app bundle may require network access."),
-          .writeToPackageDirectory(reason: "Creating an app bundle requires writing to the package directory."),
-        ]
-      ),
-      dependencies: [
-        .product(name: "swift-bundler", package: "swift-bundler"),
-      ]
-    ),
-
     /*
       * Run this from the command line via:
       *
@@ -883,8 +866,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       break
     case .demo:
       break
-    case .bundlerPlugin:
-      break
     case .all:
       config.products = [
         .library(
@@ -1203,7 +1184,6 @@ enum PkgTarget: String
   case python = "Python"
   case moltenVK = "MoltenVK"
   case demo = "MetaversalDemo"
-  case bundlerPlugin = "SwiftBundlerCommandPlugin"
   case all
 }
 
