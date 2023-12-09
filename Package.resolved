@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/furby-tm/swift-bundler",
       "state" : {
-        "branch" : "cedd7a2",
-        "revision" : "cedd7a26a16dce0a630bd9a3c3cfd2ab409cafde"
+        "revision" : "b72140213ab7135922287a48837ced1b2da1457d",
+        "version" : "2.0.8"
       }
     },
     {
@@ -192,10 +192,10 @@
     {
       "identity" : "tomlkit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/LebJe/TOMLKit",
+      "location" : "https://github.com/furby-tm/TOMLKit",
       "state" : {
-        "branch" : "0.5.5",
-        "revision" : "404c4dd011743461bff12d00a5118d0ed59d630c"
+        "revision" : "f2b3e80a19c7fb3d42e3cfda98076cef8f0d1bd7",
+        "version" : "0.5.6"
       }
     },
     {

@@ -17,7 +17,7 @@ let package = Package(
   ],
   products: getConfig(for: .all).products,
   dependencies: [
-    .package(url: "https://github.com/furby-tm/swift-bundler", revision: "cedd7a2"),
+    .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
     .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
   ],
   targets: [
