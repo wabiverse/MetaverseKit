@@ -259,8 +259,13 @@ let package = Package(
     .target(
       name: "MXResources",
       resources: [
-        .copy("libraries"),
-        .process("Resources"),
+        // FIXME
+        // .copy("libraries"),
+        // .process("Resources"),
+        // temporary workaround for metal shaders
+        // erroring on compilation, so we don't 
+        // gunk up SwiftUSD and everything else.
+        .process("Images")
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
