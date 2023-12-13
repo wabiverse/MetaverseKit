@@ -19,6 +19,7 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
     .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
+    .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.0"),
   ],
   targets: [
     .target(
@@ -231,7 +232,7 @@ let package = Package(
       name: "GLFW",
       dependencies: [
         .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
-        .target(name: "MoltenVK", condition: .when(platforms: Arch.OS.apple.platform)),
+        .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: Arch.OS.apple.platform)),
       ],
       exclude: getConfig(for: .glfw).exclude,
       publicHeadersPath: "include",
@@ -241,11 +242,14 @@ let package = Package(
     .target(
       name: "ImGui",
       dependencies: [
+        .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: Arch.OS.apple.platform)),
         .target(name: "GLFW"),
       ],
       exclude: getConfig(for: .imgui).exclude,
       publicHeadersPath: "include",
       cxxSettings: [
+        .define("VK_USE_PLATFORM_MACOS_MVK", to: "1", .when(platforms: [.macOS])),
+        .define("VK_USE_PLATFORM_IOS_MVK", to: "1", .when(platforms: [.iOS, .visionOS])),
         .headerSearchPath("."),
         .headerSearchPath("backends"),
       ],
@@ -469,12 +473,6 @@ let package = Package(
       name: "Boost",
       url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
       checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
-    ),
-
-    .binaryTarget(
-      name: "MoltenVK",
-      url: "https://github.com/wabiverse/Kraken/releases/download/1.50a/MoltenVK.xcframework.zip",
-      checksum: "d236c4d41f581b6533f2f40eb0f74a6af03b31781cbb451856c5acf2f9f8f491"
     ),
 
     /*
@@ -1020,10 +1018,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .library(
           name: "Draco",
           targets: ["Draco"]
-        ),
-        .library(
-          name: "MoltenVK",
-          targets: ["MoltenVK"]
         ),
         .library(
           name: "MXResources", 

@@ -76,11 +76,6 @@ typedef unsigned __int64 uint64_t;
 #include <omp.h>
 #endif
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #if defined(USE_LCMS)
 #include <lcms.h>
 #elif defined(USE_LCMS2)
@@ -91,6 +86,11 @@ extern "C"
 
 #include "libraw_const.h"
 #include "libraw_version.h"
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 #ifdef _WIN32
   typedef __int64 INT64;

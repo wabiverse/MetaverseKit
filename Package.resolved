@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "metaversevulkanframework",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wabiverse/MetaverseVulkanFramework",
+      "state" : {
+        "revision" : "b15ce9743fde71cadf8d429b3fa6dad68e275e73",
+        "version" : "1.26.0"
+      }
+    },
+    {
       "identity" : "pathkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kylef/PathKit.git",

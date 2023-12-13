@@ -8,3 +8,12 @@ category = 'public.app-category.graphics-design'
 
 [apps.MetaversalDemo.plist]
 commit = '$(COMMIT_HASH)'
+
+[apps.MXGraphEditor]
+identifier = 'foundation.wabi.MXGraphEditor'
+product = 'MXGraphEditor'
+version = '1.0.0'
+category = 'public.app-category.graphics-design'
+
+[apps.MXGraphEditor.plist]
+commit = '$(COMMIT_HASH)'
