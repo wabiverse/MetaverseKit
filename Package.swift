@@ -422,7 +422,7 @@ let package = Package(
         .target(name: "Boost"),
         .target(name: "HDF5"),
         .target(name: "OpenEXR"),
-        .product(name: "Python", package: "MetaversePythonFramework"),
+        .product(name: "Python", package: "MetaversePythonFramework")
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -432,6 +432,9 @@ let package = Package(
 
     .target(
       name: "PyBind11",
+      dependencies: [
+        .product(name: "Python", package: "MetaversePythonFramework")
+      ],
       publicHeadersPath: "include",
       cxxSettings: []
     ),
