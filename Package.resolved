@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/wabiverse/MetaverseVulkanFramework",
       "state" : {
-        "revision" : "b15ce9743fde71cadf8d429b3fa6dad68e275e73",
-        "version" : "1.26.0"
+        "revision" : "d81c5b35576887a5e04211657cca1535b43ab0a5",
+        "version" : "1.26.1"
       }
     },
     {

@@ -19,7 +19,7 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
     .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
-    .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.0"),
+    .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.1"),
   ],
   targets: [
     .target(
