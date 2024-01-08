@@ -30,26 +30,26 @@
  * runs of zeros and ones in Group 3 Fax encoding.
  */
 
-dumparray(name, runs) char *name;
-unsigned char runs[256];
-{
-    int i;
-    char *sep;
-    printf("static unsigned char %s[256] = {\n", name);
-    sep = "    ";
-    for (i = 0; i < 256; i++)
-    {
-        printf("%s%d", sep, runs[i]);
-        if (((i + 1) % 16) == 0)
-        {
-            printf(",	/* 0x%02x - 0x%02x */\n", i - 15, i);
-            sep = "    ";
-        }
-        else
-            sep = ", ";
-    }
-    printf("\n};\n");
-}
+// dumparray(name, runs) char *name;
+// unsigned char runs[256];
+// {
+//     int i;
+//     char *sep;
+//     printf("static unsigned char %s[256] = {\n", name);
+//     sep = "    ";
+//     for (i = 0; i < 256; i++)
+//     {
+//         printf("%s%d", sep, runs[i]);
+//         if (((i + 1) % 16) == 0)
+//         {
+//             printf(",	/* 0x%02x - 0x%02x */\n", i - 15, i);
+//             sep = "    ";
+//         }
+//         else
+//             sep = ", ";
+//     }
+//     printf("\n};\n");
+// }
 
 // main()
 // {

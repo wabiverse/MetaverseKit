@@ -789,12 +789,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       #if !os(macOS)
         /* metal is only for darwin. */
         config.exclude += [
-          "MTLComputeEvaluator.mm",
-          "MTLLegacyGregoryPatchTable.mm",
-          "MTLMesh.mm",
-          "MTLPatchShaderSource.mm",
-          "MTLPatchTable.mm",
-          "MTLVertexBuffer.mm",
+          "osd/MTLComputeEvaluator.mm",
+          "osd/MTLLegacyGregoryPatchTable.mm",
+          "osd/MTLMesh.mm",
+          "osd/MTLPatchShaderSource.mm",
+          "osd/MTLPatchTable.mm",
+          "osd/MTLVertexBuffer.mm",
         ]
       #endif /* !os(macOS) */
       config.cxxSettings = [

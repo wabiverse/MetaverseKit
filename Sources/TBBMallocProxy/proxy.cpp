@@ -59,7 +59,7 @@
 #include <new>
 
 // Synchronization primitives to protect original library pointers and new_handler
-#include "../tbbmalloc/Synchronize.h"
+#include "../TBBMalloc/Synchronize.h"
 // Use MallocMutex implementation
 typedef MallocMutex ProxyMutex;
 

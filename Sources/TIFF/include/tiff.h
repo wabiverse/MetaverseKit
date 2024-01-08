@@ -27,6 +27,10 @@
 
 #include "tiffconf.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * Tag Image File Format (TIFF)
  *
@@ -895,5 +899,9 @@ typedef enum
 #define GPSTAG_DATESTAMP 29            /* A character string recording date and time information relative to UTC (Coordinated Universal Time). */
 #define GPSTAG_DIFFERENTIAL 30         /* Indicates whether differential correction is applied to the GPS receiver. */
 #define GPSTAG_GPSHPOSITIONINGERROR 31 /* Indicates horizontal positioning errors in meters. */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _TIFF_ */

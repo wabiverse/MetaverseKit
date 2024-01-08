@@ -16,9 +16,7 @@
 
 #pragma once
 
-extern "C" {
 #include "tiff.h"
-}
 
 #include <OpenImageIO/imageio.h>
 
