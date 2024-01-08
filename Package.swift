@@ -1072,6 +1072,7 @@ enum Arch
   {
     case arm
     case arm64
+    case aarch64
     case x86_64
     case i386
     case powerpc
@@ -1085,7 +1086,7 @@ enum Arch
     {
       switch self
       {
-        case .arm, .arm64, .arm64_32: [.arm, .arm64, .arm64_32]
+        case .arm, .arm64, .aarch64, .arm64_32: [.arm, .arm64, .aarch64, .arm64_32]
         case .x86_64, .i386: [.x86_64, .i386]
         case .powerpc, .powerpc64, .powerpc64le: [.powerpc, .powerpc64, .powerpc64le]
         case .s390x: [.s390x]
@@ -1116,7 +1117,7 @@ enum Arch
     #if os(Android)
       static let device = "android"
     #else /* os(Linux) || os(OpenBSD) */
-      static let device = "unknown"
+      static let device = "gnu"
     #endif
   #elseif os(Windows)
     static let host = "windows"
@@ -1127,7 +1128,11 @@ enum Arch
   #endif
 
   #if arch(arm64)
-    static let cpuArch: CPU = .arm64
+    #if os(Linux)
+      static let cpuArch: CPU = .aarch64
+    #else
+      static let cpuArch: CPU = .arm64
+    #endif
   #elseif arch(x86_64)
     static let cpuArch: CPU = .x86_64
   #elseif arch(i386)
