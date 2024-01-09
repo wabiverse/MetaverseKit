@@ -13,9 +13,8 @@
 #include <OpenImageIO/tiffutils.h>
 #include <OpenImageIO/timer.h>
 
-extern "C" {
+
 #include "tiff.h"
-}
 
 #if USE_EXTERNAL_PUGIXML
 #    include <pugixml.hpp>

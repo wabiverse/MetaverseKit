@@ -6456,7 +6456,7 @@ enum ImGuiModFlags_ {
 #include <ImGui/CrudeJson.h>
 #include <ImGui/ImGuiStdLib.h>
 #include <ImGui/ImStbRectPack.h>
-#include <ImGui/ImStbTrueType.h>
+#include <ImGui/ImStbTruetype.h>
 #include <ImGui/ImplGLFW.h>
 #include <ImGui/ImplOpenGL.h>
 #include <ImGui/NodeEditor.h>

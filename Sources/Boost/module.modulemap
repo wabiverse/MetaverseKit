@@ -1,0 +1,5 @@
+module Boost [system] {
+  header "Boost.h"
+  link "boost"
+  export *
+}

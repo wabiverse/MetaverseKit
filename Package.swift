@@ -123,6 +123,7 @@ let package = Package(
         .target(name: "ZLibDataCompression"),
         .target(name: "ZStandard"),
         .target(name: "OpenSSL"),
+        .target(name: "BZ2", condition: .when(platforms: Arch.OS.linux.platform)),
       ],
       exclude: getConfig(for: .minizip).exclude,
       publicHeadersPath: "include",
@@ -263,9 +264,9 @@ let package = Package(
     .target(
       name: "MXResources",
       exclude: [
-        // FIXME
+        // FIXME:
         // temporary workaround for metal shaders
-        // erroring on compilation, so we don't 
+        // erroring on compilation, so we don't
         // gunk up SwiftUSD and everything else.
         "libraries",
         "Resources/Lights",
@@ -273,7 +274,7 @@ let package = Package(
         "Resources/Materials",
       ],
       resources: [
-        .process("Resources/Images")
+        .process("Resources/Images"),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -301,7 +302,8 @@ let package = Package(
       name: "MXGraphEditor",
       dependencies: [
         .target(name: "MaterialX"),
-      ]
+      ],
+      exclude: getConfig(for: .mxGraphEditor).exclude
     ),
 
     // .target(
@@ -359,7 +361,8 @@ let package = Package(
         .headerSearchPath("."),
         .headerSearchPath("include/OpenImageIO/detail"),
         .headerSearchPath("libOpenImageIO"),
-      ]
+      ],
+      linkerSettings: getConfig(for: .oiio).linkerSettings
     ),
 
     .target(
@@ -422,7 +425,7 @@ let package = Package(
         .target(name: "Boost"),
         .target(name: "HDF5"),
         .target(name: "OpenEXR"),
-        .product(name: "Python", package: "MetaversePythonFramework")
+        .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -433,7 +436,7 @@ let package = Package(
     .target(
       name: "PyBind11",
       dependencies: [
-        .product(name: "Python", package: "MetaversePythonFramework")
+        .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       publicHeadersPath: "include",
       cxxSettings: []
@@ -469,13 +472,8 @@ let package = Package(
         .product(name: "Python", package: "MetaversePythonFramework"),
       ],
       publicHeadersPath: "include",
-      cxxSettings: getConfig(for: .openvdb).cxxSettings
-    ),
-
-    .binaryTarget(
-      name: "Boost",
-      url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
-      checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
+      cxxSettings: getConfig(for: .openvdb).cxxSettings,
+      linkerSettings: getConfig(for: .openvdb).linkerSettings
     ),
 
     /*
@@ -509,7 +507,7 @@ let package = Package(
         .interoperabilityMode(.Cxx),
       ]
     ),
-  ],
+  ] + getPlatformTargets(),
   cLanguageStandard: .gnu17,
   cxxLanguageStandard: .cxx17
 )
@@ -519,6 +517,37 @@ let package = Package(
  * are in the dedicated function below. This is to
  * keep the main package file clean and readable.
  * ------------------------------------------------- */
+
+func getPlatformTargets() -> [Target]
+{
+  #if os(macOS)
+    [
+      .binaryTarget(
+        name: "Boost",
+        url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.c.zip",
+        checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
+      ),
+    ]
+  #else
+    [
+      .systemLibrary(
+        name: "Boost",
+        pkgConfig: "boost",
+        providers: [
+          .apt(["libboost-all-dev"]),
+        ]
+      ),
+
+      .systemLibrary(
+        name: "BZ2",
+        pkgConfig: "libbz2",
+        providers: [
+          .apt(["libbz2-dev"]),
+        ]
+      ),
+    ]
+  #endif
+}
 
 func getConfig(for target: PkgTarget) -> TargetInfo
 {
@@ -632,6 +661,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .headerSearchPath("rangecoder"),
         .headerSearchPath("simple"),
         .define("HAVE_STDBOOL_H", to: "1"),
+        .define("HAVE_INTTYPES_H", to: "1", .when(platforms: Arch.OS.linux.platform)),
         .define("MYTHREAD_POSIX", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
         .define("MYTHREAD_VISTA", to: "1", .when(platforms: Arch.OS.windows.platform)),
       ]
@@ -649,6 +679,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "mz_strm_os_win32.c",
           "mz_os_win32.c",
           "mz_crypt_winvista.c",
+        ]
+      #endif
+      #if !os(macOS)
+        config.exclude += [
+          "mz_strm_libcomp.c",
+          "mz_crypt_apple.c",
         ]
       #endif
     case .zlib:
@@ -755,6 +791,13 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "backends/ImplMetal.mm",
           // no apple os
           "backends/ImplMacOS.mm",
+        ]
+      #endif /* !os(macOS) */
+    case .mxGraphEditor:
+      #if !os(macOS)
+        config.exclude = [
+          // no objc
+          "FileDialog.mm",
         ]
       #endif /* !os(macOS) */
     case .mxResources:
@@ -881,10 +924,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .library(
           name: "OneTBB",
           targets: ["OneTBB"]
-        ),
-        .library(
-          name: "Boost",
-          targets: ["Boost"]
         ),
         .library(
           name: "MetaTBB",
@@ -1023,7 +1062,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["Draco"]
         ),
         .library(
-          name: "MXResources", 
+          name: "MXResources",
           targets: ["MXResources"]
         ),
         .executable(
@@ -1035,6 +1074,15 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["MetaversalDemo"]
         ),
       ]
+      #if os(macOS)
+        config.products += [
+          .library(
+            name: "Boost",
+            targets: ["Boost"]
+          ),
+        ]
+      #endif /* os(macOS) */
+
       config.dependencies = config.products.map
       {
         .init(stringLiteral: $0.name)
@@ -1176,6 +1224,7 @@ enum PkgTarget: String
   case apple = "Apple"
   case glfw = "GLFW"
   case imgui = "ImGui"
+  case mxGraphEditor = "MXGraphEditor"
   case mxResources = "MXResources"
   case materialx = "MaterialX"
   /// case gpuShaders = "GPUShaders"

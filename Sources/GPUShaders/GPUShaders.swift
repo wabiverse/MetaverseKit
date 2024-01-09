@@ -21,25 +21,33 @@
  *  . x x x . o o o . x x x . : : : .    o  x  o    . : : : .
  * -------------------------------------------------------------- */
 
-import Metal
+#if canImport(Metal)
+  import Metal
+#endif /* canImport(Metal) */
 
 public class GPUShaders
 {
   public init()
   {
-    device = MTLCreateSystemDefaultDevice()
-    metalLib = try? device.makeDefaultLibrary(bundle: Bundle.module)
+    #if canImport(Metal)
+      device = MTLCreateSystemDefaultDevice()
+      metalLib = try? device.makeDefaultLibrary(bundle: Bundle.module)
+    #endif /* canImport(Metal) */
   }
 
-  /** A metal device for access to the GPU. */
-  public var device: MTLDevice!
+  #if canImport(Metal)
+    /*  A metal device for access to the GPU. */
+    public var device: MTLDevice!
 
-  /** A metal library. */
-  public var metalLib: MTLLibrary!
+    /*  A metal library. */
+    public var metalLib: MTLLibrary!
+  #endif /* canImport(Metal) */
 
   /** Client callsite to use shader. */
   public func setupMetal() -> String
   {
-    metalLib.debugDescription
+    #if canImport(Metal)
+      metalLib.debugDescription
+    #endif /* canImport(Metal) */
   }
 }

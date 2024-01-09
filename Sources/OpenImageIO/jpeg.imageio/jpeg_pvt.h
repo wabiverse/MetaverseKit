@@ -17,9 +17,7 @@
 #    define XMD_H
 #endif
 
-extern "C" {
 #include "jpeglib.h"
-}
 
 #if JPEG_LIB_VERSION < 80
 //#    error "Only libjpeg 8+ is supported (JPEG_LIB_VERSION >= 80)"

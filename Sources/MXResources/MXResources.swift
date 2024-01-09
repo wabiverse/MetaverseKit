@@ -21,7 +21,9 @@
  *  . x x x . o o o . x x x . : : : .    o  x  o    . : : : .
  * -------------------------------------------------------------- */
 
-import Metal
+#if canImport(Metal)
+  import Metal
+#endif /* canImport(Metal) */
 
 /**
  * # MaterialX Resource Manager
@@ -46,11 +48,11 @@ import Metal
  * package to their own apps & plugins, or other projects, they will also
  * automatically have all of these resources installed to the app's bundle
  * or library module's respective ``Resources`` folder for direct consumption.
- * 
+ *
  * The **standard data libraries** that are bundled are the sames ones from the
  * [**MaterialX Standard Library**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/libraries).
- * 
- * 
+ *
+ *
  * Additionally, we have included the
  * [**MaterialX Resources**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/resources)
  * as well. */
