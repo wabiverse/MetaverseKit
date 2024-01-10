@@ -537,6 +537,7 @@ func getPlatformTargets() -> [Target]
         pkgConfig: "boost",
         providers: [
           .apt(["libboost-all-dev"]),
+          .yum(["boost-devel"]),
         ]
       ),
 
@@ -545,6 +546,7 @@ func getPlatformTargets() -> [Target]
         pkgConfig: "libbz2",
         providers: [
           .apt(["libbz2-dev"]),
+          .yum(["bzip2-devel"]),
         ]
       ),
 
@@ -553,6 +555,7 @@ func getPlatformTargets() -> [Target]
         pkgConfig: "python3",
         providers: [
           .apt(["python3-dev"]),
+          .yum(["python3-devel"]),
         ]
       ),
 
@@ -561,6 +564,7 @@ func getPlatformTargets() -> [Target]
         pkgConfig: "zlib",
         providers: [
           .apt(["zlib1g-dev"]),
+          .yum(["zlib-devel"]),
         ]
       ),
     ]
