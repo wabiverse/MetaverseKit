@@ -347,13 +347,25 @@
 #define H5_HAVE_TMPFILE 1
 
 /* Define if tm_gmtoff is a member of struct tm */
-#define H5_HAVE_TM_GMTOFF 1
+#if __linux__
+# ifdef H5_HAVE_TM_GMTOFF
+#  undef H5_HAVE_TM_GMTOFF
+# endif
+#else  /* !defined(__linux__) */
+# define H5_HAVE_TM_GMTOFF 1
+#endif /* !defined(__linux__) */
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #define H5_HAVE_UNISTD_H 1
 
 /* Define to 1 if you have the `vasprintf' function. */
-#define H5_HAVE_VASPRINTF 1
+#ifdef __linux__
+# ifdef H5_HAVE_VASPRINTF
+#  undef H5_HAVE_VASPRINTF
+# endif
+#else /* !defined(__linux__) */
+# define H5_HAVE_VASPRINTF 1
+#endif /* !defined(__linux__) */
 
 /* Define to 1 if you have the `waitpid' function. */
 #define H5_HAVE_WAITPID 1

@@ -22,8 +22,10 @@
  * -------------------------------------------------------------- */
 
 import ImGui
-import Python
-import PyBundle
+#if canImport(Python)
+  import PyBundle
+  import Python
+#endif /* canImport(Python) */
 
 #if canImport(AppKit) || canImport(UIKit)
   import Metal
@@ -37,8 +39,31 @@ import PyBundle
     public typealias OSWindow = UIWindow
     public typealias OSDelegate = UIApplicationDelegate & UIResponder
     public typealias OSApp = UIApplication
-  #endif // canImport(UIKit)
-#endif // canImport(AppKit) || canImport(UIKit)
+  #endif /* canImport(UIKit) */
+#else // !canImport(AppKit) || !canImport(UIKit)
+  public class OSApp
+  {
+    public static let shared = OSApp()
+
+    private init()
+    {
+      print("OSApp is not supported on this platform.")
+    }
+
+    public var delegate = AppDelegate()
+
+    public func run()
+    {
+      print("OSApp is not supported on this platform.")
+    }
+  }
+
+  public struct OSWindow
+  {}
+
+  public struct OSDelegate
+  {}
+#endif
 
 @main
 class Creator
@@ -48,19 +73,21 @@ class Creator
 
   public init()
   {
-    app.delegate = self.delegate
+    app.delegate = delegate
   }
 
   static func main()
   {
     let C: Creator
 
-    /* embed & init python. */
-    PyBundle.shared.pyInit()
-    PyBundle.shared.pyInfo()
+    #if canImport(Python)
+      /* embed & init python. */
+      PyBundle.shared.pyInit()
+      PyBundle.shared.pyInfo()
+    #endif /* canImport(Python) */
 
     C = Creator()
-    
+
     C.app.run()
   }
 
@@ -86,7 +113,7 @@ class Creator
 
     var window: OSWindow?
 
-    public func applicationDidFinishLaunching(_ notification: Notification)
+    public func applicationDidFinishLaunching(_: Notification)
     {
       print("MetaversalDemo has launched.")
 
@@ -141,4 +168,26 @@ class Creator
       ImGui.DestroyContext(ctx)
     }
   }
-#endif /* !canImport(AppKit) || !canImport(UIKit) */
+#else /* !canImport(AppKit) && !canImport(UIKit) */
+  public class AppDelegate
+  {
+    let app = OSApp.shared
+    let ctx = ImGui.CreateContext(nil)
+
+    var window: OSWindow?
+
+    func application(_: OSApp, didFinishLaunchingWithOptions _: [String: Any]?) -> Bool
+    {
+      Creator.setupGuiStyle(with: ctx)
+
+      window = .init()
+
+      return true
+    }
+
+    func applicationWillTerminate(_: OSApp)
+    {
+      ImGui.DestroyContext(ctx)
+    }
+  }
+#endif /* !canImport(AppKit) && !canImport(UIKit) */

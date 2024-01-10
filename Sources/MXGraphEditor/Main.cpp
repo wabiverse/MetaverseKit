@@ -13,6 +13,7 @@
 
 #include <GLFW/GLFW.h>
 
+#include <cstdlib>
 #include <iostream>
 
 namespace {
@@ -59,6 +60,8 @@ void parseToken(std::string token, std::string type, T &res) {
 } // anonymous namespace
 
 int main(int argc, char *const argv[]) {
+  setenv("MESA_GL_VERSION_OVERRIDE", "4.5", true);
+
   std::vector<std::string> tokens;
   for (int i = 1; i < argc; i++) {
     tokens.emplace_back(argv[i]);

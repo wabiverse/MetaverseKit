@@ -16,11 +16,7 @@ let package = Package(
     .watchOS(.v4),
   ],
   products: getConfig(for: .all).products,
-  dependencies: [
-    .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
-    .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
-    .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.1"),
-  ],
+  dependencies: getPlatformDeps(),
   targets: [
     .target(
       name: "Eigen",
@@ -215,7 +211,7 @@ let package = Package(
     .target(
       name: "OpenMP",
       dependencies: [
-        .product(name: "Python", package: "MetaversePythonFramework"),
+        getPython(),
       ],
       exclude: getConfig(for: .openmp).exclude,
       publicHeadersPath: "include",
@@ -231,19 +227,16 @@ let package = Package(
 
     .target(
       name: "GLFW",
-      dependencies: [
-        .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
-        .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: Arch.OS.apple.platform)),
-      ],
+      dependencies: getGLFWDeps(),
       exclude: getConfig(for: .glfw).exclude,
       publicHeadersPath: "include",
-      cxxSettings: getConfig(for: .glfw).cxxSettings
+      cxxSettings: getConfig(for: .glfw).cxxSettings,
+      linkerSettings: getConfig(for: .glfw).linkerSettings
     ),
 
     .target(
       name: "ImGui",
       dependencies: [
-        .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: Arch.OS.apple.platform)),
         .target(name: "GLFW"),
       ],
       exclude: getConfig(for: .imgui).exclude,
@@ -289,12 +282,9 @@ let package = Package(
         .target(name: "OpenImageIO"),
         .target(name: "PyBind11"),
         .target(name: "MXResources"),
-        .product(name: "Python", package: "MetaversePythonFramework"),
+        getPython(),
       ],
-      exclude: [
-        "source/JsMaterialX",
-        "source/MaterialXView",
-      ],
+      exclude: getConfig(for: .materialx).exclude,
       publicHeadersPath: "include"
     ),
 
@@ -332,14 +322,14 @@ let package = Package(
 
     .target(
       name: "OpenEXR",
-      dependencies: [
-        .target(name: "DEFLATE"),
-      ],
       publicHeadersPath: "include",
       cSettings: [
         .headerSearchPath("."),
         .headerSearchPath("OpenEXRCore"),
         .headerSearchPath("include/OpenEXR"),
+      ],
+      linkerSettings: [
+        .linkedLibrary("deflate", .when(platforms: Arch.OS.linux.platform + Arch.OS.apple.platform)),
       ]
     ),
 
@@ -371,7 +361,7 @@ let package = Package(
         .target(name: "OpenEXR"),
         .target(name: "MiniZip"),
         .target(name: "Yaml"),
-        .product(name: "Python", package: "MetaversePythonFramework"),
+        getPython(),
       ],
       exclude: getConfig(for: .ocio).exclude,
       publicHeadersPath: "include",
@@ -392,7 +382,7 @@ let package = Package(
         .target(name: "Alembic"),
         .target(name: "OpenImageIO"),
         .target(name: "MaterialX"),
-        .product(name: "Python", package: "MetaversePythonFramework"),
+        getPython(),
       ],
       exclude: getConfig(for: .mpy).exclude,
       publicHeadersPath: "include/python",
@@ -413,9 +403,11 @@ let package = Package(
       name: "HDF5",
       publicHeadersPath: "include",
       cSettings: [
-        .define("H5_HAVE_C99_FUNC", to: "1"),
         .define("H5_USE_18_API", to: "1"),
         .define("H5_BUILT_AS_DYNAMIC_LIB", to: "1"),
+        .define("H5_HAVE_C99_FUNC", to: "1", .when(platforms: Arch.OS.apple.platform)),
+        .define("H5_HAVE_FUNCTION", to: "1", .when(platforms: Arch.OS.linux.platform)),
+        .define("H5_TIME_WITH_SYS_TIME", to: "1", .when(platforms: Arch.OS.linux.platform)),
       ]
     ),
 
@@ -425,7 +417,7 @@ let package = Package(
         .target(name: "Boost"),
         .target(name: "HDF5"),
         .target(name: "OpenEXR"),
-        .product(name: "Python", package: "MetaversePythonFramework"),
+        getPython(),
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -436,19 +428,29 @@ let package = Package(
     .target(
       name: "PyBind11",
       dependencies: [
-        .product(name: "Python", package: "MetaversePythonFramework"),
+        getPython(),
       ],
       publicHeadersPath: "include",
-      cxxSettings: []
-    ),
-
-    .target(
-      name: "DEFLATE",
-      publicHeadersPath: "include",
-      cSettings: [
-        .headerSearchPath("."),
+      linkerSettings: [
+        .linkedLibrary("python3.11", .when(platforms: Arch.OS.linux.platform)),
       ]
     ),
+
+    // .target(
+    //   name: "DEFLATE",
+    //   dependencies: [
+    //     .target(name: "ZLib"),
+    //   ],
+    //   publicHeadersPath: "include",
+    //   cxxSettings: [
+    //     .headerSearchPath("."),
+    //     .define("HAVE_UNISTD_H", to: "1"),
+    //     .define("Z_HAVE_STDARG_H", to: "1"),
+    //   ],
+    //   linkerSettings: [
+    //     .linkedLibrary("z", .when(platforms: Arch.OS.linux.platform)),
+    //   ]
+    // ),
 
     .target(
       name: "Blosc",
@@ -457,7 +459,10 @@ let package = Package(
         .target(name: "ZStandard"),
       ],
       exclude: getConfig(for: .blosc).exclude,
-      publicHeadersPath: "include/blosc"
+      publicHeadersPath: "include/blosc",
+      linkerSettings: [
+        .linkedLibrary("pthread", .when(platforms: Arch.OS.linux.platform)),
+      ]
     ),
 
     .target(
@@ -469,7 +474,7 @@ let package = Package(
         .target(name: "PyBind11"),
         .target(name: "OpenEXR"),
         .target(name: "ZLibDataCompression"),
-        .product(name: "Python", package: "MetaversePythonFramework"),
+        getPython(),
       ],
       publicHeadersPath: "include",
       cxxSettings: getConfig(for: .openvdb).cxxSettings,
@@ -493,7 +498,7 @@ let package = Package(
       name: "MetaversalDemo",
       dependencies: [
         .target(name: "ImGui"),
-        .product(name: "Python", package: "MetaversePythonFramework"),
+
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -521,7 +526,7 @@ let package = Package(
 func getPlatformTargets() -> [Target]
 {
   #if os(macOS)
-    [
+    return [
       .binaryTarget(
         name: "Boost",
         url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.c.zip",
@@ -529,7 +534,7 @@ func getPlatformTargets() -> [Target]
       ),
     ]
   #else
-    [
+    return [
       .systemLibrary(
         name: "Boost",
         pkgConfig: "boost",
@@ -545,7 +550,60 @@ func getPlatformTargets() -> [Target]
           .apt(["libbz2-dev"]),
         ]
       ),
+
+      .systemLibrary(
+        name: "Python",
+        pkgConfig: "python3",
+        providers: [
+          .apt(["python3-dev"]),
+        ]
+      ),
+
+      .systemLibrary(
+        name: "ZLib",
+        pkgConfig: "zlib",
+        providers: [
+          .apt(["zlib1g-dev"]),
+        ]
+      ),
     ]
+  #endif
+}
+
+func getGLFWDeps() -> [Target.Dependency]
+{
+  #if os(macOS)
+    return [
+      .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
+      .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: Arch.OS.apple.platform)),
+    ]
+  #else
+    return [
+    ]
+  #endif
+}
+
+func getPlatformDeps() -> [Package.Dependency]
+{
+  #if os(macOS)
+    return [
+      .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
+      .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
+      .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.1"),
+    ]
+  #else
+    return [
+      .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
+    ]
+  #endif
+}
+
+func getPython() -> Target.Dependency
+{
+  #if os(macOS)
+    .product(name: "Python", package: "MetaversePythonFramework", condition: .when(platforms: Arch.OS.apple.platform))
+  #else
+    .target(name: "Python")
   #endif
 }
 
@@ -696,6 +754,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       config.cSettings = [.headerSearchPath(".")] + chipsetDefinesC
     case .turbojpeg:
       config.exclude = [
+        "cjpeg.c",
+        "djpeg.c",
         "turbojpeg-jni.c",
         "tjunittest.c",
         "tjexample.c",
@@ -742,6 +802,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         config.exclude += [
           "nsgl_context.m",
           "cocoa_init.m",
+          "cocoa_joystick.m",
+          "cocoa_window.m",
+          "cocoa_monitor.m",
+          "cocoa_time.c",
         ]
       #endif /* !os(macOS) */
       #if !os(Linux)
@@ -762,6 +826,16 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
         .define("GL_SILENCE_DEPRECATION", to: "1"),
       ]
+      #if os(Linux)
+        config.linkerSettings = [
+          .linkedLibrary("glut"),
+          .linkedLibrary("GL"),
+          .linkedLibrary("GLU"),
+          .linkedLibrary("m"),
+          .linkedLibrary("X11"),
+          .linkedLibrary("Xt"),
+        ]
+      #endif /* os(Linux) */
     case .imgui:
       config.exclude = [
         // no wgpu (for now)
@@ -779,6 +853,13 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "backends/ImplSDL.cpp",
         "backends/ImplSDLRenderer.cpp",
       ]
+      #if os(Linux)
+        config.exclude += [
+          // no vulkan (for now)
+          "backends/ImplVulkan.cpp",
+          "backends/ImplVulkan.h",
+        ]
+      #endif /* !os(Windows) */
       #if !os(Windows)
         config.exclude += [
           // no win32
@@ -803,7 +884,16 @@ func getConfig(for target: PkgTarget) -> TargetInfo
     case .mxResources:
       break
     case .materialx:
-      break
+      config.exclude = [
+        "source/JsMaterialX",
+        "source/MaterialXView",
+      ]
+      #if !os(macOS)
+        /* no metal on linux or windows */
+        config.exclude += [
+          "source/MaterialXRenderMsl",
+        ]
+      #endif
     // case .gpuShaders:
     //   break
     case .osd:
@@ -884,8 +974,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       break
     case .pybind11:
       break
-    case .deflate:
-      break
+    // case .deflate:
+    //   break
     case .blosc:
       #if !os(Windows)
         config.exclude = ["include/win32"]
@@ -910,6 +1000,18 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("OPENVDB_USE_DELAYED_LOADING", to: "1"),
         .define("OPENVDB_USE_BLOSC", to: "1"),
         .define("OPENVDB_USE_ZLIB", to: "1"),
+      ]
+      config.linkerSettings = [
+        .linkedLibrary("boost_system"),
+        .linkedLibrary("boost_filesystem"),
+        .linkedLibrary("boost_thread"),
+        .linkedLibrary("boost_regex"),
+        .linkedLibrary("boost_date_time"),
+        .linkedLibrary("boost_chrono"),
+        .linkedLibrary("boost_atomic"),
+        .linkedLibrary("boost_iostreams"),
+        .linkedLibrary("boost_program_options"),
+        .linkedLibrary("boost_python311"),
       ]
     case .boost:
       break
@@ -1025,10 +1127,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           name: "MiniZip",
           targets: ["MiniZip"]
         ),
-        .library(
-          name: "DEFLATE",
-          targets: ["DEFLATE"]
-        ),
+        // .library(
+        //   name: "DEFLATE",
+        //   targets: ["DEFLATE"]
+        // ),
         .library(
           name: "Yaml",
           targets: ["Yaml"]
@@ -1237,7 +1339,7 @@ enum PkgTarget: String
   case hdf5 = "HDF5"
   case alembic = "Alembic"
   case pybind11 = "PyBind11"
-  case deflate = "DEFLATE"
+  /// case deflate = "DEFLATE"
   case blosc = "Blosc"
   case openvdb = "OpenVDB"
   case boost = "Boost"
