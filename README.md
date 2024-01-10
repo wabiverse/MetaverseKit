@@ -33,9 +33,9 @@ releases, and we will provide monolithic releases in accordance with the [**VFX 
 
 ### Industry Swift Targets
 > [!IMPORTANT]
-> Currently, through early development, Wabi is only using **(arm64) macOS** running on Apple silicon.
-> On **December 6th, 2023** the work for **aarch64 Linux** support began,
-> and **Microsoft Windows** support will come sometime soon.
+> As of **January 10th, 2024** **Linux** is now supported, in addition to **Apple** platforms,
+> you can grab the latest release [here](https://github.com/wabiverse/MetaverseKit/releases/tag/v1.3.8)! 🎉
+> With **Microsoft Windows** support coming sometime in the near future.
 
 | Swift Target                                                               | Version           |
 | -------------------------------------------------------------------------- | ----------------- |
@@ -79,7 +79,7 @@ releases, and we will provide monolithic releases in accordance with the [**VFX 
 ##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L85).
 ```swift
 dependencies: [
-  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.3.0"),
+  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.3.8"),
 ]
 ```
 
