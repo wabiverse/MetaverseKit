@@ -513,7 +513,7 @@ func getPlatformTargets() -> [Target]
     return [
       .binaryTarget(
         name: "Boost",
-        url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.c.zip",
+        url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
         checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
       ),
 
