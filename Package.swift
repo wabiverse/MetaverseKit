@@ -39,7 +39,7 @@ let package = Package(
       ],
       publicHeadersPath: ".",
       cxxSettings: [
-        .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
+        .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform))
       ]
     ),
 
@@ -62,6 +62,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
+        .define("TBB_ALLOCATOR_TRAITS_BROKEN", to: "1", .when(platforms: Arch.OS.linux.platform)),
       ]
     ),
 
