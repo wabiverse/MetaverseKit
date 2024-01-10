@@ -119,8 +119,7 @@ let package = Package(
         .target(name: "ZLibDataCompression"),
         .target(name: "ZStandard"),
         .target(name: "OpenSSL"),
-        .target(name: "BZ2", condition: .when(platforms: Arch.OS.linux.platform)),
-      ],
+      ] + getBZ2(),
       exclude: getConfig(for: .minizip).exclude,
       publicHeadersPath: "include",
       cSettings: [
@@ -322,6 +321,7 @@ let package = Package(
 
     .target(
       name: "OpenEXR",
+      dependencies: getDEFLATE(),
       publicHeadersPath: "include",
       cSettings: [
         .headerSearchPath("."),
@@ -329,7 +329,7 @@ let package = Package(
         .headerSearchPath("include/OpenEXR"),
       ],
       linkerSettings: [
-        .linkedLibrary("deflate", .when(platforms: Arch.OS.linux.platform + Arch.OS.apple.platform)),
+        .linkedLibrary("deflate", .when(platforms: Arch.OS.linux.platform)),
       ]
     ),
 
@@ -436,22 +436,6 @@ let package = Package(
       ]
     ),
 
-    // .target(
-    //   name: "DEFLATE",
-    //   dependencies: [
-    //     .target(name: "ZLib"),
-    //   ],
-    //   publicHeadersPath: "include",
-    //   cxxSettings: [
-    //     .headerSearchPath("."),
-    //     .define("HAVE_UNISTD_H", to: "1"),
-    //     .define("Z_HAVE_STDARG_H", to: "1"),
-    //   ],
-    //   linkerSettings: [
-    //     .linkedLibrary("z", .when(platforms: Arch.OS.linux.platform)),
-    //   ]
-    // ),
-
     .target(
       name: "Blosc",
       dependencies: [
@@ -532,6 +516,19 @@ func getPlatformTargets() -> [Target]
         url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.c.zip",
         checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
       ),
+
+      .target(
+        name: "DEFLATE",
+        publicHeadersPath: "include",
+        cxxSettings: [
+          .headerSearchPath("."),
+          .define("HAVE_UNISTD_H", to: "1"),
+          .define("Z_HAVE_STDARG_H", to: "1"),
+        ],
+        linkerSettings: [
+          .linkedLibrary("z", .when(platforms: Arch.OS.linux.platform)),
+        ]
+      ),
     ]
   #else
     return [
@@ -570,6 +567,28 @@ func getPlatformTargets() -> [Target]
   #endif
 }
 
+func getDEFLATE() -> [Target.Dependency]
+{
+  #if os(macOS)
+    return [
+      .target(name: "DEFLATE"),
+    ]
+  #else
+    return []
+  #endif
+}
+
+func getBZ2() -> [Target.Dependency]
+{
+  #if os(macOS)
+    return []
+  #else
+    return [
+      .target(name: "BZ2", condition: .when(platforms: Arch.OS.linux.platform)),
+    ]
+  #endif
+}
+
 func getGLFWDeps() -> [Target.Dependency]
 {
   #if os(macOS)
@@ -578,8 +597,7 @@ func getGLFWDeps() -> [Target.Dependency]
       .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: Arch.OS.apple.platform)),
     ]
   #else
-    return [
-    ]
+    return []
   #endif
 }
 
@@ -974,8 +992,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       break
     case .pybind11:
       break
-    // case .deflate:
-    //   break
+    case .deflate:
+      break
     case .blosc:
       #if !os(Windows)
         config.exclude = ["include/win32"]
@@ -1001,18 +1019,20 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("OPENVDB_USE_BLOSC", to: "1"),
         .define("OPENVDB_USE_ZLIB", to: "1"),
       ]
-      config.linkerSettings = [
-        .linkedLibrary("boost_system"),
-        .linkedLibrary("boost_filesystem"),
-        .linkedLibrary("boost_thread"),
-        .linkedLibrary("boost_regex"),
-        .linkedLibrary("boost_date_time"),
-        .linkedLibrary("boost_chrono"),
-        .linkedLibrary("boost_atomic"),
-        .linkedLibrary("boost_iostreams"),
-        .linkedLibrary("boost_program_options"),
-        .linkedLibrary("boost_python311"),
-      ]
+      #if os(Linux)
+        config.linkerSettings = [
+          .linkedLibrary("boost_system"),
+          .linkedLibrary("boost_filesystem"),
+          .linkedLibrary("boost_thread"),
+          .linkedLibrary("boost_regex"),
+          .linkedLibrary("boost_date_time"),
+          .linkedLibrary("boost_chrono"),
+          .linkedLibrary("boost_atomic"),
+          .linkedLibrary("boost_iostreams"),
+          .linkedLibrary("boost_program_options"),
+          .linkedLibrary("boost_python311"),
+        ]
+      #endif /* os(Linux) */
     case .boost:
       break
     case .python:
@@ -1127,10 +1147,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           name: "MiniZip",
           targets: ["MiniZip"]
         ),
-        // .library(
-        //   name: "DEFLATE",
-        //   targets: ["DEFLATE"]
-        // ),
         .library(
           name: "Yaml",
           targets: ["Yaml"]
@@ -1181,6 +1197,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           .library(
             name: "Boost",
             targets: ["Boost"]
+          ),
+          .library(
+            name: "DEFLATE",
+            targets: ["DEFLATE"]
           ),
         ]
       #endif /* os(macOS) */
@@ -1339,7 +1359,7 @@ enum PkgTarget: String
   case hdf5 = "HDF5"
   case alembic = "Alembic"
   case pybind11 = "PyBind11"
-  /// case deflate = "DEFLATE"
+  case deflate = "DEFLATE"
   case blosc = "Blosc"
   case openvdb = "OpenVDB"
   case boost = "Boost"

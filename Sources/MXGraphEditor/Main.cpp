@@ -16,54 +16,69 @@
 #include <cstdlib>
 #include <iostream>
 
-namespace {
+namespace
+{
 
-static void errorCallback(int error, const char *description) {
-  fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-}
-
-const std::string options =
-    " Options: \n"
-    "    --material [FILENAME]          Specify the filename of the MTLX "
-    "document to be displayed in the graph editor\n"
-    "    --mesh [FILENAME]              Specify the filename of the OBJ or "
-    "glTF mesh to be displayed in the graph editor\n"
-    "    --path [FILEPATH]              Specify an additional data search path "
-    "location (e.g. '/projects/MaterialX').  This absolute path will be "
-    "queried when locating data libraries, XInclude references, and referenced "
-    "images.\n"
-    "    --library [FILEPATH]           Specify an additional data library "
-    "folder (e.g. 'vendorlib', 'studiolib').  This relative path will be "
-    "appended to each location in the data search path when loading data "
-    "libraries.\n"
-    "    --captureFilename [FILENAME]   Specify the filename to which the "
-    "first rendered frame should be written\n"
-    "    --help                         Display the complete list of "
-    "command-line options\n";
-
-template <class T>
-void parseToken(std::string token, std::string type, T &res) {
-  if (token.empty()) {
-    return;
+  static void errorCallback(int error, const char *description)
+  {
+    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
   }
 
-  mx::ValuePtr value = mx::Value::createValueFromStrings(token, type);
-  if (!value) {
-    std::cout << "Unable to parse token " << token << " as type " << type
-              << std::endl;
-    return;
-  }
+  const std::string options =
+      " Options: \n"
+      "    --material [FILENAME]          Specify the filename of the MTLX "
+      "document to be displayed in the graph editor\n"
+      "    --mesh [FILENAME]              Specify the filename of the OBJ or "
+      "glTF mesh to be displayed in the graph editor\n"
+      "    --path [FILEPATH]              Specify an additional data search path "
+      "location (e.g. '/projects/MaterialX').  This absolute path will be "
+      "queried when locating data libraries, XInclude references, and referenced "
+      "images.\n"
+      "    --library [FILEPATH]           Specify an additional data library "
+      "folder (e.g. 'vendorlib', 'studiolib').  This relative path will be "
+      "appended to each location in the data search path when loading data "
+      "libraries.\n"
+      "    --captureFilename [FILENAME]   Specify the filename to which the "
+      "first rendered frame should be written\n"
+      "    --help                         Display the complete list of "
+      "command-line options\n";
 
-  res = value->asA<T>();
-}
+  template <class T>
+  void parseToken(std::string token, std::string type, T &res)
+  {
+    if (token.empty())
+    {
+      return;
+    }
+
+    mx::ValuePtr value = mx::Value::createValueFromStrings(token, type);
+    if (!value)
+    {
+      std::cout << "Unable to parse token " << token << " as type " << type
+                << std::endl;
+      return;
+    }
+
+    res = value->asA<T>();
+  }
 
 } // anonymous namespace
 
-int main(int argc, char *const argv[]) {
+int main(int argc, char *const argv[])
+{
+#ifdef __linux__
+  /* -----
+   * For some reason, this is needed, at least on Ubuntu aarch64,
+   * to get a working GL context. Without this, we recieve a sad
+   * GLXBadFBConfig and a segfault. It probably has something to
+   * do with the fact I have none of the common GPU drivers as I
+   * am running this on a Macbook Pro with an M1 chip. ------ */
   setenv("MESA_GL_VERSION_OVERRIDE", "4.5", true);
+#endif /* __linux__ */
 
   std::vector<std::string> tokens;
-  for (int i = 1; i < argc; i++) {
+  for (int i = 1; i < argc; i++)
+  {
     tokens.emplace_back(argv[i]);
   }
 
@@ -76,31 +91,49 @@ int main(int argc, char *const argv[]) {
   int viewHeight = 256;
   std::string captureFilename;
 
-  for (size_t i = 0; i < tokens.size(); i++) {
+  for (size_t i = 0; i < tokens.size(); i++)
+  {
     const std::string &token = tokens[i];
     const std::string &nextToken =
         i + 1 < tokens.size() ? tokens[i + 1] : mx::EMPTY_STRING;
 
-    if (token == "--material") {
+    if (token == "--material")
+    {
       materialFilename = nextToken;
-    } else if (token == "--mesh") {
+    }
+    else if (token == "--mesh")
+    {
       meshFilename = nextToken;
-    } else if (token == "--path") {
+    }
+    else if (token == "--path")
+    {
       searchPath.append(mx::FileSearchPath(nextToken));
-    } else if (token == "--library") {
+    }
+    else if (token == "--library")
+    {
       libraryFolders.push_back(nextToken);
-    } else if (token == "--viewWidth") {
+    }
+    else if (token == "--viewWidth")
+    {
       parseToken(nextToken, "integer", viewWidth);
-    } else if (token == "--viewHeight") {
+    }
+    else if (token == "--viewHeight")
+    {
       parseToken(nextToken, "integer", viewHeight);
-    } else if (token == "--captureFilename") {
+    }
+    else if (token == "--captureFilename")
+    {
       parseToken(nextToken, "string", captureFilename);
-    } else if (token == "--help") {
+    }
+    else if (token == "--help")
+    {
       std::cout << " MaterialXGraphEditor version " << mx::getVersionString()
                 << std::endl;
       std::cout << options << std::endl;
       return 0;
-    } else {
+    }
+    else
+    {
       std::cout << "Unrecognized command-line option: " << token << std::endl;
       std::cout << "Launch the graph editor with '--help' for a complete list "
                    "of supported options."
@@ -108,10 +141,13 @@ int main(int argc, char *const argv[]) {
       continue;
     }
 
-    if (nextToken.empty()) {
+    if (nextToken.empty())
+    {
       std::cout << "Expected another token following command-line option: "
                 << token << std::endl;
-    } else {
+    }
+    else
+    {
       i++;
     }
   }
@@ -122,7 +158,8 @@ int main(int argc, char *const argv[]) {
 
   // Setup window
   glfwSetErrorCallback(errorCallback);
-  if (!glfwInit()) {
+  if (!glfwInit())
+  {
     return 1;
   }
 
@@ -133,7 +170,7 @@ int main(int argc, char *const argv[]) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Required on Mac
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
 #else
   // GL 3.0 + GLSL 130
   const char *glsl_version = "#version 130";
@@ -144,7 +181,8 @@ int main(int argc, char *const argv[]) {
   // Create window with graphics context
   GLFWwindow *window =
       glfwCreateWindow(1280, 960, "MaterialX Graph Editor", NULL, NULL);
-  if (!window) {
+  if (!window)
+  {
     return 1;
   }
   glfwMakeContextCurrent(window);
@@ -172,7 +210,8 @@ int main(int argc, char *const argv[]) {
   // Create graph editor.
   Graph *graph = new Graph(materialFilename, meshFilename, searchPath,
                            libraryFolders, viewWidth, viewHeight);
-  if (!captureFilename.empty()) {
+  if (!captureFilename.empty())
+  {
     graph->getRenderer()->requestFrameCapture(captureFilename);
     graph->getRenderer()->requestExit();
   }
@@ -183,7 +222,8 @@ int main(int argc, char *const argv[]) {
   // There appears to be no multi-monitor solution so use the primary monitor
   // for now.
   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-  if (monitor) {
+  if (monitor)
+  {
     float xscale = 1.0f, yscale = 1.0f;
     glfwGetMonitorContentScale(monitor, &xscale, &yscale);
     ImGuiStyle &style = ImGui::GetStyle();
@@ -196,15 +236,17 @@ int main(int argc, char *const argv[]) {
   ed::Config config;
   config.SettingsFile = nullptr;
   ed::EditorContext *editorContext = ed::CreateEditor(&config);
-  const float ZOOM_LEVELS[] = {0.1f,  0.15f, 0.20f, 0.25f,
-                               0.33f, 0.5f,  0.75f, 1.0f};
-  for (auto &level : ZOOM_LEVELS) {
+  const float ZOOM_LEVELS[] = {0.1f, 0.15f, 0.20f, 0.25f,
+                               0.33f, 0.5f, 0.75f, 1.0f};
+  for (auto &level : ZOOM_LEVELS)
+  {
     config.CustomZoomLevels.push_back(level);
   }
   ed::SetCurrentEditor(editorContext);
 
   // Main loop
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window))
+  {
     glfwPollEvents();
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -212,7 +254,8 @@ int main(int argc, char *const argv[]) {
     ImGui::NewFrame();
 
     graph->getRenderer()->drawContents();
-    if (!captureFilename.empty()) {
+    if (!captureFilename.empty())
+    {
       break;
     }
 
@@ -229,7 +272,8 @@ int main(int argc, char *const argv[]) {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
-  if (editorContext) {
+  if (editorContext)
+  {
     ed::DestroyEditor(editorContext);
     editorContext = nullptr;
   }
