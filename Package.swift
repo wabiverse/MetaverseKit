@@ -39,7 +39,7 @@ let package = Package(
       ],
       publicHeadersPath: ".",
       cxxSettings: [
-        .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform))
+        .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
       ]
     ),
 
@@ -129,7 +129,7 @@ let package = Package(
         .define("HAVE_WZAES", to: "1"),
       ],
       linkerSettings: [
-        .linkedLibrary("bz2", .when(platforms: Arch.OS.apple.platform)),
+        .linkedLibrary("bz2"),
       ]
     ),
 
@@ -370,7 +370,7 @@ let package = Package(
         .headerSearchPath("."),
       ],
       linkerSettings: [
-        .linkedLibrary("expat", .when(platforms: Arch.OS.apple.platform)),
+        .linkedLibrary("expat"),
       ]
     ),
 
@@ -753,8 +753,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
     case .minizip:
       config.exclude = [
         "mz_crypt_winxp.c",
-        "mz_crypt_openssl.c",
       ]
+      #if os(macOS)
+        config.exclude += [
+          "mz_crypt_openssl.c",
+        ]
+      #endif /* os(macOS) */
       #if !os(Windows)
         config.exclude += [
           "mz_strm_os_win32.c",
