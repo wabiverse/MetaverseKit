@@ -223,6 +223,16 @@ let package = Package(
     ),
 
     .target(
+      name: "DEFLATE",
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("."),
+        .define("HAVE_UNISTD_H", to: "1"),
+        .define("Z_HAVE_STDARG_H", to: "1"),
+      ]
+    ),
+
+    .target(
       name: "GLFW",
       dependencies: Arch.OS.glfwDeps(),
       exclude: getConfig(for: .glfw).exclude,
@@ -1150,16 +1160,6 @@ enum Arch
             url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
             checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
           ),
-
-          .target(
-            name: "DEFLATE",
-            publicHeadersPath: "include",
-            cxxSettings: [
-              .headerSearchPath("."),
-              .define("HAVE_UNISTD_H", to: "1"),
-              .define("Z_HAVE_STDARG_H", to: "1"),
-            ]
-          ),
         ]
       #elseif os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
         [
@@ -1223,7 +1223,7 @@ enum Arch
           .target(name: "ZLibDataCompression"),
           .target(name: "ZStandard"),
           .target(name: "OpenSSL"),
-          .target(name: "BZ2")
+          .target(name: "BZ2"),
         ]
       #else /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) */
         [
