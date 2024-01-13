@@ -9,11 +9,11 @@ import PackageDescription
 let package = Package(
   name: "MetaverseKit",
   platforms: [
-    .macOS(.v12),
+    .macOS(.v14),
     .visionOS(.v1),
-    .iOS(.v12),
-    .tvOS(.v12),
-    .watchOS(.v4),
+    .iOS(.v17),
+    .tvOS(.v17),
+    .watchOS(.v10)
   ],
   products: getConfig(for: .all).products,
   dependencies: [
