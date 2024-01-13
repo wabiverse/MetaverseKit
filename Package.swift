@@ -16,7 +16,9 @@ let package = Package(
     .watchOS(.v4),
   ],
   products: getConfig(for: .all).products,
-  dependencies: getPlatformDeps(),
+  dependencies: [
+    .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
+  ] + Arch.OS.packageDeps(),
   targets: [
     .target(
       name: "Eigen",
@@ -115,12 +117,7 @@ let package = Package(
 
     .target(
       name: "MiniZip",
-      dependencies: [
-        .target(name: "LZMA2"),
-        .target(name: "ZLibDataCompression"),
-        .target(name: "ZStandard"),
-        .target(name: "OpenSSL"),
-      ] + getBZ2(),
+      dependencies: Arch.OS.minizipDeps(),
       exclude: getConfig(for: .minizip).exclude,
       publicHeadersPath: "include",
       cSettings: [
@@ -211,7 +208,7 @@ let package = Package(
     .target(
       name: "OpenMP",
       dependencies: [
-        getPython(),
+        Arch.OS.python(),
       ],
       exclude: getConfig(for: .openmp).exclude,
       publicHeadersPath: "include",
@@ -227,7 +224,7 @@ let package = Package(
 
     .target(
       name: "GLFW",
-      dependencies: getGLFWDeps(),
+      dependencies: Arch.OS.glfwDeps(),
       exclude: getConfig(for: .glfw).exclude,
       publicHeadersPath: "include",
       cxxSettings: getConfig(for: .glfw).cxxSettings,
@@ -282,7 +279,7 @@ let package = Package(
         .target(name: "OpenImageIO"),
         .target(name: "PyBind11"),
         .target(name: "MXResources"),
-        getPython(),
+        Arch.OS.python(),
       ],
       exclude: getConfig(for: .materialx).exclude,
       publicHeadersPath: "include"
@@ -322,7 +319,9 @@ let package = Package(
 
     .target(
       name: "OpenEXR",
-      dependencies: getDEFLATE(),
+      dependencies: [
+        .target(name: "DEFLATE", condition: .when(platforms: Arch.OS.apple.platform)),
+      ],
       publicHeadersPath: "include",
       cSettings: [
         .headerSearchPath("."),
@@ -362,7 +361,7 @@ let package = Package(
         .target(name: "OpenEXR"),
         .target(name: "MiniZip"),
         .target(name: "Yaml"),
-        getPython(),
+        Arch.OS.python(),
       ],
       exclude: getConfig(for: .ocio).exclude,
       publicHeadersPath: "include",
@@ -383,7 +382,7 @@ let package = Package(
         .target(name: "Alembic"),
         .target(name: "OpenImageIO"),
         .target(name: "MaterialX"),
-        getPython(),
+        Arch.OS.python(),
       ],
       exclude: getConfig(for: .mpy).exclude,
       publicHeadersPath: "include/python",
@@ -418,7 +417,7 @@ let package = Package(
         .target(name: "Boost"),
         .target(name: "HDF5"),
         .target(name: "OpenEXR"),
-        getPython(),
+        Arch.OS.python(),
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -429,7 +428,7 @@ let package = Package(
     .target(
       name: "PyBind11",
       dependencies: [
-        getPython(),
+        Arch.OS.python(),
       ],
       publicHeadersPath: "include",
       linkerSettings: [
@@ -459,7 +458,7 @@ let package = Package(
         .target(name: "PyBind11"),
         .target(name: "OpenEXR"),
         .target(name: "ZLibDataCompression"),
-        getPython(),
+        Arch.OS.python(),
       ],
       publicHeadersPath: "include",
       cxxSettings: getConfig(for: .openvdb).cxxSettings,
@@ -497,7 +496,7 @@ let package = Package(
         .interoperabilityMode(.Cxx),
       ]
     ),
-  ] + getPlatformTargets(),
+  ] + Arch.OS.targets(),
   cLanguageStandard: .gnu17,
   cxxLanguageStandard: .cxx17
 )
@@ -508,163 +507,8 @@ let package = Package(
  * keep the main package file clean and readable.
  * ------------------------------------------------- */
 
-func getPlatformTargets() -> [Target]
-{
-  #if os(macOS)
-    return [
-      .binaryTarget(
-        name: "Boost",
-        url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
-        checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
-      ),
-
-      .target(
-        name: "DEFLATE",
-        publicHeadersPath: "include",
-        cxxSettings: [
-          .headerSearchPath("."),
-          .define("HAVE_UNISTD_H", to: "1"),
-          .define("Z_HAVE_STDARG_H", to: "1"),
-        ],
-        linkerSettings: [
-          .linkedLibrary("z", .when(platforms: Arch.OS.linux.platform)),
-        ]
-      ),
-    ]
-  #else
-    return [
-      .systemLibrary(
-        name: "Boost",
-        pkgConfig: "boost",
-        providers: [
-          .apt(["libboost-all-dev"]),
-          .yum(["boost-devel"]),
-        ]
-      ),
-
-      .systemLibrary(
-        name: "BZ2",
-        pkgConfig: "libbz2",
-        providers: [
-          .apt(["libbz2-dev"]),
-          .yum(["bzip2-devel"]),
-        ]
-      ),
-
-      .systemLibrary(
-        name: "Python",
-        pkgConfig: "python3",
-        providers: [
-          .apt(["python3-dev"]),
-          .yum(["python3-devel"]),
-        ]
-      ),
-
-      .systemLibrary(
-        name: "ZLib",
-        pkgConfig: "zlib",
-        providers: [
-          .apt(["zlib1g-dev"]),
-          .yum(["zlib-devel"]),
-        ]
-      ),
-    ]
-  #endif
-}
-
-func getDEFLATE() -> [Target.Dependency]
-{
-  #if os(macOS)
-    return [
-      .target(name: "DEFLATE"),
-    ]
-  #else
-    return []
-  #endif
-}
-
-func getBZ2() -> [Target.Dependency]
-{
-  #if os(macOS)
-    return []
-  #else
-    return [
-      .target(name: "BZ2", condition: .when(platforms: Arch.OS.linux.platform)),
-    ]
-  #endif
-}
-
-func getGLFWDeps() -> [Target.Dependency]
-{
-  #if os(macOS)
-    return [
-      .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
-      .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: Arch.OS.apple.platform)),
-    ]
-  #else
-    return []
-  #endif
-}
-
-func getPlatformDeps() -> [Package.Dependency]
-{
-  #if os(macOS)
-    return [
-      .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
-      .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
-      .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.1"),
-    ]
-  #else
-    return [
-      .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
-    ]
-  #endif
-}
-
-func getPython() -> Target.Dependency
-{
-  #if os(macOS)
-    .product(name: "Python", package: "MetaversePythonFramework", condition: .when(platforms: Arch.OS.apple.platform))
-  #else
-    .target(name: "Python")
-  #endif
-}
-
 func getConfig(for target: PkgTarget) -> TargetInfo
 {
-  var chipsetExcludeDirs: [String] = []
-  var chipsetDefinesC: [CSetting] = []
-  var chipsetDefinesCXX: [CXXSetting] = []
-  if Arch.cpuArch.family.contains(.arm)
-  {
-    chipsetExcludeDirs.append("intel")
-    chipsetExcludeDirs.append("powerpc")
-    chipsetDefinesC.append(.define("WITH_ARM", to: "1"))
-    chipsetDefinesCXX.append(.define("WITH_ARM", to: "1"))
-  }
-  else if Arch.cpuArch.family.contains(.x86_64)
-  {
-    chipsetExcludeDirs.append("arm")
-    chipsetExcludeDirs.append("powerpc")
-    chipsetDefinesC.append(.define("WITH_INTEL", to: "1"))
-    chipsetDefinesCXX.append(.define("WITH_INTEL", to: "1"))
-  }
-  else if Arch.cpuArch.family.contains(.powerpc)
-  {
-    chipsetExcludeDirs.append("arm")
-    chipsetExcludeDirs.append("intel")
-    chipsetDefinesC.append(.define("WITH_POWERPC", to: "1"))
-    chipsetDefinesCXX.append(.define("WITH_POWERPC", to: "1"))
-  }
-  else /* a unicorn! 🦄 */
-  {
-    chipsetExcludeDirs.append("arm")
-    chipsetExcludeDirs.append("intel")
-    chipsetExcludeDirs.append("powerpc")
-    chipsetDefinesC.append(.define("WITH_UNICORNS", to: "1"))
-    chipsetDefinesCXX.append(.define("WITH_UNICORNS", to: "1"))
-  }
-
   var config = TargetInfo()
 
   switch target
@@ -754,31 +598,82 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       config.exclude = [
         "mz_crypt_winxp.c",
       ]
-      #if os(macOS)
+      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         config.exclude += [
           "mz_crypt_openssl.c",
         ]
-      #endif /* os(macOS) */
+      #endif /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) */
       #if !os(Windows)
         config.exclude += [
           "mz_strm_os_win32.c",
           "mz_os_win32.c",
           "mz_crypt_winvista.c",
         ]
-      #endif
-      #if !os(macOS)
+      #endif /* !os(Windows) */
+      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude += [
           "mz_strm_libcomp.c",
           "mz_crypt_apple.c",
         ]
-      #endif
+      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
     case .zlib:
       break
     case .raw:
       break
     case .png:
-      config.exclude = ["example.c", "pngtest.c"] + chipsetExcludeDirs
-      config.cSettings = [.headerSearchPath(".")] + chipsetDefinesC
+      if Arch.cpuArch.family.contains(.arm)
+      {
+        config.exclude = [
+          "example.c",
+          "pngtest.c",
+          "intel",
+          "powerpc",
+        ]
+        config.cSettings = [
+          .headerSearchPath("."),
+          .define("WITH_ARM", to: "1"),
+        ]
+      }
+      else if Arch.cpuArch.family.contains(.x86_64)
+      {
+        config.exclude = [
+          "example.c",
+          "pngtest.c",
+          "arm",
+          "powerpc",
+        ]
+        config.cSettings = [
+          .headerSearchPath("."),
+          .define("WITH_INTEL", to: "1"),
+        ]
+      }
+      else if Arch.cpuArch.family.contains(.powerpc)
+      {
+        config.exclude = [
+          "example.c",
+          "pngtest.c",
+          "arm",
+          "intel",
+        ]
+        config.cSettings = [
+          .headerSearchPath("."),
+          .define("WITH_POWERPC", to: "1"),
+        ]
+      }
+      else /* a unicorn! 🦄 */
+      {
+        config.exclude = [
+          "example.c",
+          "pngtest.c",
+          "arm",
+          "intel",
+          "powerpc",
+        ]
+        config.cSettings = [
+          .headerSearchPath("."),
+          .define("WITH_UNICORNS", to: "1"),
+        ]
+      }
     case .turbojpeg:
       config.exclude = [
         "cjpeg.c",
@@ -802,8 +697,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "runtime/kmp_import.cpp",
         "runtime/test-touch.c",
       ]
-    case .apple:
-      break
     case .glfw:
       config.exclude = [
         "wl_init.c",
@@ -825,7 +718,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "win32_window.c",
         ]
       #endif /* !os(Windows) */
-      #if !os(macOS)
+      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude += [
           "nsgl_context.m",
           "cocoa_init.m",
@@ -834,8 +727,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "cocoa_monitor.m",
           "cocoa_time.c",
         ]
-      #endif /* !os(macOS) */
-      #if !os(Linux)
+      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
+      #if !os(Linux) && !os(Android) && !os(OpenBSD) && !os(FreeBSD)
         config.exclude += [
           "xkb_unicode.c",
           "x11_init.c",
@@ -845,7 +738,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "glx_context.c",
           "linux_joystick.c",
         ]
-      #endif /* !os(Linux) */
+      #endif /* !os(Linux) && !os(Android) && !os(OpenBSD) && !os(FreeBSD) */
       config.cxxSettings = [
         .headerSearchPath("."),
         .define("_GLFW_COCOA", to: "1", .when(platforms: Arch.OS.apple.platform)),
@@ -853,7 +746,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
         .define("GL_SILENCE_DEPRECATION", to: "1"),
       ]
-      #if os(Linux)
+      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
         config.linkerSettings = [
           .linkedLibrary("glut"),
           .linkedLibrary("GL"),
@@ -862,7 +755,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           .linkedLibrary("X11"),
           .linkedLibrary("Xt"),
         ]
-      #endif /* os(Linux) */
+      #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) */
     case .imgui:
       config.exclude = [
         // no wgpu (for now)
@@ -880,34 +773,34 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "backends/ImplSDL.cpp",
         "backends/ImplSDLRenderer.cpp",
       ]
-      #if os(Linux)
+      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude += [
           // no vulkan (for now)
           "backends/ImplVulkan.cpp",
           "backends/ImplVulkan.h",
         ]
-      #endif /* !os(Windows) */
+      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
       #if !os(Windows)
         config.exclude += [
           // no win32
           "backends/ImplWin32.cpp",
         ]
       #endif /* !os(Windows) */
-      #if !os(macOS)
+      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude += [
           // no metal
           "backends/ImplMetal.mm",
           // no apple os
           "backends/ImplMacOS.mm",
         ]
-      #endif /* !os(macOS) */
+      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
     case .mxGraphEditor:
-      #if !os(macOS)
+      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude = [
           // no objc
           "FileDialog.mm",
         ]
-      #endif /* !os(macOS) */
+      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
     case .mxResources:
       break
     case .materialx:
@@ -915,12 +808,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "source/JsMaterialX",
         "source/MaterialXView",
       ]
-      #if !os(macOS)
-        /* no metal on linux or windows */
+      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
+        /* no metal on linux or windows or wasm */
         config.exclude += [
           "source/MaterialXRenderMsl",
         ]
-      #endif
+      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
     // case .gpuShaders:
     //   break
     case .osd:
@@ -946,7 +839,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "osd/CudaPatchTable.cpp",
         "osd/CudaVertexBuffer.cpp",
       ]
-      #if !os(macOS)
+      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         /* metal is only for darwin. */
         config.exclude += [
           "osd/MTLComputeEvaluator.mm",
@@ -956,7 +849,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "osd/MTLPatchTable.mm",
           "osd/MTLVertexBuffer.mm",
         ]
-      #endif /* !os(macOS) */
+      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
       config.cxxSettings = [
         .headerSearchPath("glLoader"),
         /* autogenerated shader headers. */
@@ -977,16 +870,16 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "cineon.imageio",
       ]
     case .ocio:
-      #if !os(macOS)
+      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude = [
           "SystemMonitor_macos.cpp",
         ]
-      #endif
+      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
       #if !os(Windows)
         config.exclude += [
           "SystemMonitor_windows.cpp",
         ]
-      #endif
+      #endif /* !os(Windows) */
     case .mpy:
       config.exclude = [
         "PyAlembic/msvc14fixes.cpp",
@@ -1001,12 +894,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       break
     case .pybind11:
       break
-    case .deflate:
-      break
     case .blosc:
       #if !os(Windows)
         config.exclude = ["include/win32"]
-      #endif
+      #endif /* !os(Windows) */
     case .openvdb:
       config.cxxSettings = [
         .headerSearchPath("include/openvdb/io"),
@@ -1028,7 +919,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("OPENVDB_USE_BLOSC", to: "1"),
         .define("OPENVDB_USE_ZLIB", to: "1"),
       ]
-      #if os(Linux)
+      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
         config.linkerSettings = [
           .linkedLibrary("boost_system"),
           .linkedLibrary("boost_filesystem"),
@@ -1041,12 +932,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           .linkedLibrary("boost_program_options"),
           .linkedLibrary("boost_python311"),
         ]
-      #endif /* os(Linux) */
+      #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) */
     case .boost:
       break
     case .python:
-      break
-    case .moltenVK:
       break
     case .demo:
       break
@@ -1071,6 +960,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .library(
           name: "Apple",
           targets: ["Apple"]
+        ),
+        .library(
+          name: "DEFLATE",
+          targets: ["DEFLATE"]
         ),
         .library(
           name: "MetaPy",
@@ -1201,18 +1094,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["MetaversalDemo"]
         ),
       ]
-      #if os(macOS)
-        config.products += [
-          .library(
-            name: "Boost",
-            targets: ["Boost"]
-          ),
-          .library(
-            name: "DEFLATE",
-            targets: ["DEFLATE"]
-          ),
-        ]
-      #endif /* os(macOS) */
+
+      config.products += Arch.OS.products()
 
       config.dependencies = config.products.map
       {
@@ -1244,6 +1127,124 @@ enum Arch
         case .windows: [.windows]
         case .web: [.wasi]
       }
+    }
+
+    public static func packageDeps() -> [Package.Dependency]
+    {
+      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
+        [
+          .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
+          .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.1"),
+        ]
+      #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
+        []
+      #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
+    }
+
+    public static func targets() -> [Target]
+    {
+      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
+        [
+          .binaryTarget(
+            name: "Boost",
+            url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
+            checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
+          ),
+
+          .target(
+            name: "DEFLATE",
+            publicHeadersPath: "include",
+            cxxSettings: [
+              .headerSearchPath("."),
+              .define("HAVE_UNISTD_H", to: "1"),
+              .define("Z_HAVE_STDARG_H", to: "1"),
+            ]
+          ),
+        ]
+      #elseif os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+        [
+          .systemLibrary(
+            name: "Boost",
+            pkgConfig: "boost",
+            providers: [
+              .apt(["libboost-all-dev"]),
+              .yum(["boost-devel"]),
+            ]
+          ),
+
+          .systemLibrary(
+            name: "BZ2",
+            pkgConfig: "libbz2",
+            providers: [
+              .apt(["libbz2-dev"]),
+              .yum(["bzip2-devel"]),
+            ]
+          ),
+
+          .systemLibrary(
+            name: "Python",
+            pkgConfig: "python3",
+            providers: [
+              .apt(["python3-dev"]),
+              .yum(["python3-devel"]),
+            ]
+          ),
+        ]
+      #else /* os(Windows), os(Cygwin), os(WASI) */
+        []
+      #endif /* os(Windows), os(Cygwin), os(WASI) */
+    }
+
+    public static func products() -> [Product]
+    {
+      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
+        [
+          .library(name: "Boost", targets: ["Boost"]),
+        ]
+      #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
+        []
+      #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
+    }
+
+    public static func python() -> Target.Dependency
+    {
+      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
+        return .product(name: "Python", package: "MetaversePythonFramework")
+      #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
+        return .target(name: "Python")
+      #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
+    }
+
+    public static func minizipDeps() -> [Target.Dependency]
+    {
+      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+        [
+          .target(name: "LZMA2"),
+          .target(name: "ZLibDataCompression"),
+          .target(name: "ZStandard"),
+          .target(name: "OpenSSL"),
+          .target(name: "BZ2")
+        ]
+      #else /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) */
+        [
+          .target(name: "LZMA2"),
+          .target(name: "ZLibDataCompression"),
+          .target(name: "ZStandard"),
+          .target(name: "OpenSSL"),
+        ]
+      #endif /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) */
+    }
+
+    public static func glfwDeps() -> [Target.Dependency]
+    {
+      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
+        [
+          .target(name: "Apple"),
+          .product(name: "MoltenVK", package: "MetaverseVulkanFramework"),
+        ]
+      #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
+        []
+      #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
     }
   }
 
@@ -1290,28 +1291,31 @@ enum Arch
       static let device = "tvos"
     #elseif os(watchOS)
       static let device = "watchos"
-    #endif
-  #elseif os(Linux) || os(Android) || os(OpenBSD)
+    #endif /* os(watchOS) */
+  #elseif os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
     static let host = "unknown-linux"
     #if os(Android)
       static let device = "android"
-    #else /* os(Linux) || os(OpenBSD) */
+    #else /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
       static let device = "gnu"
-    #endif
+    #endif /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
   #elseif os(Windows)
     static let host = "windows"
+    static let device = "windows"
+  #elseif os(Cygwin)
+    static let host = "cygwin"
     static let device = "windows"
   #elseif os(WASI)
     static let host = "wasi"
     static let device = "wasi"
-  #endif
+  #endif /* os(WASI) */
 
   #if arch(arm64)
-    #if os(Linux)
+    #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
       static let cpuArch: CPU = .aarch64
-    #else
+    #else /* !os(Linux) && !os(Android) && !os(OpenBSD) && !os(FreeBSD) */
       static let cpuArch: CPU = .arm64
-    #endif
+    #endif /* !os(Linux) && !os(Android) && !os(OpenBSD) && !os(FreeBSD) */
   #elseif arch(x86_64)
     static let cpuArch: CPU = .x86_64
   #elseif arch(i386)
@@ -1330,7 +1334,7 @@ enum Arch
     static let cpuArch: CPU = .wasm32
   #elseif arch(arm64_32)
     static let cpuArch: CPU = .arm64_32
-  #endif
+  #endif /* arch(arm64_32) */
 }
 
 enum PkgTarget: String
@@ -1352,7 +1356,6 @@ enum PkgTarget: String
   case tiff = "TIFF"
   case webp = "WebP"
   case openmp = "OpenMP"
-  case apple = "Apple"
   case glfw = "GLFW"
   case imgui = "ImGui"
   case mxGraphEditor = "MXGraphEditor"
@@ -1368,12 +1371,10 @@ enum PkgTarget: String
   case hdf5 = "HDF5"
   case alembic = "Alembic"
   case pybind11 = "PyBind11"
-  case deflate = "DEFLATE"
   case blosc = "Blosc"
   case openvdb = "OpenVDB"
   case boost = "Boost"
   case python = "Python"
-  case moltenVK = "MoltenVK"
   case demo = "MetaversalDemo"
   case all
 }
