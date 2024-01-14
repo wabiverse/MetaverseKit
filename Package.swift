@@ -255,8 +255,8 @@ let package = Package(
         .headerSearchPath("backends"),
       ],
       linkerSettings: [
-        .linkedFramework("Cocoa", .when(platforms: Arch.OS.apple.platform)),
-        .linkedFramework("GLUT", .when(platforms: Arch.OS.apple.platform)),
+        .linkedFramework("Cocoa", .when(platforms: [.macOS])),
+        .linkedFramework("GLUT", .when(platforms: [.macOS])),
         .linkedFramework("GameController", .when(platforms: Arch.OS.apple.platform)),
       ]
     ),
@@ -478,7 +478,7 @@ let package = Package(
     /*
       * Run this from the command line via:
       *
-      * swift bundler run -p macOS MetaversalDemo
+      * swift package --disable-sandbox plugin bundler run -p macOS MetaversalDemo
       *
       * It is pending a pull request which I have submitted here:
       * https://github.com/stackotter/swift-bundler/issues/34
@@ -492,7 +492,7 @@ let package = Package(
       name: "MetaversalDemo",
       dependencies: [
         .target(name: "ImGui"),
-
+        Arch.OS.python()
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
