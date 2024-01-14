@@ -4,9 +4,8 @@
 //
 
 #if defined(__APPLE__)
+# include <TargetConditionals.h>
 
-#if defined(__APPLE__)
-#include <TargetConditionals.h>
 #if !defined(TARGET_OS_VISION)
 # import <Cocoa/Cocoa.h>
 # import <AppKit/NSApplication.h>
@@ -22,6 +21,7 @@ void *NSOpenGLChoosePixelFormatWrapper(bool allRenders, int bufferType,
                                        int accumSize, bool minimumPolicy,
                                        bool accelerated, bool mp_safe,
                                        bool stereo, bool supportMultiSample) {
+#if !defined(TARGET_OS_VISION)
   // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
@@ -101,25 +101,33 @@ void *NSOpenGLChoosePixelFormatWrapper(bool allRenders, int bufferType,
 #if !__has_feature(objc_arc)
   [pool release];
 #endif
-
+  
   return (__bridge void*)pixelFormat;
+#else /* defined(TARGET_OS_VISION) */
+  return nil;
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLReleasePixelFormat(void *pPixelFormat) {
+#if !defined(TARGET_OS_VISION)
   NSOpenGLPixelFormat *pixelFormat = (__bridge NSOpenGLPixelFormat *)pPixelFormat;
   #if !__has_feature(objc_arc)
   [pixelFormat release];
   #endif
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLReleaseContext(void *pContext) {
+#if !defined(TARGET_OS_VISION)
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   #if !__has_feature(objc_arc)
   [context release];
   #endif
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void *NSOpenGLCreateContextWrapper(void *pPixelFormat, void *pDummyContext) {
+#if !defined(TARGET_OS_VISION)
   NSOpenGLPixelFormat *pixelFormat = (__bridge NSOpenGLPixelFormat *)pPixelFormat;
   NSOpenGLContext *dummyContext = (__bridge NSOpenGLContext *)pDummyContext;
   NSOpenGLContext *context =
@@ -127,9 +135,13 @@ void *NSOpenGLCreateContextWrapper(void *pPixelFormat, void *pDummyContext) {
                                  shareContext:dummyContext];
 
   return (__bridge void*)context;
+#else /* defined(TARGET_OS_VISION) */
+  return nil;
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLSetDrawable(void *pContext, void *pWindow) {
+#if !defined(TARGET_OS_VISION)
   // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
@@ -146,42 +158,60 @@ void NSOpenGLSetDrawable(void *pContext, void *pWindow) {
 #if !__has_feature(objc_arc)
   [pool release];
 #endif
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLMakeCurrent(void *pContext) {
+#if !defined(TARGET_OS_VISION)
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   [context makeCurrentContext];
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void *NSOpenGLGetCurrentContextWrapper() {
+#if !defined(TARGET_OS_VISION)
   return (__bridge void*)[NSOpenGLContext currentContext];
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLSwapBuffers(void *pContext) {
+#if !defined(TARGET_OS_VISION)
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   [context flushBuffer];
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
-void NSOpenGLClearCurrentContext() { [NSOpenGLContext clearCurrentContext]; }
+void NSOpenGLClearCurrentContext()
+{
+#if !defined(TARGET_OS_VISION)
+  [NSOpenGLContext clearCurrentContext];
+#endif /* !defined(TARGET_OS_VISION) */
+}
 
-void NSOpenGLDestroyContext(void **pContext) {
+void NSOpenGLDestroyContext(void **pContext)
+{
+#if !defined(TARGET_OS_VISION)
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)*pContext;
   #if !__has_feature(objc_arc)
   [context release];
   #endif
   *pContext = NULL;
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLDestroyCurrentContext(void **pContext) {
+#if !defined(TARGET_OS_VISION)
   [NSOpenGLContext clearCurrentContext];
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)*pContext;
   #if !__has_feature(objc_arc)
   [context release];
   #endif
   *pContext = NULL;
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLClearDrawable(void *pContext) {
+#if !defined(TARGET_OS_VISION)
   // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
@@ -196,29 +226,39 @@ void NSOpenGLClearDrawable(void *pContext) {
 #if !__has_feature(objc_arc)
   [pool release];
 #endif
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLDescribePixelFormat(void *pPixelFormat, int attrib, int *vals) {
+#if !defined(TARGET_OS_VISION)
   NSOpenGLPixelFormat *pixelFormat = (__bridge NSOpenGLPixelFormat *)pPixelFormat;
   [pixelFormat getValues:vals forAttribute:attrib forVirtualScreen:0];
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLGetInteger(void *pContext, int param, int *vals) {
+#if !defined(TARGET_OS_VISION)
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   [context getValues:vals forParameter:(NSOpenGLContextParameter)param];
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLUpdate(void *pContext) {
+#if !defined(TARGET_OS_VISION)
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   [context update];
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void *NSOpenGLGetWindow(void *pView) {
+#if !defined(TARGET_OS_VISION)
   NSView *view = (__bridge NSView *)pView;
   return (__bridge void*)[view window];
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void NSOpenGLInitializeGLLibrary() {
+#if !defined(TARGET_OS_VISION)
   // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
@@ -239,6 +279,7 @@ void NSOpenGLInitializeGLLibrary() {
 #if !__has_feature(objc_arc)
   [pool release];
 #endif
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
-#endif
+#endif /* defined(__APPLE__) */
