@@ -110,7 +110,7 @@ static void createMenuBar(void)
             appName = @"GLFW Application";
     }
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     NSMenu* bar = [[NSMenu alloc] init];
     [NSApp setMainMenu:bar];
 
@@ -129,7 +129,7 @@ static void createMenuBar(void)
                         action:NULL
                  keyEquivalent:@""] setSubmenu:servicesMenu];
   
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
   NSSet *scenes = [[UIApplication sharedApplication] connectedScenes];
   
   UIView *menuView = nil;
@@ -140,6 +140,11 @@ static void createMenuBar(void)
     {
       menuView = scene.inputView;
     }
+  }
+  
+  if (!menuView)
+  {
+    return;
   }
   
   UIEditMenuInteraction *appMenuItem = [[UIEditMenuInteraction alloc] initWithDelegate:nil];
@@ -186,13 +191,13 @@ static void createMenuBar(void)
   
   [builder insertSiblingMenu:servicesMenu
      beforeMenuForIdentifier:UIMenuServices];
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
 #if !__has_feature(objc_arc)
     [servicesMenu release];
 #endif
   
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     [appMenu addItem:[NSMenuItem separatorItem]];
     [appMenu addItemWithTitle:[NSString stringWithFormat:@"Hide %@", appName]
                        action:@selector(hide:)
@@ -239,10 +244,11 @@ static void createMenuBar(void)
     // to get the application menu working properly.
     SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");
     [NSApp performSelector:setAppleMenuSelector withObject:appMenu];
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 }
 
-static void didTap(UIGestureRecognizer *recognizer, 
+#if TARGET_OS_VISION
+static void didTap(UIGestureRecognizer *recognizer,
                    UIEditMenuInteraction *appMenuInteraction)
 {
   CGPoint location = [recognizer locationInView:nil];
@@ -255,6 +261,7 @@ static void didTap(UIGestureRecognizer *recognizer,
     [appMenuInteraction presentEditMenuWithConfiguration:config];
   }
 }
+#endif /* TARGET_OS_VISION */
 
 // Create key code translation tables
 //
@@ -392,7 +399,7 @@ static void createKeyTables(void)
 //
 static GLFWbool updateUnicodeDataNS(void)
 {
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     if (_glfw.ns.inputSource)
     {
         CFRelease(_glfw.ns.inputSource);
@@ -417,9 +424,9 @@ static GLFWbool updateUnicodeDataNS(void)
                         "Cocoa: Failed to retrieve keyboard layout Unicode data");
         return GLFW_FALSE;
     }
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
     return GLFW_FALSE;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
     return GLFW_TRUE;
 }
 
@@ -427,7 +434,7 @@ static GLFWbool updateUnicodeDataNS(void)
 //
 static GLFWbool initializeTIS(void)
 {
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     // This works only because Cocoa has already loaded it properly
     _glfw.ns.tis.bundle =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.HIToolbox"));
@@ -464,9 +471,9 @@ static GLFWbool initializeTIS(void)
     _glfw.ns.tis.kPropertyUnicodeKeyLayoutData =
         *kPropertyUnicodeKeyLayoutData;
 
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
     return GLFW_FALSE;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
     return updateUnicodeDataNS();
 }
 
@@ -486,32 +493,32 @@ static GLFWbool initializeTIS(void)
 
 @end // GLFWHelper
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
 @interface GLFWApplicationDelegate : NSObject <NSApplicationDelegate>
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
 @interface GLFWApplicationDelegate : NSObject <UIApplicationDelegate>
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 @end
 
 @implementation GLFWApplicationDelegate
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
 - (void)applicationWillTerminate:(UIApplication *)application
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 {
     _GLFWwindow* window;
 
     for (window = _glfw.windowListHead;  window;  window = window->next)
         _glfwInputWindowCloseRequest(window);
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     return NSTerminateCancel;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 }
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
 - (void)applicationDidChangeScreenParameters:(NSNotification *) notification
 {
     _GLFWwindow* window;
@@ -546,29 +553,29 @@ static GLFWbool initializeTIS(void)
             createMenuBar();
     }
 }
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 {
     _glfw.ns.finishedLaunching = GLFW_TRUE;
     _glfwPlatformPostEmptyEvent();
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     [NSApp stop:nil];
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
     return true;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 }
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
 - (void)applicationDidHide:(NSNotification *)notification
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
 - (void)applicationDidEnterBackground:(UIApplication *)application;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 {
     int i;
 
@@ -618,15 +625,15 @@ int _glfwPlatformInit(void)
     [NSThread detachNewThreadSelector:@selector(doNothing:)
                              toTarget:_glfw.ns.helper
                            withObject:nil];
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     if (NSApp)
       _glfw.ns.finishedLaunching = GLFW_TRUE;
       [NSApplication sharedApplication];
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
     if (UIApplication.sharedApplication)
       _glfw.ns.finishedLaunching = GLFW_TRUE;
       [UIApplication sharedApplication];
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
     _glfw.ns.delegate = [[GLFWApplicationDelegate alloc] init];
     if (_glfw.ns.delegate == nil)
@@ -636,7 +643,7 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
     }
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     [NSApp setDelegate:_glfw.ns.delegate];
 
     NSEvent* (^block)(NSEvent*) = ^ NSEvent* (NSEvent* event)
@@ -646,7 +653,7 @@ int _glfwPlatformInit(void)
 
         return event;
     };
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
       [[UIApplication sharedApplication] setDelegate:_glfw.ns.delegate];
       
       UIEvent* (^block)(UIEvent*) = ^ UIEvent* (UIEvent* event)
@@ -670,13 +677,13 @@ int _glfwPlatformInit(void)
         
         return event;
       };
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     _glfw.ns.keyUpMonitor =
         [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyUp
                                               handler:block];
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
     if (_glfw.hints.init.ns.chdir)
         changeToResourcesDirectory();
@@ -688,25 +695,25 @@ int _glfwPlatformInit(void)
     [[NSNotificationCenter defaultCenter]
         addObserver:_glfw.ns.helper
            selector:@selector(selectedKeyboardInputSourceChanged:)
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
                name:NSTextInputContextKeyboardSelectionDidChangeNotification
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
                name:UITextInputCurrentInputModeDidChangeNotification
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
              object:nil];
 
     createKeyTables();
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     _glfw.ns.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
     if (!_glfw.ns.eventSource)
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
         return GLFW_FALSE;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
       
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
     if (!initializeTIS())
         return GLFW_FALSE;
@@ -724,30 +731,30 @@ void _glfwPlatformTerminate(void)
 {
     @autoreleasepool {
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     if (_glfw.ns.inputSource)
     {
         CFRelease(_glfw.ns.inputSource);
         _glfw.ns.inputSource = NULL;
         _glfw.ns.unicodeData = nil;
     }
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     if (_glfw.ns.eventSource)
     {
         CFRelease(_glfw.ns.eventSource);
         _glfw.ns.eventSource = NULL;
     }
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
     if (_glfw.ns.delegate)
     {
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
         [NSApp setDelegate:nil];
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
         [[UIApplication sharedApplication] setDelegate:nil];
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
       #if !__has_feature(objc_arc)
         [_glfw.ns.delegate release];
       #endif
@@ -758,11 +765,11 @@ void _glfwPlatformTerminate(void)
     {
         [[NSNotificationCenter defaultCenter]
             removeObserver:_glfw.ns.helper
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
                       name:NSTextInputContextKeyboardSelectionDidChangeNotification
-#else /* defined(TARGET_OS_VISION) */
+#else /* TARGET_OS_VISION */
                       name:UITextInputCurrentInputModeDidChangeNotification
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
                     object:nil];
         [[NSNotificationCenter defaultCenter]
             removeObserver:_glfw.ns.helper];
@@ -772,10 +779,10 @@ void _glfwPlatformTerminate(void)
         _glfw.ns.helper = nil;
     }
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     if (_glfw.ns.keyUpMonitor)
         [NSEvent removeMonitor:_glfw.ns.keyUpMonitor];
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
     free(_glfw.ns.clipboardString);
 

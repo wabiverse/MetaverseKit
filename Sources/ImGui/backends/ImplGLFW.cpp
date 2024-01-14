@@ -837,7 +837,7 @@ static bool ImGui_ImplGlfw_Init(GLFWwindow *window, bool install_callbacks,
   ImGuiViewport *main_viewport = ImGui::GetMainViewport();
 #ifdef _WIN32
   main_viewport->PlatformHandleRaw = glfwGetWin32Window(bd->Window);
-#elif defined(__APPLE__) && !defined(TARGET_OS_VISION)
+#elif defined(__APPLE__) && !TARGET_OS_VISION
   main_viewport->PlatformHandleRaw = (void *)glfwGetCocoaWindow(bd->Window);
 #else
   IM_UNUSED(main_viewport);

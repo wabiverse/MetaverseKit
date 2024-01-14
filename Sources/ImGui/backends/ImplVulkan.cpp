@@ -123,7 +123,7 @@
 #endif
 
 /* Vulkan disabled temporarily for visionOS. */
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
 
 // Reusable buffers used for rendering 1 current in-flight frame, for
 // ImGui_ImplVulkan_RenderDrawData() [Please zero-clear before use!]
@@ -1758,7 +1758,7 @@ void ImGui_ImplVulkanH_DestroyWindowRenderBuffers(
 //-----------------------------------------------------------------------------
 
 /* Vulkan disabled temporarily for visionOS. */
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
 //-----------------------------------------------------------------------------
 

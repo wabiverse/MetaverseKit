@@ -44,7 +44,7 @@
 #endif /* __APPLE__ */
 
 /* Vulkan disabled temporarily for visionOS. */
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
 
 // [Configuration] in order to use a custom Vulkan function loader:
 // (1) You'll need to disable default Vulkan function prototypes.
@@ -221,6 +221,6 @@ struct ImGui_ImplVulkanH_Window {
   }
 };
 
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
 #endif // #ifndef IMGUI_DISABLE
