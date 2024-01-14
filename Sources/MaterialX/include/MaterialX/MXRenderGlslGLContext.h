@@ -14,7 +14,10 @@
 #include <MaterialX/MXRenderHwSimpleWindow.h>
 
 #if defined(__APPLE__)
-#include <OpenGL/gl.h>
+#include <TargetConditionals.h>
+#if !defined(TARGET_OS_VISION)
+# include <OpenGL/gl.h>
+#endif /* !defined(TARGET_OS_VISION) */
 #elif defined(__linux__) || defined(__FreeBSD__)
 #include <GL/glx.h>
 #endif

@@ -33,12 +33,15 @@
 #include <limits.h>
 #include <math.h>
 
+#if !defined(TARGET_OS_VISION)
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <ApplicationServices/ApplicationServices.h>
+#endif /* !defined(TARGET_OS_VISION) */
 
 
 // Get the name of the specified display, or NULL
 //
+#if !defined(TARGET_OS_VISION)
 static char* getDisplayName(CGDirectDisplayID displayID)
 {
     io_iterator_t it;
@@ -113,9 +116,11 @@ static char* getDisplayName(CGDirectDisplayID displayID)
     CFRelease(info);
     return name;
 }
+#endif /* !defined(TARGET_OS_VISION) */
 
 // Check whether the display mode should be included in enumeration
 //
+#if !defined(TARGET_OS_VISION)
 static GLFWbool modeIsGood(CGDisplayModeRef mode)
 {
     uint32_t flags = CGDisplayModeGetIOFlags(mode);
@@ -140,7 +145,9 @@ static GLFWbool modeIsGood(CGDisplayModeRef mode)
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
     return GLFW_TRUE;
 }
+#endif /* !defined(TARGET_OS_VISION) */
 
+#if !defined(TARGET_OS_VISION)
 // Convert Core Graphics display mode to GLFW video mode
 //
 static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
@@ -175,9 +182,11 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
     return result;
 }
+#endif /* !defined(TARGET_OS_VISION) */
 
 // Starts reservation for display fading
 //
+#if !defined(TARGET_OS_VISION)
 static CGDisplayFadeReservationToken beginFadeReservation(void)
 {
     CGDisplayFadeReservationToken token = kCGDisplayFadeReservationInvalidToken;
@@ -193,7 +202,9 @@ static CGDisplayFadeReservationToken beginFadeReservation(void)
 
     return token;
 }
+#endif /* !defined(TARGET_OS_VISION) */
 
+#if !defined(TARGET_OS_VISION)
 // Ends reservation for display fading
 //
 static void endFadeReservation(CGDisplayFadeReservationToken token)
@@ -208,6 +219,7 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
         CGReleaseDisplayFadeReservation(token);
     }
 }
+#endif /* !defined(TARGET_OS_VISION) */
 
 // Finds and caches the NSScreen corresponding to the specified monitor
 //
@@ -216,6 +228,7 @@ static GLFWbool refreshMonitorScreen(_GLFWmonitor* monitor)
     if (monitor->ns.screen)
         return GLFW_TRUE;
 
+#if !defined(TARGET_OS_VISION)
     for (NSScreen* screen in [NSScreen screens])
     {
         NSNumber* displayID = [screen deviceDescription][@"NSScreenNumber"];
@@ -229,13 +242,16 @@ static GLFWbool refreshMonitorScreen(_GLFWmonitor* monitor)
             return GLFW_TRUE;
         }
     }
+#endif /* !defined(TARGET_OS_VISION) */
 
     _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to find a screen for monitor");
     return GLFW_FALSE;
 }
 
+
 // Returns the display refresh rate queried from the I/O registry
 //
+#if !defined(TARGET_OS_VISION)
 static double getFallbackRefreshRate(CGDirectDisplayID displayID)
 {
     double refreshRate = 60.0;
@@ -295,6 +311,7 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
     IOObjectRelease(it);
     return refreshRate;
 }
+#endif /* !defined(TARGET_OS_VISION) */
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -305,6 +322,7 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
 //
 void _glfwPollMonitorsNS(void)
 {
+#if !defined(TARGET_OS_VISION)
     uint32_t displayCount;
     CGGetOnlineDisplayList(0, NULL, &displayCount);
     CGDirectDisplayID* displays = calloc(displayCount, sizeof(CGDirectDisplayID));
@@ -368,12 +386,14 @@ void _glfwPollMonitorsNS(void)
 
     free(disconnected);
     free(displays);
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Change the current video mode
 //
 void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
+#if !defined(TARGET_OS_VISION)
     GLFWvidmode current;
     _glfwPlatformGetVideoMode(monitor, &current);
 
@@ -411,12 +431,14 @@ void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     }
 
     CFRelease(modes);
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Restore the previously saved (original) video mode
 //
 void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor)
 {
+#if !defined(TARGET_OS_VISION)
     if (monitor->ns.previousMode)
     {
         CGDisplayFadeReservationToken token = beginFadeReservation();
@@ -427,6 +449,7 @@ void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor)
         CGDisplayModeRelease(monitor->ns.previousMode);
         monitor->ns.previousMode = NULL;
     }
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 
@@ -440,6 +463,7 @@ void _glfwPlatformFreeMonitor(_GLFWmonitor* monitor)
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
+#if !defined(TARGET_OS_VISION)
     @autoreleasepool {
 
     const CGRect bounds = CGDisplayBounds(monitor->ns.displayID);
@@ -450,11 +474,13 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *ypos = (int) bounds.origin.y;
 
     } // autoreleasepool
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
                                          float* xscale, float* yscale)
 {
+#if !defined(TARGET_OS_VISION)
     @autoreleasepool {
 
     if (!refreshMonitorScreen(monitor))
@@ -469,12 +495,14 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
         *yscale = (float) (pixels.size.height / points.size.height);
 
     } // autoreleasepool
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
                                      int* xpos, int* ypos,
                                      int* width, int* height)
 {
+#if !defined(TARGET_OS_VISION)
     @autoreleasepool {
 
     if (!refreshMonitorScreen(monitor))
@@ -492,10 +520,12 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
         *height = frameRect.size.height;
 
     } // autoreleasepool
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 {
+#if !defined(TARGET_OS_VISION)
     @autoreleasepool {
 
     *count = 0;
@@ -532,10 +562,12 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
     return result;
 
     } // autoreleasepool
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
 {
+#if !defined(TARGET_OS_VISION)
     @autoreleasepool {
 
     CGDisplayModeRef native = CGDisplayCopyDisplayMode(monitor->ns.displayID);
@@ -543,10 +575,12 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
     CGDisplayModeRelease(native);
 
     } // autoreleasepool
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 GLFWbool _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
+#if !defined(TARGET_OS_VISION)
     @autoreleasepool {
 
     uint32_t size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
@@ -572,10 +606,12 @@ GLFWbool _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
     return GLFW_TRUE;
 
     } // autoreleasepool
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
+#if !defined(TARGET_OS_VISION)
     @autoreleasepool {
 
     CGGammaValue* values = calloc(ramp->size * 3, sizeof(CGGammaValue));
@@ -596,6 +632,7 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
     free(values);
 
     } // autoreleasepool
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 
@@ -603,10 +640,11 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
 
+#if !defined(TARGET_OS_VISION)
 GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(kCGNullDirectDisplay);
     return monitor->ns.displayID;
 }
-
+#endif /* !defined(TARGET_OS_VISION) */

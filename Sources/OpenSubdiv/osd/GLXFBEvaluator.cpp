@@ -97,20 +97,20 @@ GLuint createGLTextureBuffer(std::vector<T> const &src, GLenum type) {
   {
     GLint prev = 0;
 
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prev);
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, size, ptr, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, prev);
+    OpenSubdiv::internal::GLApi::glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prev);
+    OpenSubdiv::internal::GLApi::glGenBuffers(1, &buffer);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    OpenSubdiv::internal::GLApi::glBufferData(GL_ARRAY_BUFFER, size, ptr, GL_STATIC_DRAW);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, prev);
 
-    glGetIntegerv(GL_TEXTURE_BINDING_BUFFER, &prev);
-    glGenTextures(1, &devicePtr);
-    glBindTexture(GL_TEXTURE_BUFFER, devicePtr);
+    OpenSubdiv::internal::GLApi::glGetIntegerv(GL_TEXTURE_BINDING_BUFFER, &prev);
+    OpenSubdiv::internal::GLApi::glGenTextures(1, &devicePtr);
+    OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, devicePtr);
     glTexBuffer(GL_TEXTURE_BUFFER, type, buffer);
-    glBindTexture(GL_TEXTURE_BUFFER, prev);
+    OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, prev);
   }
 
-  glDeleteBuffers(1, &buffer);
+  OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &buffer);
 
   return devicePtr;
 }
@@ -162,23 +162,23 @@ GLStencilTableTBO::GLStencilTableTBO(
 
 GLStencilTableTBO::~GLStencilTableTBO() {
   if (_sizes)
-    glDeleteTextures(1, &_sizes);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_sizes);
   if (_offsets)
-    glDeleteTextures(1, &_offsets);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_offsets);
   if (_indices)
-    glDeleteTextures(1, &_indices);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_indices);
   if (_weights)
-    glDeleteTextures(1, &_weights);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_weights);
   if (_duWeights)
-    glDeleteTextures(1, &_duWeights);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_duWeights);
   if (_dvWeights)
-    glDeleteTextures(1, &_dvWeights);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_dvWeights);
   if (_duuWeights)
-    glDeleteTextures(1, &_duuWeights);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_duuWeights);
   if (_duvWeights)
-    glDeleteTextures(1, &_duvWeights);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_duvWeights);
   if (_dvvWeights)
-    glDeleteTextures(1, &_dvvWeights);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_dvvWeights);
 }
 
 // ---------------------------------------------------------------------------
@@ -193,10 +193,10 @@ GLXFBEvaluator::GLXFBEvaluator(bool interleavedDerivativeBuffers)
 
 GLXFBEvaluator::~GLXFBEvaluator() {
   if (_srcBufferTexture) {
-    glDeleteTextures(1, &_srcBufferTexture);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_srcBufferTexture);
   }
   if (_patchArraysUBO) {
-    glDeleteBuffers(1, &_patchArraysUBO);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_patchArraysUBO);
   }
 }
 
@@ -207,9 +207,9 @@ compileKernel(BufferDescriptor const &srcDesc, BufferDescriptor const &dstDesc,
               BufferDescriptor const &dvvDesc, const char *kernelDefine,
               bool interleavedDerivativeBuffers) {
 
-  GLuint program = glCreateProgram();
+  GLuint program = OpenSubdiv::internal::GLApi::glCreateProgram();
 
-  GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  GLuint vertexShader = OpenSubdiv::internal::GLApi::glCreateShader(GL_VERTEX_SHADER);
 
   std::string patchBasisShaderSource =
       GLSLPatchShaderSource::GetPatchBasisShaderSource();
@@ -247,9 +247,9 @@ compileKernel(BufferDescriptor const &srcDesc, BufferDescriptor const &dstDesc,
   shaderSources[1] = defineStr.c_str();
   shaderSources[2] = patchBasisShaderSource.c_str();
   shaderSources[3] = shaderSource;
-  glShaderSource(vertexShader, 4, shaderSources, NULL);
-  glCompileShader(vertexShader);
-  glAttachShader(program, vertexShader);
+  OpenSubdiv::internal::GLApi::glShaderSource(vertexShader, 4, shaderSources, NULL);
+  OpenSubdiv::internal::GLApi::glCompileShader(vertexShader);
+  OpenSubdiv::internal::GLApi::glAttachShader(program, vertexShader);
 
   std::vector<std::string> outputs;
   char attrName[32];
@@ -434,22 +434,22 @@ compileKernel(BufferDescriptor const &srcDesc, BufferDescriptor const &dstDesc,
                               GL_INTERLEAVED_ATTRIBS);
 
   GLint linked = 0;
-  glLinkProgram(program);
-  glGetProgramiv(program, GL_LINK_STATUS, &linked);
+  OpenSubdiv::internal::GLApi::glLinkProgram(program);
+  OpenSubdiv::internal::GLApi::glGetProgramiv(program, GL_LINK_STATUS, &linked);
 
   if (linked == GL_FALSE) {
     char buffer[1024];
-    glGetShaderInfoLog(vertexShader, 1024, NULL, buffer);
+    OpenSubdiv::internal::GLApi::glGetShaderInfoLog(vertexShader, 1024, NULL, buffer);
     Far::Error(Far::FAR_RUNTIME_ERROR, buffer);
 
-    glGetProgramInfoLog(program, 1024, NULL, buffer);
+    OpenSubdiv::internal::GLApi::glGetProgramInfoLog(program, 1024, NULL, buffer);
     Far::Error(Far::FAR_RUNTIME_ERROR, buffer);
 
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
     program = 0;
   }
 
-  glDeleteShader(vertexShader);
+  OpenSubdiv::internal::GLApi::glDeleteShader(vertexShader);
 
   return program;
 }
@@ -472,10 +472,10 @@ bool GLXFBEvaluator::Compile(BufferDescriptor const &srcDesc,
 
   // create a texture for input buffer
   if (!_srcBufferTexture) {
-    glGenTextures(1, &_srcBufferTexture);
+    OpenSubdiv::internal::GLApi::glGenTextures(1, &_srcBufferTexture);
   }
   if (!_patchArraysUBO) {
-    glGenBuffers(1, &_patchArraysUBO);
+    OpenSubdiv::internal::GLApi::glGenBuffers(1, &_patchArraysUBO);
   }
   return true;
 }
@@ -484,17 +484,17 @@ bool GLXFBEvaluator::Compile(BufferDescriptor const &srcDesc,
 void GLXFBEvaluator::Synchronize(void * /*kernel*/) {
   // XXX: this is currently just for the test purpose.
   // need to be reimplemented by fence and sync.
-  glFinish();
+  OpenSubdiv::internal::GLApi::glFinish();
 }
 
 static void bindTexture(GLint sampler, GLuint texture, int unit) {
   if (sampler == -1) {
     return;
   }
-  glUniform1i(sampler, unit);
-  glActiveTexture(GL_TEXTURE0 + unit);
-  glBindTexture(GL_TEXTURE_BUFFER, texture);
-  glActiveTexture(GL_TEXTURE0);
+  OpenSubdiv::internal::GLApi::glUniform1i(sampler, unit);
+  OpenSubdiv::internal::GLApi::glActiveTexture(GL_TEXTURE0 + unit);
+  OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, texture);
+  OpenSubdiv::internal::GLApi::glActiveTexture(GL_TEXTURE0);
 }
 
 bool GLXFBEvaluator::EvalStencils(
@@ -537,13 +537,13 @@ bool GLXFBEvaluator::EvalStencils(
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  glEnable(GL_RASTERIZER_DISCARD);
-  glUseProgram(_stencilKernel.program);
+  OpenSubdiv::internal::GLApi::glEnable(GL_RASTERIZER_DISCARD);
+  OpenSubdiv::internal::GLApi::glUseProgram(_stencilKernel.program);
 
   // Set input VBO as a texture buffer.
-  glBindTexture(GL_TEXTURE_BUFFER, _srcBufferTexture);
+  OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, _srcBufferTexture);
   glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, srcBuffer);
-  glBindTexture(GL_TEXTURE_BUFFER, 0);
+  OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, 0);
 
   bindTexture(_stencilKernel.uniformSrcBufferTexture, _srcBufferTexture, 0);
 
@@ -564,9 +564,9 @@ bool GLXFBEvaluator::EvalStencils(
     bindTexture(_stencilKernel.uniformDvvWeightsTexture, dvvWeightsTexture, 9);
 
   // set batch range
-  glUniform1i(_stencilKernel.uniformStart, start);
-  glUniform1i(_stencilKernel.uniformEnd, end);
-  glUniform1i(_stencilKernel.uniformSrcOffset, srcDesc.offset);
+  OpenSubdiv::internal::GLApi::glUniform1i(_stencilKernel.uniformStart, start);
+  OpenSubdiv::internal::GLApi::glUniform1i(_stencilKernel.uniformEnd, end);
+  OpenSubdiv::internal::GLApi::glUniform1i(_stencilKernel.uniformSrcOffset, srcDesc.offset);
 
   // The destination buffer is bound at vertex boundary.
   //
@@ -656,19 +656,19 @@ bool GLXFBEvaluator::EvalStencils(
   }
 
   glBeginTransformFeedback(GL_POINTS);
-  glDrawArrays(GL_POINTS, 0, count);
+  OpenSubdiv::internal::GLApi::glDrawArrays(GL_POINTS, 0, count);
   glEndTransformFeedback();
 
-  glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, 0);
+  OpenSubdiv::internal::GLApi::glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, 0);
 
   for (int i = 0; i < 6; ++i) {
-    glActiveTexture(GL_TEXTURE0 + i);
-    glBindTexture(GL_TEXTURE_BUFFER, 0);
+    OpenSubdiv::internal::GLApi::glActiveTexture(GL_TEXTURE0 + i);
+    OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, 0);
   }
 
-  glDisable(GL_RASTERIZER_DISCARD);
-  glUseProgram(0);
-  glActiveTexture(GL_TEXTURE0);
+  OpenSubdiv::internal::GLApi::glDisable(GL_RASTERIZER_DISCARD);
+  OpenSubdiv::internal::GLApi::glUseProgram(0);
+  OpenSubdiv::internal::GLApi::glActiveTexture(GL_TEXTURE0);
 
   // revert vao
   glBindVertexArray(0);
@@ -716,13 +716,13 @@ bool GLXFBEvaluator::EvalPatches(
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  glEnable(GL_RASTERIZER_DISCARD);
-  glUseProgram(_patchKernel.program);
+  OpenSubdiv::internal::GLApi::glEnable(GL_RASTERIZER_DISCARD);
+  OpenSubdiv::internal::GLApi::glUseProgram(_patchKernel.program);
 
   // Set input VBO as a texture buffer.
-  glBindTexture(GL_TEXTURE_BUFFER, _srcBufferTexture);
+  OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, _srcBufferTexture);
   glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, srcBuffer);
-  glBindTexture(GL_TEXTURE_BUFFER, 0);
+  OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, 0);
 
   bindTexture(_patchKernel.uniformSrcBufferTexture, _srcBufferTexture, 0);
 
@@ -733,27 +733,27 @@ bool GLXFBEvaluator::EvalPatches(
   // bind patch arrays UBO (std140 struct size padded to vec4 alignment)
   int patchArraySize =
       sizeof(GLint) * ((sizeof(PatchArray) / sizeof(GLint) + 3) & ~3);
-  glBindBuffer(GL_UNIFORM_BUFFER, _patchArraysUBO);
-  glBufferData(GL_UNIFORM_BUFFER, patchArrays.size() * patchArraySize, NULL,
+  OpenSubdiv::internal::GLApi::glBindBuffer(GL_UNIFORM_BUFFER, _patchArraysUBO);
+  OpenSubdiv::internal::GLApi::glBufferData(GL_UNIFORM_BUFFER, patchArrays.size() * patchArraySize, NULL,
                GL_STATIC_DRAW);
   for (int i = 0; i < (int)patchArrays.size(); ++i) {
-    glBufferSubData(GL_UNIFORM_BUFFER, i * patchArraySize, sizeof(PatchArray),
-                    &patchArrays[i]);
+    OpenSubdiv::internal::GLApi::glBufferSubData(GL_UNIFORM_BUFFER, i * patchArraySize, sizeof(PatchArray),
+                                                 &patchArrays[i]);
   }
   glBindBufferBase(GL_UNIFORM_BUFFER, _patchKernel.uniformPatchArraysUBOBinding,
                    _patchArraysUBO);
 
   // set other uniforms
-  glUniform1i(_patchKernel.uniformSrcOffset, srcDesc.offset);
+      OpenSubdiv::internal::GLApi::glUniform1i(_patchKernel.uniformSrcOffset, srcDesc.offset);
 
   // input patchcoords
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
+  OpenSubdiv::internal::GLApi::glEnableVertexAttribArray(0);
+  OpenSubdiv::internal::GLApi::glEnableVertexAttribArray(1);
   int stride = sizeof(int) * 5; // patchcoord = int*5 struct
-  glBindBuffer(GL_ARRAY_BUFFER, patchCoordsBuffer);
+  OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, patchCoordsBuffer);
   glVertexAttribIPointer(0, 3, GL_UNSIGNED_INT, stride, (void *)0);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride,
-                        (void *)(sizeof(int) * 3));
+  OpenSubdiv::internal::GLApi::glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride,
+                                                     (void *)(sizeof(int) * 3));
 
   int dstBufferBindOffset = dstDesc.offset - (dstDesc.offset % dstDesc.stride);
   int duBufferBindOffset =
@@ -804,27 +804,27 @@ bool GLXFBEvaluator::EvalPatches(
   }
 
   glBeginTransformFeedback(GL_POINTS);
-  glDrawArrays(GL_POINTS, 0, numPatchCoords);
+  OpenSubdiv::internal::GLApi::glDrawArrays(GL_POINTS, 0, numPatchCoords);
   glEndTransformFeedback();
 
-  glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, 0);
+  OpenSubdiv::internal::GLApi::glBindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, 0);
 
   // unbind textures
   for (int i = 0; i < 6; ++i) {
-    glActiveTexture(GL_TEXTURE0 + i);
-    glBindTexture(GL_TEXTURE_BUFFER, 0);
+    OpenSubdiv::internal::GLApi::glActiveTexture(GL_TEXTURE0 + i);
+    OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, 0);
   }
 
   // unbind UBO
   glBindBufferBase(GL_UNIFORM_BUFFER, _patchKernel.uniformPatchArraysUBOBinding,
                    0);
 
-  glDisable(GL_RASTERIZER_DISCARD);
-  glUseProgram(0);
-  glActiveTexture(GL_TEXTURE0);
+  OpenSubdiv::internal::GLApi::glDisable(GL_RASTERIZER_DISCARD);
+  OpenSubdiv::internal::GLApi::glUseProgram(0);
+  OpenSubdiv::internal::GLApi::glActiveTexture(GL_TEXTURE0);
 
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
+  OpenSubdiv::internal::GLApi::glDisableVertexAttribArray(0);
+  OpenSubdiv::internal::GLApi::glDisableVertexAttribArray(1);
 
   // revert vao
   glBindVertexArray(0);
@@ -838,7 +838,7 @@ bool GLXFBEvaluator::EvalPatches(
 GLXFBEvaluator::_StencilKernel::_StencilKernel() : program(0) {}
 GLXFBEvaluator::_StencilKernel::~_StencilKernel() {
   if (program) {
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
   }
 }
 
@@ -849,7 +849,7 @@ bool GLXFBEvaluator::_StencilKernel::Compile(
     BufferDescriptor const &dvvDesc, bool interleavedDerivativeBuffers) {
   // create stencil kernel
   if (program) {
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
   }
 
   const char *kernelDefines =
@@ -861,19 +861,19 @@ bool GLXFBEvaluator::_StencilKernel::Compile(
     return false;
 
   // cache uniform locations (TODO: use uniform block)
-  uniformSrcBufferTexture = glGetUniformLocation(program, "vertexBuffer");
-  uniformSrcOffset = glGetUniformLocation(program, "srcOffset");
-  uniformSizesTexture = glGetUniformLocation(program, "sizes");
-  uniformOffsetsTexture = glGetUniformLocation(program, "offsets");
-  uniformIndicesTexture = glGetUniformLocation(program, "indices");
-  uniformWeightsTexture = glGetUniformLocation(program, "weights");
-  uniformDuWeightsTexture = glGetUniformLocation(program, "duWeights");
-  uniformDvWeightsTexture = glGetUniformLocation(program, "dvWeights");
-  uniformDuuWeightsTexture = glGetUniformLocation(program, "duuWeights");
-  uniformDuvWeightsTexture = glGetUniformLocation(program, "duvWeights");
-  uniformDvvWeightsTexture = glGetUniformLocation(program, "dvvWeights");
-  uniformStart = glGetUniformLocation(program, "batchStart");
-  uniformEnd = glGetUniformLocation(program, "batchEnd");
+  uniformSrcBufferTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "vertexBuffer");
+  uniformSrcOffset = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "srcOffset");
+  uniformSizesTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "sizes");
+  uniformOffsetsTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "offsets");
+  uniformIndicesTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "indices");
+  uniformWeightsTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "weights");
+  uniformDuWeightsTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "duWeights");
+  uniformDvWeightsTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "dvWeights");
+  uniformDuuWeightsTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "duuWeights");
+  uniformDuvWeightsTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "duvWeights");
+  uniformDvvWeightsTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "dvvWeights");
+  uniformStart = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "batchStart");
+  uniformEnd = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "batchEnd");
 
   return true;
 }
@@ -883,7 +883,7 @@ bool GLXFBEvaluator::_StencilKernel::Compile(
 GLXFBEvaluator::_PatchKernel::_PatchKernel() : program(0) {}
 GLXFBEvaluator::_PatchKernel::~_PatchKernel() {
   if (program) {
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
   }
 }
 
@@ -894,7 +894,7 @@ bool GLXFBEvaluator::_PatchKernel::Compile(
     BufferDescriptor const &dvvDesc, bool interleavedDerivativeBuffers) {
   // create stencil kernel
   if (program) {
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
   }
 
   const char *kernelDefines =
@@ -906,10 +906,10 @@ bool GLXFBEvaluator::_PatchKernel::Compile(
     return false;
 
   // cache uniform locations
-  uniformSrcBufferTexture = glGetUniformLocation(program, "vertexBuffer");
-  uniformSrcOffset = glGetUniformLocation(program, "srcOffset");
-  uniformPatchParamTexture = glGetUniformLocation(program, "patchParamBuffer");
-  uniformPatchIndexTexture = glGetUniformLocation(program, "patchIndexBuffer");
+  uniformSrcBufferTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "vertexBuffer");
+  uniformSrcOffset = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "srcOffset");
+  uniformPatchParamTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "patchParamBuffer");
+  uniformPatchIndexTexture = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "patchIndexBuffer");
 
   uniformPatchArraysUBOBinding = 1;
   int uboIndex = glGetUniformBlockIndex(program, "PatchArrays");

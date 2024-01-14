@@ -27,13 +27,27 @@
 #include <stdint.h>
 #include <dlfcn.h>
 
-#include <Carbon/Carbon.h>
+#ifdef __APPLE__
+# include <TargetConditionals.h>
+#endif /* __APPLE__ */
+
+#if !defined(TARGET_OS_VISION)
+# include <Carbon/Carbon.h>
+#else /* defined(TARGET_OS_VISION) */
+# include <CoreFoundation/CFCGTypes.h>
+# include <CoreFoundation/CFBundle.h>
+#endif /* !defined(TARGET_OS_VISION) */
 
 #if defined(__OBJC__)
-#import <Cocoa/Cocoa.h>
-#else
+# if !defined(TARGET_OS_VISION)
+#  import <Cocoa/Cocoa.h>
+# else /* defined(TARGET_OS_VISION) */
+#  import <UIKit/UIKit.h>
+#  import <Foundation/Foundation.h>
+# endif /* !defined(TARGET_OS_VISION) */
+#else /* !defined(__OBJC__) */
 typedef void* id;
-#endif
+#endif /* defined(__OBJC__) */
 
 // NOTE: Many Cocoa enum values have been renamed and we need to build across
 //       SDK versions where one is unavailable or the other deprecated
@@ -99,9 +113,13 @@ typedef VkResult (APIENTRY *PFN_vkCreateMetalSurfaceEXT)(VkInstance,const VkMeta
 
 // HIToolbox.framework pointer typedefs
 #define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
+#if !defined(TARGET_OS_VISION)
 typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardLayoutInputSource)(void);
+#endif /* !defined(TARGET_OS_VISION) */
 #define TISCopyCurrentKeyboardLayoutInputSource _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource
+#if !defined(TARGET_OS_VISION)
 typedef void* (*PFN_TISGetInputSourceProperty)(TISInputSourceRef,CFStringRef);
+#endif /* !defined(TARGET_OS_VISION) */
 #define TISGetInputSourceProperty _glfw.ns.tis.GetInputSourceProperty
 typedef UInt8 (*PFN_LMGetKbdType)(void);
 #define LMGetKbdType _glfw.ns.tis.GetKbdType
@@ -135,12 +153,16 @@ typedef struct _GLFWwindowNS
 //
 typedef struct _GLFWlibraryNS
 {
+#if !defined(TARGET_OS_VISION)
     CGEventSourceRef    eventSource;
+#endif /* !defined(TARGET_OS_VISION) */
     id                  delegate;
     GLFWbool            finishedLaunching;
     GLFWbool            cursorHidden;
+#if !defined(TARGET_OS_VISION)
     TISInputSourceRef   inputSource;
     IOHIDManagerRef     hidManager;
+#endif /* !defined(TARGET_OS_VISION) */
     id                  unicodeData;
     id                  helper;
     id                  keyUpMonitor;
@@ -158,8 +180,10 @@ typedef struct _GLFWlibraryNS
 
     struct {
         CFBundleRef     bundle;
+#if !defined(TARGET_OS_VISION)
         PFN_TISCopyCurrentKeyboardLayoutInputSource CopyCurrentKeyboardLayoutInputSource;
         PFN_TISGetInputSourceProperty GetInputSourceProperty;
+#endif /* !defined(TARGET_OS_VISION) */
         PFN_LMGetKbdType GetKbdType;
         CFStringRef     kPropertyUnicodeKeyLayoutData;
     } tis;
@@ -170,8 +194,10 @@ typedef struct _GLFWlibraryNS
 //
 typedef struct _GLFWmonitorNS
 {
+#if !defined(TARGET_OS_VISION)
     CGDirectDisplayID   displayID;
     CGDisplayModeRef    previousMode;
+#endif /* !defined(TARGET_OS_VISION) */
     uint32_t            unitNumber;
     id                  screen;
     double              fallbackRefreshRate;

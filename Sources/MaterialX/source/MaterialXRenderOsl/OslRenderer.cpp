@@ -3,6 +3,10 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif /* __APPLE__ */
+
 #include <MaterialX/MXRenderOslRenderer.h>
 
 #include <MaterialX/MXGenOslShaderGenerator.h>
@@ -175,7 +179,9 @@ void OslRenderer::renderOSL(const FilePath &dirPath, const string &shaderName,
   // Repeat the render command to allow for sporadic errors.
   int returnValue = 0;
   for (int i = 0; i < 5; i++) {
+    #if !defined(TARGET_OS_VISION)
     returnValue = std::system(command.c_str());
+    #endif /* !defined(TARGET_OS_VISION) */
     if (!returnValue) {
       break;
     }
@@ -232,8 +238,12 @@ void OslRenderer::shadeOSL(const FilePath &dirPath, const string &shaderName,
   command += " -o " + outputName + " " + outputFileName;
   command += " -g 256 256";
   command += " > " + errorFile + redirectString;
-
+  
+#if !defined(TARGET_OS_VISION)
   int returnValue = std::system(command.c_str());
+#else /* defined(TARGET_OS_VISION) */
+  int returnValue = 0;
+#endif /* !defined(TARGET_OS_VISION) */
 
   // There is no "silent" or "quiet" mode for testshade so we must parse the
   // lines to check if there were any error lines which are not the success
@@ -286,7 +296,11 @@ void OslRenderer::compileOSL(const FilePath &oslFilePath) {
   command += oslFilePath.asString() + " -o " + outputFileName.asString() +
              " > " + errorFile + redirectString;
 
+#if !defined(TARGET_OS_VISION)
   int returnValue = std::system(command.c_str());
+#else /* defined(TARGET_OS_VISION) */
+  int returnValue = 0;
+#endif /* !defined(TARGET_OS_VISION) */
 
   std::ifstream errorStream(errorFile);
   string result;

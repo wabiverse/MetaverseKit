@@ -94,7 +94,10 @@ extern "C" {
  #if defined(__OBJC__)
   #import <Cocoa/Cocoa.h>
  #else
-  #include <ApplicationServices/ApplicationServices.h>
+  #include <TargetConditionals.h>
+  #if !defined(TARGET_OS_VISION)
+   #include <ApplicationServices/ApplicationServices.h>
+  #endif /* !defined(TARGET_OS_VISION) */
   typedef void* id;
  #endif
 #elif defined(GLFW_EXPOSE_NATIVE_X11) || defined(GLFW_EXPOSE_NATIVE_GLX)
@@ -187,7 +190,7 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* window);
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* window);
 #endif
 
-#if defined(GLFW_EXPOSE_NATIVE_COCOA)
+#if defined(GLFW_EXPOSE_NATIVE_COCOA) && !defined(TARGET_OS_VISION)
 /*! @brief Returns the `CGDirectDisplayID` of the specified monitor.
  *
  *  @return The `CGDirectDisplayID` of the specified monitor, or

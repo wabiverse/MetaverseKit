@@ -5,7 +5,9 @@
 
 #if defined(__APPLE__)
 
-#ifndef TARGET_OS_IOS
+#include <TargetConditionals.h>
+
+#if !defined(TARGET_OS_IOS) && !defined(TARGET_OS_VISION)
 
 #import <AppKit/NSApplication.h>
 #import <Cocoa/Cocoa.h>

@@ -16,7 +16,7 @@
  * write to the Free Software Foundation, Inc., to the address of
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- *       Copyright (C) 2023 Wabi Foundation. All Rights Reserved.
+ *       Copyright (C) 2024 Wabi Foundation. All Rights Reserved.
  * --------------------------------------------------------------
  *  . x x x . o o o . x x x . : : : .    o  x  o    . : : : .
  * -------------------------------------------------------------- */
@@ -82,13 +82,15 @@ class Creator
 
     #if canImport(Python)
       /* embed & init python. */
-      PyBundle.shared.pyInit()
-      PyBundle.shared.pyInfo()
+      PyBundler.shared.pyInit()
+      PyBundler.shared.pyInfo()
     #endif /* canImport(Python) */
 
     C = Creator()
 
-    C.app.run()
+    #if canImport(AppKit)
+      C.app.run()
+    #endif /* canImport(AppKit) */
   }
 
   static func setupGuiStyle(with context: UnsafeMutablePointer<ImGuiContext>? = nil)
@@ -111,7 +113,7 @@ class Creator
     let viewController = ViewController()
     let ctx = ImGui.CreateContext(nil)
 
-    var window: OSWindow?
+    public var window: OSWindow?
 
     public func applicationDidFinishLaunching(_: Notification)
     {
@@ -144,26 +146,26 @@ class Creator
   }
 
 #elseif canImport(UIKit)
-  @main
-  class AppDelegate: OSDelegate
+  public class AppDelegate: OSDelegate
   {
     let app = OSApp.shared
     let viewController = ViewController()
     let ctx = ImGui.CreateContext(nil)
 
-    var window: OSWindow?
+    public var window: OSWindow?
 
-    func application(_: OSApp, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
+    public func application(_: OSApp, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
       Creator.setupGuiStyle(with: ctx)
 
-      let window = UIWindow(frame: UIScreen.main.bounds)
-      window.rootViewController = ViewController()
+      let window = UIWindow()
       window.makeKeyAndVisible()
       self.window = window
+      
+      return true
     }
 
-    func applicationWillTerminate(_: OSApp)
+    public func applicationWillTerminate(_: OSApp)
     {
       ImGui.DestroyContext(ctx)
     }
@@ -174,9 +176,9 @@ class Creator
     let app = OSApp.shared
     let ctx = ImGui.CreateContext(nil)
 
-    var window: OSWindow?
+    public var window: OSWindow?
 
-    func application(_: OSApp, didFinishLaunchingWithOptions _: [String: Any]?) -> Bool
+    public func application(_: OSApp, didFinishLaunchingWithOptions _: [String: Any]?) -> Bool
     {
       Creator.setupGuiStyle(with: ctx)
 
@@ -185,7 +187,7 @@ class Creator
       return true
     }
 
-    func applicationWillTerminate(_: OSApp)
+    public func applicationWillTerminate(_: OSApp)
     {
       ImGui.DestroyContext(ctx)
     }

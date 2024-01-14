@@ -8,6 +8,9 @@
 
 #endif
 
+#include <TargetConditionals.h>
+
+#if !defined(TARGET_OS_VISION)
 
 #include <Carbon/Carbon.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
@@ -225,3 +228,5 @@ void SystemMonitorsImpl::getAllMonitors()
 }
 
 } // namespace OCIO_NAMESPACE
+
+#endif /* !defined(TARGET_OS_VISION) */

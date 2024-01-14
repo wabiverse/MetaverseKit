@@ -86,12 +86,12 @@ template <class T> GLuint createSSBO(std::vector<T> const &src) {
 #endif
   {
     GLint prev = 0;
-    glGetIntegerv(GL_SHADER_STORAGE_BUFFER_BINDING, &prev);
-    glGenBuffers(1, &devicePtr);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, devicePtr);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, src.size() * sizeof(T), &src.at(0),
-                 GL_STATIC_DRAW);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, prev);
+    OpenSubdiv::internal::GLApi::glGetIntegerv(GL_SHADER_STORAGE_BUFFER_BINDING, &prev);
+    OpenSubdiv::internal::GLApi::glGenBuffers(1, &devicePtr);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_SHADER_STORAGE_BUFFER, devicePtr);
+    OpenSubdiv::internal::GLApi::glBufferData(GL_SHADER_STORAGE_BUFFER, src.size() * sizeof(T), &src.at(0),
+                                              GL_STATIC_DRAW);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_SHADER_STORAGE_BUFFER, prev);
   }
 
   return devicePtr;
@@ -135,23 +135,23 @@ GLStencilTableSSBO::GLStencilTableSSBO(
 
 GLStencilTableSSBO::~GLStencilTableSSBO() {
   if (_sizes)
-    glDeleteBuffers(1, &_sizes);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_sizes);
   if (_offsets)
-    glDeleteBuffers(1, &_offsets);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_offsets);
   if (_indices)
-    glDeleteBuffers(1, &_indices);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_indices);
   if (_weights)
-    glDeleteBuffers(1, &_weights);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_weights);
   if (_duWeights)
-    glDeleteBuffers(1, &_duWeights);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_duWeights);
   if (_dvWeights)
-    glDeleteBuffers(1, &_dvWeights);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_dvWeights);
   if (_duuWeights)
-    glDeleteBuffers(1, &_duuWeights);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_duuWeights);
   if (_duvWeights)
-    glDeleteBuffers(1, &_duvWeights);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_duvWeights);
   if (_dvvWeights)
-    glDeleteBuffers(1, &_dvvWeights);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_dvvWeights);
 }
 
 // ---------------------------------------------------------------------------
@@ -167,7 +167,7 @@ GLComputeEvaluator::GLComputeEvaluator()
 
 GLComputeEvaluator::~GLComputeEvaluator() {
   if (_patchArraysSSBO) {
-    glDeleteBuffers(1, &_patchArraysSSBO);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_patchArraysSSBO);
   }
 }
 
@@ -177,9 +177,9 @@ compileKernel(BufferDescriptor const &srcDesc, BufferDescriptor const &dstDesc,
               BufferDescriptor const &duuDesc, BufferDescriptor const &duvDesc,
               BufferDescriptor const &dvvDesc, const char *kernelDefine,
               int workGroupSize) {
-  GLuint program = glCreateProgram();
+  GLuint program = OpenSubdiv::internal::GLApi::glCreateProgram();
 
-  GLuint shader = glCreateShader(GL_COMPUTE_SHADER);
+  GLuint shader = OpenSubdiv::internal::GLApi::glCreateShader(GL_COMPUTE_SHADER);
 
   std::string patchBasisShaderSource =
       GLSLPatchShaderSource::GetPatchBasisShaderSource();
@@ -210,27 +210,27 @@ compileKernel(BufferDescriptor const &srcDesc, BufferDescriptor const &dstDesc,
   shaderSources[1] = defineStr.c_str();
   shaderSources[2] = patchBasisShaderSource.c_str();
   shaderSources[3] = shaderSource;
-  glShaderSource(shader, 4, shaderSources, NULL);
-  glCompileShader(shader);
-  glAttachShader(program, shader);
+  OpenSubdiv::internal::GLApi::glShaderSource(shader, 4, shaderSources, NULL);
+  OpenSubdiv::internal::GLApi::glCompileShader(shader);
+  OpenSubdiv::internal::GLApi::glAttachShader(program, shader);
 
   GLint linked = 0;
-  glLinkProgram(program);
-  glGetProgramiv(program, GL_LINK_STATUS, &linked);
+  OpenSubdiv::internal::GLApi::glLinkProgram(program);
+  OpenSubdiv::internal::GLApi::glGetProgramiv(program, GL_LINK_STATUS, &linked);
 
   if (linked == GL_FALSE) {
     char buffer[1024];
-    glGetShaderInfoLog(shader, 1024, NULL, buffer);
+    OpenSubdiv::internal::GLApi::glGetShaderInfoLog(shader, 1024, NULL, buffer);
     Far::Error(Far::FAR_RUNTIME_ERROR, buffer);
 
-    glGetProgramInfoLog(program, 1024, NULL, buffer);
+    OpenSubdiv::internal::GLApi::glGetProgramInfoLog(program, 1024, NULL, buffer);
     Far::Error(Far::FAR_RUNTIME_ERROR, buffer);
 
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
     return 0;
   }
 
-  glDeleteShader(shader);
+  OpenSubdiv::internal::GLApi::glDeleteShader(shader);
 
   return program;
 }
@@ -257,7 +257,7 @@ bool GLComputeEvaluator::Compile(BufferDescriptor const &srcDesc,
 
   // create a patch arrays buffer
   if (!_patchArraysSSBO) {
-    glGenBuffers(1, &_patchArraysSSBO);
+    OpenSubdiv::internal::GLApi::glGenBuffers(1, &_patchArraysSSBO);
   }
 
   return true;
@@ -267,7 +267,7 @@ bool GLComputeEvaluator::Compile(BufferDescriptor const &srcDesc,
 void GLComputeEvaluator::Synchronize(void * /*kernel*/) {
   // XXX: this is currently just for the performance measuring purpose.
   // need to be reimplemented by fence and sync.
-  glFinish();
+  OpenSubdiv::internal::GLApi::glFinish();
 }
 
 bool GLComputeEvaluator::EvalStencils(
@@ -327,37 +327,37 @@ bool GLComputeEvaluator::EvalStencils(
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 15, dvvWeightsBuffer);
 
   GLint activeProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &activeProgram);
-  glUseProgram(_stencilKernel.program);
+  OpenSubdiv::internal::GLApi::glGetIntegerv(GL_CURRENT_PROGRAM, &activeProgram);
+  OpenSubdiv::internal::GLApi::glUseProgram(_stencilKernel.program);
 
-  glUniform1i(_stencilKernel.uniformStart, start);
-  glUniform1i(_stencilKernel.uniformEnd, end);
-  glUniform1i(_stencilKernel.uniformSrcOffset, srcDesc.offset);
-  glUniform1i(_stencilKernel.uniformDstOffset, dstDesc.offset);
+  OpenSubdiv::internal::GLApi::glUniform1i(_stencilKernel.uniformStart, start);
+  OpenSubdiv::internal::GLApi::glUniform1i(_stencilKernel.uniformEnd, end);
+  OpenSubdiv::internal::GLApi::glUniform1i(_stencilKernel.uniformSrcOffset, srcDesc.offset);
+  OpenSubdiv::internal::GLApi::glUniform1i(_stencilKernel.uniformDstOffset, dstDesc.offset);
   if (_stencilKernel.uniformDuDesc > 0) {
-    glUniform3i(_stencilKernel.uniformDuDesc, duDesc.offset, duDesc.length,
-                duDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_stencilKernel.uniformDuDesc, duDesc.offset, duDesc.length,
+                                             duDesc.stride);
   }
   if (_stencilKernel.uniformDvDesc > 0) {
-    glUniform3i(_stencilKernel.uniformDvDesc, dvDesc.offset, dvDesc.length,
-                dvDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_stencilKernel.uniformDvDesc, dvDesc.offset, dvDesc.length,
+                                             dvDesc.stride);
   }
   if (_stencilKernel.uniformDuuDesc > 0) {
-    glUniform3i(_stencilKernel.uniformDuuDesc, duuDesc.offset, duuDesc.length,
-                duuDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_stencilKernel.uniformDuuDesc, duuDesc.offset, duuDesc.length,
+                                             duuDesc.stride);
   }
   if (_stencilKernel.uniformDuvDesc > 0) {
-    glUniform3i(_stencilKernel.uniformDuvDesc, duvDesc.offset, duvDesc.length,
-                duvDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_stencilKernel.uniformDuvDesc, duvDesc.offset, duvDesc.length,
+                                             duvDesc.stride);
   }
   if (_stencilKernel.uniformDvvDesc > 0) {
-    glUniform3i(_stencilKernel.uniformDvvDesc, dvvDesc.offset, dvvDesc.length,
-                dvvDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_stencilKernel.uniformDvvDesc, dvvDesc.offset, dvvDesc.length,
+                                             dvvDesc.stride);
   }
 
   glDispatchCompute((count + _workGroupSize - 1) / _workGroupSize, 1, 1);
 
-  glUseProgram(activeProgram);
+  OpenSubdiv::internal::GLApi::glUseProgram(activeProgram);
 
   glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT);
   for (int i = 0; i < 16; ++i) {
@@ -408,47 +408,47 @@ bool GLComputeEvaluator::EvalPatches(
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, patchParamsBuffer);
 
   GLint activeProgram;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &activeProgram);
-  glUseProgram(_patchKernel.program);
+      OpenSubdiv::internal::GLApi::glGetIntegerv(GL_CURRENT_PROGRAM, &activeProgram);
+      OpenSubdiv::internal::GLApi::glUseProgram(_patchKernel.program);
 
-  glUniform1i(_patchKernel.uniformSrcOffset, srcDesc.offset);
-  glUniform1i(_patchKernel.uniformDstOffset, dstDesc.offset);
+      OpenSubdiv::internal::GLApi::glUniform1i(_patchKernel.uniformSrcOffset, srcDesc.offset);
+      OpenSubdiv::internal::GLApi::glUniform1i(_patchKernel.uniformDstOffset, dstDesc.offset);
 
   int patchArraySize = sizeof(PatchArray);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, _patchArraysSSBO);
-  glBufferData(GL_SHADER_STORAGE_BUFFER, patchArrays.size() * patchArraySize,
+      OpenSubdiv::internal::GLApi::glBindBuffer(GL_SHADER_STORAGE_BUFFER, _patchArraysSSBO);
+      OpenSubdiv::internal::GLApi::glBufferData(GL_SHADER_STORAGE_BUFFER, patchArrays.size() * patchArraySize,
                NULL, GL_STATIC_DRAW);
   for (int i = 0; i < (int)patchArrays.size(); ++i) {
-    glBufferSubData(GL_SHADER_STORAGE_BUFFER, i * patchArraySize,
-                    sizeof(PatchArray), &patchArrays[i]);
+    OpenSubdiv::internal::GLApi::glBufferSubData(GL_SHADER_STORAGE_BUFFER, i * patchArraySize,
+                                                 sizeof(PatchArray), &patchArrays[i]);
   }
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, _patchArraysSSBO);
 
   if (_patchKernel.uniformDuDesc > 0) {
-    glUniform3i(_patchKernel.uniformDuDesc, duDesc.offset, duDesc.length,
-                duDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_patchKernel.uniformDuDesc, duDesc.offset, duDesc.length,
+                                             duDesc.stride);
   }
   if (_patchKernel.uniformDvDesc > 0) {
-    glUniform3i(_patchKernel.uniformDvDesc, dvDesc.offset, dvDesc.length,
-                dvDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_patchKernel.uniformDvDesc, dvDesc.offset, dvDesc.length,
+                                             dvDesc.stride);
   }
   if (_patchKernel.uniformDuuDesc > 0) {
-    glUniform3i(_patchKernel.uniformDuuDesc, duuDesc.offset, duuDesc.length,
-                duuDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_patchKernel.uniformDuuDesc, duuDesc.offset, duuDesc.length,
+                                             duuDesc.stride);
   }
   if (_patchKernel.uniformDuvDesc > 0) {
-    glUniform3i(_patchKernel.uniformDuvDesc, duvDesc.offset, duvDesc.length,
-                duvDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_patchKernel.uniformDuvDesc, duvDesc.offset, duvDesc.length,
+                                             duvDesc.stride);
   }
   if (_patchKernel.uniformDvvDesc > 0) {
-    glUniform3i(_patchKernel.uniformDvvDesc, dvvDesc.offset, dvvDesc.length,
-                dvvDesc.stride);
+    OpenSubdiv::internal::GLApi::glUniform3i(_patchKernel.uniformDvvDesc, dvvDesc.offset, dvvDesc.length,
+                                             dvvDesc.stride);
   }
 
   glDispatchCompute((numPatchCoords + _workGroupSize - 1) / _workGroupSize, 1,
                     1);
 
-  glUseProgram(activeProgram);
+  OpenSubdiv::internal::GLApi::glUseProgram(activeProgram);
 
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, 0);
@@ -469,7 +469,7 @@ bool GLComputeEvaluator::EvalPatches(
 GLComputeEvaluator::_StencilKernel::_StencilKernel() : program(0) {}
 GLComputeEvaluator::_StencilKernel::~_StencilKernel() {
   if (program) {
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
   }
 }
 
@@ -480,7 +480,7 @@ bool GLComputeEvaluator::_StencilKernel::Compile(
     BufferDescriptor const &dvvDesc, int workGroupSize) {
   // create stencil kernel
   if (program) {
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
   }
 
   const char *kernelDefine =
@@ -492,15 +492,15 @@ bool GLComputeEvaluator::_StencilKernel::Compile(
     return false;
 
   // cache uniform locations (TODO: use uniform block)
-  uniformStart = glGetUniformLocation(program, "batchStart");
-  uniformEnd = glGetUniformLocation(program, "batchEnd");
-  uniformSrcOffset = glGetUniformLocation(program, "srcOffset");
-  uniformDstOffset = glGetUniformLocation(program, "dstOffset");
-  uniformDuDesc = glGetUniformLocation(program, "duDesc");
-  uniformDvDesc = glGetUniformLocation(program, "dvDesc");
-  uniformDuuDesc = glGetUniformLocation(program, "duuDesc");
-  uniformDuvDesc = glGetUniformLocation(program, "duvDesc");
-  uniformDvvDesc = glGetUniformLocation(program, "dvvDesc");
+  uniformStart = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "batchStart");
+  uniformEnd = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "batchEnd");
+  uniformSrcOffset = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "srcOffset");
+  uniformDstOffset = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "dstOffset");
+  uniformDuDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "duDesc");
+  uniformDvDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "dvDesc");
+  uniformDuuDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "duuDesc");
+  uniformDuvDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "duvDesc");
+  uniformDvvDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "dvvDesc");
 
   return true;
 }
@@ -510,7 +510,7 @@ bool GLComputeEvaluator::_StencilKernel::Compile(
 GLComputeEvaluator::_PatchKernel::_PatchKernel() : program(0) {}
 GLComputeEvaluator::_PatchKernel::~_PatchKernel() {
   if (program) {
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
   }
 }
 
@@ -521,7 +521,7 @@ bool GLComputeEvaluator::_PatchKernel::Compile(
     BufferDescriptor const &dvvDesc, int workGroupSize) {
   // create stencil kernel
   if (program) {
-    glDeleteProgram(program);
+    OpenSubdiv::internal::GLApi::glDeleteProgram(program);
   }
 
   const char *kernelDefine =
@@ -533,14 +533,14 @@ bool GLComputeEvaluator::_PatchKernel::Compile(
     return false;
 
   // cache uniform locations
-  uniformSrcOffset = glGetUniformLocation(program, "srcOffset");
-  uniformDstOffset = glGetUniformLocation(program, "dstOffset");
-  uniformPatchArray = glGetUniformLocation(program, "patchArray");
-  uniformDuDesc = glGetUniformLocation(program, "duDesc");
-  uniformDvDesc = glGetUniformLocation(program, "dvDesc");
-  uniformDuuDesc = glGetUniformLocation(program, "duuDesc");
-  uniformDuvDesc = glGetUniformLocation(program, "duvDesc");
-  uniformDvvDesc = glGetUniformLocation(program, "dvvDesc");
+  uniformSrcOffset = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "srcOffset");
+  uniformDstOffset = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "dstOffset");
+  uniformPatchArray = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "patchArray");
+  uniformDuDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "duDesc");
+  uniformDvDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "dvDesc");
+  uniformDuuDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "duuDesc");
+  uniformDuvDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "duvDesc");
+  uniformDvvDesc = OpenSubdiv::internal::GLApi::glGetUniformLocation(program, "dvvDesc");
 
   return true;
 }
