@@ -37,18 +37,18 @@
 #include <mach/mach_error.h>
 
 #include <CoreFoundation/CoreFoundation.h>
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
 #include <Kernel/IOKit/hidsystem/IOHIDUsageTables.h>
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
 
 // Joystick element information
 //
 typedef struct _GLFWjoyelementNS
 {
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     IOHIDElementRef native;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
     uint32_t        usage;
     int             index;
     long            minimum;
@@ -61,12 +61,12 @@ typedef struct _GLFWjoyelementNS
 //
 static long getElementValue(_GLFWjoystick* js, _GLFWjoyelementNS* element)
 {
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     IOHIDValueRef valueRef;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
     long value = 0;
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     if (js->ns.device)
     {
         if (IOHIDDeviceGetValue(js->ns.device,
@@ -76,7 +76,7 @@ static long getElementValue(_GLFWjoystick* js, _GLFWjoyelementNS* element)
             value = IOHIDValueGetIntegerValue(valueRef);
         }
     }
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
   
     return value;
 }
@@ -125,7 +125,7 @@ static void closeJoystick(_GLFWjoystick* js)
     _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
 // Callback for user-initiated joystick addition
 //
 static void matchCallback(void* context,
@@ -310,7 +310,7 @@ static void removeCallback(void* context,
         }
     }
 }
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -321,7 +321,7 @@ static void removeCallback(void* context,
 //
 void _glfwInitJoysticksNS(void)
 {
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     CFMutableArrayRef matching;
     const long usages[] =
     {
@@ -394,14 +394,14 @@ void _glfwInitJoysticksNS(void)
     // Execute the run loop once in order to register any initially-attached
     // joysticks
     CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, false);
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 }
 
 // Close all opened joystick handles
 //
 void _glfwTerminateJoysticksNS(void)
 {
-#if !defined(TARGET_OS_VISION)
+#if !TARGET_OS_VISION
     int jid;
 
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
@@ -409,7 +409,7 @@ void _glfwTerminateJoysticksNS(void)
 
     CFRelease(_glfw.ns.hidManager);
     _glfw.ns.hidManager = NULL;
-#endif /* !defined(TARGET_OS_VISION) */
+#endif /* !TARGET_OS_VISION */
 }
 
 

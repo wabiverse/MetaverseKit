@@ -7,7 +7,7 @@
 
 #include <TargetConditionals.h>
 
-#if !defined(TARGET_OS_IOS) && !defined(TARGET_OS_VISION)
+#if !TARGET_OS_IOS && !TARGET_OS_VISION
 
 #import <AppKit/NSApplication.h>
 #import <Cocoa/Cocoa.h>
@@ -86,6 +86,6 @@ void NSUtilDisposeWindow(void *pWindow) {
 #endif
 }
 
-#endif
+#endif /* !TARGET_OS_IOS && !TARGET_OS_VISION */
 
-#endif
+#endif /* defined(__APPLE__) */
