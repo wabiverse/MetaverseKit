@@ -42,20 +42,20 @@ GLLegacyGregoryPatchTable::GLLegacyGregoryPatchTable()
 
 GLLegacyGregoryPatchTable::~GLLegacyGregoryPatchTable() {
   if (_vertexTextureBuffer)
-    glDeleteTextures(1, &_vertexTextureBuffer);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_vertexTextureBuffer);
   if (_vertexValenceTextureBuffer)
-    glDeleteTextures(1, &_vertexValenceTextureBuffer);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_vertexValenceTextureBuffer);
   if (_quadOffsetsTextureBuffer)
-    glDeleteTextures(1, &_quadOffsetsTextureBuffer);
+    OpenSubdiv::internal::GLApi::glDeleteTextures(1, &_quadOffsetsTextureBuffer);
 }
 
 GLLegacyGregoryPatchTable *
 GLLegacyGregoryPatchTable::Create(Far::PatchTable const *farPatchTable) {
 
   GLLegacyGregoryPatchTable *result = new GLLegacyGregoryPatchTable();
-  glGenTextures(1, &result->_vertexTextureBuffer);
-  glGenTextures(1, &result->_vertexValenceTextureBuffer);
-  glGenTextures(1, &result->_quadOffsetsTextureBuffer);
+  OpenSubdiv::internal::GLApi::glGenTextures(1, &result->_vertexTextureBuffer);
+  OpenSubdiv::internal::GLApi::glGenTextures(1, &result->_vertexValenceTextureBuffer);
+  OpenSubdiv::internal::GLApi::glGenTextures(1, &result->_quadOffsetsTextureBuffer);
 
   Far::PatchTable::VertexValenceTable const &valenceTable =
       farPatchTable->GetVertexValenceTable();
@@ -64,30 +64,30 @@ GLLegacyGregoryPatchTable::Create(Far::PatchTable const *farPatchTable) {
 
   if (!valenceTable.empty()) {
     GLuint buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, valenceTable.size() * sizeof(int),
+    OpenSubdiv::internal::GLApi::glGenBuffers(1, &buffer);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    OpenSubdiv::internal::GLApi::glBufferData(GL_ARRAY_BUFFER, valenceTable.size() * sizeof(int),
                  &valenceTable[0], GL_STATIC_DRAW);
 
-    glBindTexture(GL_TEXTURE_BUFFER, result->_vertexValenceTextureBuffer);
+    OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, result->_vertexValenceTextureBuffer);
     glTexBuffer(GL_TEXTURE_BUFFER, GL_R32I, buffer);
-    glBindTexture(GL_TEXTURE_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDeleteBuffers(1, &buffer);
+    OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, 0);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, 0);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &buffer);
   }
 
   if (!quadOffsetsTable.empty()) {
     GLuint buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, quadOffsetsTable.size() * sizeof(int),
+    OpenSubdiv::internal::GLApi::glGenBuffers(1, &buffer);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    OpenSubdiv::internal::GLApi::glBufferData(GL_ARRAY_BUFFER, quadOffsetsTable.size() * sizeof(int),
                  &quadOffsetsTable[0], GL_STATIC_DRAW);
 
-    glBindTexture(GL_TEXTURE_BUFFER, result->_quadOffsetsTextureBuffer);
+    OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, result->_quadOffsetsTextureBuffer);
     glTexBuffer(GL_TEXTURE_BUFFER, GL_R32I, buffer);
-    glBindTexture(GL_TEXTURE_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDeleteBuffers(1, &buffer);
+    OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, 0);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, 0);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &buffer);
   }
 
   result->_quadOffsetsBase[0] = 0;
@@ -105,9 +105,9 @@ GLLegacyGregoryPatchTable::Create(Far::PatchTable const *farPatchTable) {
 }
 
 void GLLegacyGregoryPatchTable::UpdateVertexBuffer(GLuint vbo) {
-  glBindTexture(GL_TEXTURE_BUFFER, _vertexTextureBuffer);
+  OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, _vertexTextureBuffer);
   glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, vbo);
-  glBindTexture(GL_TEXTURE_BUFFER, 0);
+  OpenSubdiv::internal::GLApi::glBindTexture(GL_TEXTURE_BUFFER, 0);
 }
 
 } // end namespace Osd

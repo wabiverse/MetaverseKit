@@ -122,6 +122,9 @@
 #pragma warning(disable : 4127) // condition expression is constant
 #endif
 
+/* Vulkan disabled temporarily for visionOS. */
+#if !defined(TARGET_OS_VISION)
+
 // Reusable buffers used for rendering 1 current in-flight frame, for
 // ImGui_ImplVulkan_RenderDrawData() [Please zero-clear before use!]
 struct ImGui_ImplVulkanH_FrameRenderBuffers {
@@ -1751,6 +1754,11 @@ void ImGui_ImplVulkanH_DestroyWindowRenderBuffers(
   buffers->Index = 0;
   buffers->Count = 0;
 }
+
+//-----------------------------------------------------------------------------
+
+/* Vulkan disabled temporarily for visionOS. */
+#endif /* !defined(TARGET_OS_VISION) */
 
 //-----------------------------------------------------------------------------
 

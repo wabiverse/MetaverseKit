@@ -28,8 +28,18 @@
 #import "ImGui/ImGui.h"
 #ifndef IMGUI_DISABLE
 #import "ImplMacOS.h"
-#import <Carbon/Carbon.h>
-#import <Cocoa/Cocoa.h>
+#if !defined(TARGET_OS_VISION)
+# import <Carbon/Carbon.h>
+#else /* defined(TARGET_OS_VISION) */
+# include <CoreFoundation/CFCGTypes.h>
+# include <CoreFoundation/CFBundle.h>
+#endif /* !defined(TARGET_OS_VISION) */
+# if !defined(TARGET_OS_VISION)
+#  import <Cocoa/Cocoa.h>
+# else /* defined(TARGET_OS_VISION) */
+#  import <UIKit/UIKit.h>
+#  import <Foundation/Foundation.h>
+# endif /* !defined(TARGET_OS_VISION) */
 #import <GameController/GameController.h>
 #import <time.h>
 
@@ -100,11 +110,17 @@
 // Data
 struct ImGui_ImplOSX_Data {
   CFTimeInterval Time;
+#if !defined(TARGET_OS_VISION)
   NSCursor *MouseCursors[ImGuiMouseCursor_COUNT];
+#endif /* !defined(TARGET_OS_VISION) */
   bool MouseCursorHidden;
   ImGuiObserver *Observer;
   KeyEventResponder *KeyEventResponder;
+#if !defined(TARGET_OS_VISION)
   NSTextInputContext *InputContext;
+#else /* defined(TARGET_OS_VISION) */
+  UITextInputContext *InputContext;
+#endif /* !defined(TARGET_OS_VISION) */
   id Monitor;
 
   ImGui_ImplOSX_Data() { memset(this, 0, sizeof(*this)); }
@@ -129,6 +145,7 @@ static inline CFTimeInterval GetMachAbsoluteTimeInSeconds() {
 static void ImGui_ImplOSX_AddTrackingArea(NSView *_Nonnull view);
 static bool ImGui_ImplOSX_HandleEvent(NSEvent *event, NSView *view);
 
+#if !defined(TARGET_OS_VISION)
 // Undocumented methods for creating cursors.
 @interface NSCursor ()
 + (id)_windowResizeNorthWestSouthEastCursor;
@@ -136,6 +153,7 @@ static bool ImGui_ImplOSX_HandleEvent(NSEvent *event, NSView *view);
 + (id)_windowResizeNorthSouthCursor;
 + (id)_windowResizeEastWestCursor;
 @end
+#endif /* !defined(TARGET_OS_VISION) */
 
 /**
  KeyEventResponder implements the NSTextInputClient protocol as is required by
@@ -152,6 +170,7 @@ static bool ImGui_ImplOSX_HandleEvent(NSEvent *event, NSView *view);
  and GLFW:
   https://github.com/glfw/glfw/blob/b55a517ae0c7b5127dffa79a64f5406021bf9076/src/cocoa_window.m#L722-L723
  */
+#if !defined(TARGET_OS_VISION)
 @interface KeyEventResponder : NSView <NSTextInputClient>
 @end
 
@@ -255,6 +274,8 @@ static bool ImGui_ImplOSX_HandleEvent(NSEvent *event, NSView *view);
 
 @end
 
+#endif /* !defined(TARGET_OS_VISION) */
+
 @interface ImGuiObserver : NSObject
 
 - (void)onApplicationBecomeActive:(NSNotification *)aNotification;
@@ -278,6 +299,7 @@ static bool ImGui_ImplOSX_HandleEvent(NSEvent *event, NSView *view);
 
 // Functions
 static ImGuiKey ImGui_ImplOSX_KeyCodeToImGuiKey(int key_code) {
+#if !defined(TARGET_OS_VISION)
   switch (key_code) {
   case kVK_ANSI_A:
     return ImGuiKey_A;
@@ -499,6 +521,9 @@ static ImGuiKey ImGui_ImplOSX_KeyCodeToImGuiKey(int key_code) {
   default:
     return ImGuiKey_None;
   }
+#else /* defined(TARGET_OS_VISION) */
+  return ImGuiKey_None;
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 #ifdef IMGUI_IMPL_METAL_CPP_EXTENSIONS
@@ -513,6 +538,7 @@ IMGUI_IMPL_API void ImGui_ImplOSX_NewFrame(void *_Nullable view) {
 
 #endif
 
+#if !defined(TARGET_OS_VISION)
 bool ImGui_ImplOSX_Init(NSView *view) {
   ImGuiIO &io = ImGui::GetIO();
   ImGui_ImplOSX_Data *bd = ImGui_ImplOSX_CreateBackendData();
@@ -623,6 +649,7 @@ bool ImGui_ImplOSX_Init(NSView *view) {
 
   return true;
 }
+#endif /* !defined(TARGET_OS_VISION) */
 
 void ImGui_ImplOSX_Shutdown() {
   ImGui_ImplOSX_Data *bd = ImGui_ImplOSX_GetBackendData();
@@ -631,7 +658,9 @@ void ImGui_ImplOSX_Shutdown() {
 
   bd->Observer = nullptr;
   if (bd->Monitor != nullptr) {
+#if !defined(TARGET_OS_VISION)
     [NSEvent removeMonitor:bd->Monitor];
+#endif /* !defined(TARGET_OS_VISION) */
     bd->Monitor = nullptr;
   }
 
@@ -655,9 +684,12 @@ static void ImGui_ImplOSX_UpdateMouseCursor() {
     // Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
     if (!bd->MouseCursorHidden) {
       bd->MouseCursorHidden = true;
+#if !defined(TARGET_OS_VISION)
       [NSCursor hide];
+#endif /* !defined(TARGET_OS_VISION) */
     }
   } else {
+#if !defined(TARGET_OS_VISION)
     NSCursor *desired = bd->MouseCursors[imgui_cursor]
                             ?: bd->MouseCursors[ImGuiMouseCursor_Arrow];
     // -[NSCursor set] generates measureable overhead if called unconditionally.
@@ -668,6 +700,7 @@ static void ImGui_ImplOSX_UpdateMouseCursor() {
       bd->MouseCursorHidden = false;
       [NSCursor unhide];
     }
+#endif /* !defined(TARGET_OS_VISION) */
   }
 }
 
@@ -747,14 +780,17 @@ static void ImGui_ImplOSX_UpdateGamepads() {
 static void ImGui_ImplOSX_UpdateImePosWithView(NSView *view) {
   ImGui_ImplOSX_Data *bd = ImGui_ImplOSX_GetBackendData();
   ImGuiIO &io = ImGui::GetIO();
+#if !defined(TARGET_OS_VISION)
   if (io.WantTextInput)
     [bd->KeyEventResponder updateImePosWithView:view];
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 void ImGui_ImplOSX_NewFrame(NSView *view) {
   ImGui_ImplOSX_Data *bd = ImGui_ImplOSX_GetBackendData();
   ImGuiIO &io = ImGui::GetIO();
 
+#if !defined(TARGET_OS_VISION)
   // Setup display size
   if (view) {
     const float dpi = (float)[view.window backingScaleFactor];
@@ -762,6 +798,7 @@ void ImGui_ImplOSX_NewFrame(NSView *view) {
         ImVec2((float)view.bounds.size.width, (float)view.bounds.size.height);
     io.DisplayFramebufferScale = ImVec2(dpi, dpi);
   }
+#endif /* !defined(TARGET_OS_VISION) */
 
   // Setup time step
   if (bd->Time == 0.0)
@@ -780,6 +817,7 @@ void ImGui_ImplOSX_NewFrame(NSView *view) {
 // (Note that NSEventTypeScrollWheel is considered "other input". Oddly enough
 // an exception does not occur with it, but the value will sometimes be wrong!)
 static ImGuiMouseSource GetMouseSource(NSEvent *event) {
+#if !defined(TARGET_OS_VISION)
   switch (event.subtype) {
   case NSEventSubtypeTabletPoint:
     return ImGuiMouseSource_Pen;
@@ -795,9 +833,14 @@ static ImGuiMouseSource GetMouseSource(NSEvent *event) {
   default:
     return ImGuiMouseSource_Mouse;
   }
+#else /* defined(TARGET_OS_VISION) */
+    return ImGuiMouseSource_TouchScreen;
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 static bool ImGui_ImplOSX_HandleEvent(NSEvent *event, NSView *view) {
+#if !defined(TARGET_OS_VISION)
+  
   ImGuiIO &io = ImGui::GetIO();
 
   if (event.type == NSEventTypeLeftMouseDown ||
@@ -950,6 +993,7 @@ static bool ImGui_ImplOSX_HandleEvent(NSEvent *event, NSView *view) {
 
     return io.WantCaptureKeyboard;
   }
+#endif /* !defined(TARGET_OS_VISION) */
 
   return false;
 }
@@ -965,6 +1009,7 @@ static void ImGui_ImplOSX_AddTrackingArea(NSView *_Nonnull view) {
   ImGui_ImplOSX_Data *bd = ImGui_ImplOSX_GetBackendData();
   if (bd->Monitor)
     return;
+#if !defined(TARGET_OS_VISION)
   NSEventMask eventMask = 0;
   eventMask |= NSEventMaskMouseMoved | NSEventMaskScrollWheel;
   eventMask |= NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp |
@@ -980,6 +1025,7 @@ static void ImGui_ImplOSX_AddTrackingArea(NSView *_Nonnull view) {
                                      ImGui_ImplOSX_HandleEvent(event, view);
                                      return event;
                                    }];
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 //-----------------------------------------------------------------------------

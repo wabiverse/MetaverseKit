@@ -38,7 +38,7 @@ GLVertexBuffer::GLVertexBuffer(int numElements, int numVertices)
   OpenSubdiv::internal::GLLoader::libraryInitializeGL();
 }
 
-GLVertexBuffer::~GLVertexBuffer() { glDeleteBuffers(1, &_vbo); }
+GLVertexBuffer::~GLVertexBuffer() { OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_vbo); }
 
 GLVertexBuffer *GLVertexBuffer::Create(int numElements, int numVertices,
                                        void *) {
@@ -61,10 +61,9 @@ void GLVertexBuffer::UpdateData(const float *src, int startVertex,
   } else
 #endif
   {
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, startVertex * _numElements * sizeof(float),
-                    size, src);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+    OpenSubdiv::internal::GLApi::glBufferSubData(GL_ARRAY_BUFFER, startVertex * _numElements * sizeof(float), size, src);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 }
 
@@ -86,11 +85,11 @@ bool GLVertexBuffer::allocate() {
 #endif
   {
     GLint prev = 0;
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prev);
-    glGenBuffers(1, &_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, size, 0, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, prev);
+    OpenSubdiv::internal::GLApi::glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prev);
+    OpenSubdiv::internal::GLApi::glGenBuffers(1, &_vbo);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+    OpenSubdiv::internal::GLApi::glBufferData(GL_ARRAY_BUFFER, size, 0, GL_DYNAMIC_DRAW);
+    OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, prev);
   }
 
   return true;

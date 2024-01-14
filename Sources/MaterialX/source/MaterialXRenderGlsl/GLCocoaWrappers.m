@@ -5,9 +5,14 @@
 
 #if defined(__APPLE__)
 
-#import <Cocoa/Cocoa.h>
-
-#import <AppKit/NSApplication.h>
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#if !defined(TARGET_OS_VISION)
+# import <Cocoa/Cocoa.h>
+# import <AppKit/NSApplication.h>
+#else /* defined(TARGET_OS_VISION) */
+# import <UIKit/UIApplication.h>
+#endif /* !defined(TARGET_OS_VISION) */
 
 #import <MaterialX/MXRenderGlslGLCocoaWrappers.h>
 

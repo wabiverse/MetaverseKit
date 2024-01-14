@@ -21,7 +21,18 @@
  *  . x x x . o o o . x x x . : : : .    o  x  o    . : : : .
  * -------------------------------------------------------------- */
 
-#if canImport(AppKit) || canImport(UIKit)
+#if os(visionOS) || !canImport(AppKit) && !canImport(UIKit)
+
+public final class Renderer
+{
+  public init?()
+  {}
+  
+  public func draw()
+  {}
+}
+
+#elseif canImport(Metal)
   import Metal
   import MetalKit
 
@@ -54,14 +65,5 @@
       commandBuffer.present(drawable)
       commandBuffer.commit()
     }
-  }
-#else
-  public final class Renderer
-  {
-    public init?()
-    {}
-
-    public func draw()
-    {}
   }
 #endif

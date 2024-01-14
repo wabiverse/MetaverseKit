@@ -46,7 +46,7 @@ CpuGLVertexBuffer::~CpuGLVertexBuffer() {
   delete[] _cpuBuffer;
 
   if (_vbo) {
-    glDeleteBuffers(1, &_vbo);
+    OpenSubdiv::internal::GLApi::glDeleteBuffers(1, &_vbo);
   }
 }
 
@@ -85,12 +85,12 @@ GLuint CpuGLVertexBuffer::BindVBO(void * /*deviceContext*/) {
   int size = GetNumElements() * GetNumVertices() * (int)sizeof(float);
 
   if (!_vbo) {
-    glGenBuffers(1, &_vbo);
+    OpenSubdiv::internal::GLApi::glGenBuffers(1, &_vbo);
   }
 
-  glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-  glBufferData(GL_ARRAY_BUFFER, size, _cpuBuffer, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+  OpenSubdiv::internal::GLApi::glBufferData(GL_ARRAY_BUFFER, size, _cpuBuffer, GL_STATIC_DRAW);
+  OpenSubdiv::internal::GLApi::glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   _dataDirty = false;
   return _vbo;

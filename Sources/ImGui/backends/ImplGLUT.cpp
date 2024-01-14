@@ -48,7 +48,11 @@
 #include "ImplGLUT.h"
 #define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
+#if __has_include(<GLUT/GLUT.h>)
 #include <GLUT/glut.h>
+#else /* !__has_include(<GLUT/GLUT.h>) */
+#define NO_GLUT
+#endif /* !__has_include(<GLUT/GLUT.h>) */
 #else
 #include <GL/freeglut.h>
 #endif
@@ -64,6 +68,7 @@ static int g_Time = 0; // Current time, in milliseconds
 // characters in the 0..255 range and the keys above.
 static ImGuiKey ImGui_ImplGLUT_KeyToImGuiKey(int key) {
   switch (key) {
+#if !defined(NO_GLUT)
   case '\t':
     return ImGuiKey_Tab;
   case 256 + GLUT_KEY_LEFT:
@@ -84,6 +89,7 @@ static ImGuiKey ImGui_ImplGLUT_KeyToImGuiKey(int key) {
     return ImGuiKey_End;
   case 256 + GLUT_KEY_INSERT:
     return ImGuiKey_Insert;
+#endif /* !defined(NO_GLUT) */
   case 127:
     return ImGuiKey_Delete;
   case 8:
@@ -252,6 +258,7 @@ static ImGuiKey ImGui_ImplGLUT_KeyToImGuiKey(int key) {
   case 'y':
     return ImGuiKey_Y;
   case 'Z':
+#if !defined(NO_GLUT)
   case 'z':
     return ImGuiKey_Z;
   case 256 + GLUT_KEY_F1:
@@ -278,6 +285,7 @@ static ImGuiKey ImGui_ImplGLUT_KeyToImGuiKey(int key) {
     return ImGuiKey_F11;
   case 256 + GLUT_KEY_F12:
     return ImGuiKey_F12;
+#endif /* !defined(NO_GLUT) */
   default:
     return ImGuiKey_None;
   }
@@ -297,6 +305,7 @@ bool ImGui_ImplGLUT_Init() {
 }
 
 void ImGui_ImplGLUT_InstallFuncs() {
+#if !defined(NO_GLUT)
   glutReshapeFunc(ImGui_ImplGLUT_ReshapeFunc);
   glutMotionFunc(ImGui_ImplGLUT_MotionFunc);
   glutPassiveMotionFunc(ImGui_ImplGLUT_MotionFunc);
@@ -308,6 +317,7 @@ void ImGui_ImplGLUT_InstallFuncs() {
   glutKeyboardUpFunc(ImGui_ImplGLUT_KeyboardUpFunc);
   glutSpecialFunc(ImGui_ImplGLUT_SpecialFunc);
   glutSpecialUpFunc(ImGui_ImplGLUT_SpecialUpFunc);
+#endif /* !defined(NO_GLUT) */
 }
 
 void ImGui_ImplGLUT_Shutdown() {
@@ -316,6 +326,7 @@ void ImGui_ImplGLUT_Shutdown() {
 }
 
 void ImGui_ImplGLUT_NewFrame() {
+#if !defined(NO_GLUT)
   // Setup time step
   ImGuiIO &io = ImGui::GetIO();
   int current_time = glutGet(GLUT_ELAPSED_TIME);
@@ -324,14 +335,17 @@ void ImGui_ImplGLUT_NewFrame() {
     delta_time_ms = 1;
   io.DeltaTime = delta_time_ms / 1000.0f;
   g_Time = current_time;
+#endif /* !defined(NO_GLUT) */
 }
 
 static void ImGui_ImplGLUT_UpdateKeyModifiers() {
+#if !defined(NO_GLUT)
   ImGuiIO &io = ImGui::GetIO();
   int glut_key_mods = glutGetModifiers();
   io.AddKeyEvent(ImGuiMod_Ctrl, (glut_key_mods & GLUT_ACTIVE_CTRL) != 0);
   io.AddKeyEvent(ImGuiMod_Shift, (glut_key_mods & GLUT_ACTIVE_SHIFT) != 0);
   io.AddKeyEvent(ImGuiMod_Alt, (glut_key_mods & GLUT_ACTIVE_ALT) != 0);
+#endif /* !defined(NO_GLUT) */
 }
 
 static void ImGui_ImplGLUT_AddKeyEvent(ImGuiKey key, bool down,
@@ -386,6 +400,7 @@ void ImGui_ImplGLUT_SpecialUpFunc(int key, int x, int y) {
 void ImGui_ImplGLUT_MouseFunc(int glut_button, int state, int x, int y) {
   ImGuiIO &io = ImGui::GetIO();
   io.AddMousePosEvent((float)x, (float)y);
+#if !defined(NO_GLUT)
   int button = -1;
   if (glut_button == GLUT_LEFT_BUTTON)
     button = 0;
@@ -395,6 +410,7 @@ void ImGui_ImplGLUT_MouseFunc(int glut_button, int state, int x, int y) {
     button = 2;
   if (button != -1 && (state == GLUT_DOWN || state == GLUT_UP))
     io.AddMouseButtonEvent(button, state == GLUT_DOWN);
+#endif /* !defined(NO_GLUT) */
 }
 
 #ifdef __FREEGLUT_EXT_H__

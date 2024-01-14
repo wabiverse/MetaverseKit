@@ -35,6 +35,7 @@
 //
 static NSUInteger getStyleMask(_GLFWwindow* window)
 {
+#if !defined(TARGET_OS_VISION)
     NSUInteger styleMask = NSWindowStyleMaskMiniaturizable;
 
     if (window->monitor || !window->decorated)
@@ -47,7 +48,11 @@ static NSUInteger getStyleMask(_GLFWwindow* window)
         if (window->resizable)
             styleMask |= NSWindowStyleMaskResizable;
     }
+    
 
+#else /* defined(TARGET_OS_VISION) */
+    NSUInteger styleMask = 0;
+#endif /* !defined(TARGET_OS_VISION) */
     return styleMask;
 }
 
@@ -55,36 +60,45 @@ static NSUInteger getStyleMask(_GLFWwindow* window)
 //
 static GLFWbool cursorInContentArea(_GLFWwindow* window)
 {
+#if !defined(TARGET_OS_VISION)
     const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
     return [window->ns.view mouse:pos inRect:[window->ns.view frame]];
+#else /* defined(TARGET_OS_VISION) */
+    return GLFW_FALSE;
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Hides the cursor if not already hidden
 //
 static void hideCursor(_GLFWwindow* window)
 {
+#if !defined(TARGET_OS_VISION)
     if (!_glfw.ns.cursorHidden)
     {
         [NSCursor hide];
         _glfw.ns.cursorHidden = GLFW_TRUE;
     }
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Shows the cursor if not already shown
 //
 static void showCursor(_GLFWwindow* window)
 {
+#if !defined(TARGET_OS_VISION)
     if (_glfw.ns.cursorHidden)
     {
         [NSCursor unhide];
         _glfw.ns.cursorHidden = GLFW_FALSE;
     }
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Updates the cursor image according to its cursor mode
 //
 static void updateCursorImage(_GLFWwindow* window)
 {
+#if !defined(TARGET_OS_VISION)
     if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
         showCursor(window);
@@ -96,12 +110,14 @@ static void updateCursorImage(_GLFWwindow* window)
     }
     else
         hideCursor(window);
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Apply chosen cursor mode to a focused window
 //
 static void updateCursorMode(_GLFWwindow* window)
 {
+#if !defined(TARGET_OS_VISION)
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         _glfw.ns.disabledCursorWindow = window;
@@ -122,12 +138,14 @@ static void updateCursorMode(_GLFWwindow* window)
 
     if (cursorInContentArea(window))
         updateCursorImage(window);
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Make the specified window and its video mode active on its monitor
 //
 static void acquireMonitor(_GLFWwindow* window)
 {
+#if !defined(TARGET_OS_VISION)
     _glfwSetVideoModeNS(window->monitor, &window->videoMode);
     const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
     const NSRect frame = NSMakeRect(bounds.origin.x,
@@ -138,17 +156,20 @@ static void acquireMonitor(_GLFWwindow* window)
     [window->ns.object setFrame:frame display:YES];
 
     _glfwInputMonitorWindow(window->monitor, window);
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Remove the window and restore the original video mode
 //
 static void releaseMonitor(_GLFWwindow* window)
 {
+#if !defined(TARGET_OS_VISION)
     if (window->monitor->window != window)
         return;
 
     _glfwInputMonitorWindow(window->monitor, NULL);
     _glfwRestoreVideoModeNS(window->monitor);
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Translates macOS key modifiers into GLFW ones
@@ -156,7 +177,8 @@ static void releaseMonitor(_GLFWwindow* window)
 static int translateFlags(NSUInteger flags)
 {
     int mods = 0;
-
+  
+#if !defined(TARGET_OS_VISION)
     if (flags & NSEventModifierFlagShift)
         mods |= GLFW_MOD_SHIFT;
     if (flags & NSEventModifierFlagControl)
@@ -167,6 +189,7 @@ static int translateFlags(NSUInteger flags)
         mods |= GLFW_MOD_SUPER;
     if (flags & NSEventModifierFlagCapsLock)
         mods |= GLFW_MOD_CAPS_LOCK;
+#endif /* !defined(TARGET_OS_VISION) */
 
     return mods;
 }
@@ -175,16 +198,21 @@ static int translateFlags(NSUInteger flags)
 //
 static int translateKey(unsigned int key)
 {
+#if !defined(TARGET_OS_VISION)
     if (key >= sizeof(_glfw.ns.keycodes) / sizeof(_glfw.ns.keycodes[0]))
         return GLFW_KEY_UNKNOWN;
 
     return _glfw.ns.keycodes[key];
+#else /* defined(TARGET_OS_VISION) */
+    return GLFW_KEY_UNKNOWN;
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 // Translate a GLFW keycode to a Cocoa modifier flag
 //
 static NSUInteger translateKeyToModifierFlag(int key)
 {
+#if !defined(TARGET_OS_VISION)
     switch (key)
     {
         case GLFW_KEY_LEFT_SHIFT:
@@ -202,7 +230,7 @@ static NSUInteger translateKeyToModifierFlag(int key)
         case GLFW_KEY_CAPS_LOCK:
             return NSEventModifierFlagCapsLock;
     }
-
+#endif /* !defined(TARGET_OS_VISION) */
     return 0;
 }
 
@@ -243,6 +271,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidResize:(NSNotification *)notification
 {
+#if !defined(TARGET_OS_VISION)
     if (window->context.client != GLFW_NO_API)
         [window->context.nsgl.object update];
 
@@ -274,6 +303,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         window->ns.height = contentRect.size.height;
         _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
     }
+#endif /* !defined(TARGET_OS_VISION) */
 }
 
 - (void)windowDidMove:(NSNotification *)notification
@@ -329,6 +359,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 // Content view class for the GLFW window
 //------------------------------------------------------------------------
 
+#if !defined(TARGET_OS_VISION)
 @interface GLFWContentView : NSView <NSTextInputClient>
 {
     _GLFWwindow* window;
@@ -1861,3 +1892,4 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
     return window->ns.object;
 }
 
+#endif /* !defined(TARGET_OS_VISION) */

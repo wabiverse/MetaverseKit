@@ -39,6 +39,13 @@
 #ifndef IMGUI_DISABLE
 #include "ImGui/ImGui.h" // IMGUI_IMPL_API
 
+#if __APPLE__
+#include <TargetConditionals.h>
+#endif /* __APPLE__ */
+
+/* Vulkan disabled temporarily for visionOS. */
+#if !defined(TARGET_OS_VISION)
+
 // [Configuration] in order to use a custom Vulkan function loader:
 // (1) You'll need to disable default Vulkan function prototypes.
 //     We provide a '#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES' convenience
@@ -57,6 +64,7 @@
 #if defined(IMGUI_IMPL_VULKAN_NO_PROTOTYPES) && !defined(VK_NO_PROTOTYPES)
 #define VK_NO_PROTOTYPES
 #endif
+
 #include <vulkan/vulkan.h>
 
 // Initialization data, for ImGui_ImplVulkan_Init()
@@ -212,5 +220,7 @@ struct ImGui_ImplVulkanH_Window {
     ClearEnable = true;
   }
 };
+
+#endif /* !defined(TARGET_OS_VISION) */
 
 #endif // #ifndef IMGUI_DISABLE

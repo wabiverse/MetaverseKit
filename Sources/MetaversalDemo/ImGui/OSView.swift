@@ -21,7 +21,26 @@
  *  . x x x . o o o . x x x . : : : .    o  x  o    . : : : .
  * -------------------------------------------------------------- */
 
-#if canImport(AppKit) || canImport(UIKit)
+#if os(visionOS) || !canImport(AppKit) && !canImport(UIKit)
+open class OSView
+{
+  public init()
+  {}
+  
+  public func viewDidLoad()
+  {}
+}
+public typealias ViewControllerAPI = OSView
+
+public final class ViewController: ViewControllerAPI
+{
+  private var renderer: Renderer?
+  
+  public override func viewDidLoad()
+  {}
+}
+
+#elseif canImport(Metal)
   import Metal
   import MetalKit
 
@@ -51,15 +70,4 @@
       metalKitView.delegate = renderer
     }
   }
-#else
-  open class OSView
-  {
-    public init()
-    {}
-
-    public func viewDidLoad()
-    {}
-  }
-
-  public typealias ViewControllerAPI = OSView
 #endif

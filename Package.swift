@@ -13,7 +13,7 @@ let package = Package(
     .visionOS(.v1),
     .iOS(.v17),
     .tvOS(.v17),
-    .watchOS(.v10)
+    .watchOS(.v10),
   ],
   products: getConfig(for: .all).products,
   dependencies: [
@@ -783,13 +783,17 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "backends/ImplSDL.cpp",
         "backends/ImplSDLRenderer.cpp",
       ]
-      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
+      #if !os(macOS) && !os(iOS) && !os(tvOS)
+        /* fixup metaversalvulkanframework,
+         we should be able to rig moltenvk
+         to work on visionOS, but disabled
+         for now. */
         config.exclude += [
           // no vulkan (for now)
           "backends/ImplVulkan.cpp",
           "backends/ImplVulkan.h",
         ]
-      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
+      #endif /* !os(macOS) && !os(iOS) && !os(tvOS) */
       #if !os(Windows)
         config.exclude += [
           // no win32
@@ -1143,7 +1147,7 @@ enum Arch
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         [
-          .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.4"),
+          .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.5"),
           .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.1"),
         ]
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
@@ -1209,9 +1213,9 @@ enum Arch
     public static func python() -> Target.Dependency
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
-        return .product(name: "Python", package: "MetaversePythonFramework")
+        .product(name: "Python", package: "MetaversePythonFramework", condition: .when(platforms: Arch.OS.apple.platform))
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
-        return .target(name: "Python")
+        .target(name: "Python")
       #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
     }
 
@@ -1240,7 +1244,7 @@ enum Arch
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         [
           .target(name: "Apple"),
-          .product(name: "MoltenVK", package: "MetaverseVulkanFramework"),
+          .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: [.macOS, .iOS, .tvOS])),
         ]
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
         []
