@@ -31,20 +31,20 @@
 # include <TargetConditionals.h>
 #endif /* __APPLE__ */
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 # include <Carbon/Carbon.h>
-#else /* TARGET_OS_VISION */
+#else /* TARGET_OS_IPHONE */
 # include <CoreFoundation/CFCGTypes.h>
 # include <CoreFoundation/CFBundle.h>
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 #if defined(__OBJC__)
-# if !TARGET_OS_VISION
+# if !TARGET_OS_IPHONE
 #  import <Cocoa/Cocoa.h>
-# else /* TARGET_OS_VISION */
+# else /* TARGET_OS_IPHONE */
 #  import <UIKit/UIKit.h>
 #  import <Foundation/Foundation.h>
-# endif /* !TARGET_OS_VISION */
+# endif /* !TARGET_OS_IPHONE */
 #else /* !defined(__OBJC__) */
 typedef void* id;
 #endif /* defined(__OBJC__) */
@@ -113,13 +113,13 @@ typedef VkResult (APIENTRY *PFN_vkCreateMetalSurfaceEXT)(VkInstance,const VkMeta
 
 // HIToolbox.framework pointer typedefs
 #define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardLayoutInputSource)(void);
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 #define TISCopyCurrentKeyboardLayoutInputSource _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 typedef void* (*PFN_TISGetInputSourceProperty)(TISInputSourceRef,CFStringRef);
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 #define TISGetInputSourceProperty _glfw.ns.tis.GetInputSourceProperty
 typedef UInt8 (*PFN_LMGetKbdType)(void);
 #define LMGetKbdType _glfw.ns.tis.GetKbdType
@@ -153,16 +153,16 @@ typedef struct _GLFWwindowNS
 //
 typedef struct _GLFWlibraryNS
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     CGEventSourceRef    eventSource;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
     id                  delegate;
     GLFWbool            finishedLaunching;
     GLFWbool            cursorHidden;
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     TISInputSourceRef   inputSource;
     IOHIDManagerRef     hidManager;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
     id                  unicodeData;
     id                  helper;
     id                  keyUpMonitor;
@@ -180,10 +180,10 @@ typedef struct _GLFWlibraryNS
 
     struct {
         CFBundleRef     bundle;
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
         PFN_TISCopyCurrentKeyboardLayoutInputSource CopyCurrentKeyboardLayoutInputSource;
         PFN_TISGetInputSourceProperty GetInputSourceProperty;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
         PFN_LMGetKbdType GetKbdType;
         CFStringRef     kPropertyUnicodeKeyLayoutData;
     } tis;
@@ -194,10 +194,10 @@ typedef struct _GLFWlibraryNS
 //
 typedef struct _GLFWmonitorNS
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     CGDirectDisplayID   displayID;
     CGDisplayModeRef    previousMode;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
     uint32_t            unitNumber;
     id                  screen;
     double              fallbackRefreshRate;

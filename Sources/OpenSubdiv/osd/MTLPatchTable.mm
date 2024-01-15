@@ -43,7 +43,7 @@ static id<MTLBuffer> createBuffer(const void *data, const size_t length,
                                   MTLContext *context) {
   if (length == 0)
     return nil;
-#if TARGET_OS_IOS || TARGET_OS_TV
+#if TARGET_OS_IPHONE
   return
       [context->device newBufferWithBytes:data
                                    length:length

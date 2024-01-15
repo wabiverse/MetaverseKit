@@ -179,9 +179,9 @@ void OslRenderer::renderOSL(const FilePath &dirPath, const string &shaderName,
   // Repeat the render command to allow for sporadic errors.
   int returnValue = 0;
   for (int i = 0; i < 5; i++) {
-    #if !TARGET_OS_VISION
+    #if !TARGET_OS_IPHONE
     returnValue = std::system(command.c_str());
-    #endif /* !TARGET_OS_VISION */
+    #endif /* !TARGET_OS_IPHONE */
     if (!returnValue) {
       break;
     }
@@ -239,11 +239,11 @@ void OslRenderer::shadeOSL(const FilePath &dirPath, const string &shaderName,
   command += " -g 256 256";
   command += " > " + errorFile + redirectString;
   
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   int returnValue = std::system(command.c_str());
-#else /* TARGET_OS_VISION */
+#else /* TARGET_OS_IPHONE */
   int returnValue = 0;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
   // There is no "silent" or "quiet" mode for testshade so we must parse the
   // lines to check if there were any error lines which are not the success
@@ -296,11 +296,11 @@ void OslRenderer::compileOSL(const FilePath &oslFilePath) {
   command += oslFilePath.asString() + " -o " + outputFileName.asString() +
              " > " + errorFile + redirectString;
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   int returnValue = std::system(command.c_str());
-#else /* TARGET_OS_VISION */
+#else /* TARGET_OS_IPHONE */
   int returnValue = 0;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
   std::ifstream errorStream(errorFile);
   string result;

@@ -4,8 +4,9 @@
 //
 
 #if defined(__APPLE__)
+#include <TargetConditionals.h>
 
-#ifndef TARGET_OS_IOS
+#if !TARGET_OS_IPHONE
 
 #include <MaterialX/MXRenderHwSimpleWindow.h>
 #include <MaterialX/MXRenderHwWindowCocoaWrappers.h>

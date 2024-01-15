@@ -30,11 +30,11 @@
 
 #include <IOKit/IOKitLib.h>
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hid/IOHIDKeys.h>
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 #define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickNS ns
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE struct { int dummyJoystick; }
@@ -45,9 +45,9 @@
 //
 typedef struct _GLFWjoystickNS
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     IOHIDDeviceRef      device;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
     CFMutableArrayRef   axes;
     CFMutableArrayRef   buttons;
     CFMutableArrayRef   hats;

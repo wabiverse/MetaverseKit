@@ -292,7 +292,10 @@ let package = Package(
         Arch.OS.python(),
       ],
       exclude: getConfig(for: .materialx).exclude,
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("GL_SILENCE_DEPRECATION", to: "1"),
+      ]
     ),
 
     .executableTarget(

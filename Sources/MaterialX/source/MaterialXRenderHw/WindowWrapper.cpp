@@ -69,7 +69,7 @@ WindowWrapper::WindowWrapper(ExternalWindowHandle externalHandle,
                              InternalWindowHandle internalHandle,
                              DisplayHandle display) {
   _externalHandle = externalHandle;
-#ifndef TARGET_OS_IOS
+#if !TARGET_OS_IPHONE
   // Cache a pointer to the window.
   _internalHandle = NSUtilGetView(externalHandle);
 #else

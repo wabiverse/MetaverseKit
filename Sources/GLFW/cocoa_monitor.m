@@ -33,15 +33,15 @@
 #include <limits.h>
 #include <math.h>
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <ApplicationServices/ApplicationServices.h>
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 
 // Get the name of the specified display, or NULL
 //
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 static char* getDisplayName(CGDirectDisplayID displayID)
 {
     io_iterator_t it;
@@ -116,11 +116,11 @@ static char* getDisplayName(CGDirectDisplayID displayID)
     CFRelease(info);
     return name;
 }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 // Check whether the display mode should be included in enumeration
 //
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 static GLFWbool modeIsGood(CGDisplayModeRef mode)
 {
     uint32_t flags = CGDisplayModeGetIOFlags(mode);
@@ -145,9 +145,9 @@ static GLFWbool modeIsGood(CGDisplayModeRef mode)
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
     return GLFW_TRUE;
 }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 // Convert Core Graphics display mode to GLFW video mode
 //
 static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
@@ -182,11 +182,11 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
     return result;
 }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 // Starts reservation for display fading
 //
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 static CGDisplayFadeReservationToken beginFadeReservation(void)
 {
     CGDisplayFadeReservationToken token = kCGDisplayFadeReservationInvalidToken;
@@ -202,9 +202,9 @@ static CGDisplayFadeReservationToken beginFadeReservation(void)
 
     return token;
 }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 // Ends reservation for display fading
 //
 static void endFadeReservation(CGDisplayFadeReservationToken token)
@@ -219,7 +219,7 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
         CGReleaseDisplayFadeReservation(token);
     }
 }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 // Finds and caches the NSScreen corresponding to the specified monitor
 //
@@ -228,7 +228,7 @@ static GLFWbool refreshMonitorScreen(_GLFWmonitor* monitor)
     if (monitor->ns.screen)
         return GLFW_TRUE;
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     for (NSScreen* screen in [NSScreen screens])
     {
         NSNumber* displayID = [screen deviceDescription][@"NSScreenNumber"];
@@ -242,7 +242,7 @@ static GLFWbool refreshMonitorScreen(_GLFWmonitor* monitor)
             return GLFW_TRUE;
         }
     }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
     _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to find a screen for monitor");
     return GLFW_FALSE;
@@ -251,7 +251,7 @@ static GLFWbool refreshMonitorScreen(_GLFWmonitor* monitor)
 
 // Returns the display refresh rate queried from the I/O registry
 //
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 static double getFallbackRefreshRate(CGDirectDisplayID displayID)
 {
     double refreshRate = 60.0;
@@ -311,7 +311,7 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
     IOObjectRelease(it);
     return refreshRate;
 }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -322,7 +322,7 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
 //
 void _glfwPollMonitorsNS(void)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     uint32_t displayCount;
     CGGetOnlineDisplayList(0, NULL, &displayCount);
     CGDirectDisplayID* displays = calloc(displayCount, sizeof(CGDirectDisplayID));
@@ -386,14 +386,14 @@ void _glfwPollMonitorsNS(void)
 
     free(disconnected);
     free(displays);
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 // Change the current video mode
 //
 void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     GLFWvidmode current;
     _glfwPlatformGetVideoMode(monitor, &current);
 
@@ -431,14 +431,14 @@ void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     }
 
     CFRelease(modes);
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 // Restore the previously saved (original) video mode
 //
 void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     if (monitor->ns.previousMode)
     {
         CGDisplayFadeReservationToken token = beginFadeReservation();
@@ -449,7 +449,7 @@ void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor)
         CGDisplayModeRelease(monitor->ns.previousMode);
         monitor->ns.previousMode = NULL;
     }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 
@@ -463,7 +463,7 @@ void _glfwPlatformFreeMonitor(_GLFWmonitor* monitor)
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     const CGRect bounds = CGDisplayBounds(monitor->ns.displayID);
@@ -474,13 +474,13 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *ypos = (int) bounds.origin.y;
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
                                          float* xscale, float* yscale)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     if (!refreshMonitorScreen(monitor))
@@ -495,14 +495,14 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
         *yscale = (float) (pixels.size.height / points.size.height);
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
                                      int* xpos, int* ypos,
                                      int* width, int* height)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     if (!refreshMonitorScreen(monitor))
@@ -520,12 +520,12 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
         *height = frameRect.size.height;
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     *count = 0;
@@ -562,12 +562,12 @@ GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)
     return result;
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     CGDisplayModeRef native = CGDisplayCopyDisplayMode(monitor->ns.displayID);
@@ -575,12 +575,12 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
     CGDisplayModeRelease(native);
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 GLFWbool _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     uint32_t size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
@@ -606,12 +606,12 @@ GLFWbool _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
     return GLFW_TRUE;
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     CGGammaValue* values = calloc(ramp->size * 3, sizeof(CGGammaValue));
@@ -632,7 +632,7 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
     free(values);
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 
@@ -640,11 +640,11 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(kCGNullDirectDisplay);
     return monitor->ns.displayID;
 }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */

@@ -37,18 +37,18 @@
 #include <mach/mach_error.h>
 
 #include <CoreFoundation/CoreFoundation.h>
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 #include <Kernel/IOKit/hidsystem/IOHIDUsageTables.h>
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 
 // Joystick element information
 //
 typedef struct _GLFWjoyelementNS
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     IOHIDElementRef native;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
     uint32_t        usage;
     int             index;
     long            minimum;
@@ -61,12 +61,12 @@ typedef struct _GLFWjoyelementNS
 //
 static long getElementValue(_GLFWjoystick* js, _GLFWjoyelementNS* element)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     IOHIDValueRef valueRef;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
     long value = 0;
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     if (js->ns.device)
     {
         if (IOHIDDeviceGetValue(js->ns.device,
@@ -76,7 +76,7 @@ static long getElementValue(_GLFWjoystick* js, _GLFWjoyelementNS* element)
             value = IOHIDValueGetIntegerValue(valueRef);
         }
     }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
   
     return value;
 }
@@ -125,7 +125,7 @@ static void closeJoystick(_GLFWjoystick* js)
     _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 // Callback for user-initiated joystick addition
 //
 static void matchCallback(void* context,
@@ -310,7 +310,7 @@ static void removeCallback(void* context,
         }
     }
 }
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -321,7 +321,7 @@ static void removeCallback(void* context,
 //
 void _glfwInitJoysticksNS(void)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     CFMutableArrayRef matching;
     const long usages[] =
     {
@@ -394,14 +394,14 @@ void _glfwInitJoysticksNS(void)
     // Execute the run loop once in order to register any initially-attached
     // joysticks
     CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, false);
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 // Close all opened joystick handles
 //
 void _glfwTerminateJoysticksNS(void)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     int jid;
 
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
@@ -409,7 +409,7 @@ void _glfwTerminateJoysticksNS(void)
 
     CFRelease(_glfw.ns.hidManager);
     _glfw.ns.hidManager = NULL;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 

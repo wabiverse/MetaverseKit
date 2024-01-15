@@ -61,7 +61,7 @@
 #endif
 
 #if !defined(__EMSCRIPTEN__) && !defined(__ANDROID__) &&                       \
-    !(defined(__APPLE__) && TARGET_OS_IOS) && !defined(__amigaos4__)
+    !(defined(__APPLE__) && TARGET_OS_IPHONE) && !defined(__amigaos4__)
 #define SDL_HAS_CAPTURE_AND_GLOBAL_MOUSE 1
 #else
 #define SDL_HAS_CAPTURE_AND_GLOBAL_MOUSE 0
