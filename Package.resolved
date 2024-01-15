@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/wabiverse/MetaversePythonFramework",
       "state" : {
-        "revision" : "644bf6824044bc8be53b21439a7c8cd51656ca2a",
-        "version" : "3.11.5"
+        "revision" : "fc6d15f768b0a675207aecea248bd4f63f4c4133",
+        "version" : "3.11.6"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/wabiverse/MetaverseVulkanFramework",
       "state" : {
-        "revision" : "d81c5b35576887a5e04211657cca1535b43ab0a5",
-        "version" : "1.26.1"
+        "revision" : "13c7061599c61a4959c558d8ec1836e5b32b640b",
+        "version" : "1.26.2"
       }
     },
     {
