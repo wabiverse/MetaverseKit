@@ -33,7 +33,7 @@
 
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     if (window)
@@ -44,12 +44,12 @@ static void makeContextCurrentNSGL(_GLFWwindow* window)
     _glfwPlatformSetTls(&_glfw.contextSlot, window);
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 static void swapBuffersNSGL(_GLFWwindow* window)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     // HACK: Simulate vsync with usleep as NSGL swap interval does not apply to
@@ -77,12 +77,12 @@ static void swapBuffersNSGL(_GLFWwindow* window)
     [window->context.nsgl.object flushBuffer];
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 static void swapIntervalNSGL(int interval)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     @autoreleasepool {
 
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
@@ -93,7 +93,7 @@ static void swapIntervalNSGL(int interval)
     }
 
     } // autoreleasepool
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 static int extensionSupportedNSGL(const char* extension)
@@ -188,7 +188,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         }
     }
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     // Context robustness modes (GL_KHR_robustness) are not yet supported by
     // macOS but are not a hard constraint, so ignore and continue
 
@@ -358,9 +358,9 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     window->context.destroy = destroyContextNSGL;
 
     return GLFW_TRUE;
-#else /* !TARGET_OS_VISION */
+#else /* !TARGET_OS_IPHONE */
     return GLFW_FALSE;
-#endif /* TARGET_OS_VISION */
+#endif /* TARGET_OS_IPHONE */
 }
 
 

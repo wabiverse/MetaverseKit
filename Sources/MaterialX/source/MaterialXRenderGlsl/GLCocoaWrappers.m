@@ -6,12 +6,12 @@
 #if defined(__APPLE__)
 # include <TargetConditionals.h>
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 # import <Cocoa/Cocoa.h>
 # import <AppKit/NSApplication.h>
-#else /* TARGET_OS_VISION */
+#else /* TARGET_OS_IPHONE */
 # import <UIKit/UIApplication.h>
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 
 #import <MaterialX/MXRenderGlslGLCocoaWrappers.h>
 
@@ -21,7 +21,7 @@ void *NSOpenGLChoosePixelFormatWrapper(bool allRenders, int bufferType,
                                        int accumSize, bool minimumPolicy,
                                        bool accelerated, bool mp_safe,
                                        bool stereo, bool supportMultiSample) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
@@ -103,31 +103,31 @@ void *NSOpenGLChoosePixelFormatWrapper(bool allRenders, int bufferType,
 #endif
   
   return (__bridge void*)pixelFormat;
-#else /* TARGET_OS_VISION */
+#else /* TARGET_OS_IPHONE */
   return nil;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLReleasePixelFormat(void *pPixelFormat) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSOpenGLPixelFormat *pixelFormat = (__bridge NSOpenGLPixelFormat *)pPixelFormat;
   #if !__has_feature(objc_arc)
   [pixelFormat release];
   #endif
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLReleaseContext(void *pContext) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   #if !__has_feature(objc_arc)
   [context release];
   #endif
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void *NSOpenGLCreateContextWrapper(void *pPixelFormat, void *pDummyContext) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSOpenGLPixelFormat *pixelFormat = (__bridge NSOpenGLPixelFormat *)pPixelFormat;
   NSOpenGLContext *dummyContext = (__bridge NSOpenGLContext *)pDummyContext;
   NSOpenGLContext *context =
@@ -135,13 +135,13 @@ void *NSOpenGLCreateContextWrapper(void *pPixelFormat, void *pDummyContext) {
                                  shareContext:dummyContext];
 
   return (__bridge void*)context;
-#else /* TARGET_OS_VISION */
+#else /* TARGET_OS_IPHONE */
   return nil;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLSetDrawable(void *pContext, void *pWindow) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
@@ -158,60 +158,60 @@ void NSOpenGLSetDrawable(void *pContext, void *pWindow) {
 #if !__has_feature(objc_arc)
   [pool release];
 #endif
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLMakeCurrent(void *pContext) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   [context makeCurrentContext];
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void *NSOpenGLGetCurrentContextWrapper() {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   return (__bridge void*)[NSOpenGLContext currentContext];
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLSwapBuffers(void *pContext) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   [context flushBuffer];
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLClearCurrentContext()
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   [NSOpenGLContext clearCurrentContext];
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLDestroyContext(void **pContext)
 {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)*pContext;
   #if !__has_feature(objc_arc)
   [context release];
   #endif
   *pContext = NULL;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLDestroyCurrentContext(void **pContext) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   [NSOpenGLContext clearCurrentContext];
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)*pContext;
   #if !__has_feature(objc_arc)
   [context release];
   #endif
   *pContext = NULL;
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLClearDrawable(void *pContext) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
@@ -226,39 +226,39 @@ void NSOpenGLClearDrawable(void *pContext) {
 #if !__has_feature(objc_arc)
   [pool release];
 #endif
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLDescribePixelFormat(void *pPixelFormat, int attrib, int *vals) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSOpenGLPixelFormat *pixelFormat = (__bridge NSOpenGLPixelFormat *)pPixelFormat;
   [pixelFormat getValues:vals forAttribute:attrib forVirtualScreen:0];
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLGetInteger(void *pContext, int param, int *vals) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   [context getValues:vals forParameter:(NSOpenGLContextParameter)param];
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLUpdate(void *pContext) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSOpenGLContext *context = (__bridge NSOpenGLContext *)pContext;
   [context update];
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void *NSOpenGLGetWindow(void *pView) {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   NSView *view = (__bridge NSView *)pView;
   return (__bridge void*)[view window];
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 void NSOpenGLInitializeGLLibrary() {
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
   // NOTE: the autoreleasepool (for the objc impl) only exists if ARC is enabled.
   // TODO: refactor this objc code to cxx.
   // Create local autorelease pool for any objects that need to be autoreleased.
@@ -279,7 +279,7 @@ void NSOpenGLInitializeGLLibrary() {
 #if !__has_feature(objc_arc)
   [pool release];
 #endif
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 }
 
 #endif /* defined(__APPLE__) */

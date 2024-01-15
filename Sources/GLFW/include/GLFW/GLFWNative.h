@@ -95,9 +95,9 @@ extern "C" {
   #import <Cocoa/Cocoa.h>
  #else
   #include <TargetConditionals.h>
-  #if !TARGET_OS_VISION
+  #if !TARGET_OS_IPHONE
    #include <ApplicationServices/ApplicationServices.h>
-  #endif /* !TARGET_OS_VISION */
+  #endif /* !TARGET_OS_IPHONE */
   typedef void* id;
  #endif
 #elif defined(GLFW_EXPOSE_NATIVE_X11) || defined(GLFW_EXPOSE_NATIVE_GLX)
@@ -190,7 +190,7 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* window);
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* window);
 #endif
 
-#if defined(GLFW_EXPOSE_NATIVE_COCOA) && !TARGET_OS_VISION
+#if defined(GLFW_EXPOSE_NATIVE_COCOA) && !TARGET_OS_IPHONE
 /*! @brief Returns the `CGDirectDisplayID` of the specified monitor.
  *
  *  @return The `CGDirectDisplayID` of the specified monitor, or

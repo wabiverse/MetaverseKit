@@ -10,7 +10,7 @@
 
 #include <TargetConditionals.h>
 
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 
 #include <Carbon/Carbon.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
@@ -229,4 +229,4 @@ void SystemMonitorsImpl::getAllMonitors()
 
 } // namespace OCIO_NAMESPACE
 
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */

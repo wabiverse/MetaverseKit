@@ -101,7 +101,7 @@ static id<MTLBuffer> createBuffer(const std::vector<T> &vec,
   }
 
   const auto length = sizeof(T) * vec.size();
-#if TARGET_OS_IOS || TARGET_OS_TV
+#if TARGET_OS_IPHONE
   return
       [context->device newBufferWithBytes:vec.data()
                                    length:length

@@ -15,9 +15,9 @@
 
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
-#if !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
 # include <OpenGL/gl.h>
-#endif /* !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
 #elif defined(__linux__) || defined(__FreeBSD__)
 #include <GL/glx.h>
 #endif

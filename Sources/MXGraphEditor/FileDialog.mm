@@ -10,11 +10,11 @@
 #if defined(__APPLE__)
 # include <TargetConditionals.h>
 
-# if !TARGET_OS_IOS && !TARGET_OS_VISION
+# if !TARGET_OS_IPHONE
 #  import <Cocoa/Cocoa.h>
-# else /* TARGET_OS_IOS || TARGET_OS_VISION */
+# else /* TARGET_OS_IPHONE */
 #  import <UIKit/UIKit.h>
-# endif /* !TARGET_OS_IOS && !TARGET_OS_VISION */
+# endif /* !TARGET_OS_IPHONE */
 
 #endif /* defined(__APPLE__) */
 
@@ -28,7 +28,7 @@ mx::StringVec launchFileDialog(
 
   mx::StringVec result;
   if (save) {
-#if !TARGET_OS_IOS && !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     NSSavePanel *saveDlg = [NSSavePanel savePanel];
 
     NSMutableArray *types = [NSMutableArray new];
@@ -40,9 +40,9 @@ mx::StringVec launchFileDialog(
 
     if ([saveDlg runModal] == NSModalResponseOK)
       result.emplace_back([[[saveDlg URL] path] UTF8String]);
-#endif /* !TARGET_OS_IOS && !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
   } else {
-#if !TARGET_OS_IOS && !TARGET_OS_VISION
+#if !TARGET_OS_IPHONE
     NSOpenPanel *openDlg = [NSOpenPanel openPanel];
 
     [openDlg setCanChooseFiles:YES];
@@ -60,7 +60,7 @@ mx::StringVec launchFileDialog(
         result.emplace_back((char *)[[url path] UTF8String]);
       }
     }
-#endif /* !TARGET_OS_IOS && !TARGET_OS_VISION */
+#endif /* !TARGET_OS_IPHONE */
   }
   return result;
 }

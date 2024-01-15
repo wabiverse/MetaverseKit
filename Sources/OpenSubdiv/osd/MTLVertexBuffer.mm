@@ -36,7 +36,7 @@ CPUMTLVertexBuffer::CPUMTLVertexBuffer(int numElements, int numVertices)
       _dirty(true) {}
 
 bool CPUMTLVertexBuffer::allocate(MTLContext *context) {
-#if TARGET_OS_IOS || TARGET_OS_TV
+#if TARGET_OS_IPHONE
   _buffer = [context->device
       newBufferWithLength:_numElements * _numVertices * sizeof(float)
                   options:MTLResourceOptionCPUCacheModeDefault];
