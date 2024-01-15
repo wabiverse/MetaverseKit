@@ -62,7 +62,9 @@ ConstSystemMonitorsRcPtr SystemMonitors::Get() noexcept
     if (!monitors)
     {
         SystemMonitorsRcPtr m = std::make_shared<SystemMonitorsImpl>();
+#if !TARGET_OS_IPHONE
         DynamicPtrCast<SystemMonitorsImpl>(m)->getAllMonitors();
+#endif /* !TARGET_OS_IPHONE */
         monitors = m;
     }
 

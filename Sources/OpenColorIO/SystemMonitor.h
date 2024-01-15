@@ -4,6 +4,11 @@
 #ifndef INCLUDED_OCIO_SYSTEM_MONITOR_H
 #define INCLUDED_OCIO_SYSTEM_MONITOR_H
 
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#else /* defined(__APPLE__) */
+#define TARGET_OS_IPHONE 0
+#endif /* defined(__APPLE__) */
 
 #include <string>
 #include <vector>
@@ -30,8 +35,10 @@ public:
 
     static std::string GetICCProfileFromMonitorName(const char * monitorName);
 
+#if !TARGET_OS_IPHONE
     void getAllMonitors();
-
+#endif /* !TARGET_OS_IPHONE */
+  
 private:
     struct MonitorInfo
     {
