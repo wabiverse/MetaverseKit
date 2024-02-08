@@ -25,7 +25,7 @@
 #ifndef _TIFFDIR_
 #define _TIFFDIR_
 
-#include "tiff.h"
+#include "tiffimpl.h"
 #include "tiffio.h"
 
 /*

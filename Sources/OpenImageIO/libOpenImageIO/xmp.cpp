@@ -14,7 +14,7 @@
 #include <OpenImageIO/timer.h>
 
 
-#include "tiff.h"
+#include "tiffimpl.h"
 
 #if USE_EXTERNAL_PUGIXML
 #    include <pugixml.hpp>

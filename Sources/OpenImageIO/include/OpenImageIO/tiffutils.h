@@ -16,13 +16,13 @@
 
 #pragma once
 
-#include "tiff.h"
+#include "tiffimpl.h"
 
 #include <OpenImageIO/imageio.h>
 
 
 #ifdef TIFF_VERSION_BIG
-// In old versions of TIFF, this was defined in tiff.h.  It's gone from
+// In old versions of TIFF, this was defined in tiffimpl.h.  It's gone from
 // "BIG TIFF" (libtiff 4.x), so we just define it here.
 
 struct TIFFHeader {
@@ -130,7 +130,7 @@ enum TIFFTAG {
 
 
 
-/// Given a TIFF data type code (defined in tiff.h) and a count, return the
+/// Given a TIFF data type code (defined in tiffimpl.h) and a count, return the
 /// equivalent TypeDesc where one exists. Return TypeUnknown if there is no
 /// obvious equivalent.
 OIIO_API TypeDesc tiff_datatype_to_typedesc (TIFFDataType tifftype, size_t tiffcount=1);

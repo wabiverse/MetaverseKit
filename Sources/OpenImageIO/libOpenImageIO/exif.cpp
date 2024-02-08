@@ -529,7 +529,7 @@ pvt::exif_tagmap_ref()
 
 
 
-// libtiff > 4.1.0 defines these in tiff.h. For older libtiff, let's define
+// libtiff > 4.1.0 defines these in tiffimpl.h. For older libtiff, let's define
 // them ourselves.
 #ifndef GPSTAG_VERSIONID
 enum GPSTag {
@@ -1151,7 +1151,7 @@ decode_exif(cspan<uint8_t> exif, ImageSpec& spec)
     // also tells us the endianness of the data) and an offset to the
     // first TIFF directory.
     //
-    // N.B. Just read libtiff's "tiff.h" for info on the structure
+    // N.B. Just read libtiff's "tiffimpl.h" for info on the structure
     // layout of TIFF headers and directory entries.  The TIFF spec
     // itself is also helpful in this area.
     TIFFHeader head = *(const TIFFHeader*)exif.data();

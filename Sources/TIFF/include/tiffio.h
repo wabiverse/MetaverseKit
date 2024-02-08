@@ -28,7 +28,7 @@
 /*
  * TIFF I/O Library Definitions.
  */
-#include "tiff.h"
+#include "tiffimpl.h"
 #include "tiffvers.h"
 
 /*
@@ -41,9 +41,9 @@ typedef struct tiff TIFF;
  * The following typedefs define the intrinsic size of
  * data types used in the *exported* interfaces.  These
  * definitions depend on the proper definition of types
- * in tiff.h.  Note also that the varargs interface used
+ * in tiffimpl.h.  Note also that the varargs interface used
  * to pass tag types and values uses the types defined in
- * tiff.h directly.
+ * tiffimpl.h directly.
  *
  * NB: ttag_t is unsigned int and not unsigned short because
  *     ANSI C requires that the type before the ellipsis be a
