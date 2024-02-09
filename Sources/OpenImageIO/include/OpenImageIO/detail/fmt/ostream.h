@@ -28,10 +28,12 @@ namespace detail {
 namespace {
 struct file_access_tag {};
 }  // namespace
+#ifdef OIIO_FIX_ABI_FOR_SWIFT
 template <typename Tag, typename BufType, FILE* BufType::*FileMemberPtr>
 class file_access {
   friend auto get_file(BufType& obj) -> FILE* { return obj.*FileMemberPtr; }
 };
+#endif /* OIIO_FIX_ABI_FOR_SWIFT */
 
 #if FMT_MSC_VERSION
 template class file_access<file_access_tag, std::filebuf,

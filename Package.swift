@@ -364,6 +364,10 @@ let package = Package(
         .headerSearchPath("."),
         .headerSearchPath("include/OpenImageIO/detail"),
         .headerSearchPath("libOpenImageIO"),
+        // FIXME: We broke the ABI for fmt::detail::get_file
+        // to stop the swift compiler from crashing at this
+        // function, we should fix this in the future.
+        //.define("OIIO_FIX_ABI_FOR_SWIFT", to: "1"),
       ],
       linkerSettings: getConfig(for: .oiio).linkerSettings
     ),
