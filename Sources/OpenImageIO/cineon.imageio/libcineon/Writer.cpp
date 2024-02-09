@@ -105,8 +105,10 @@ void cineon::Writer::SetOutStream(OutStream *fd)
 
 bool cineon::Writer::WriteHeader()
 {
+#ifdef OIIO_DOES_NOT_NEED_THIS
 	// calculate any header info
 	this->header.CalculateOffsets();
+#endif /* OIIO_DOES_NOT_NEED_THIS */
 
 	// seek to the beginning of the file
 	if (!this->fd->Seek(0, OutStream::kStart))
@@ -115,7 +117,11 @@ bool cineon::Writer::WriteHeader()
 	// writing the header count
 	this->fileLoc = this->header.Size();
 
+#ifdef OIIO_DOES_NOT_NEED_THIS
 	return this->header.Write(fd);
+#else /* OIIO_DOES_NOT_NEED_THIS */
+  return true;
+#endif /* OIIO_DOES_NOT_NEED_THIS */
 }
 
 
@@ -150,8 +156,10 @@ void cineon::Writer::SetElement(const int num, const Descriptor desc, const U8 b
 	this->header.SetImageDescriptor(num, desc);
 	this->header.SetBitDepth(num, bitDepth);
 
+#ifdef OIIO_DOES_NOT_NEED_THIS
 	// determine if increases element count
 	this->header.CalculateNumberOfElements();
+#endif /* OIIO_DOES_NOT_NEED_THIS */
 }
 
 
@@ -363,8 +371,12 @@ bool cineon::Writer::Finish()
 	// write the file size in the header
 	this->header.SetFileSize(this->fileLoc);
 
-	// rewrite all of the offsets in the header
+// rewrite all of the offsets in the header
+#ifdef OIIO_DOES_NOT_NEED_THIS
 	return this->header.WriteOffsetData(this->fd);
+#else /* OIIO_DOES_NOT_NEED_THIS */
+  return true;
+#endif /* OIIO_DOES_NOT_NEED_THIS */
 }
 
 

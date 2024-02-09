@@ -1,25 +1,32 @@
-/* --------------------------------------------------------------
- * :: :  M  E  T  A  V  E  R  S  E  :                          ::
- * --------------------------------------------------------------
- * This program is free software; you can redistribute it, and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+/* ----------------------------------------------------------------
+ * :: :  M  E  T  A  V  E  R  S  E  :                            ::
+ * ----------------------------------------------------------------
+ * This software is Licensed under the terms of the Apache License,
+ * version 2.0 (the "Apache License") with the following additional
+ * modification; you may not use this file except within compliance
+ * of the Apache License and the following modification made to it.
+ * Section 6. Trademarks. is deleted and replaced with:
  *
- * This program is distributed in the hope that it will be useful
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Check out
- * the GNU General Public License for more details.
+ * Trademarks. This License does not grant permission to use any of
+ * its trade names, trademarks, service marks, or the product names
+ * of this Licensor or its affiliates, except as required to comply
+ * with Section 4(c.) of this License, and to reproduce the content
+ * of the NOTICE file.
  *
- * You should have received a copy for this software license, the
- * GNU General Public License along with this program; or, if not
- * write to the Free Software Foundation, Inc., to the address of
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND without even an
+ * implied warranty of MERCHANTABILITY, or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Apache License for more details.
+ *
+ * You should have received a copy for this software license of the
+ * Apache License along with this program; or, if not, please write
+ * to the Free Software Foundation Inc., with the following address
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- *       Copyright (C) 2024 Wabi Foundation. All Rights Reserved.
- * --------------------------------------------------------------
+ *         Copyright (C) 2024 Wabi Foundation. All Rights Reserved.
+ * ----------------------------------------------------------------
  *  . x x x . o o o . x x x . : : : .    o  x  o    . : : : .
- * -------------------------------------------------------------- */
+ * ---------------------------------------------------------------- */
 
 import ImGui
 import OpenColorIO
@@ -28,6 +35,13 @@ import OpenImageIO
   import PyBundle
   import Python
 #endif /* canImport(Python) */
+
+/* --- xxx --- */
+
+public typealias OCIO = OpenColorIO_v2_3
+public typealias OIIO = OpenImageIO_v2_5
+
+/* --- xxx --- */
 
 #if canImport(AppKit) || canImport(UIKit)
   import Metal
@@ -106,6 +120,41 @@ class Creator
 
     ImGui.StyleColorsDark(nil)
   }
+
+  /* -------------------------------------------------------- */
+
+  static func configColor()
+  {
+    /* setup color config. */
+    OCIO.GetCurrentConfig()
+  }
+
+  static func configImaging()
+  {
+    /* create some exr images. */
+    let dtp = OIIO.TypeDesc.TypeFloat
+    let fmt = OIIO.ImageSpec(512, 89, 4, dtp)
+
+    var fg = OIIO.ImageBuf(.init("fg.exr"), fmt, OIIO.InitializePixels.Yes)
+    let bg = OIIO.ImageBuf(.init("bg.exr"), fmt, OIIO.InitializePixels.Yes)
+
+    fg.set_origin(512, 89, 0)
+
+    let comp = OIIO.ImageBufAlgo.over(fg, bg, fmt.roi(), 0)
+    if !comp.has_error()
+    {
+      if comp.write(.init("composite"), dtp, .init("openexr"), nil, nil) == false || comp.has_error()
+      {
+        print("Error writing image: \(comp.geterror(true))")
+      }
+    }
+    else
+    {
+      print("Error writing image: \(comp.geterror(true))")
+    }
+  }
+
+  /* -------------------------------------------------------- */
 }
 
 #if canImport(AppKit)
@@ -121,6 +170,8 @@ class Creator
     {
       print("MetaversalDemo has launched.")
 
+      Creator.configColor()
+      Creator.configImaging()
       Creator.setupGuiStyle(with: ctx)
 
       let window = NSWindow(
@@ -158,12 +209,14 @@ class Creator
 
     public func application(_: OSApp, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
+      Creator.configColor()
+      Creator.configImaging()
       Creator.setupGuiStyle(with: ctx)
 
       let window = UIWindow()
       window.makeKeyAndVisible()
       self.window = window
-      
+
       return true
     }
 
@@ -182,6 +235,8 @@ class Creator
 
     public func application(_: OSApp, didFinishLaunchingWithOptions _: [String: Any]?) -> Bool
     {
+      Creator.configColor()
+      Creator.configImaging()
       Creator.setupGuiStyle(with: ctx)
 
       window = .init()

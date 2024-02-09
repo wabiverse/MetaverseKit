@@ -287,6 +287,7 @@ let package = Package(
         .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
         .target(name: "ImGui"),
         .target(name: "OpenImageIO"),
+        .target(name: "OpenImageIO_Util"),
         .target(name: "PyBind11"),
         .target(name: "MXResources"),
         Arch.OS.python(),
@@ -347,6 +348,19 @@ let package = Package(
     ),
 
     .target(
+      name: "OpenImageIO_Util",
+      dependencies: [
+        .target(name: "OpenImageIO"),
+      ],
+      exclude: getConfig(for: .oiioUtil).exclude,
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("."),
+      ],
+      linkerSettings: getConfig(for: .oiioUtil).linkerSettings
+    ),
+
+    .target(
       name: "OpenImageIO",
       dependencies: [
         .target(name: "WebP"),
@@ -362,8 +376,8 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
+        .define("EMBED_PLUGINS", to: "1"),
         .headerSearchPath("include/OpenImageIO/detail"),
-        .headerSearchPath("libOpenImageIO"),
         // FIXME: We broke the ABI for fmt::detail::get_file
         // to stop the swift compiler from crashing at this
         // function, we should fix this in the future.
@@ -501,6 +515,7 @@ let package = Package(
         .target(name: "ImGui"),
         .target(name: "OpenColorIO"),
         .target(name: "OpenImageIO"),
+        .target(name: "OpenImageIO_Util"),
         Arch.OS.python(),
       ],
       swiftSettings: [
@@ -881,17 +896,21 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       ]
     case .exr:
       break
-    case .oiio:
+    case .oiioUtil:
       config.exclude = [
         "nuke",
-        "jpeg2000.imageio",
         "iv",
+      ]
+      break
+    case .oiio:
+      config.exclude = [
+        "jpeg2000.imageio",
         "heif.imageio",
         "gif.imageio",
         "ffmpeg.imageio",
         "dicom.imageio",
-        "cineon.imageio",
       ]
+      break
     case .ocio:
       #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude = [
@@ -1003,6 +1022,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .library(
           name: "OpenColorIO",
           targets: ["OpenColorIO"]
+        ),
+        .library(
+          name: "OpenImageIO_Util",
+          targets: ["OpenImageIO_Util"]
         ),
         .library(
           name: "OpenImageIO",
@@ -1378,6 +1401,7 @@ enum PkgTarget: String
   case osd = "OpenSubdiv"
   case exr = "OpenEXR"
   case oiio = "OpenImageIO"
+  case oiioUtil = "OpenImageIO_Util"
   case ocio = "OpenColorIO"
   case mpy = "MetaPy"
   case ptex = "Ptex"
