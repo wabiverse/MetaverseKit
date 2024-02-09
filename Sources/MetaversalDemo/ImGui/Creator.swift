@@ -22,6 +22,8 @@
  * -------------------------------------------------------------- */
 
 import ImGui
+import OpenColorIO
+import OpenImageIO
 #if canImport(Python)
   import PyBundle
   import Python

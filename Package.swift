@@ -495,7 +495,9 @@ let package = Package(
       name: "MetaversalDemo",
       dependencies: [
         .target(name: "ImGui"),
-        Arch.OS.python()
+        .target(name: "OpenColorIO"),
+        .target(name: "OpenImageIO"),
+        Arch.OS.python(),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
