@@ -125,7 +125,16 @@ class Creator
 
   static func configColor()
   {
-    /* setup color config. */
+    #if os(macOS)
+      guard let resources = Bundle.main.resourcePath,
+            let ociocfg = Bundle(path: "\(resources)/MetaverseKit_OpenColorIO.bundle"),
+            let cfgpath = ociocfg.resourcePath
+      else { return print("Could not find OCIO config.") }
+
+      /* setup ocio color config. */
+      setenv("OCIO", cfgpath + "/colormanagement/config.ocio", 1)
+    #endif /* os(macOS) */
+
     OCIO.GetCurrentConfig()
   }
 
@@ -135,15 +144,15 @@ class Creator
     let dtp = OIIO.TypeDesc.TypeFloat
     let fmt = OIIO.ImageSpec(512, 89, 4, dtp)
 
-    var fg = OIIO.ImageBuf(.init("fg.exr"), fmt, OIIO.InitializePixels.Yes)
-    let bg = OIIO.ImageBuf(.init("bg.exr"), fmt, OIIO.InitializePixels.Yes)
+    var fg = OIIO.ImageBuf(.init(std.string("fg.exr")), fmt, OIIO.InitializePixels.Yes)
+    let bg = OIIO.ImageBuf(.init(std.string("bg.exr")), fmt, OIIO.InitializePixels.Yes)
 
     fg.set_origin(512, 89, 0)
 
     let comp = OIIO.ImageBufAlgo.over(fg, bg, fmt.roi(), 0)
     if !comp.has_error()
     {
-      if comp.write(.init("composite"), dtp, .init("openexr"), nil, nil) == false || comp.has_error()
+      if comp.write(.init(std.string("composite.exr")), OIIO.TypeDesc(.init("UNKNOWN")), .init(""), nil, nil) == false || comp.has_error()
       {
         print("Error writing image: \(comp.geterror(true))")
       }

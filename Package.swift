@@ -356,6 +356,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
+        .define("OpenImageIO_Util_EXPORTS", to: "1"),
       ],
       linkerSettings: getConfig(for: .oiioUtil).linkerSettings
     ),
@@ -376,12 +377,13 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
-        .define("EMBED_PLUGINS", to: "1"),
         .headerSearchPath("include/OpenImageIO/detail"),
+        .define("EMBED_PLUGINS", to: "1"),
+        .define("OpenImageIO_EXPORTS", to: "1"),
         // FIXME: We broke the ABI for fmt::detail::get_file
         // to stop the swift compiler from crashing at this
         // function, we should fix this in the future.
-        //.define("OIIO_FIX_ABI_FOR_SWIFT", to: "1"),
+        // .define("OIIO_FIX_ABI_FOR_SWIFT", to: "1"),
       ],
       linkerSettings: getConfig(for: .oiio).linkerSettings
     ),
@@ -395,6 +397,9 @@ let package = Package(
         Arch.OS.python(),
       ],
       exclude: getConfig(for: .ocio).exclude,
+      resources: [
+        .copy("Resources/colormanagement"),
+      ],
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
@@ -901,7 +906,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "nuke",
         "iv",
       ]
-      break
     case .oiio:
       config.exclude = [
         "jpeg2000.imageio",
@@ -910,7 +914,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "ffmpeg.imageio",
         "dicom.imageio",
       ]
-      break
     case .ocio:
       #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude = [
@@ -1025,10 +1028,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         ),
         .library(
           name: "OpenImageIO_Util",
+          type: .dynamic,
           targets: ["OpenImageIO_Util"]
         ),
         .library(
           name: "OpenImageIO",
+          type: .dynamic,
           targets: ["OpenImageIO"]
         ),
         .library(
@@ -1137,7 +1142,11 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         ),
         .executable(
           name: "MetaversalDemo",
-          targets: ["MetaversalDemo"]
+          targets: [
+            "MetaversalDemo",
+            "OpenImageIO",
+            "OpenImageIO_Util",
+          ]
         ),
       ]
 
