@@ -397,15 +397,25 @@ let package = Package(
         Arch.OS.python(),
       ],
       exclude: getConfig(for: .ocio).exclude,
-      resources: [
-        .copy("Resources/colormanagement"),
-      ],
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
       ],
       linkerSettings: [
         .linkedLibrary("expat"),
+      ]
+    ),
+
+    .target(
+      name: "OCIOBundle",
+      dependencies: [
+        .target(name: "OpenColorIO")
+      ],
+      resources: [
+        .copy("Resources/colormanagement"),
+      ],
+      swiftSettings: [
+        .interoperabilityMode(.Cxx),
       ]
     ),
 
@@ -519,6 +529,7 @@ let package = Package(
       dependencies: [
         .target(name: "ImGui"),
         .target(name: "OpenColorIO"),
+        .target(name: "OCIOBundle"),
         .target(name: "OpenImageIO"),
         .target(name: "OpenImageIO_Util"),
         Arch.OS.python(),
@@ -914,6 +925,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "ffmpeg.imageio",
         "dicom.imageio",
       ]
+    case .ocioBundle:
+      break
     case .ocio:
       #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude = [
@@ -1023,8 +1036,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["OpenVDB"]
         ),
         .library(
+          name: "OCIOBundle",
+          targets: ["OCIOBundle"]
+        ),
+        .library(
           name: "OpenColorIO",
-          targets: ["OpenColorIO"]
+          targets: ["OpenColorIO", "OCIOBundle"]
         ),
         .library(
           name: "OpenImageIO_Util",
@@ -1412,6 +1429,7 @@ enum PkgTarget: String
   case oiio = "OpenImageIO"
   case oiioUtil = "OpenImageIO_Util"
   case ocio = "OpenColorIO"
+  case ocioBundle = "OCIOBundle"
   case mpy = "MetaPy"
   case ptex = "Ptex"
   case hdf5 = "HDF5"

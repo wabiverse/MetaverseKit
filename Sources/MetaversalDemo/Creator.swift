@@ -31,6 +31,7 @@
 import ImGui
 import OpenColorIO
 import OpenImageIO
+import OCIOBundle
 #if canImport(Python)
   import PyBundle
   import Python
@@ -125,15 +126,7 @@ class Creator
 
   static func configColor()
   {
-    #if os(macOS)
-      guard let resources = Bundle.main.resourcePath,
-            let ociocfg = Bundle(path: "\(resources)/MetaverseKit_OpenColorIO.bundle"),
-            let cfgpath = ociocfg.resourcePath
-      else { return print("Could not find OCIO config.") }
-
-      /* setup ocio color config. */
-      setenv("OCIO", cfgpath + "/colormanagement/ACES/studio-config-v2.1.0_aces-v1.3_ocio-v2.3.ocio", 1)
-    #endif /* os(macOS) */
+    OCIOBundler.shared.ocioInit(config: .aces)
 
     OCIO.GetCurrentConfig()
   }
