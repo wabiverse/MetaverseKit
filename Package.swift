@@ -379,6 +379,34 @@ let package = Package(
     ),
 
     .target(
+      name: "any",
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "nonstd",
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "rapidjson",
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "OpenTimelineIO",
+      dependencies: [
+        .target(name: "PyBind11"),
+        .target(name: "any"),
+        .target(name: "nonstd"),
+        .target(name: "rapidjson"),
+        .target(name: "Imath"),
+        Arch.OS.python(),
+      ],
+      publicHeadersPath: "src"
+    ),
+
+    .target(
       name: "OpenEXR",
       dependencies: [
         .target(name: "DEFLATE", condition: .when(platforms: Arch.OS.apple.platform)),
@@ -581,7 +609,7 @@ let package = Package(
         .target(name: "ImGui"),
         .target(name: "OpenColorIO"),
         .target(name: "OCIOBundle"),
-        .target(name: "OpenImageIO_Util"),
+        .target(name: "OpenImageIO"),
         Arch.OS.python(),
       ],
       swiftSettings: [
@@ -1117,6 +1145,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           name: "OpenImageIO",
           type: .dynamic,
           targets: ["OpenImageIO"]
+        ),
+        .library(
+          name: "OpenTimelineIO",
+          targets: ["any", "nonstd", "rapidjson", "OpenTimelineIO"]
         ),
         .library(
           name: "OpenEXR",
