@@ -332,6 +332,53 @@ let package = Package(
     ),
 
     .target(
+      name: "sse2neon",
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "pystring",
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "ImathConfig",
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "Imath",
+      dependencies: [
+        .target(name: "PyBind11"),
+        .target(name: "ImathConfig"),
+        .target(name: "pystring"),
+        Arch.OS.python(),
+      ],
+      exclude: [
+        "src/ImathTest",
+        "src/python/PyImathTest",
+        "website",
+        "src/python/PyImathNumpy",
+        "src/python/PyImathNumpyTest",
+        "src/python/PyImathPythonTest",
+        "src/python/PyImathSpeedTest",
+        "src/python/PyImathTest"
+      ],
+      publicHeadersPath: "src/Imath",
+      cxxSettings: [
+        .headerSearchPath("src/python/PyImath"),
+      ]
+    ),
+
+    .target(
+      name: "ImathHalf",
+      dependencies: [
+        .target(name: "Imath"),
+      ],
+      publicHeadersPath: "include"
+    ),
+
+    .target(
       name: "OpenEXR",
       dependencies: [
         .target(name: "DEFLATE", condition: .when(platforms: Arch.OS.apple.platform)),
@@ -380,6 +427,7 @@ let package = Package(
         .headerSearchPath("include/OpenImageIO/detail"),
         .define("EMBED_PLUGINS", to: "1"),
         .define("OpenImageIO_EXPORTS", to: "1"),
+        .define("DISABLE_PSD", to: "1"),
         // FIXME: We broke the ABI for fmt::detail::get_file
         // to stop the swift compiler from crashing at this
         // function, we should fix this in the future.
@@ -623,6 +671,16 @@ func getConfig(for target: PkgTarget) -> TargetInfo
     case .metaTbb:
       break
     case .zstd:
+      break
+    case .sse2neon:
+      break
+    case .pystring:
+      break
+    case .imathConfig:
+      break
+    case .imath:
+      break
+    case .imathHalf:
       break
     case .lzma2:
       config.exclude = ["check/crc32_small.c"]
@@ -924,6 +982,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "gif.imageio",
         "ffmpeg.imageio",
         "dicom.imageio",
+        "oiiotool",
+        "psd.imageio",
       ]
     case .ocioBundle:
       break
@@ -1072,6 +1132,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .library(
           name: "GLFW",
           targets: ["GLFW"]
+        ),
+        .library(
+          name: "Imath",
+          targets: ["pystring", "ImathConfig", "Imath", "ImathHalf"]
         ),
         .library(
           name: "ImGui",
@@ -1420,6 +1484,11 @@ enum PkgTarget: String
   case openmp = "OpenMP"
   case glfw = "GLFW"
   case imgui = "ImGui"
+  case sse2neon = "sse2neon"
+  case pystring = "pystring"
+  case imath = "Imath"
+  case imathConfig = "ImathConfig"
+  case imathHalf = "ImathHalf"
   case mxGraphEditor = "MXGraphEditor"
   case mxResources = "MXResources"
   case materialx = "MaterialX"
