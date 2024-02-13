@@ -428,6 +428,9 @@ let package = Package(
         .define("EMBED_PLUGINS", to: "1"),
         .define("OpenImageIO_EXPORTS", to: "1"),
         .define("DISABLE_PSD", to: "1"),
+        .define("DISABLE_BMP", to: "1"),
+        .define("DISABLE_TERM", to: "1"),
+        .define("DISABLE_PNM", to: "1"),
         // FIXME: We broke the ABI for fmt::detail::get_file
         // to stop the swift compiler from crashing at this
         // function, we should fix this in the future.
@@ -578,7 +581,6 @@ let package = Package(
         .target(name: "ImGui"),
         .target(name: "OpenColorIO"),
         .target(name: "OCIOBundle"),
-        .target(name: "OpenImageIO"),
         .target(name: "OpenImageIO_Util"),
         Arch.OS.python(),
       ],
@@ -982,8 +984,11 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "gif.imageio",
         "ffmpeg.imageio",
         "dicom.imageio",
-        "oiiotool",
+        "bmp.imageio",
+        "term.imageio",
         "psd.imageio",
+        "pnm.imageio",
+        "oiiotool",
       ]
     case .ocioBundle:
       break
