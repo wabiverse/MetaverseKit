@@ -403,6 +403,11 @@ let package = Package(
         .target(name: "Imath"),
         Arch.OS.python(),
       ],
+      exclude: [
+        "tests",
+        "examples",
+        "src/deps",
+      ],
       publicHeadersPath: "src"
     ),
 
