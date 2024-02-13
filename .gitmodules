@@ -3,4 +3,4 @@
 	url = git@github.com:wabiverse/Imath.git
 [submodule "Sources/OpenTimelineIO"]
 	path = Sources/OpenTimelineIO
-	url = git@github.com:AcademySoftwareFoundation/OpenTimelineIO.git
+	url = git@github.com:wabiverse/OpenTimelineIO.git
