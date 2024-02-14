@@ -10,7 +10,7 @@
 
 #ifdef OPENVDB_USE_IMATH_HALF
 #ifdef OPENVDB_IMATH_VERSION
-#include <OpenEXR/half.h>
+#include <half.h>
 #endif
 namespace openvdb {
 OPENVDB_USE_VERSION_NAMESPACE

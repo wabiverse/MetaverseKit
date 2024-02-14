@@ -10,11 +10,11 @@
 #include <boost/python.hpp>
 #include <boost/python/make_constructor.hpp>
 #include <boost/format.hpp>
-#include <OpenEXR/ImathVec.h>
-#include <OpenEXR/ImathQuat.h>
-#include <OpenEXR/ImathEuler.h>
-#include <OpenEXR/ImathFun.h>
-#include <OpenEXR/ImathMatrixAlgo.h>
+#include <ImathVec.h>
+#include <ImathQuat.h>
+#include <ImathEuler.h>
+#include <ImathFun.h>
+#include <ImathMatrixAlgo.h>
 
 #include "PyImathFixedArray.h"
 #include "PyImath.h"

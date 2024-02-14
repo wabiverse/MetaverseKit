@@ -19,9 +19,9 @@
 #define OIIO_USING_IMATH 3
 
 #if OIIO_USING_IMATH >= 3
-#   include <OpenEXR/ImathColor.h>
-#   include <OpenEXR/ImathMatrix.h>
-#   include <OpenEXR/ImathVec.h>
+#   include <ImathColor.h>
+#   include <ImathMatrix.h>
+#   include <ImathVec.h>
 #else
 #   include <OpenEXR/ImathColor.h>
 #   include <OpenEXR/ImathMatrix.h>

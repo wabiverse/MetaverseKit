@@ -8,8 +8,8 @@
 #ifndef _PyImath_h_
 #define _PyImath_h_
 
-#include <OpenEXR/ImathVec.h>
-#include <OpenEXR/ImathQuat.h>
+#include <ImathVec.h>
+#include <ImathQuat.h>
 #include <PyImathAPI.h>
 #include "PyImathFixedArray.h"
 #include "PyImathFixedMatrix.h"

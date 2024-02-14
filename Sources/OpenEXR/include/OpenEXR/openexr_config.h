@@ -9,7 +9,7 @@
 
 #include "OpenEXRConfig.h"
 #include "IlmThreadConfig.h"
-#include "ImathConfig.h"
+//#include "ImathConfig.h"
 
 /// \addtogroup ExportMacros
 /// @{

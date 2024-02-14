@@ -8,7 +8,7 @@
 // Determine which Imath we're dealing with and include the appropriate path
 // to half.h.
 
-#include <OpenEXR/half.h>
+#include <half.h>
 
 
 #if defined(FMT_VERSION) && !defined(OIIO_HALF_FORMATTER)

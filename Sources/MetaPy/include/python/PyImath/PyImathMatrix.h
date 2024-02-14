@@ -11,8 +11,8 @@
 #include <Python.h>
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS
 #include <boost/python.hpp>
-#include <OpenEXR/ImathMatrix.h>
-#include <OpenEXR/ImathMatrixAlgo.h>
+#include <ImathMatrix.h>
+#include <ImathMatrixAlgo.h>
 #include "PyImath.h"
 
 namespace PyImath {

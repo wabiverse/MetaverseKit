@@ -8,7 +8,7 @@
 #ifndef _PyImathQuatOperators_h_
 #define _PyImathQuatOperators_h_
 
-#include <OpenEXR/ImathQuat.h>
+#include <ImathQuat.h>
 
 namespace PyImath {
 

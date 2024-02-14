@@ -32,6 +32,8 @@ import ImGui
 import OpenColorIO
 import OpenImageIO
 import OCIOBundle
+import OpenTime
+import OpenTimelineIO
 #if canImport(Python)
   import PyBundle
   import Python

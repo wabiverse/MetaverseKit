@@ -15,8 +15,8 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/dict.hpp>
 #include <boost/python/raw_function.hpp>
-#include <OpenEXR/ImathVec.h>
-#include <OpenEXR/ImathMatrixAlgo.h>
+#include <ImathVec.h>
+#include <ImathMatrixAlgo.h>
 #include "PyImathMatrix.h"
 #include "PyImathExport.h"
 #include "PyImathDecorators.h"

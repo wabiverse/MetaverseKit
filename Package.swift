@@ -338,44 +338,38 @@ let package = Package(
 
     .target(
       name: "pystring",
-      publicHeadersPath: "include"
-    ),
-
-    .target(
-      name: "ImathConfig",
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("include/pystring"),
+      ]
     ),
 
     .target(
       name: "Imath",
       dependencies: [
         .target(name: "PyBind11"),
-        .target(name: "ImathConfig"),
         .target(name: "pystring"),
         Arch.OS.python(),
       ],
       exclude: [
-        "src/ImathTest",
+        /* prefer pybindimath */
+        "src/python/PyImath",
         "src/python/PyImathTest",
-        "website",
         "src/python/PyImathNumpy",
         "src/python/PyImathNumpyTest",
         "src/python/PyImathPythonTest",
         "src/python/PyImathSpeedTest",
-        "src/python/PyImathTest"
+        "src/python/PyImathTest",
+        "src/ImathTest",
+        "website",
       ],
       publicHeadersPath: "src/Imath",
       cxxSettings: [
         .headerSearchPath("src/python/PyImath"),
-      ]
-    ),
-
-    .target(
-      name: "ImathHalf",
-      dependencies: [
-        .target(name: "Imath"),
       ],
-      publicHeadersPath: "include"
+      linkerSettings: [
+        .linkedFramework("OpenGL", .when(platforms: Arch.OS.apple.platform)),
+      ]
     ),
 
     .target(
@@ -394,7 +388,7 @@ let package = Package(
     ),
 
     .target(
-      name: "OpenTimelineIO",
+      name: "OpenTime",
       dependencies: [
         .target(name: "PyBind11"),
         .target(name: "any"),
@@ -403,21 +397,33 @@ let package = Package(
         .target(name: "Imath"),
         Arch.OS.python(),
       ],
-      exclude: [
-        "tests",
-        "examples",
-        "src/deps",
+      path: "Sources/OpenTimelineIO/src/opentime",
+      publicHeadersPath: "include"
+    ),
+
+    .target(
+      name: "OpenTimelineIO",
+      dependencies: [
+        .target(name: "OpenTime"),
       ],
-      publicHeadersPath: "src"
+      path: "Sources/OpenTimelineIO/src/opentimelineio",
+      exclude: [
+        "CORE_VERSION_MAP.last.cpp",
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .headerSearchPath("include/opentimelineio"),
+      ]
     ),
 
     .target(
       name: "OpenEXR",
       dependencies: [
+        .target(name: "Imath"),
         .target(name: "DEFLATE", condition: .when(platforms: Arch.OS.apple.platform)),
       ],
       publicHeadersPath: "include",
-      cSettings: [
+      cxxSettings: [
         .headerSearchPath("."),
         .headerSearchPath("OpenEXRCore"),
         .headerSearchPath("include/OpenEXR"),
@@ -450,6 +456,7 @@ let package = Package(
         .target(name: "Ptex"),
         .target(name: "LibPNG"),
         .target(name: "OpenVDB"),
+        .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "PyBind11"),
       ],
@@ -475,6 +482,8 @@ let package = Package(
     .target(
       name: "OpenColorIO",
       dependencies: [
+        .target(name: "pystring"),
+        .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "MiniZip"),
         .target(name: "Yaml"),
@@ -493,7 +502,7 @@ let package = Package(
     .target(
       name: "OCIOBundle",
       dependencies: [
-        .target(name: "OpenColorIO")
+        .target(name: "OpenColorIO"),
       ],
       resources: [
         .copy("Resources/colormanagement"),
@@ -507,6 +516,7 @@ let package = Package(
       name: "MetaPy",
       dependencies: [
         .target(name: "Boost"),
+        .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "OpenVDB"),
         .target(name: "Alembic"),
@@ -546,6 +556,7 @@ let package = Package(
       dependencies: [
         .target(name: "Boost"),
         .target(name: "HDF5"),
+        .target(name: "Imath"),
         .target(name: "OpenEXR"),
         Arch.OS.python(),
       ],
@@ -586,6 +597,7 @@ let package = Package(
         .target(name: "MetaTBB"),
         .target(name: "Blosc"),
         .target(name: "PyBind11"),
+        .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "ZLibDataCompression"),
         Arch.OS.python(),
@@ -612,9 +624,10 @@ let package = Package(
       name: "MetaversalDemo",
       dependencies: [
         .target(name: "ImGui"),
-        .target(name: "OpenColorIO"),
         .target(name: "OCIOBundle"),
+        .target(name: "OpenColorIO"),
         .target(name: "OpenImageIO"),
+        .target(name: "OpenTimelineIO"),
         Arch.OS.python(),
       ],
       swiftSettings: [
@@ -711,11 +724,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       break
     case .pystring:
       break
-    case .imathConfig:
-      break
     case .imath:
-      break
-    case .imathHalf:
       break
     case .lzma2:
       config.exclude = ["check/crc32_small.c"]
@@ -1153,7 +1162,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         ),
         .library(
           name: "OpenTimelineIO",
-          targets: ["any", "nonstd", "rapidjson", "OpenTimelineIO"]
+          targets: ["any", "nonstd", "rapidjson", "OpenTime", "OpenTimelineIO"]
         ),
         .library(
           name: "OpenEXR",
@@ -1177,7 +1186,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         ),
         .library(
           name: "Imath",
-          targets: ["pystring", "ImathConfig", "Imath", "ImathHalf"]
+          targets: ["pystring", "Imath"]
         ),
         .library(
           name: "ImGui",
@@ -1526,11 +1535,9 @@ enum PkgTarget: String
   case openmp = "OpenMP"
   case glfw = "GLFW"
   case imgui = "ImGui"
-  case sse2neon = "sse2neon"
-  case pystring = "pystring"
+  case sse2neon
+  case pystring
   case imath = "Imath"
-  case imathConfig = "ImathConfig"
-  case imathHalf = "ImathHalf"
   case mxGraphEditor = "MXGraphEditor"
   case mxResources = "MXResources"
   case materialx = "MaterialX"

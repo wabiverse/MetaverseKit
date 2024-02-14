@@ -1,1 +1,0 @@
-#include "Imath/half.h"

@@ -42,7 +42,7 @@
 
 #include <memory>
 
-#include <OpenEXR/half.h>
+#include <half.h>
 
 #include <iomanip>
 #include <iostream>

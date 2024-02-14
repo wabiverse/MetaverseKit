@@ -14,7 +14,7 @@
 #include <boost/shared_array.hpp>
 #include <boost/any.hpp>
 #include <iostream>
-#include <OpenEXR/ImathVec.h>
+#include <ImathVec.h>
 #include "PyImathFixedArray.h"
 #include "PyImathOperators.h"
 

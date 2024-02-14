@@ -20,7 +20,7 @@
 #include <OpenImageIO/thread.h>
 
 #if OIIO_USING_IMATH >= 3
-#    include <OpenEXR/ImathBox.h>
+#    include <ImathBox.h>
 #else
 #    include <OpenEXR/ImathBox.h>
 #endif

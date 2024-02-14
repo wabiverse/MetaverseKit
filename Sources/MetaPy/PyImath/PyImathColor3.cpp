@@ -16,9 +16,9 @@
 #include <boost/python.hpp>
 #include <boost/python/make_constructor.hpp>
 #include <boost/format.hpp>
-#include <OpenEXR/ImathVec.h>
-#include <OpenEXR/ImathColor.h>
-#include <OpenEXR/ImathColorAlgo.h>
+#include <ImathVec.h>
+#include <ImathColor.h>
+#include <ImathColorAlgo.h>
 #include "PyImath.h"
 #include "PyImathMathExc.h"
 #include "PyImathColor.h"

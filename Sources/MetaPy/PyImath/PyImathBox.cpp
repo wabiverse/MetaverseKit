@@ -7,7 +7,7 @@
 
 #include <boost/python/make_constructor.hpp>
 #include <vector>
-#include <OpenEXR/ImathBoxAlgo.h>
+#include <ImathBoxAlgo.h>
 #include "PyImathBox.h"
 #include "PyImathVec.h"
 #include "PyImathMathExc.h"

@@ -9,8 +9,8 @@
 #define _PYIMATH_FIXEDARRAY_TRAITS_H
 
 #include <Python.h>
-#include <OpenEXR/ImathVec.h>
-#include <OpenEXR/half.h>
+#include <ImathVec.h>
+#include <half.h>
 #include <string>
 
 
