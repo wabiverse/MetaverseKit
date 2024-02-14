@@ -61,11 +61,13 @@
 #include <MaterialX/MXRenderImageHandler.h>
 #include <MaterialX/MXRenderLightHandler.h>
 #include <MaterialX/MXRenderMesh.h>
+#if defined(__APPLE__)
 #include <MaterialX/MXRenderMslExport.h>
 #include <MaterialX/MXRenderMslMaterial.h>
 #include <MaterialX/MXRenderMslMetalFramebuffer.h>
 #include <MaterialX/MXRenderMslMetalState.h>
 #include <MaterialX/MXRenderMslPipelineStateObject.h>
+#endif /* defined(__APPLE__) */
 #include <MaterialX/MXRenderOiioImageLoader.h>
 #include <MaterialX/MXRenderShaderMaterial.h>
 #include <MaterialX/MXRenderShaderRenderer.h>
@@ -120,6 +122,7 @@
 #include <MaterialX/MXGenGlslVkResourceBindingContext.h>
 #include <MaterialX/MXGenGlslVkShaderGenerator.h>
 #include <MaterialX/MXGenGlslVkSyntax.h>
+#if defined(__APPLE__)
 #include <MaterialX/MXGenMslBitangentNodeMsl.h>
 #include <MaterialX/MXGenMslBlurNodeMsl.h>
 #include <MaterialX/MXGenMslExport.h>
@@ -142,6 +145,7 @@
 #include <MaterialX/MXGenMslTangentNodeMsl.h>
 #include <MaterialX/MXGenMslTimeNodeMsl.h>
 #include <MaterialX/MXGenMslUnlitSurfaceNodeMsl.h>
+#endif /* defined(__APPLE__) */
 #include <MaterialX/MXGenShader.h>
 #include <MaterialX/MXGenShaderBlurNode.h>
 #include <MaterialX/MXGenShaderClosureAddNode.h>

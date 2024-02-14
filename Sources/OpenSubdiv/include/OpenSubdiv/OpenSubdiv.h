@@ -129,6 +129,7 @@
 #include <OpenSubdiv/OSDSurfaceGLVertexBuffer.h>
 #include <OpenSubdiv/OSDSurfaceGLXFBEvaluator.h>
 #include <OpenSubdiv/OSDSurfaceHLSLPatchShaderSource.h>
+#if defined(__APPLE__)
 #include <OpenSubdiv/OSDSurfaceMTLCommon.h>
 #include <OpenSubdiv/OSDSurfaceMTLComputeEvaluator.h>
 #include <OpenSubdiv/OSDSurfaceMTLLegacyGregoryPatchTable.h>
@@ -136,6 +137,7 @@
 #include <OpenSubdiv/OSDSurfaceMTLPatchShaderSource.h>
 #include <OpenSubdiv/OSDSurfaceMTLPatchTable.h>
 #include <OpenSubdiv/OSDSurfaceMTLVertexBuffer.h>
+#endif /* defined(__APPLE__) */
 #include <OpenSubdiv/OSDSurfaceMesh.h>
 #include <OpenSubdiv/OSDSurfaceNonCopyable.h>
 #include <OpenSubdiv/OSDSurfaceOmpEvaluator.h>
@@ -147,7 +149,7 @@
 #include <OpenSubdiv/OSDSurfaceTBBEvaluator.h>
 #include <OpenSubdiv/OSDSurfaceTBBKernel.h>
 #include <OpenSubdiv/OSDSurfaceTypes.h>
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(__linux__)
 # include <OpenSubdiv/OSDSurfaceCpuD3D11VertexBuffer.h>
 # include <OpenSubdiv/OSDSurfaceCudaD3D11VertexBuffer.h>
 # include <OpenSubdiv/OSDSurfaceOpenCLD3D11VertexBuffer.h>
@@ -156,7 +158,7 @@
 # include <OpenSubdiv/OSDSurfaced3D11Mesh.h>
 # include <OpenSubdiv/OSDSurfaced3D11PatchTable.h>
 # include <OpenSubdiv/OSDSurfaced3D11VertexBuffer.h>
-#endif /* !defined(__APPLE__) */
+#endif /* !defined(__APPLE__) && !defined(__linux__) */
 
 /* vectorized topology refinement. */
 #include <OpenSubdiv/OSDVectorArray.h>
