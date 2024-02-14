@@ -28,10 +28,12 @@
  *  . x x x . o o o . x x x . : : : .    o  x  o    . : : : .
  * ---------------------------------------------------------------- */
 
+import Imath
 import ImGui
-import OpenColorIO
-import OpenImageIO
 import OCIOBundle
+import OpenColorIO
+import OpenEXR
+import OpenImageIO
 import OpenTime
 import OpenTimelineIO
 #if canImport(Python)

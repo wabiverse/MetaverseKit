@@ -624,6 +624,8 @@ let package = Package(
       name: "MetaversalDemo",
       dependencies: [
         .target(name: "ImGui"),
+        .target(name: "Imath"),
+        .target(name: "OpenEXR"),
         .target(name: "OCIOBundle"),
         .target(name: "OpenColorIO"),
         .target(name: "OpenImageIO"),
