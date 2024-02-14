@@ -352,7 +352,8 @@ let package = Package(
         Arch.OS.python(),
       ],
       exclude: [
-        /* prefer pybindimath */
+        /* metapy builds pyimath. */
+        "src/python/PyBindImath",
         "src/python/PyImath",
         "src/python/PyImathTest",
         "src/python/PyImathNumpy",
@@ -527,6 +528,7 @@ let package = Package(
       exclude: getConfig(for: .mpy).exclude,
       publicHeadersPath: "include/python",
       cxxSettings: [
+        .headerSearchPath("include/python/PyImath"),
         .headerSearchPath("include/python/PyAlembic"),
         .headerSearchPath("include/python/PyOIIO"),
       ]
