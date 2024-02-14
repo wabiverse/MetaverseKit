@@ -527,7 +527,6 @@ let package = Package(
       exclude: getConfig(for: .mpy).exclude,
       publicHeadersPath: "include/python",
       cxxSettings: [
-        .headerSearchPath("include/python/PyImath"),
         .headerSearchPath("include/python/PyAlembic"),
         .headerSearchPath("include/python/PyOIIO"),
       ]
