@@ -65,10 +65,7 @@
 #include <MaterialX/MXRenderMslMaterial.h>
 #include <MaterialX/MXRenderMslMetalFramebuffer.h>
 #include <MaterialX/MXRenderMslMetalState.h>
-#include <MaterialX/MXRenderMslMetalTextureHandler.h>
 #include <MaterialX/MXRenderMslPipelineStateObject.h>
-#include <MaterialX/MXRenderMslRenderer.h>
-#include <MaterialX/MXRenderMslTextureBaker.h>
 #include <MaterialX/MXRenderOiioImageLoader.h>
 #include <MaterialX/MXRenderShaderMaterial.h>
 #include <MaterialX/MXRenderShaderRenderer.h>
@@ -187,12 +184,20 @@
 #include <MaterialX/MXRenderGlslGLCocoaWrappers.h>
 #include <MaterialX/MXRenderGlslGLContext.h>
 #include <MaterialX/MXRenderGlslGLFramebuffer.h>
-#include <MaterialX/MXRenderGlslGLTextureHandler.h>
 #include <MaterialX/MXRenderGlslGLUtil.h>
 #include <MaterialX/MXRenderGlslGlslMaterial.h>
 #include <MaterialX/MXRenderGlslGlslProgram.h>
-#include <MaterialX/MXRenderGlslGlslRenderer.h>
-#include <MaterialX/MXRenderGlslTextureBaker.h>
+
+#if defined(__APPLE__)
+# include <MaterialX/MXRenderMslMetalTextureHandler.h>
+# include <MaterialX/MXRenderMslRenderer.h>
+# include <MaterialX/MXRenderMslTextureBaker.h>
+#else /* defined(__APPLE__) */
+# include <MaterialX/MXRenderGlslGLTextureHandler.h>
+# include <MaterialX/MXRenderGlslGlslRenderer.h>
+# include <MaterialX/MXRenderGlslTextureBaker.h>
+#endif /* !defined(__APPLE__) */
+
 #include <MaterialX/MXRenderOslExport.h>
 #include <MaterialX/MXRenderOslRenderer.h>
 

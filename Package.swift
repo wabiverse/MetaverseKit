@@ -630,6 +630,7 @@ let package = Package(
         .target(name: "OpenColorIO"),
         .target(name: "OpenImageIO"),
         .target(name: "OpenTimelineIO"),
+        .target(name: "MaterialX"),
         Arch.OS.python(),
       ],
       swiftSettings: [

@@ -30,6 +30,7 @@
 
 import Imath
 import ImGui
+import MaterialX
 import OCIOBundle
 import OpenColorIO
 import OpenEXR
