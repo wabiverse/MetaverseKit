@@ -37,6 +37,9 @@ import OpenEXR
 import OpenImageIO
 import OpenTime
 import OpenTimelineIO
+import OpenVDB
+import OpenSubdiv
+import Ptex
 #if canImport(Python)
   import PyBundle
   import Python

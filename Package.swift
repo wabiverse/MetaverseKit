@@ -631,6 +631,9 @@ let package = Package(
         .target(name: "OpenImageIO"),
         .target(name: "OpenTimelineIO"),
         .target(name: "MaterialX"),
+        .target(name: "OpenVDB"),
+        .target(name: "OpenSubdiv"),
+        .target(name: "Ptex"),
         Arch.OS.python(),
       ],
       swiftSettings: [

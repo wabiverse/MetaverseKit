@@ -85,6 +85,10 @@
 #include <OpenSubdiv/OSDBaseVertexTag.h>
 
 /* hierarchical boundary representation. */
+#include <OpenSubdiv/OSDBoundHierarchicalEdit.h>
+#include <OpenSubdiv/OSDBoundMesh.h>
+#include <OpenSubdiv/OSDBoundVertex.h>
+#include <OpenSubdiv/OSDBoundVertexEdit.h>
 #include <OpenSubdiv/OSDBoundAllocator.h>
 #include <OpenSubdiv/OSDBoundBilinear.h>
 #include <OpenSubdiv/OSDBoundCatmark.h>
@@ -95,25 +99,19 @@
 #include <OpenSubdiv/OSDBoundFvarData.h>
 #include <OpenSubdiv/OSDBoundFvarEdit.h>
 #include <OpenSubdiv/OSDBoundHalfedge.h>
-#include <OpenSubdiv/OSDBoundHierarchicalEdit.h>
+
 #include <OpenSubdiv/OSDBoundHoleEdit.h>
 #include <OpenSubdiv/OSDBoundLoop.h>
-#include <OpenSubdiv/OSDBoundMesh.h>
 #include <OpenSubdiv/OSDBoundSubdivision.h>
-#include <OpenSubdiv/OSDBoundVertex.h>
-#include <OpenSubdiv/OSDBoundVertexEdit.h>
 
 /* device dependent surfaces. */
 #include <OpenSubdiv/OSDSurfaceBufferDescriptor.h>
-#include <OpenSubdiv/OSDSurfaceCpuD3D11VertexBuffer.h>
 #include <OpenSubdiv/OSDSurfaceCpuEvaluator.h>
 #include <OpenSubdiv/OSDSurfaceCpuGLVertexBuffer.h>
 #include <OpenSubdiv/OSDSurfaceCpuKernel.h>
 #include <OpenSubdiv/OSDSurfaceCpuPatchTable.h>
 #include <OpenSubdiv/OSDSurfaceCpuVertexBuffer.h>
-#include <OpenSubdiv/OSDSurfaceCudaD3D11VertexBuffer.h>
 #include <OpenSubdiv/OSDSurfaceCudaEvaluator.h>
-#include <OpenSubdiv/OSDSurfaceOpenCLD3D11VertexBuffer.h>
 #include <OpenSubdiv/OSDSurfaceOpenCLEvaluator.h>
 #include <OpenSubdiv/OSDSurfaceOpenCLGLVertexBuffer.h>
 #include <OpenSubdiv/OSDSurfaceOpenCLPatchTable.h>
@@ -149,11 +147,16 @@
 #include <OpenSubdiv/OSDSurfaceTBBEvaluator.h>
 #include <OpenSubdiv/OSDSurfaceTBBKernel.h>
 #include <OpenSubdiv/OSDSurfaceTypes.h>
-#include <OpenSubdiv/OSDSurfaced3D11ComputeEvaluator.h>
-#include <OpenSubdiv/OSDSurfaced3D11LegacyGregoryPatchTable.h>
-#include <OpenSubdiv/OSDSurfaced3D11Mesh.h>
-#include <OpenSubdiv/OSDSurfaced3D11PatchTable.h>
-#include <OpenSubdiv/OSDSurfaced3D11VertexBuffer.h>
+#if !defined(__APPLE__)
+# include <OpenSubdiv/OSDSurfaceCpuD3D11VertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaceCudaD3D11VertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaceOpenCLD3D11VertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaced3D11ComputeEvaluator.h>
+# include <OpenSubdiv/OSDSurfaced3D11LegacyGregoryPatchTable.h>
+# include <OpenSubdiv/OSDSurfaced3D11Mesh.h>
+# include <OpenSubdiv/OSDSurfaced3D11PatchTable.h>
+# include <OpenSubdiv/OSDSurfaced3D11VertexBuffer.h>
+#endif /* !defined(__APPLE__) */
 
 /* vectorized topology refinement. */
 #include <OpenSubdiv/OSDVectorArray.h>
