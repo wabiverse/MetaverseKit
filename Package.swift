@@ -1159,12 +1159,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         ),
         .library(
           name: "OpenImageIO_Util",
-          type: .dynamic,
           targets: ["OpenImageIO_Util"]
         ),
         .library(
           name: "OpenImageIO",
-          type: .dynamic,
           targets: ["OpenImageIO"]
         ),
         .library(
