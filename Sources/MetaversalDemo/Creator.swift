@@ -40,6 +40,7 @@ import OpenTimelineIO
 import OpenVDB
 import OpenSubdiv
 import Ptex
+import Draco
 #if canImport(Python)
   import PyBundle
   import Python
