@@ -1,27 +1,38 @@
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
-//
-// OpenGL/NSGLContext.hpp
-//
-// Copyright 2020-2023 Apple Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
+/* ----------------------------------------------------------------
+ * :: :  M  E  T  A  V  E  R  S  E  :                            ::
+ * ----------------------------------------------------------------
+ * This software is Licensed under the terms of the Apache License,
+ * version 2.0 (the "Apache License") with the following additional
+ * modification; you may not use this file except within compliance
+ * of the Apache License and the following modification made to it.
+ * Section 6. Trademarks. is deleted and replaced with:
+ *
+ * Trademarks. This License does not grant permission to use any of
+ * its trade names, trademarks, service marks, or the product names
+ * of this Licensor or its affiliates, except as required to comply
+ * with Section 4(c.) of this License, and to reproduce the content
+ * of the NOTICE file.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND without even an
+ * implied warranty of MERCHANTABILITY, or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Apache License for more details.
+ *
+ * You should have received a copy for this software license of the
+ * Apache License along with this program; or, if not, please write
+ * to the Free Software Foundation Inc., with the following address
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ *         Copyright (C) 2024 Wabi Foundation. All Rights Reserved.
+ * ----------------------------------------------------------------
+ *  . x x x . o o o . x x x . : : : .    o  x  o    . : : : .
+ * ---------------------------------------------------------------- */
 
 #pragma once
 
 #include "NSGLDefines.hpp"
 #include "NSGLPrivate.hpp"
+#include "NSGLPixelFormat.hpp"
 
 #include <Foundation/Foundation.hpp>
 
@@ -29,54 +40,6 @@
 
 namespace NSGL
 {
-_NSGL_ENUM(NS::UInteger, OpenGLPixelFormatAttribute)
-{
-  OpenGLPFAAllRenderers = 1,
-  OpenGLPFATripleBuffer = 3,
-  OpenGLPFADoubleBuffer = 5,
-  OpenGLPFAAuxBuffers = 7,
-  OpenGLPFAColorSize = 8,
-  OpenGLPFAAlphaSize = 11,
-  OpenGLPFADepthSize = 12,
-  OpenGLPFAStencilSize = 13,
-  OpenGLPFAAccumSize = 14,
-  OpenGLPFAMinimumPolicy = 51,
-  OpenGLPFAMaximumPolicy = 52,
-  OpenGLPFASampleBuffers = 55,
-  OpenGLPFASamples = 56,
-  OpenGLPFAAuxDepthStencil = 57,
-  OpenGLPFAColorFloat = 58,
-  OpenGLPFAMultisample = 59,
-  OpenGLPFASupersample = 60,
-  OpenGLPFASampleAlpha = 61,
-  OpenGLPFARendererID = 70,
-  OpenGLPFANoRecovery = 72,
-  OpenGLPFAAccelerated = 73,
-  OpenGLPFAClosestPolicy = 74,
-  OpenGLPFABackingStore = 76,
-  OpenGLPFAScreenMask = 84,
-  OpenGLPFAAllowOfflineRenderers = 96,
-  OpenGLPFAAcceleratedCompute = 97,
-  OpenGLPFAOpenGLProfile = 99,
-  OpenGLPFAVirtualScreenCount = 128,
-
-  OpenGLPFAStereo = 6,
-  OpenGLPFAOffScreen = 53,
-  OpenGLPFAFullScreen = 54,
-  OpenGLPFASingleRenderer = 71,
-  OpenGLPFARobust = 75,
-  OpenGLPFAMPSafe = 78,
-  OpenGLPFAWindow = 80,
-  OpenGLPFAMultiScreen = 81,
-  OpenGLPFACompliant = 83,
-  OpenGLPFAPixelBuffer = 90,
-  OpenGLPFARemotePixelBuffer = 91,
-
-  OpenGLProfileVersionLegacy = 0x1000,  /* choose a Legacy/Pre-OpenGL 3.0 Implementation */
-  OpenGLProfileVersion3_2Core = 0x3200, /* choose an OpenGL 3.2 Core Implementation      */
-  OpenGLProfileVersion4_1Core = 0x4100, /* choose an OpenGL 4.1 Core Implementation      */
-};
-
 _NSGL_ENUM(NS::Integer, OpenGLContextParameter) {
   OpenGLContextParameterSwapInterval = 222,
   OpenGLContextParameterSurfaceOrder = 235,
@@ -93,24 +56,6 @@ _NSGL_ENUM(NS::Integer, OpenGLContextParameter) {
   OpenGLContextParameterRasterizationEnable = 221,
   OpenGLContextParameterStateValidation = 301,
   OpenGLContextParameterSurfaceSurfaceVolatile = 306,
-};
-
-class OpenGLPixelFormat : public NS::Referencing<OpenGLPixelFormat>
-{
- public:
-  static class OpenGLPixelFormat* alloc();
-
-  NSGL::OpenGLPixelFormat*          init(const NSGL::OpenGLPixelFormatAttribute* attribs);
-  NSGL::OpenGLPixelFormat*          init(NS::Data* attribs);
-
-  NS::Data* attributes(NSGL::OpenGLPixelFormatAttribute attributes);
-  void      getValues(NS::Integer* vals, NSGL::OpenGLPixelFormatAttribute attrib, NS::Integer screen);
-
-  NS::Integer numberOfVirtualScreens() const;
-  void        setFullScreen();
-  void        clearFullScreen();
-
-  void* CGLPixelFormatObj() const;
 };
 
 class OpenGLContext : public NS::Referencing<OpenGLContext>
@@ -147,10 +92,106 @@ class OpenGLContext : public NS::Referencing<OpenGLContext>
   void clearFullScreen();
 
   void setValues(const NS::Integer* vals, NSGL::OpenGLContextParameter param);
-  void getValues(NS::Integer* vals, NS::Integer count, NSGL::OpenGLContextParameter param);
+  void getValues(NS::Integer* vals, NSGL::OpenGLContextParameter param);
 
   NS::Integer currentVirtualScreen() const;
 
   void* CGLContextObj() const;
 };
 } // namespace NSGL
+
+// static method: alloc
+_NSGL_INLINE NSGL::OpenGLContext* NSGL::OpenGLContext::alloc()
+{
+    return NS::Object::alloc<NSGL::OpenGLContext>(_NSGL_PRIVATE_CLS(NSOpenGLContext));
+}
+
+// method: initWithFormat:shareContext:
+_NSGL_INLINE NSGL::OpenGLContext* NSGL::OpenGLContext::init(const NSGL::OpenGLPixelFormat* format, NSGL::OpenGLContext* share)
+{
+    return Object::sendMessage<NSGL::OpenGLContext*>(this, _NSGL_PRIVATE_SEL(initWithFormat_shareContext_), format, share);
+}
+
+// method: pixelFormat
+_NSGL_INLINE NSGL::OpenGLPixelFormat* NSGL::OpenGLContext::pixelFormat() const
+{
+    return Object::sendMessage<NSGL::OpenGLPixelFormat*>(this, _NSGL_PRIVATE_SEL(pixelFormat));
+}
+
+// method: setOffScreen:width:height:rowbytes:
+_NSGL_INLINE void NSGL::OpenGLContext::setOffScreen(void* baseaddr, NS::Integer width, NS::Integer height, NS::Integer rowbytes)
+{
+    Object::sendMessage<void>(this, _NSGL_PRIVATE_SEL(setOffScreen_width_height_rowbytes_), baseaddr, width, height, rowbytes);
+}
+
+// method: clearDrawable
+_NSGL_INLINE void NSGL::OpenGLContext::clearDrawable()
+{
+    Object::sendMessage<void>(this, _NSGL_PRIVATE_SEL(clearDrawable));
+}
+
+// method: update
+_NSGL_INLINE void NSGL::OpenGLContext::update()
+{
+    Object::sendMessage<void>(this, _NSGL_PRIVATE_SEL(update));
+}
+
+// method: flushBuffer
+_NSGL_INLINE void NSGL::OpenGLContext::flushBuffer()
+{
+    Object::sendMessage<void>(this, _NSGL_PRIVATE_SEL(flushBuffer));
+}
+
+// method: makeCurrentContext
+_NSGL_INLINE void NSGL::OpenGLContext::makeCurrentContext()
+{
+    Object::sendMessage<void>(this, _NSGL_PRIVATE_SEL(makeCurrentContext));
+}
+
+// static method: clearCurrentContext
+_NSGL_INLINE void NSGL::OpenGLContext::clearCurrentContext()
+{
+    Object::sendMessage<void>(_NSGL_PRIVATE_CLS(NSOpenGLContext), _NSGL_PRIVATE_SEL(clearCurrentContext));
+}
+
+// static method: currentContext
+_NSGL_INLINE NSGL::OpenGLContext* NSGL::OpenGLContext::currentContext()
+{
+    return Object::sendMessage<NSGL::OpenGLContext*>(_NSGL_PRIVATE_CLS(NSOpenGLContext), _NSGL_PRIVATE_SEL(currentContext));
+}
+
+// method: setFullScreen
+_NSGL_INLINE void NSGL::OpenGLContext::setFullScreen()
+{
+    Object::sendMessage<void>(this, _NSGL_PRIVATE_SEL(setFullScreen));
+}
+
+// method: clearFullScreen
+_NSGL_INLINE void NSGL::OpenGLContext::clearFullScreen()
+{
+    Object::sendMessage<void>(this, _NSGL_PRIVATE_SEL(clearFullScreen));
+}
+
+// method: setValues:forParameter:
+_NSGL_INLINE void NSGL::OpenGLContext::setValues(const NS::Integer* vals, NSGL::OpenGLContextParameter param)
+{
+    Object::sendMessage<void>(this, _NSGL_PRIVATE_SEL(setValues_forParameter_), vals, param);
+}
+
+// method: getValues:forParameter:
+_NSGL_INLINE void NSGL::OpenGLContext::getValues(NS::Integer* vals, NSGL::OpenGLContextParameter param)
+{
+    Object::sendMessage<void>(this, _NSGL_PRIVATE_SEL(getValues_forParameter_), vals, param);
+}
+
+// method: currentVirtualScreen
+_NSGL_INLINE NS::Integer NSGL::OpenGLContext::currentVirtualScreen() const
+{
+    return Object::sendMessage<NS::Integer>(this, _NSGL_PRIVATE_SEL(currentVirtualScreen));
+}
+
+// method: CGLContextObj
+_NSGL_INLINE void* NSGL::OpenGLContext::CGLContextObj() const
+{
+    return Object::sendMessage<void*>(this, _NSGL_PRIVATE_SEL(CGLContextObj));
+}
