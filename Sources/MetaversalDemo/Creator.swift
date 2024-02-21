@@ -28,6 +28,7 @@
  *  . x x x . o o o . x x x . : : : .    o  x  o    . : : : .
  * ---------------------------------------------------------------- */
 
+import Draco
 import Imath
 import ImGui
 import MaterialX
@@ -35,12 +36,11 @@ import OCIOBundle
 import OpenColorIO
 import OpenEXR
 import OpenImageIO
+import OpenSubdiv
 import OpenTime
 import OpenTimelineIO
 import OpenVDB
-import OpenSubdiv
 import Ptex
-import Draco
 #if canImport(Python)
   import PyBundle
   import Python
