@@ -1,6 +1,6 @@
 [submodule "Sources/Imath"]
 	path = Sources/Imath
-	url = git@github.com:wabiverse/Imath.git
+	url = https://github.com/wabiverse/Imath.git
 [submodule "Sources/OpenTimelineIO"]
 	path = Sources/OpenTimelineIO
-	url = git@github.com:wabiverse/OpenTimelineIO.git
+	url = https://github.com/wabiverse/OpenTimelineIO.git
