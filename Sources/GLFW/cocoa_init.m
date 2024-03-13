@@ -186,7 +186,7 @@ static void createMenuBar(void)
   UIMenu* servicesMenu = [UIMenu menuWithTitle:[NSString stringWithFormat:@"Services %@", appName]
                                          image:nil
                                     identifier:UIMenuServices
-                                       options:nil
+                                       options:UIMenuOptionsDisplayInline
                                       children:fileMenuItems];
   
   [builder insertSiblingMenu:servicesMenu

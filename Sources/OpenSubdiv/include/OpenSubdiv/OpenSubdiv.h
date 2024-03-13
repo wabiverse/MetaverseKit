@@ -111,15 +111,20 @@
 #include <OpenSubdiv/OSDSurfaceCpuKernel.h>
 #include <OpenSubdiv/OSDSurfaceCpuPatchTable.h>
 #include <OpenSubdiv/OSDSurfaceCpuVertexBuffer.h>
-#include <OpenSubdiv/OSDSurfaceCudaEvaluator.h>
-#include <OpenSubdiv/OSDSurfaceOpenCLEvaluator.h>
-#include <OpenSubdiv/OSDSurfaceOpenCLGLVertexBuffer.h>
-#include <OpenSubdiv/OSDSurfaceOpenCLPatchTable.h>
-#include <OpenSubdiv/OSDSurfaceOpenCLVertexBuffer.h>
+#ifdef WITH_OPENCL
+# include <OpenSubdiv/OSDSurfaceOpenCLEvaluator.h>
+# include <OpenSubdiv/OSDSurfaceOpenCLGLVertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaceOpenCLD3D11VertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaceOpenCLPatchTable.h>
+# include <OpenSubdiv/OSDSurfaceOpenCLVertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaceOpenCL.h>
+#endif /* WITH_OPENCL */
 #ifdef __CUDA__
-#include <OpenSubdiv/OSDSurfaceCudaGLVertexBuffer.h>
-#include <OpenSubdiv/OSDSurfaceCudaPatchTable.h>
-#include <OpenSubdiv/OSDSurfaceCudaVertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaceCudaEvaluator.h>
+# include <OpenSubdiv/OSDSurfaceCudaD3D11VertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaceCudaGLVertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaceCudaVertexBuffer.h>
+# include <OpenSubdiv/OSDSurfaceCudaPatchTable.h>
 #endif /* __CUDA__ */
 #include <OpenSubdiv/OSDSurfaceGLComputeEvaluator.h>
 #include <OpenSubdiv/OSDSurfaceGLLegacyGregoryPatchTable.h>
@@ -142,23 +147,20 @@
 #include <OpenSubdiv/OSDSurfaceNonCopyable.h>
 #include <OpenSubdiv/OSDSurfaceOmpEvaluator.h>
 #include <OpenSubdiv/OSDSurfaceOmpKernel.h>
-#include <OpenSubdiv/OSDSurfaceOpenCL.h>
 #include <OpenSubdiv/OSDSurfaceOpenGL.h>
 #include <OpenSubdiv/OSDSurfacePatchBasis.h>
 #include <OpenSubdiv/OSDSurfacePatchBasisTypes.h>
 #include <OpenSubdiv/OSDSurfaceTBBEvaluator.h>
 #include <OpenSubdiv/OSDSurfaceTBBKernel.h>
 #include <OpenSubdiv/OSDSurfaceTypes.h>
-#if !defined(__APPLE__) && !defined(__linux__)
+#ifdef WITH_DIRECTX
 # include <OpenSubdiv/OSDSurfaceCpuD3D11VertexBuffer.h>
-# include <OpenSubdiv/OSDSurfaceCudaD3D11VertexBuffer.h>
-# include <OpenSubdiv/OSDSurfaceOpenCLD3D11VertexBuffer.h>
 # include <OpenSubdiv/OSDSurfaced3D11ComputeEvaluator.h>
 # include <OpenSubdiv/OSDSurfaced3D11LegacyGregoryPatchTable.h>
 # include <OpenSubdiv/OSDSurfaced3D11Mesh.h>
 # include <OpenSubdiv/OSDSurfaced3D11PatchTable.h>
 # include <OpenSubdiv/OSDSurfaced3D11VertexBuffer.h>
-#endif /* !defined(__APPLE__) && !defined(__linux__) */
+#endif /* WITH_DIRECTX */
 
 /* vectorized topology refinement. */
 #include <OpenSubdiv/OSDVectorArray.h>

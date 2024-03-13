@@ -226,6 +226,7 @@ class Creator
 
       let window = UIWindow()
       window.makeKeyAndVisible()
+
       self.window = window
 
       return true

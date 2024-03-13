@@ -368,7 +368,8 @@ let package = Package(
         .headerSearchPath("src/python/PyImath"),
       ],
       linkerSettings: [
-        .linkedFramework("OpenGL", .when(platforms: Arch.OS.apple.platform)),
+        .linkedFramework("OpenGL", .when(platforms: [.macOS])),
+        .linkedFramework("OpenGLES", .when(platforms: [.iOS, .watchOS, .tvOS])),
       ]
     ),
 
