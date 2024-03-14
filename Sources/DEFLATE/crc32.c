@@ -33,7 +33,7 @@
  * polynomial M(x) with coefficients in GF(2) (the field of integers modulo 2),
  * where the coefficient of 'x^i' is 'bits[len - i]'.  Then, compute:
  *
- *			R(x) = M(x)*x^n mod G(x)
+ *      R(x) = M(x)*x^n mod G(x)
  *
  * where G(x) is a selected "generator" polynomial of degree 'n'.  The remainder
  * R(x) is a polynomial of max degree 'n - 1'.  The CRC of 'bits' is R(x)
@@ -44,17 +44,17 @@
  *
  * In the gzip format (RFC 1952):
  *
- *	- The bitstring to checksum is formed from the bytes of the uncompressed
- *	  data by concatenating the bits from the bytes in order, proceeding
- *	  from the low-order bit to the high-order bit within each byte.
+ *  - The bitstring to checksum is formed from the bytes of the uncompressed
+ *    data by concatenating the bits from the bytes in order, proceeding
+ *    from the low-order bit to the high-order bit within each byte.
  *
- *	- The generator polynomial G(x) is: x^32 + x^26 + x^23 + x^22 + x^16 +
- *	  x^12 + x^11 + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1.
- *	  Consequently, the CRC length is 32 bits ("CRC-32").
+ *  - The generator polynomial G(x) is: x^32 + x^26 + x^23 + x^22 + x^16 +
+ *    x^12 + x^11 + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1.
+ *    Consequently, the CRC length is 32 bits ("CRC-32").
  *
- *	- The highest order 32 coefficients of M(x)*x^n are inverted.
+ *  - The highest order 32 coefficients of M(x)*x^n are inverted.
  *
- *	- All 32 coefficients of R(x) are inverted.
+ *  - All 32 coefficients of R(x) are inverted.
  *
  * The two inversions cause added leading and trailing zero bits to affect the
  * resulting CRC, whereas with a regular CRC such bits would have no effect on
@@ -70,35 +70,35 @@
  * subtraction can be implemented as bitwise exclusive OR (since we are working
  * in GF(2)).  Here is an unoptimized implementation:
  *
- *	static u32 crc32_gzip(const u8 *p, size_t len)
- *	{
- *		u32 crc = 0;
- *		const u32 divisor = 0xEDB88320;
+ *  static u32 crc32_gzip(const u8 *p, size_t len)
+ *  {
+ *    u32 crc = 0;
+ *    const u32 divisor = 0xEDB88320;
  *
- *		for (size_t i = 0; i < len * 8 + 32; i++) {
- *			int bit;
- *			u32 multiple;
+ *    for (size_t i = 0; i < len * 8 + 32; i++) {
+ *      int bit;
+ *      u32 multiple;
  *
- *			if (i < len * 8)
- *				bit = (p[i / 8] >> (i % 8)) & 1;
- *			else
- *				bit = 0; // one of the 32 appended 0 bits
+ *      if (i < len * 8)
+ *        bit = (p[i / 8] >> (i % 8)) & 1;
+ *      else
+ *        bit = 0; // one of the 32 appended 0 bits
  *
- *			if (i < 32) // the first 32 bits are inverted
- *				bit ^= 1;
+ *      if (i < 32) // the first 32 bits are inverted
+ *        bit ^= 1;
  *
- *			if (crc & 1)
- *				multiple = divisor;
- *			else
- *				multiple = 0;
+ *      if (crc & 1)
+ *        multiple = divisor;
+ *      else
+ *        multiple = 0;
  *
- *			crc >>= 1;
- *			crc |= (u32)bit << 31;
- *			crc ^= multiple;
- *		}
+ *      crc >>= 1;
+ *      crc |= (u32)bit << 31;
+ *      crc ^= multiple;
+ *    }
  *
- *		return ~crc;
- *	}
+ *    return ~crc;
+ *  }
  *
  * In this implementation, the 32-bit integer 'crc' maintains the remainder of
  * the currently processed portion of the message (with 32 zero bits appended)
@@ -114,27 +114,27 @@
  * 'multiple' until 32 bits later, we need not actually add each message bit
  * until that point:
  *
- *	static u32 crc32_gzip(const u8 *p, size_t len)
- *	{
- *		u32 crc = ~0;
- *		const u32 divisor = 0xEDB88320;
+ *  static u32 crc32_gzip(const u8 *p, size_t len)
+ *  {
+ *    u32 crc = ~0;
+ *    const u32 divisor = 0xEDB88320;
  *
- *		for (size_t i = 0; i < len * 8; i++) {
- *			int bit;
- *			u32 multiple;
+ *    for (size_t i = 0; i < len * 8; i++) {
+ *      int bit;
+ *      u32 multiple;
  *
- *			bit = (p[i / 8] >> (i % 8)) & 1;
- *			crc ^= bit;
- *			if (crc & 1)
- *				multiple = divisor;
- *			else
- *				multiple = 0;
- *			crc >>= 1;
- *			crc ^= multiple;
- *		}
+ *      bit = (p[i / 8] >> (i % 8)) & 1;
+ *      crc ^= bit;
+ *      if (crc & 1)
+ *        multiple = divisor;
+ *      else
+ *        multiple = 0;
+ *      crc >>= 1;
+ *      crc ^= multiple;
+ *    }
  *
- *		return ~crc;
- *	}
+ *    return ~crc;
+ *  }
  *
  * With the above implementation we get the effect of 32 appended 0 bits for
  * free; they never affect the choice of a divisor, nor would they change the
@@ -165,7 +165,7 @@
  * intermediate remainder (which we never actually store explicitly) is 96 bits.
  *
  * On CPUs that support fast carryless multiplication, CRCs can be computed even
- * more quickly via "folding".  See e.g. the x86 PCLMUL implementation.
+ * more quickly via "folding".  See e.g. the x86 PCLMUL implementations.
  */
 
 #include "lib_common.h"
@@ -176,31 +176,31 @@
 static u32 MAYBE_UNUSED
 crc32_slice8(u32 crc, const u8 *p, size_t len)
 {
-	const u8 * const end = p + len;
-	const u8 *end64;
-
-	for (; ((uintptr_t)p & 7) && p != end; p++)
-		crc = (crc >> 8) ^ crc32_slice8_table[(u8)crc ^ *p];
-
-	end64 = p + ((end - p) & ~7);
-	for (; p != end64; p += 8) {
-		u32 v1 = le32_bswap(*(const u32 *)(p + 0));
-		u32 v2 = le32_bswap(*(const u32 *)(p + 4));
-
-		crc = crc32_slice8_table[0x700 + (u8)((crc ^ v1) >> 0)] ^
-		      crc32_slice8_table[0x600 + (u8)((crc ^ v1) >> 8)] ^
-		      crc32_slice8_table[0x500 + (u8)((crc ^ v1) >> 16)] ^
-		      crc32_slice8_table[0x400 + (u8)((crc ^ v1) >> 24)] ^
-		      crc32_slice8_table[0x300 + (u8)(v2 >> 0)] ^
-		      crc32_slice8_table[0x200 + (u8)(v2 >> 8)] ^
-		      crc32_slice8_table[0x100 + (u8)(v2 >> 16)] ^
-		      crc32_slice8_table[0x000 + (u8)(v2 >> 24)];
-	}
-
-	for (; p != end; p++)
-		crc = (crc >> 8) ^ crc32_slice8_table[(u8)crc ^ *p];
-
-	return crc;
+  const u8 * const end = p + len;
+  const u8 *end64;
+  
+  for (; ((uintptr_t)p & 7) && p != end; p++)
+    crc = (crc >> 8) ^ crc32_slice8_table[(u8)crc ^ *p];
+  
+  end64 = p + ((end - p) & ~7);
+  for (; p != end64; p += 8) {
+    u32 v1 = le32_bswap(*(const u32 *)(p + 0));
+    u32 v2 = le32_bswap(*(const u32 *)(p + 4));
+    
+    crc = crc32_slice8_table[0x700 + (u8)((crc ^ v1) >> 0)] ^
+    crc32_slice8_table[0x600 + (u8)((crc ^ v1) >> 8)] ^
+    crc32_slice8_table[0x500 + (u8)((crc ^ v1) >> 16)] ^
+    crc32_slice8_table[0x400 + (u8)((crc ^ v1) >> 24)] ^
+    crc32_slice8_table[0x300 + (u8)(v2 >> 0)] ^
+    crc32_slice8_table[0x200 + (u8)(v2 >> 8)] ^
+    crc32_slice8_table[0x100 + (u8)(v2 >> 16)] ^
+    crc32_slice8_table[0x000 + (u8)(v2 >> 24)];
+  }
+  
+  for (; p != end; p++)
+    crc = (crc >> 8) ^ crc32_slice8_table[(u8)crc ^ *p];
+  
+  return crc;
 }
 
 /*
@@ -211,11 +211,11 @@ crc32_slice8(u32 crc, const u8 *p, size_t len)
 static forceinline u32 MAYBE_UNUSED
 crc32_slice1(u32 crc, const u8 *p, size_t len)
 {
-	size_t i;
-
-	for (i = 0; i < len; i++)
-		crc = (crc >> 8) ^ crc32_slice1_table[(u8)crc ^ p[i]];
-	return crc;
+  size_t i;
+  
+  for (i = 0; i < len; i++)
+    crc = (crc >> 8) ^ crc32_slice1_table[(u8)crc ^ p[i]];
+  return crc;
 }
 
 /* Include architecture-specific implementation(s) if available. */
@@ -223,7 +223,7 @@ crc32_slice1(u32 crc, const u8 *p, size_t len)
 #undef arch_select_crc32_func
 typedef u32 (*crc32_func_t)(u32 crc, const u8 *p, size_t len);
 #if defined(ARCH_ARM32) || defined(ARCH_ARM64)
-#  include "crc32_impl.h"
+#  include "arm/crc32_impl.h"
 #elif defined(ARCH_X86_32) || defined(ARCH_X86_64)
 #  include "x86/crc32_impl.h"
 #endif
@@ -240,13 +240,13 @@ static volatile crc32_func_t crc32_impl = dispatch_crc32;
 /* Choose the best implementation at runtime. */
 static u32 dispatch_crc32(u32 crc, const u8 *p, size_t len)
 {
-	crc32_func_t f = arch_select_crc32_func();
-
-	if (f == NULL)
-		f = DEFAULT_IMPL;
-
-	crc32_impl = f;
-	return f(crc, p, len);
+  crc32_func_t f = arch_select_crc32_func();
+  
+  if (f == NULL)
+    f = DEFAULT_IMPL;
+  
+  crc32_impl = f;
+  return f(crc, p, len);
 }
 #else
 /* The best implementation is statically known, so call it directly. */
@@ -256,7 +256,7 @@ static u32 dispatch_crc32(u32 crc, const u8 *p, size_t len)
 LIBDEFLATEAPI u32
 libdeflate_crc32(u32 crc, const void *p, size_t len)
 {
-	if (p == NULL) /* Return initial value. */
-		return 0;
-	return ~crc32_impl(~crc, p, len);
+  if (p == NULL) /* Return initial value. */
+    return 0;
+  return ~crc32_impl(~crc, p, len);
 }

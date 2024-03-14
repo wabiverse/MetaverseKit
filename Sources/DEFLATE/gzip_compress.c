@@ -30,61 +30,61 @@
 
 LIBDEFLATEAPI size_t
 libdeflate_gzip_compress(struct libdeflate_compressor *c,
-			 const void *in, size_t in_nbytes,
-			 void *out, size_t out_nbytes_avail)
+                         const void *in, size_t in_nbytes,
+                         void *out, size_t out_nbytes_avail)
 {
-	u8 *out_next = out;
-	unsigned compression_level;
-	u8 xfl;
-	size_t deflate_size;
-
-	if (out_nbytes_avail <= GZIP_MIN_OVERHEAD)
-		return 0;
-
-	/* ID1 */
-	*out_next++ = GZIP_ID1;
-	/* ID2 */
-	*out_next++ = GZIP_ID2;
-	/* CM */
-	*out_next++ = GZIP_CM_DEFLATE;
-	/* FLG */
-	*out_next++ = 0;
-	/* MTIME */
-	put_unaligned_le32(GZIP_MTIME_UNAVAILABLE, out_next);
-	out_next += 4;
-	/* XFL */
-	xfl = 0;
-	compression_level = libdeflate_get_compression_level(c);
-	if (compression_level < 2)
-		xfl |= GZIP_XFL_FASTEST_COMPRESSION;
-	else if (compression_level >= 8)
-		xfl |= GZIP_XFL_SLOWEST_COMPRESSION;
-	*out_next++ = xfl;
-	/* OS */
-	*out_next++ = GZIP_OS_UNKNOWN;	/* OS  */
-
-	/* Compressed data  */
-	deflate_size = libdeflate_deflate_compress(c, in, in_nbytes, out_next,
-					out_nbytes_avail - GZIP_MIN_OVERHEAD);
-	if (deflate_size == 0)
-		return 0;
-	out_next += deflate_size;
-
-	/* CRC32 */
-	put_unaligned_le32(libdeflate_crc32(0, in, in_nbytes), out_next);
-	out_next += 4;
-
-	/* ISIZE */
-	put_unaligned_le32((u32)in_nbytes, out_next);
-	out_next += 4;
-
-	return out_next - (u8 *)out;
+  u8 *out_next = out;
+  unsigned compression_level;
+  u8 xfl;
+  size_t deflate_size;
+  
+  if (out_nbytes_avail <= GZIP_MIN_OVERHEAD)
+    return 0;
+  
+  /* ID1 */
+  *out_next++ = GZIP_ID1;
+  /* ID2 */
+  *out_next++ = GZIP_ID2;
+  /* CM */
+  *out_next++ = GZIP_CM_DEFLATE;
+  /* FLG */
+  *out_next++ = 0;
+  /* MTIME */
+  put_unaligned_le32(GZIP_MTIME_UNAVAILABLE, out_next);
+  out_next += 4;
+  /* XFL */
+  xfl = 0;
+  compression_level = libdeflate_get_compression_level(c);
+  if (compression_level < 2)
+    xfl |= GZIP_XFL_FASTEST_COMPRESSION;
+  else if (compression_level >= 8)
+    xfl |= GZIP_XFL_SLOWEST_COMPRESSION;
+  *out_next++ = xfl;
+  /* OS */
+  *out_next++ = GZIP_OS_UNKNOWN;  /* OS  */
+  
+  /* Compressed data  */
+  deflate_size = libdeflate_deflate_compress(c, in, in_nbytes, out_next,
+                                             out_nbytes_avail - GZIP_MIN_OVERHEAD);
+  if (deflate_size == 0)
+    return 0;
+  out_next += deflate_size;
+  
+  /* CRC32 */
+  put_unaligned_le32(libdeflate_crc32(0, in, in_nbytes), out_next);
+  out_next += 4;
+  
+  /* ISIZE */
+  put_unaligned_le32((u32)in_nbytes, out_next);
+  out_next += 4;
+  
+  return out_next - (u8 *)out;
 }
 
 LIBDEFLATEAPI size_t
 libdeflate_gzip_compress_bound(struct libdeflate_compressor *c,
-			       size_t in_nbytes)
+                               size_t in_nbytes)
 {
-	return GZIP_MIN_OVERHEAD +
-	       libdeflate_deflate_compress_bound(c, in_nbytes);
+  return GZIP_MIN_OVERHEAD +
+  libdeflate_deflate_compress_bound(c, in_nbytes);
 }

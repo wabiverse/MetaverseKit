@@ -223,6 +223,16 @@ let package = Package(
 
     .target(
       name: "DEFLATE",
+      exclude: [
+        // better cross-platform compatibility if we remove gzip
+        // support for now, gzip builds fine for macOS and even
+        // on iOS -- it is only when a user chooses to build an
+        // archive using one of the generic devices, that makes
+        // building gzip more complicated.
+        "crc32.c",
+        "gzip_compress.c",
+        "gzip_decompress.c",
+      ],
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
