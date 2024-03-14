@@ -492,14 +492,7 @@ let package = Package(
 
     .target(
       name: "OpenColorIO",
-      dependencies: [
-        .target(name: "pystring"),
-        .target(name: "Imath"),
-        .target(name: "OpenEXR"),
-        .target(name: "MiniZip"),
-        .target(name: "Yaml"),
-        Arch.OS.python(),
-      ],
+      dependencies: Arch.OS.ocioDeps(),
       exclude: getConfig(for: .ocio).exclude,
       publicHeadersPath: "include",
       cxxSettings: [
@@ -1365,6 +1358,32 @@ enum Arch
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
         []
       #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
+    }
+
+    public static func ocioDeps() -> [Target.Dependency]
+    {
+      // only add sse2neon on arm arch.
+      let sse2neon: [Target.Dependency] = Arch.cpuArch.family.contains(.arm) ? [.target(name: "sse2neon")] : []
+
+      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+        return [
+          .target(name: "pystring"),
+          .target(name: "Imath"),
+          .target(name: "OpenEXR"),
+          .target(name: "MiniZip"),
+          .target(name: "Yaml"),
+          .target(name: "Python")
+        ] + sse2neon
+      #else /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) */
+        return [
+          .target(name: "pystring"),
+          .target(name: "Imath"),
+          .target(name: "OpenEXR"),
+          .target(name: "MiniZip"),
+          .target(name: "Yaml"),
+          .product(name: "Python", package: "MetaversePythonFramework", condition: .when(platforms: Arch.OS.apple.platform))
+        ] + sse2neon
+      #endif /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) */
     }
 
     public static func python() -> Target.Dependency
