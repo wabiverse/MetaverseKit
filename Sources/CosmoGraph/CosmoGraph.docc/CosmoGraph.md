@@ -1,4 +1,4 @@
-# `CosmoGraph`
+# ``CosmoGraph``
 
 Seamlessly create native cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **WinRT**, and various graphics frameworks using a unified API.
 

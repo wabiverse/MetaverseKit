@@ -4,7 +4,7 @@
 
 > One small step for **swift**, one giant leap for **reality**!
 
-### Embark on the Metaversal Frontier
+### Embark on the Metaversal Frontier 
 
 Swiftly integrate the [**ASWF Landscape**](https://landscape.aswf.io) into mighty apps, plugins, and games with seamless simplicity. 
 **MetaverseKit** is a monolithic dependency target of the [**SwiftUSD**](https://github.com/wabiverse/SwiftUSD) package, and will
@@ -16,6 +16,16 @@ releases, and we will provide monolithic releases in accordance with the [**VFX 
 > The **Wabi Foundation** remains steadfast in its collaboration with industry leaders, diligently working to secure official support
   for these foundational libraries through the implementation of Swift Packages. This strategic initiative opens the gateway for developers,
   offering unparalleled opportunity to unleash the full power of industry-grade software, and unlocking its utmost potential.
+
+<br/>
+
+### 📰 News
+
+Planning & initial development on [**CosmoGraph**](https://wabi.foundation/cosmograph/documentation/cosmograph/), seamlessly create native
+cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **WinRT**, and various graphics frameworks using a unified **Swift** and
+**C++** API.
+
+<br/>
 
 ### Wabi Targets
 | Swift Target  | Description                                                                                                                                                                                                                                                                                                                                                                                                                       |
