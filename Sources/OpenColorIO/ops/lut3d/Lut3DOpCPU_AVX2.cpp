@@ -174,7 +174,8 @@ static inline rgbavec_avx2 interp_tetrahedral_avx2(const Lut3DContextAVX2 &ctx, 
 }
 
 template<BitDepth inBD, BitDepth outBD>
-inline void applyTetrahedralAVX2Func(const float *lut3d, int dim, const void *inImg, void *outImg, int numPixels)
+inline OCIO_TARGET_ATTRIBUTE("avx")
+void applyTetrahedralAVX2Func(const float *lut3d, int dim, const void *inImg, void *outImg, int numPixels)
 {
     typedef typename BitDepthInfo<inBD>::Type InType;
     typedef typename BitDepthInfo<outBD>::Type OutType;
