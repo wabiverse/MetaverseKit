@@ -31,6 +31,7 @@
 #include "NSDictionary.hpp"
 #include "NSEnumerator.hpp"
 #include "NSError.hpp"
+#include "NSInterop.hpp"
 #include "NSLock.hpp"
 #include "NSNotification.hpp"
 #include "NSNumber.hpp"

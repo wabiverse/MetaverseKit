@@ -20,10 +20,6 @@
 
 #pragma once
 
-#if defined(__APPLE__)
-#include <swift/bridging>
-#endif // defined(__APPLE__)
-
 #include "MTLDefines.hpp"
 #include "MTLHeaderBridge.hpp"
 #include "MTLPrivate.hpp"

@@ -22,10 +22,7 @@
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#if defined(__APPLE__)
-#include <swift/bridging>
-#endif // defined(__APPLE__)
-
+#include "NSInterop.hpp"
 #include "NSDefines.hpp"
 #include "NSObjCRuntime.hpp"
 #include "NSObject.hpp"
