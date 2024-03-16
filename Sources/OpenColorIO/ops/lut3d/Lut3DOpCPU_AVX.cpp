@@ -72,7 +72,8 @@ static inline __m256 blendv_avx(__m256 a, __m256 b, __m256 mask)
 #endif
 }
 
-static inline rgbavec_avx interp_tetrahedral_avx(const Lut3DContextAVX &ctx, __m256 r, __m256 g, __m256 b, __m256 a)
+static inline OCIO_TARGET_ATTRIBUTE("avx")
+rgbavec_avx interp_tetrahedral_avx(const Lut3DContextAVX &ctx, __m256 r, __m256 g, __m256 b, __m256 a)
 {
     AVX_ALIGN(uint32_t indices[8]);
 
