@@ -338,6 +338,21 @@
 #define __TBB_WAITPKG_INTRINSICS_PRESENT ((__INTEL_COMPILER >= 1900 || __TBB_GCC_VERSION >= 110000 || __TBB_CLANG_VERSION >= 120000) \
                                          && (_WIN32 || _WIN64 || __unix__ || __APPLE__) && (__TBB_x86_32 || __TBB_x86_64) && !__ANDROID__)
 
+/*
+ * OCIO_TARGET_ATTRIBUTE(attrs) - override the compilation target for a function.
+ *
+ * This accepts one or more comma-separated suffixes to the -m prefix jointly
+ * forming the name of a machine-dependent option.  On gcc-like compilers, this
+ * enables codegen for the given targets, including arbitrary compiler-generated
+ * code as well as the corresponding intrinsics.  On other compilers this macro
+ * expands to nothing, though MSVC allows intrinsics to be used anywhere anyway.
+ */
+#if defined(__GNUC__) || __has_attribute(target)
+#  define __TBB_TARGET_ATTRIBUTE(attrs)	__attribute__((target(attrs)))
+#else
+#  define __TBB_TARGET_ATTRIBUTE(attrs)
+#endif
+
 /** Internal TBB features & modes **/
 
 /** __TBB_SOURCE_DIRECTLY_INCLUDED is a mode used in whitebox testing when

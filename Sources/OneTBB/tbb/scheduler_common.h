@@ -219,7 +219,11 @@ inline void prolonged_pause_impl() {
 }
 #endif
 
-inline void prolonged_pause() {
+inline
+#if __TBB_WAITPKG_INTRINSICS_PRESENT
+__TBB_TARGET_ATTRIBUTE("waitpkg")
+#endif // __TBB_WAITPKG_INTRINSICS_PRESENT
+void prolonged_pause() {
 #if __TBB_WAITPKG_INTRINSICS_PRESENT
     if (governor::wait_package_enabled()) {
         std::uint64_t time_stamp = machine_time_stamp();
