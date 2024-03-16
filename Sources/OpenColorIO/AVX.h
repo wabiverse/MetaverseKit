@@ -304,7 +304,7 @@ struct AVXRGBAPack<BIT_DEPTH_F16>
         avxRGBATranspose_4x4_4x4(rgba0, rgba1, rgba2, rgba3, r, g, b, a);
     }
 
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("avx,f16c")
     void Store(half *out, __m256 r, __m256 g, __m256 b, __m256 a)
     {
         __m256 rgba0, rgba1, rgba2, rgba3;
