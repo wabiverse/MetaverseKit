@@ -29,7 +29,7 @@ struct rgbavec_avx2 {
     sample_g = _mm256_i32gather_ps(src+1, idx, 4);              \
     sample_b = _mm256_i32gather_ps(src+2, idx, 4)
 
-static inline OCIO_TARGET_ATTRIBUTE("avx2")
+static inline OCIO_TARGET_ATTRIBUTE("vpclmulqdq,pclmul,avx2")
 rgbavec_avx2 interp_tetrahedral_avx2(const Lut3DContextAVX2 &ctx, __m256& r, __m256& g, __m256& b, __m256& a)
 {
     __m256 x0, x1, x2;
