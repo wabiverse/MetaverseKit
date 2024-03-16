@@ -299,7 +299,7 @@ struct AVX2RGBAPack<BIT_DEPTH_F16>
 template <>
 struct AVX2RGBAPack<BIT_DEPTH_F32>
 {
-    static inline
+    static inline OCIO_TARGET_ATTRIBUTE("avx2")
     void Load(const float *in, __m256& r, __m256& g, __m256& b, __m256& a)
     {
         const __m256i rgba_idx = _mm256_setr_epi32(0, 8, 16, 24, 4, 12, 20, 28);
