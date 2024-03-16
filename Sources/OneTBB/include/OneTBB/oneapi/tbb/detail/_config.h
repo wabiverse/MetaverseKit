@@ -339,7 +339,7 @@
                                          && (_WIN32 || _WIN64 || __unix__ || __APPLE__) && (__TBB_x86_32 || __TBB_x86_64) && !__ANDROID__)
 
 /*
- * OCIO_TARGET_ATTRIBUTE(attrs) - override the compilation target for a function.
+ * __TBB_TARGET_ATTRIBUTE(attrs) - override the compilation target for a function.
  *
  * This accepts one or more comma-separated suffixes to the -m prefix jointly
  * forming the name of a machine-dependent option.  On gcc-like compilers, this
