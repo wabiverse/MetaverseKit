@@ -23,18 +23,21 @@ struct rgbavec_avx {
     __m256 r, g, b, a;
 };
 
-static inline __m256 movelh_ps_avx(__m256 a, __m256 b)
+static inline OCIO_TARGET_ATTRIBUTE("avx")
+__m256 movelh_ps_avx(__m256 a, __m256 b)
 {
     return _mm256_castpd_ps(_mm256_unpacklo_pd(_mm256_castps_pd(a), _mm256_castps_pd(b)));
 }
 
-static inline __m256 movehl_ps_avx(__m256 a, __m256 b)
+static inline OCIO_TARGET_ATTRIBUTE("avx")
+__m256 movehl_ps_avx(__m256 a, __m256 b)
 {
     // NOTE: this is a and b are reversed to match sse2 movhlps which is different than unpckhpd
     return _mm256_castpd_ps(_mm256_unpackhi_pd(_mm256_castps_pd(b), _mm256_castps_pd(a)));
 }
 
-static inline __m256 load2_m128_avx(const float *hi, const float *low)
+static inline OCIO_TARGET_ATTRIBUTE("avx")
+__m256 load2_m128_avx(const float *hi, const float *low)
 {
     return _mm256_insertf128_ps(_mm256_castps128_ps256(_mm_loadu_ps(low)), _mm_loadu_ps(hi), 1);
 }
@@ -53,12 +56,14 @@ static inline __m256 load2_m128_avx(const float *hi, const float *low)
     sample_g = movehl_ps_avx(tmp2, tmp0);                       \
     sample_b = movelh_ps_avx(tmp1, tmp3)
 
-static inline __m256 fmadd_ps_avx(__m256 a, __m256 b, __m256 c)
+static inline OCIO_TARGET_ATTRIBUTE("avx")
+__m256 fmadd_ps_avx(__m256 a, __m256 b, __m256 c)
 {
     return  _mm256_add_ps(_mm256_mul_ps(a, b), c);
 }
 
-static inline __m256 blendv_avx(__m256 a, __m256 b, __m256 mask)
+static inline OCIO_TARGET_ATTRIBUTE("avx")
+__m256 blendv_avx(__m256 a, __m256 b, __m256 mask)
 {
     /* gcc 12.0 to 12.2 don't generate the vblendvps instruction with the -mavx flag.
        Use inline assembly to force it to.
