@@ -15,7 +15,8 @@ namespace OCIO_NAMESPACE
 namespace {
 
 
-static inline __m256 apply_lut_avx2(const float *lut, __m256 v, const __m256& scale, const __m256& lut_max)
+static inline OCIO_TARGET_ATTRIBUTE("avx")
+__m256 apply_lut_avx2(const float *lut, __m256 v, const __m256& scale, const __m256& lut_max)
 {
     __m256 zero   = _mm256_setzero_ps();
     __m256 one_f  = _mm256_set1_ps(1);
@@ -41,7 +42,8 @@ static inline __m256 apply_lut_avx2(const float *lut, __m256 v, const __m256& sc
 }
 
 template <BitDepth inBD, BitDepth outBD>
-static inline void linear1D(const float *lutR, const float *lutG,const float *lutB, int dim, const void *inImg, void *outImg, long numPixels)
+static inline OCIO_TARGET_ATTRIBUTE("avx")
+void linear1D(const float *lutR, const float *lutG,const float *lutB, int dim, const void *inImg, void *outImg, long numPixels)
 {
 
     typedef typename BitDepthInfo<inBD>::Type InType;
