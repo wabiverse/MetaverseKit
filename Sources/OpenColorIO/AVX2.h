@@ -21,29 +21,28 @@
 namespace OCIO_NAMESPACE
 {
 
-inline OCIO_TARGET_ATTRIBUTE("avx")
+inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
 __m256 avx2_movelh_ps(__m256 a, __m256 b)
 {
     return _mm256_castpd_ps(_mm256_unpacklo_pd(_mm256_castps_pd(a), _mm256_castps_pd(b)));
 }
 
-inline OCIO_TARGET_ATTRIBUTE("avx")
+inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
 __m256 avx2_movehl_ps(__m256 a, __m256 b)
 {
     // NOTE: this is a and b are reversed to match sse2 movhlps which is different than unpckhpd
     return _mm256_castpd_ps(_mm256_unpackhi_pd(_mm256_castps_pd(b), _mm256_castps_pd(a)));
 }
 
-inline OCIO_TARGET_ATTRIBUTE("avx")
+inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
 __m256 avx2_clamp(__m256 value, const __m256& maxValue)
 {
     value = _mm256_max_ps(value, _mm256_setzero_ps());
     return _mm256_min_ps(value, maxValue);
 }
 
-inline OCIO_TARGET_ATTRIBUTE("avx")
+inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
 void avx2RGBATranspose_4x4_4x4(__m256 row0, __m256 row1, __m256 row2, __m256 row3,
-            
                                __m256 &out_r, __m256 &out_g, __m256 &out_b, __m256 &out_a )
 {
     // the rgba transpose result will look this
@@ -77,7 +76,7 @@ template<BitDepth BD> struct AVX2RGBAPack {};
 template <>
 struct AVX2RGBAPack<BIT_DEPTH_UINT8>
 {
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Load(const uint8_t *in, __m256& r, __m256& g, __m256& b, __m256& a)
     {
         __m256i rgba_00_07 = _mm256_loadu_si256((const __m256i*)in);
@@ -98,7 +97,7 @@ struct AVX2RGBAPack<BIT_DEPTH_UINT8>
         avx2RGBATranspose_4x4_4x4(rgba0, rgba1, rgba2, rgba3, r, g, b, a);
     }
 
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Store(uint8_t *out, __m256 r, __m256 g, __m256 b, __m256 a)
     {
         __m256 rgba0, rgba1, rgba2, rgba3;
@@ -146,7 +145,7 @@ struct AVX2RGBAPack16
 {
     typedef typename BitDepthInfo<BD>::Type Type;
 
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Load(const Type *in, __m256& r, __m256& g, __m256& b, __m256& a)
     {
         // const __m256 scale = _mm256_set1_ps(1.0f / (float)BitDepthInfo<BD>::maxValue);
@@ -161,7 +160,7 @@ struct AVX2RGBAPack16
         avx2RGBATranspose_4x4_4x4(rgba0, rgba1, rgba2, rgba3, r, g, b, a);
     }
 
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Store(Type *out, __m256 r, __m256 g, __m256 b, __m256 a)
     {
         __m256 rgba0, rgba1, rgba2, rgba3;
@@ -208,13 +207,13 @@ struct AVX2RGBAPack16
 template <>
 struct AVX2RGBAPack<BIT_DEPTH_UINT10>
 {
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Load(const uint16_t *in, __m256& r, __m256& g, __m256& b, __m256& a)
     {
         AVX2RGBAPack16<BIT_DEPTH_UINT10>::Load(in, r, g, b, a);
     }
 
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Store(uint16_t *out, __m256 r, __m256 g, __m256 b, __m256 a)
     {
         AVX2RGBAPack16<BIT_DEPTH_UINT10>::Store(out, r, g, b, a);
@@ -224,13 +223,13 @@ struct AVX2RGBAPack<BIT_DEPTH_UINT10>
 template <>
 struct AVX2RGBAPack<BIT_DEPTH_UINT12>
 {
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Load(const uint16_t *in, __m256& r, __m256& g, __m256& b, __m256& a)
     {
         AVX2RGBAPack16<BIT_DEPTH_UINT12>::Load(in, r, g, b, a);
     }
 
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Store(uint16_t *out, __m256 r, __m256 g, __m256 b, __m256 a)
     {
         AVX2RGBAPack16<BIT_DEPTH_UINT12>::Store(out, r, g, b, a);
@@ -240,13 +239,13 @@ struct AVX2RGBAPack<BIT_DEPTH_UINT12>
 template <>
 struct AVX2RGBAPack<BIT_DEPTH_UINT16>
 {
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Load(const uint16_t *in, __m256& r, __m256& g, __m256& b, __m256& a)
     {
         AVX2RGBAPack16<BIT_DEPTH_UINT16>::Load(in, r, g, b, a);
     }
 
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Store(uint16_t *out, __m256 r, __m256 g, __m256 b, __m256 a)
     {
         AVX2RGBAPack16<BIT_DEPTH_UINT16>::Store(out, r, g, b, a);
@@ -258,7 +257,7 @@ struct AVX2RGBAPack<BIT_DEPTH_UINT16>
 template <>
 struct AVX2RGBAPack<BIT_DEPTH_F16>
 {
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Load(const half *in, __m256& r, __m256& g, __m256& b, __m256& a)
     {
 
@@ -273,7 +272,7 @@ struct AVX2RGBAPack<BIT_DEPTH_F16>
         avx2RGBATranspose_4x4_4x4(rgba0, rgba1, rgba2, rgba3, r, g, b, a);
     }
 
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Store(half *out, __m256 r, __m256 g, __m256 b, __m256 a)
     {
         __m256 rgba0, rgba1, rgba2, rgba3;
@@ -299,7 +298,7 @@ struct AVX2RGBAPack<BIT_DEPTH_F16>
 template <>
 struct AVX2RGBAPack<BIT_DEPTH_F32>
 {
-    static inline OCIO_TARGET_ATTRIBUTE("avx2")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Load(const float *in, __m256& r, __m256& g, __m256& b, __m256& a)
     {
         const __m256i rgba_idx = _mm256_setr_epi32(0, 8, 16, 24, 4, 12, 20, 28);
@@ -309,7 +308,7 @@ struct AVX2RGBAPack<BIT_DEPTH_F32>
         a = _mm256_i32gather_ps(in + 3, rgba_idx, 4);
     }
 
-    static inline OCIO_TARGET_ATTRIBUTE("avx")
+    static inline OCIO_TARGET_ATTRIBUTE("arch=haswell")
     void Store(float *out, __m256 r, __m256 g, __m256 b, __m256 a)
     {
         __m256 rgba0, rgba1, rgba2, rgba3;
