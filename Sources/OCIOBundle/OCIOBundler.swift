@@ -30,6 +30,11 @@
 
 import Foundation
 import OpenColorIO
+#if os(Linux)
+  import Glibc
+#else
+  import Darwin.C
+#endif
 
 public class OCIOBundler
 {
