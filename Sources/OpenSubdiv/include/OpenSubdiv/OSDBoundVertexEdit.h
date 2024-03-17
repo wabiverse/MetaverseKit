@@ -25,7 +25,7 @@
 #ifndef OPENSUBDIV3_HBRVERTEXEDIT_H
 #define OPENSUBDIV3_HBRVERTEXEDIT_H
 
-#include "../OpenSubdiv/OSDBoundhierarchicalEdit.h"
+#include "../OpenSubdiv/OSDBoundHierarchicalEdit.h"
 #include <algorithm>
 
 #include "OpenSubdiv/OSDVersion.h"
