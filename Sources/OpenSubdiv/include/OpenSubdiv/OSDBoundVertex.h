@@ -25,8 +25,8 @@
 #ifndef OPENSUBDIV3_HBRVERTEX_H
 #define OPENSUBDIV3_HBRVERTEX_H
 
-#include "../OpenSubdiv/OSDBoundface.h"
-#include "../OpenSubdiv/OSDBoundfvarData.h"
+#include "../OpenSubdiv/OSDBoundFace.h"
+#include "../OpenSubdiv/OSDBoundFvarData.h"
 #include <assert.h>
 #include <iostream>
 #include <iterator>

@@ -127,7 +127,7 @@ using namespace OPENSUBDIV_VERSION;
 
 } // end namespace OpenSubdiv
 
-#include "../OpenSubdiv/OSDBoundface.h"
+#include "../OpenSubdiv/OSDBoundFace.h"
 #include <cstring>
 
 namespace OpenSubdiv {

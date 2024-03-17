@@ -32,8 +32,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../OpenSubdiv/OSDBoundallocator.h"
-#include "../OpenSubdiv/OSDBoundfvarData.h"
+#include "../OpenSubdiv/OSDBoundAllocator.h"
+#include "../OpenSubdiv/OSDBoundFvarData.h"
 #ifdef HBRSTITCH
 #include "libgprims/stitch.h"
 #include "libgprims/stitchInternal.h"
@@ -426,7 +426,7 @@ using namespace OPENSUBDIV_VERSION;
 
 } // end namespace OpenSubdiv
 
-#include "../OpenSubdiv/OSDBoundmesh.h"
+#include "../OpenSubdiv/OSDBoundMesh.h"
 
 namespace OpenSubdiv {
 namespace OPENSUBDIV_VERSION {

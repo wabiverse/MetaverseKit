@@ -25,7 +25,7 @@
 #ifndef OPENSUBDIV3_HBRFACEEDIT_H
 #define OPENSUBDIV3_HBRFACEEDIT_H
 
-#include "../OpenSubdiv/OSDBoundhierarchicalEdit.h"
+#include "../OpenSubdiv/OSDBoundHierarchicalEdit.h"
 
 #include "OpenSubdiv/OSDVersion.h"
 
