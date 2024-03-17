@@ -52,7 +52,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include <hdf5.h>
+#include <HDF5.h>
 
 #define ALEMBIC_HDF5_FILE_VERSION -8
 
