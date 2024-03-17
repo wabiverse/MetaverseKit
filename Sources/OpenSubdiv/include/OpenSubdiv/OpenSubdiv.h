@@ -98,7 +98,7 @@
 #include <OpenSubdiv/OSDBoundFaceEdit.h>
 #include <OpenSubdiv/OSDBoundFvarData.h>
 #include <OpenSubdiv/OSDBoundFvarEdit.h>
-#include <OpenSubdiv/OSDBoundHalfedge.h>
+#include <OpenSubdiv/OSDBoundHalfEdge.h>
 
 #include <OpenSubdiv/OSDBoundHoleEdit.h>
 #include <OpenSubdiv/OSDBoundLoop.h>
