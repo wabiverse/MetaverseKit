@@ -341,11 +341,6 @@ let package = Package(
     ),
 
     .target(
-      name: "sse2neon",
-      publicHeadersPath: "include"
-    ),
-
-    .target(
       name: "pystring",
       publicHeadersPath: "include",
       cxxSettings: [
@@ -694,8 +689,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
     case .metaTbb:
       break
     case .zstd:
-      break
-    case .sse2neon:
       break
     case .pystring:
       break
@@ -1308,7 +1301,7 @@ enum Arch
     public static func targets() -> [Target]
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
-        [
+        var targs: [Target] = [
           .binaryTarget(
             name: "Boost",
             url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
@@ -1316,7 +1309,7 @@ enum Arch
           ),
         ]
       #elseif os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
-        [
+        var targs: [Target] = [
           .systemLibrary(
             name: "Boost",
             pkgConfig: "boost",
@@ -1345,19 +1338,45 @@ enum Arch
           ),
         ]
       #else /* os(Windows), os(Cygwin), os(WASI) */
-        []
+        var targs: [Target] = []
       #endif /* os(Windows), os(Cygwin), os(WASI) */
+
+      // targets that depend on arch not os.
+      if Arch.cpuArch.family.contains(.arm)
+      {
+        targs.append(
+          .target(
+            name: "sse2neon",
+            publicHeadersPath: "include"
+          )
+        )
+      }
+
+      return targs
     }
 
     public static func products() -> [Product]
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
-        [
+        var prods: [Product] = [
           .library(name: "Boost", targets: ["Boost"]),
         ]
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
-        []
+        var prods: [Product] = []
       #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
+
+      // products that depend on arch not os.
+      if Arch.cpuArch.family.contains(.arm)
+      {
+        prods.append(
+          .library(
+            name: "sse2neon", 
+            targets: ["sse2neon"]
+          )
+        )
+      }
+
+      return prods
     }
 
     public static func ocioDeps() -> [Target.Dependency]
@@ -1539,7 +1558,6 @@ enum PkgTarget: String
   case openmp = "OpenMP"
   case glfw = "GLFW"
   case imgui = "ImGui"
-  case sse2neon
   case pystring
   case imath = "Imath"
   case mxGraphEditor = "MXGraphEditor"

@@ -1621,13 +1621,21 @@ extern char *strdup(const char *s);
 
 
 /* Use FUNC to safely handle variations of C99 __func__ keyword handling */
-#ifdef H5_HAVE_C99_FUNC
+#if defined(H5_HAVE_C99_FUNC) || defined(__APPLE__)
 #define FUNC __func__
 #elif defined(H5_HAVE_FUNCTION) || defined(__linux__)
 #define FUNC __FUNCTION__
 #else
 #error "We need __func__ or __FUNCTION__ to test function names!"
 #endif
+
+#if __cplusplus
+# if __cplusplus > 199711L
+#  if !defined(register)
+#   define register // Deprecated in C++11.
+#  endif /* !defined(register) */
+# endif /* __cplusplus > 199711L */
+#endif /* __cplusplus */
 
 /*
  * These macros check whether debugging has been requested for a certain
