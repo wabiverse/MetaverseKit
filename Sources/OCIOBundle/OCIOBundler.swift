@@ -52,8 +52,10 @@ public class OCIOBundler
     guard let ocioConfig = ocio.config
     else { return print("Could not find OCIO config.") }
 
-    /* setup ocio color config. */
-    setenv("OCIO", ocioConfig, 1)
+    #if os(macOS)
+      /* setup ocio color config. */
+      setenv("OCIO", ocioConfig, 1)
+    #endif /* macOS */
 
     config = OpenColorIO_v2_3.GetCurrentConfig()
   }
