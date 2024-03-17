@@ -1623,7 +1623,7 @@ extern char *strdup(const char *s);
 /* Use FUNC to safely handle variations of C99 __func__ keyword handling */
 #ifdef H5_HAVE_C99_FUNC
 #define FUNC __func__
-#elif defined(H5_HAVE_FUNCTION)
+#elif defined(H5_HAVE_FUNCTION) || defined(__linux__)
 #define FUNC __FUNCTION__
 #else
 #error "We need __func__ or __FUNCTION__ to test function names!"
