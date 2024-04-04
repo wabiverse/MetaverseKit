@@ -29,7 +29,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "hdf5.h"
+#include "HDF5.h"
 
 #ifdef H5_HAVE_FLOCK
 /* Needed for lock type definitions (e.g., LOCK_EX) */

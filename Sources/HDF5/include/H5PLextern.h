@@ -20,7 +20,7 @@
 #define _H5PLextern_H
 
 /* Include HDF5 header */
-#include "hdf5.h"
+#include "HDF5.h"
 
 /* plugins always export */
 #if defined (_MSC_VER)  /* MSVC Compiler Case */

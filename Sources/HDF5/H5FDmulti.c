@@ -33,7 +33,7 @@
 /*lint --emacro( {534, 830}, H5FD_MULTI) */
 /*lint -esym( 534, H5Eclear2, H5Epush2) */
 
-#include "hdf5.h"
+#include "HDF5.h"
 
 
 #ifndef FALSE

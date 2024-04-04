@@ -391,7 +391,7 @@
 /* Define if the library will ignore file locks when disabled */
 #define H5_IGNORE_DISABLED_FILE_LOCKS 1
 
-/* Define if the high-level library headers should be included in hdf5.h */
+/* Define if the high-level library headers should be included in HDF5.h */
 #define H5_INCLUDE_HL 1
 
 /* Define if your system can convert long double to (unsigned) long long
