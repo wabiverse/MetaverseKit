@@ -1383,7 +1383,7 @@ enum Arch
       // only add sse2neon on arm arch.
       let sse2neon: [Target.Dependency] = Arch.cpuArch.family.contains(.arm) ? [.target(name: "sse2neon")] : []
 
-      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin)
         return [
           .target(name: "pystring"),
           .target(name: "Imath"),
@@ -1392,7 +1392,7 @@ enum Arch
           .target(name: "Yaml"),
           .target(name: "Python")
         ] + sse2neon
-      #else /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) */
+      #else /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(WASI) */
         return [
           .target(name: "pystring"),
           .target(name: "Imath"),
