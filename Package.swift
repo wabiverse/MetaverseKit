@@ -571,7 +571,7 @@ let package = Package(
       ],
       publicHeadersPath: "include",
       linkerSettings: [
-        .linkedLibrary("python3.11", .when(platforms: Arch.OS.linux.platform)),
+        .linkedLibrary("python3.10", .when(platforms: Arch.OS.linux.platform)),
       ]
     ),
 
@@ -1062,7 +1062,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           .linkedLibrary("boost_atomic"),
           .linkedLibrary("boost_iostreams"),
           .linkedLibrary("boost_program_options"),
-          .linkedLibrary("boost_python311"),
+          .linkedLibrary("boost_python310"),
         ]
       #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) */
     case .boost:
@@ -1369,7 +1369,7 @@ enum Arch
       {
         prods.append(
           .library(
-            name: "sse2neon", 
+            name: "sse2neon",
             targets: ["sse2neon"]
           )
         )
