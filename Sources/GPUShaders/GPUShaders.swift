@@ -42,12 +42,4 @@ public class GPUShaders
     /*  A metal library. */
     public var metalLib: MTLLibrary!
   #endif /* canImport(Metal) */
-
-  /** Client callsite to use shader. */
-  public func setupMetal() -> String
-  {
-    #if canImport(Metal)
-      metalLib.debugDescription
-    #endif /* canImport(Metal) */
-  }
 }
