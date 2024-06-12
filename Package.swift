@@ -1267,7 +1267,7 @@ enum Arch
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         [
-          .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.6"),
+          .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.7"),
           .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.2"),
         ]
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */

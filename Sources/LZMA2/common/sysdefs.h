@@ -117,7 +117,7 @@
 #	elif SIZEOF_SIZE_T == 8
 #		define SIZE_MAX UINT64_MAX
 #	else
-#		error size_t is not 32-bit or 64-bit
+#   define SIZE_MAX UINT64_MAX
 #	endif
 #endif
 #if SIZE_MAX != UINT32_MAX && SIZE_MAX != UINT64_MAX
