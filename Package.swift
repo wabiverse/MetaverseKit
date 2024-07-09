@@ -104,16 +104,6 @@ let package = Package(
     ),
 
     .target(
-      name: "OpenSSL",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "include",
-      cSettings: [
-        .define("BORINGSSL_NO_STATIC_INITIALIZER", to: "1"),
-      ]
-    ),
-
-    .target(
       name: "MiniZip",
       dependencies: Arch.OS.minizipDeps(),
       exclude: getConfig(for: .minizip).exclude,
@@ -122,6 +112,7 @@ let package = Package(
         .define("HAVE_ZLIB", to: "1"),
         .define("ZLIB_COMPAT", to: "1"),
         .define("HAVE_WZAES", to: "1"),
+        .define("MZ_ZIP_NO_CRYPTO", to: "1"),
       ],
       linkerSettings: [
         .linkedLibrary("bz2"),
@@ -164,9 +155,6 @@ let package = Package(
 
     .target(
       name: "TurboJPEG",
-      dependencies: [
-        .target(name: "OpenSSL"),
-      ],
       exclude: getConfig(for: .turbojpeg).exclude,
       publicHeadersPath: "include/turbo",
       cSettings: [
@@ -698,17 +686,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       ]
     case .yaml:
       break
-    case .openssl:
-      break
     case .minizip:
       config.exclude = [
         "mz_crypt_winxp.c",
+        "mz_crypt_openssl.c",
+        "mz_crypt_apple.c",
       ]
-      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
-        config.exclude += [
-          "mz_crypt_openssl.c",
-        ]
-      #endif /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) */
       #if !os(Windows)
         config.exclude += [
           "mz_strm_os_win32.c",
@@ -718,8 +701,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       #endif /* !os(Windows) */
       #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude += [
-          "mz_strm_libcomp.c",
-          "mz_crypt_apple.c",
+          "mz_strm_libcomp.c"
         ]
       #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
     case .zlib:
@@ -1184,10 +1166,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["Yaml"]
         ),
         .library(
-          name: "OpenSSL",
-          targets: ["OpenSSL"]
-        ),
-        .library(
           name: "PyBind11",
           targets: ["PyBind11"]
         ),
@@ -1398,7 +1376,6 @@ enum Arch
           .target(name: "LZMA2"),
           .target(name: "ZLibDataCompression"),
           .target(name: "ZStandard"),
-          .target(name: "OpenSSL"),
           .target(name: "BZ2"),
         ]
       #else /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) */
@@ -1406,7 +1383,6 @@ enum Arch
           .target(name: "LZMA2"),
           .target(name: "ZLibDataCompression"),
           .target(name: "ZStandard"),
-          .target(name: "OpenSSL"),
         ]
       #endif /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) */
     }
@@ -1524,7 +1500,6 @@ enum PkgTarget: String
   case zstd = "ZStandard"
   case lzma2 = "LZMA2"
   case yaml = "Yaml"
-  case openssl = "OpenSSL"
   case minizip = "MiniZip"
   case zlib = "ZLibDataCompression"
   case raw = "Raw"
