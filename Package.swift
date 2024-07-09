@@ -111,7 +111,6 @@ let package = Package(
       cSettings: [
         .define("HAVE_ZLIB", to: "1"),
         .define("ZLIB_COMPAT", to: "1"),
-        .define("HAVE_WZAES", to: "1"),
         .define("MZ_ZIP_NO_CRYPTO", to: "1"),
       ],
       linkerSettings: [
@@ -691,6 +690,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "mz_crypt_winxp.c",
         "mz_crypt_openssl.c",
         "mz_crypt_apple.c",
+        "mz_strm_wzaes.c",
       ]
       #if !os(Windows)
         config.exclude += [
