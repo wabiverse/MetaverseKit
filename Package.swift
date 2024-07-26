@@ -131,7 +131,7 @@ let package = Package(
         .headerSearchPath("."),
         .define("HAVE_ATTRIBUTE_ALIGNED", to: "1"),
         .define("WITH_GZFILEOP", to: "1"),
-        .define("HAVE_UNISTD_H", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
+        .define("HAVE_UNISTD_H", to: "1", .when(platforms: Arch.OS.nix.platform)),
         .define("Z_HAVE_STDARG_H", to: "1"),
       ]
     ),
@@ -172,7 +172,8 @@ let package = Package(
     .target(
       name: "TIFF",
       dependencies: [
-        .target(name: "WebP"),
+        .target(name: "ZLibDataCompression"),
+        .target(name: "WebP", condition: .when(platforms: Arch.OS.nix.platform)),
         .target(name: "LZMA2"),
         .target(name: "ZStandard"),
         .target(name: "TurboJPEG"),
@@ -226,7 +227,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
-        .define("HAVE_UNISTD_H", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
+        .define("HAVE_UNISTD_H", to: "1", .when(platforms: Arch.OS.nix.platform)),
         .define("Z_HAVE_STDARG_H", to: "1"),
       ]
     ),
@@ -443,8 +444,8 @@ let package = Package(
     .target(
       name: "OpenImageIO",
       dependencies: [
-        .target(name: "WebP"),
-        .target(name: "TIFF"),
+        .target(name: "WebP", condition: .when(platforms: Arch.OS.nix.platform)),
+        .target(name: "TIFF", condition: .when(platforms: Arch.OS.nix.platform)),
         .target(name: "Raw"),
         .target(name: "Ptex"),
         .target(name: "LibPNG"),
@@ -549,6 +550,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("include/Alembic/AbcMaterial"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -694,7 +696,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .headerSearchPath("simple"),
         .define("HAVE_STDBOOL_H", to: "1"),
         .define("HAVE_INTTYPES_H", to: "1", .when(platforms: Arch.OS.linux.platform)),
-        .define("MYTHREAD_POSIX", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
+        .define("MYTHREAD_POSIX", to: "1", .when(platforms: Arch.OS.nix.platform)),
         .define("MYTHREAD_VISTA", to: "1", .when(platforms: Arch.OS.windows.platform)),
       ]
     case .yaml:
@@ -1239,10 +1241,16 @@ enum Arch
 
   enum OS
   {
+    /// apple devices (macOS, visionOS, iOS, etc).
     case apple
+    /// linux distros (ubuntu, centos, etc).
     case linux
+    /// microsoft windows.
     case windows
+    /// web (wasm).
     case web
+    /// everything not windows (apple + linux).
+    case nix
 
     public var platform: [Platform]
     {
@@ -1252,6 +1260,7 @@ enum Arch
         case .linux: [.linux, .android, .openbsd]
         case .windows: [.windows]
         case .web: [.wasi]
+        case .nix: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux, .android, .openbsd]
       }
     }
 
