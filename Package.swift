@@ -40,6 +40,7 @@ let package = Package(
       publicHeadersPath: ".",
       cxxSettings: [
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -54,6 +55,7 @@ let package = Package(
       cxxSettings: [
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("__TBBMALLOC_BUILD", to: "1"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -63,6 +65,7 @@ let package = Package(
       cxxSettings: [
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("TBB_ALLOCATOR_TRAITS_BROKEN", to: "1", .when(platforms: Arch.OS.linux.platform)),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -143,6 +146,8 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        .define("LIBRAW_BUILDLIB", .when(platforms: [.windows])),
       ]
     ),
 
