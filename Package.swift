@@ -100,7 +100,11 @@ let package = Package(
       name: "Yaml",
       dependencies: [],
       exclude: [],
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        .define("yaml_cpp_EXPORTS", .when(platforms: [.windows]))
+      ]
     ),
 
     .target(
@@ -127,7 +131,7 @@ let package = Package(
         .headerSearchPath("."),
         .define("HAVE_ATTRIBUTE_ALIGNED", to: "1"),
         .define("WITH_GZFILEOP", to: "1"),
-        .define("HAVE_UNISTD_H", to: "1"),
+        .define("HAVE_UNISTD_H", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
         .define("Z_HAVE_STDARG_H", to: "1"),
       ]
     ),
@@ -222,7 +226,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
-        .define("HAVE_UNISTD_H", to: "1"),
+        .define("HAVE_UNISTD_H", to: "1", .when(platforms: Arch.OS.apple.platform + Arch.OS.linux.platform)),
         .define("Z_HAVE_STDARG_H", to: "1"),
       ]
     ),
@@ -318,6 +322,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("include/pystring"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
       ]
     ),
 
@@ -353,17 +358,26 @@ let package = Package(
 
     .target(
       name: "any",
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
+      ]
     ),
 
     .target(
       name: "nonstd",
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
+      ]
     ),
 
     .target(
       name: "rapidjson",
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
+      ]
     ),
 
     .target(
@@ -1263,7 +1277,7 @@ enum Arch
             checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
           ),
         ]
-      #elseif os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+      #elseif os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin)
         var targs: [Target] = [
           .systemLibrary(
             name: "Boost",
@@ -1292,9 +1306,9 @@ enum Arch
             ]
           ),
         ]
-      #else /* os(Windows), os(Cygwin), os(WASI) */
+      #else /* os(WASI) */
         var targs: [Target] = []
-      #endif /* os(Windows), os(Cygwin), os(WASI) */
+      #endif /* os(WASI) */
 
       // targets that depend on arch not os.
       if Arch.cpuArch.family.contains(.arm)
