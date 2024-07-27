@@ -29,7 +29,10 @@ let package = Package(
       dependencies: [
         .target(name: "Eigen"),
       ],
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ]
     ),
 
     .target(
@@ -293,7 +296,7 @@ let package = Package(
         .target(name: "ImGui"),
         .target(name: "OpenImageIO"),
         .target(name: "OpenImageIO_Util"),
-        .target(name: "PyBind11"),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
         .target(name: "MXResources"),
         Arch.OS.python(),
       ],
@@ -335,7 +338,7 @@ let package = Package(
     .target(
       name: "Imath",
       dependencies: [
-        .target(name: "PyBind11"),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
         .target(name: "pystring"),
         Arch.OS.python(),
       ],
@@ -389,7 +392,7 @@ let package = Package(
     .target(
       name: "OpenTime",
       dependencies: [
-        .target(name: "PyBind11"),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
         .target(name: "any"),
         .target(name: "nonstd"),
         .target(name: "rapidjson"),
@@ -397,7 +400,10 @@ let package = Package(
         Arch.OS.python(),
       ],
       path: "Sources/OpenTimelineIO/src/opentime",
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
+      ]
     ),
 
     .target(
@@ -412,6 +418,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("include/opentimelineio"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
       ]
     ),
 
@@ -457,7 +464,7 @@ let package = Package(
         .target(name: "OpenVDB"),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
-        .target(name: "PyBind11"),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
       ],
       exclude: getConfig(for: .oiio).exclude,
       publicHeadersPath: "include",
@@ -527,8 +534,14 @@ let package = Package(
 
     .target(
       name: "Ptex",
+      dependencies: [
+        .target(name: "ZLibDataCompression")
+      ],
       publicHeadersPath: "include",
-      cxxSettings: []
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        .define("PTEX_EXPORTS", .when(platforms: [.windows]))
+      ]
     ),
 
     .target(
@@ -589,7 +602,7 @@ let package = Package(
         .target(name: "Boost"),
         .target(name: "MetaTBB"),
         .target(name: "Blosc"),
-        .target(name: "PyBind11"),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "ZLibDataCompression"),
