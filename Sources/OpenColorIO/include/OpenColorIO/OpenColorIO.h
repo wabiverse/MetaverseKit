@@ -2894,7 +2894,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////
 // ImageDesc
 
-const ptrdiff_t AutoStride = std::numeric_limits<ptrdiff_t>::min();
+const ptrdiff_t AutoStride = (std::numeric_limits<ptrdiff_t>::min)();
 
 /**
  * \brief

@@ -2,7 +2,7 @@
 // Copyright Contributors to the OpenColorIO Project.
 
 #include "Lut3DOpCPU_AVX2.h"
-#if OCIO_USE_AVX2
+#if OCIO_USE_AVX2 && defined(__AVX2__)
 
 #include <immintrin.h>
 #include <string.h>
@@ -279,4 +279,4 @@ void applyTetrahedralAVX2(const float *lut3d, int dim, const float *src, float *
 
 } // OCIO_NAMESPACE
 
-#endif // OCIO_USE_AVX2
+#endif // OCIO_USE_AVX2 && defined(__AVX2__)

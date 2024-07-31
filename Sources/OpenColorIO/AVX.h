@@ -6,7 +6,7 @@
 #define INCLUDED_OCIO_AVX_H
 
 #include "CPUInfo.h"
-#if OCIO_USE_AVX
+#if OCIO_USE_AVX && defined(__AVX__)
 
 #include <immintrin.h>
 #include <stdio.h>

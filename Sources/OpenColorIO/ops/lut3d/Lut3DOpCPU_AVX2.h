@@ -8,7 +8,7 @@
 
 #include "CPUInfo.h"
 
-#if OCIO_USE_AVX2
+#if OCIO_USE_AVX2 && defined(__AVX2__)
 namespace OCIO_NAMESPACE
 {
 
@@ -16,6 +16,6 @@ void applyTetrahedralAVX2(const float *lut3d, int dim, const float *src, float *
 
 } // namespace OCIO_NAMESPACE
 
-#endif // OCIO_USE_AVX2
+#endif // OCIO_USE_AVX2 && defined(__AVX2__)
 
 #endif /* INCLUDED_OCIO_LUT3DOP_CPU_AVX2_H */

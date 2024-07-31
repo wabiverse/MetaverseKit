@@ -14,6 +14,7 @@
 
 #include "Platform.h"
 #include "utils/StringUtils.h"
+#include "SystemMonitor.h"
 
 namespace OCIO_NAMESPACE
 {
@@ -73,10 +74,10 @@ void getAllMonitorsWithQueryDisplayConfig(std::vector<std::tstring> & monitorsNa
 
             if (result == ERROR_SUCCESS)
             {
-                monitorsName.push_back(
-                    (result == ERROR_SUCCESS && targetName.flags.friendlyNameFromEdid) ? 
-                    targetName.monitorFriendlyDeviceName : L""
-                );
+                std::wstring ws((result == ERROR_SUCCESS && targetName.flags.friendlyNameFromEdid) ? targetName.monitorFriendlyDeviceName : L"");
+                std::tstring name(ws.begin(), ws.end());
+
+                monitorsName.push_back(name);
             }
         }
     }
@@ -147,7 +148,8 @@ void SystemMonitorsImpl::getAllMonitors()
                         friendlyMonitorNames.at(dispNum) : std::tstring(dispDevice.DeviceString);
 
                 std::tstring strippedDeviceName = deviceName;
-                if(StringUtils::StartsWith(Platform::Utf16ToUtf8(deviceName), "\\\\.\\DISPLAY"))
+                std::wstring dName(deviceName.begin(), deviceName.end());
+                if(StringUtils::StartsWith(Platform::Utf16ToUtf8(dName), "\\\\.\\DISPLAY"))
                 {
                     // Remove the slashes.
                     std::string prefix = "\\\\.\\";
