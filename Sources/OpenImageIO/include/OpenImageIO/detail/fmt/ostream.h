@@ -35,7 +35,7 @@ class file_access {
 };
 #endif /* OIIO_FIX_ABI_FOR_SWIFT */
 
-#if FMT_MSC_VERSION
+#if defined(OIIO_FIX_ABI_FOR_SWIFT) && FMT_MSC_VERSION
 template class file_access<file_access_tag, std::filebuf,
                            &std::filebuf::_Myfile>;
 auto get_file(std::filebuf&) -> FILE*;
@@ -43,10 +43,10 @@ auto get_file(std::filebuf&) -> FILE*;
 template class file_access<file_access_tag, std::__stdoutbuf<char>,
                            &std::__stdoutbuf<char>::__file_>;
 auto get_file(std::__stdoutbuf<char>&) -> FILE*;
-#endif
+#endif /* defined(OIIO_FIX_ABI_FOR_SWIFT) && FMT_MSC_VERSION */
 
 inline bool write_ostream_unicode(std::ostream& os, fmt::string_view data) {
-#if FMT_MSC_VERSION
+#if defined(OIIO_FIX_ABI_FOR_SWIFT) && FMT_MSC_VERSION
   if (auto* buf = dynamic_cast<std::filebuf*>(os.rdbuf()))
     if (FILE* f = get_file(*buf)) return write_console(f, data);
 #elif defined(_WIN32) && defined(__GLIBCXX__)

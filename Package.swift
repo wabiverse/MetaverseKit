@@ -452,6 +452,7 @@ let package = Package(
       cxxSettings: [
         .headerSearchPath("."),
         .define("OpenImageIO_Util_EXPORTS", to: "1"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
       ],
       linkerSettings: getConfig(for: .oiioUtil).linkerSettings
     ),
@@ -460,7 +461,7 @@ let package = Package(
       name: "OpenImageIO",
       dependencies: [
         .target(name: "WebP", condition: .when(platforms: Arch.OS.nix.platform)),
-        .target(name: "TIFF", condition: .when(platforms: Arch.OS.nix.platform)),
+        .target(name: "TIFF"),
         .target(name: "Raw"),
         .target(name: "Ptex"),
         .target(name: "LibPNG"),
@@ -480,10 +481,12 @@ let package = Package(
         .define("DISABLE_BMP", to: "1"),
         .define("DISABLE_TERM", to: "1"),
         .define("DISABLE_PNM", to: "1"),
+        .define("DISABLE_WEBP", to: "1", .when(platforms: [.windows])),
         // FIXME: We broke the ABI for fmt::detail::get_file
         // to stop the swift compiler from crashing at this
         // function, we should fix this in the future.
         // .define("OIIO_FIX_ABI_FOR_SWIFT", to: "1"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
       ],
       linkerSettings: getConfig(for: .oiio).linkerSettings
     ),
@@ -809,7 +812,13 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "example.c",
       ]
     case .tiff:
-      config.exclude = ["tif_win32.c", "mkg3states.c"]
+      config.exclude = ["mkg3states.c"]
+      #if !os(Windows)
+        config.exclude += ["tif_win32.c"]
+      #endif
+      #if os(Windows)
+        config.exclude += ["tif_unix.c"]
+      #endif
     case .webp:
       break
     case .openmp:
@@ -1011,6 +1020,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "pnm.imageio",
         "oiiotool",
       ]
+
+      #if os(Windows)
+        config.exclude += ["webp.imageio"]
+      #endif
     case .ocioBundle:
       break
     case .ocio:

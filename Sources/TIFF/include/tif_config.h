@@ -104,7 +104,9 @@
 #undef USE_WIN32_FILEIO
 
 /* Support webp compression */
+#if !defined(_WIN32)
 #define WEBP_SUPPORT
+#endif // !defined(_WIN32)
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

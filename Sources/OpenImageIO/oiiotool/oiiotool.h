@@ -9,7 +9,7 @@
 #include <memory>
 #include <stack>
 
-#include <boost/container/flat_set.hpp>
+#include <tsl/robin_set.h>
 
 #include <OpenImageIO/half.h>
 
@@ -1039,7 +1039,10 @@ public:
     }
 
     int nargs() const { return m_nargs; }
-    string_view args(int i) const { return m_args[i]; }
+    string_view args(int i) const
+    {
+        return i < m_nargs ? m_args[i] : string_view();
+    }
     int nimages() const { return m_nimages; }
     string_view opname() const { return m_opname; }
     ParamValueList& options() { return m_options; }
@@ -1096,7 +1099,7 @@ protected:
     std::vector<ImageBuf*> m_img;
     std::vector<string_view> m_args;
     ParamValueList m_options;
-    typedef boost::container::flat_set<int> FastIntSet;
+    typedef tsl::robin_set<int> FastIntSet;
     FastIntSet subimage_includes;  // Subimages to operate on (empty == all)
     FastIntSet subimage_excludes;  // Subimages to skip for the op
     setup_func_t m_setup_func;

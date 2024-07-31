@@ -33,7 +33,7 @@
 #    include <OneTBB/tbb/task_arena.h>
 #endif
 
-#include <boost/container/flat_map.hpp>
+#include <tsl/robin_map.h>
 
 #ifdef _WIN32
 #    include <windows.h>
@@ -301,10 +301,10 @@ public:
     bool very_busy() const { return jobs_in_queue() > size_t(4 * m_size); }
 
 private:
-    Impl(const Impl&) = delete;
-    Impl(Impl&&)      = delete;
+    Impl(const Impl&)            = delete;
+    Impl(Impl&&)                 = delete;
     Impl& operator=(const Impl&) = delete;
-    Impl& operator=(Impl&&) = delete;
+    Impl& operator=(Impl&&)      = delete;
 
     void set_thread(int i)
     {
@@ -360,7 +360,7 @@ private:
     int m_size { 0 };           // Number of threads in the queue
     std::mutex mutex;
     std::condition_variable cv;
-    mutable boost::container::flat_map<std::thread::id, int> m_worker_threadids;
+    mutable tsl::robin_map<std::thread::id, int> m_worker_threadids;
     mutable spin_mutex m_worker_threadids_mutex;
 };
 

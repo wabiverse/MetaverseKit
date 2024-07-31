@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenImageIO project.
-// SPDX-License-Identifier: BSD-3-Clause and Apache-2.0
+// SPDX-License-Identifier: Apache-2.0
 // https://github.com/AcademySoftwareFoundation/OpenImageIO
 
 
@@ -11,7 +11,7 @@
 #include <sstream>
 #include <vector>
 
-#include <boost/container/flat_map.hpp>
+#include <tsl/robin_map.h>
 
 #include <OpenImageIO/fmath.h>
 #include <OpenImageIO/imageio.h>
@@ -27,8 +27,8 @@ using namespace pvt;
 
 class TagMap::Impl {
 public:
-    typedef boost::container::flat_map<int, const TagInfo*> tagmap_t;
-    typedef boost::container::flat_map<std::string, const TagInfo*> namemap_t;
+    typedef tsl::robin_map<int, const TagInfo*> tagmap_t;
+    typedef tsl::robin_map<std::string, const TagInfo*> namemap_t;
     // Name map is lower case so it's effectively case-insensitive
 
     Impl(string_view mapname, cspan<TagInfo> tag_table)
@@ -247,27 +247,26 @@ print_dir_entry(std::ostream& out, const TagMap& tagmap,
         return false;  // bogus! overruns the buffer
     mydata += offset_adjustment;
     const char* name = tagmap.name(dir.tdir_tag);
-    Strutil::fprintf(out,
-                     "  Tag %d/0x%s (%s) type=%d (%s) count=%d offset=%d = ",
-                     dir.tdir_tag, dir.tdir_tag, (name ? name : "unknown"),
-                     dir.tdir_type, tiff_datatype_to_typedesc(dir),
-                     dir.tdir_count, dir.tdir_offset);
+    print(out,
+          "  Tag {}/0x{} ({}) type={} ({}) count={} offset={} = ", dir.tdir_tag,
+          dir.tdir_tag, (name ? name : "unknown"), dir.tdir_type,
+          tiff_datatype_to_typedesc(dir), dir.tdir_count, dir.tdir_offset);
 
     switch (dir.tdir_type) {
     case TIFF_ASCII:
-        out << "'" << string_view(mydata, dir.tdir_count) << "'";
+        print(out, "'{}'", string_view(mydata, dir.tdir_count));
         break;
     case TIFF_RATIONAL: {
         const unsigned int* u = (unsigned int*)mydata;
         for (size_t i = 0; i < dir.tdir_count; ++i)
-            out << u[2 * i] << "/" << u[2 * i + 1] << " = "
-                << (double)u[2 * i] / (double)u[2 * i + 1] << " ";
+            print(out, "{}/{} = {} ", u[2 * i], << u[2 * i + 1],
+                  (double)u[2 * i] / (double)u[2 * i + 1]);
     } break;
     case TIFF_SRATIONAL: {
         const int* u = (int*)mydata;
         for (size_t i = 0; i < dir.tdir_count; ++i)
-            out << u[2 * i] << "/" << u[2 * i + 1] << " = "
-                << (double)u[2 * i] / (double)u[2 * i + 1] << " ";
+            print(out, "{}/{} = {} ", u[2 * i], u[2 * i + 1],
+                  (double)u[2 * i] / (double)u[2 * i + 1]);
     } break;
     case TIFF_SHORT: out << ((unsigned short*)mydata)[0]; break;
     case TIFF_LONG: out << ((unsigned int*)mydata)[0]; break;
@@ -277,14 +276,14 @@ print_dir_entry(std::ostream& out, const TagMap& tagmap,
     default:
         if (len <= 4 && dir.tdir_count > 4) {
             // Request more data than is stored.
-            out << "Ignoring buffer with too much count of short data.\n";
+            print(out, "Ignoring buffer with too much count of short data.\n");
             return false;
         }
         for (size_t i = 0; i < dir.tdir_count; ++i)
-            out << (int)((unsigned char*)mydata)[i] << ' ';
+            print(out, "{} ", (int)((unsigned char*)mydata)[i]);
         break;
     }
-    out << "\n";
+    print(out, "\n");
     return true;
 }
 
@@ -300,12 +299,11 @@ dumpdata(cspan<uint8_t> blob, cspan<size_t> ifdoffsets, size_t start,
         bool at_ifd = (std::find(ifdoffsets.cbegin(), ifdoffsets.cend(), pos)
                        != ifdoffsets.end());
         if (pos == 0 || pos == start || at_ifd || (pos % 10) == 0) {
-            out << "\n@" << pos << ": ";
+            print(out, "\n@{}: ", pos);
             if (at_ifd) {
                 uint16_t n = *(uint16_t*)&blob[pos];
-                out << "\nNew IFD: " << n
-                    << " tags:  [offset_adjustment=" << offset_adjustment
-                    << "\n";
+                print(out, "\nNew IFD: {} tags:  [offset_adjustment={}]\n", n,
+                      offset_adjustment);
                 TIFFDirEntry* td = (TIFFDirEntry*)&blob[pos + 2];
                 for (int i = 0; i < n; ++i, ++td)
                     print_dir_entry(out, tiff_tagmap_ref(), *td, blob,
@@ -314,10 +312,10 @@ dumpdata(cspan<uint8_t> blob, cspan<size_t> ifdoffsets, size_t start,
         }
         unsigned char c = (unsigned char)blob[pos];
         if (c >= ' ' && c < 127)
-            out << c << ' ';
-        out << "(" << (int)c << ") ";
+            print(out, "{:c} ", c);
+        print(out, "({:d}) ", int(c));
     }
-    out << "\n";
+    print(out, "\n");
     return out.str();
 }
 #endif
@@ -529,7 +527,7 @@ pvt::exif_tagmap_ref()
 
 
 
-// libtiff > 4.1.0 defines these in tiffimpl.h. For older libtiff, let's define
+// libtiff > 4.1.0 defines these in tiff.h. For older libtiff, let's define
 // them ourselves.
 #ifndef GPSTAG_VERSIONID
 enum GPSTag {
@@ -570,11 +568,11 @@ enum GPSTag {
 
 static const TagInfo gps_tag_table[] = {
     // clang-format off
-    { GPSTAG_VERSIONID,		"GPS:VersionID",	TIFF_BYTE, 4, version4uint8_handler }, 
+    { GPSTAG_VERSIONID,		"GPS:VersionID",	TIFF_BYTE, 4, version4uint8_handler },
     { GPSTAG_LATITUDEREF,	"GPS:LatitudeRef",	TIFF_ASCII, 2 },
     { GPSTAG_LATITUDE,		"GPS:Latitude",		TIFF_RATIONAL, 3 },
     { GPSTAG_LONGITUDEREF,	"GPS:LongitudeRef",	TIFF_ASCII, 2 },
-    { GPSTAG_LONGITUDE,		"GPS:Longitude",	TIFF_RATIONAL, 3 }, 
+    { GPSTAG_LONGITUDE,		"GPS:Longitude",	TIFF_RATIONAL, 3 },
     { GPSTAG_ALTITUDEREF,	"GPS:AltitudeRef",	TIFF_BYTE, 1 },
     { GPSTAG_ALTITUDE,		"GPS:Altitude",		TIFF_RATIONAL, 1 },
     { GPSTAG_TIMESTAMP,		"GPS:TimeStamp",	TIFF_RATIONAL, 3 },
@@ -592,7 +590,7 @@ static const TagInfo gps_tag_table[] = {
     { GPSTAG_DESTLATITUDEREF,	"GPS:DestLatitudeRef",	TIFF_ASCII, 2 },
     { GPSTAG_DESTLATITUDE,	"GPS:DestLatitude",	TIFF_RATIONAL, 3 },
     { GPSTAG_DESTLONGITUDEREF,	"GPS:DestLongitudeRef",	TIFF_ASCII, 2 },
-    { GPSTAG_DESTLONGITUDE,	"GPS:DestLongitude",	TIFF_RATIONAL, 3 }, 
+    { GPSTAG_DESTLONGITUDE,	"GPS:DestLongitude",	TIFF_RATIONAL, 3 },
     { GPSTAG_DESTBEARINGREF,	"GPS:DestBearingRef",	TIFF_ASCII, 2 },
     { GPSTAG_DESTBEARING,	"GPS:DestBearing",	TIFF_RATIONAL, 1 },
     { GPSTAG_DESTDISTANCEREF,	"GPS:DestDistanceRef",	TIFF_ASCII, 2 },
@@ -641,92 +639,124 @@ add_exif_item_to_spec(ImageSpec& spec, const char* name,
                       int offset_adjustment = 0)
 {
     OIIO_ASSERT(dirp);
-    const uint8_t* dataptr = (const uint8_t*)pvt::dataptr(*dirp, buf,
-                                                          offset_adjustment);
-    if (!dataptr)
-        return;
     TypeDesc type = tiff_datatype_to_typedesc(*dirp);
+    size_t count  = dirp->tdir_count;
     if (dirp->tdir_type == TIFF_SHORT) {
-        std::vector<uint16_t> d((const uint16_t*)dataptr,
-                                (const uint16_t*)dataptr + dirp->tdir_count);
-        if (swab)
-            swap_endian(d.data(), d.size());
-        spec.attribute(name, type, d.data());
+        cspan<uint8_t> dspan
+            = pvt::dataspan<uint16_t>(*dirp, buf, offset_adjustment, count);
+        if (dspan.empty())
+            return;
+        if (swab) {
+            // In the byte swap case, copy it into a vector because the
+            // upstream source isn't mutable.
+            std::vector<uint16_t> dswab((const uint16_t*)dspan.begin(),
+                                        (const uint16_t*)dspan.end());
+            swap_endian(dswab.data(), dswab.size());
+            spec.attribute(name, type, dswab.data());
+        } else {
+            spec.attribute(name, type, dspan.data());
+        }
         return;
     }
     if (dirp->tdir_type == TIFF_LONG) {
-        std::vector<uint32_t> d((const uint32_t*)dataptr,
-                                (const uint32_t*)dataptr + dirp->tdir_count);
-        if (swab)
-            swap_endian(d.data(), d.size());
-        spec.attribute(name, type, d.data());
+        cspan<uint8_t> dspan
+            = pvt::dataspan<uint32_t>(*dirp, buf, offset_adjustment, count);
+        if (dspan.empty())
+            return;
+        if (swab) {
+            // In the byte swap case, copy it into a vector because the
+            // upstream source isn't mutable.
+            std::vector<uint32_t> dswab((const uint32_t*)dspan.begin(),
+                                        (const uint32_t*)dspan.end());
+            swap_endian(dswab.data(), dswab.size());
+            spec.attribute(name, type, dswab.data());
+        } else {
+            spec.attribute(name, type, dspan.data());
+        }
         return;
     }
     if (dirp->tdir_type == TIFF_RATIONAL) {
-        int n    = dirp->tdir_count;  // How many
-        float* f = OIIO_ALLOCA(float, n);
-        for (int i = 0; i < n; ++i) {
+        cspan<uint8_t> dspan
+            = pvt::dataspan<uint32_t>(*dirp, buf, offset_adjustment, 2 * count);
+        if (dspan.empty())
+            return;
+        float* f = OIIO_ALLOCA(float, count);
+        for (size_t i = 0; i < count; ++i) {
+            // Because the values in the blob aren't 32-bit-aligned, memcpy
+            // them into ints to do the swapping.
             unsigned int num, den;
-            memcpy(&num, dataptr + (2 * i) * sizeof(unsigned int),
-                   sizeof(unsigned int));
-            memcpy(&den, dataptr + (2 * i + 1) * sizeof(unsigned int),
+            memcpy(&num, dspan.data() + (2 * i) * sizeof(unsigned int),
+                   sizeof(unsigned int));  //NOSONAR
+            memcpy(&den, dspan.data() + (2 * i + 1) * sizeof(unsigned int),
                    sizeof(unsigned int));  //NOSONAR
             if (swab) {
-                swap_endian(&num);
-                swap_endian(&den);
+                num = byteswap(num);
+                den = byteswap(den);
             }
             f[i] = (float)((double)num / (double)den);
         }
         if (dirp->tdir_count == 1)
-            spec.attribute(name, *f);
+            spec.attribute(name, f[0]);
         else
-            spec.attribute(name, TypeDesc(TypeDesc::FLOAT, n), f);
+            spec.attribute(name, TypeDesc(TypeDesc::FLOAT, int(count)), f);
         return;
     }
     if (dirp->tdir_type == TIFF_SRATIONAL) {
-        int n    = dirp->tdir_count;  // How many
-        float* f = OIIO_ALLOCA(float, n);
-        for (int i = 0; i < n; ++i) {
+        cspan<uint8_t> dspan
+            = pvt::dataspan<int32_t>(*dirp, buf, offset_adjustment, 2 * count);
+        if (dspan.empty())
+            return;
+        float* f = OIIO_ALLOCA(float, count);
+        for (size_t i = 0; i < count; ++i) {
+            // Because the values in the blob aren't 32-bit-aligned, memcpy
+            // them into ints to do the swapping.
             int num, den;
-            memcpy(&num, dataptr + (2 * i) * sizeof(int), sizeof(int));
-            memcpy(&den, dataptr + (2 * i + 1) * sizeof(int),
+            memcpy(&num, dspan.data() + (2 * i) * sizeof(int),
+                   sizeof(int));  //NOSONAR
+            memcpy(&den, dspan.data() + (2 * i + 1) * sizeof(int),
                    sizeof(int));  //NOSONAR
             if (swab) {
-                swap_endian(&num);
-                swap_endian(&den);
+                num = byteswap(num);
+                den = byteswap(den);
             }
             f[i] = (float)((double)num / (double)den);
         }
         if (dirp->tdir_count == 1)
-            spec.attribute(name, *f);
+            spec.attribute(name, f[0]);
         else
-            spec.attribute(name, TypeDesc(TypeDesc::FLOAT, n), f);
+            spec.attribute(name, TypeDesc(TypeDesc::FLOAT, int(count)), f);
         return;
     }
     if (dirp->tdir_type == TIFF_ASCII) {
-        int len         = tiff_data_size(*dirp);
-        const char* ptr = (const char*)dataptr;
-        while (len && ptr[len - 1] == 0)  // Don't grab the terminating null
-            --len;
-        std::string str(ptr, len);
+        size_t len           = tiff_data_size(*dirp);
+        cspan<uint8_t> dspan = pvt::dataspan<char>(*dirp, buf,
+                                                   offset_adjustment, len);
+        if (dspan.empty())
+            return;
+        // Don't grab the terminating null
+        while (dspan.size() && dspan.back() == 0)
+            dspan = dspan.subspan(0, dspan.size() - 1);
+        std::string str(dspan.begin(), dspan.end());
         if (strlen(str.c_str()) < str.length())  // Stray \0 in the middle
             str = std::string(str.c_str());
         spec.attribute(name, str);
         return;
     }
-    if (dirp->tdir_type == TIFF_BYTE && dirp->tdir_count == 1) {
+    if (dirp->tdir_type == TIFF_BYTE && count == 1) {
         // Not sure how to handle "bytes" generally, but certainly for just
         // one, add it as an int.
-        unsigned char d;
-        d = *dataptr;  // byte stored in offset itself
-        spec.attribute(name, (int)d);
+        cspan<uint8_t> dspan = pvt::dataspan<uint8_t>(*dirp, buf,
+                                                      offset_adjustment, count);
+        if (dspan.empty())
+            return;
+        spec.attribute(name, (int)dspan[0]);
         return;
     }
 
 #if 0
     if (dirp->tdir_type == TIFF_UNDEFINED || dirp->tdir_type == TIFF_BYTE) {
         // Add it as bytes
-        const void *addr = dirp->tdir_count <= 4 ? (const void *) &dirp->tdir_offset 
+        const void *addr = dirp->tdir_count <= 4 ? (const void *) &dirp->tdir_offset
                                                  : (const void *) &buf[dirp->tdir_offset];
         spec.attribute (name, TypeDesc(TypeDesc::UINT8, dirp->tdir_count), addr);
     }
@@ -894,9 +924,9 @@ read_exif_tag(ImageSpec& spec, const TIFFDirEntry* dirp, cspan<uint8_t> buf,
                                       offset_adjustment);
         } else {
 #if DEBUG_EXIF_READ || DEBUG_EXIF_UNHANDLED
-            Strutil::fprintf(
+            print(
                 stderr,
-                "read_exif_tag: Unhandled %s tag=%d (0x%x), type=%d count=%d (%s), offset=%d\n",
+                "read_exif_tag: Unhandled {} tag={} (0x{:x}), type={} count={} ({}), offset={}\n",
                 tagmap.mapname(), dir.tdir_tag, dir.tdir_tag, dir.tdir_type,
                 dir.tdir_count, tiff_datatype_to_typedesc(dir),
                 dir.tdir_offset);
@@ -1151,7 +1181,7 @@ decode_exif(cspan<uint8_t> exif, ImageSpec& spec)
     // also tells us the endianness of the data) and an offset to the
     // first TIFF directory.
     //
-    // N.B. Just read libtiff's "tiffimpl.h" for info on the structure
+    // N.B. Just read libtiff's "tiff.h" for info on the structure
     // layout of TIFF headers and directory entries.  The TIFF spec
     // itself is also helpful in this area.
     TIFFHeader head = *(const TIFFHeader*)exif.data();
