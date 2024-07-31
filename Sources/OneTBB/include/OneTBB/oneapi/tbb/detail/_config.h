@@ -333,10 +333,22 @@
 #define __TBB_CPP17_UNCAUGHT_EXCEPTIONS_PRESENT             (_MSC_VER >= 1900 || __GLIBCXX__ && __cpp_lib_uncaught_exceptions \
                                                             || _LIBCPP_VERSION >= 3700 && (!__TBB_MACOS_TARGET_VERSION || __TBB_MACOS_TARGET_VERSION >= 101200))
 
-#define __TBB_TSX_INTRINSICS_PRESENT (__RTM__ || __INTEL_COMPILER || (_MSC_VER>=1700 && (__TBB_x86_64 || __TBB_x86_32)))
+#if defined(_WIN32) && defined(__clang__)
+     // intel intrinsics are not available when
+     // using clang on windows.
+#    define __TBB_TSX_INTRINSICS_PRESENT 0
+#else // !defined(_WIN32) || defined(__clang__)
+#    define __TBB_TSX_INTRINSICS_PRESENT (__RTM__ || __INTEL_COMPILER || (_MSC_VER>=1700 && (__TBB_x86_64 || __TBB_x86_32)))
+#endif // defined(_WIN32) && defined(__clang__)
 
-#define __TBB_WAITPKG_INTRINSICS_PRESENT ((__INTEL_COMPILER >= 1900 || __TBB_GCC_VERSION >= 110000 || __TBB_CLANG_VERSION >= 120000) \
-                                         && (_WIN32 || _WIN64 || __unix__ || __APPLE__) && (__TBB_x86_32 || __TBB_x86_64) && !__ANDROID__)
+#if defined(_WIN32) && defined(__clang__)
+     // intel intrinsics are not available when
+     // using clang on windows.
+#    define __TBB_WAITPKG_INTRINSICS_PRESENT 0
+#else // !defined(_WIN32) || defined(__clang__)
+#    define __TBB_WAITPKG_INTRINSICS_PRESENT ((__INTEL_COMPILER >= 1900 || __TBB_GCC_VERSION >= 110000 || __TBB_CLANG_VERSION >= 120000) \
+                                             && (_WIN32 || _WIN64 || __unix__ || __APPLE__) && (__TBB_x86_32 || __TBB_x86_64) && !__ANDROID__)
+#endif // defined(_WIN32) && defined(__clang__)
 
 /*
  * __TBB_TARGET_ATTRIBUTE(attrs) - override the compilation target for a function.

@@ -751,6 +751,13 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "mz_crypt_winvista.c",
         ]
       #endif /* !os(Windows) */
+      #if os(Windows)
+        config.exclude += [
+          "mz_strm_os_posix.c",
+          "mz_os_posix.c",
+          "mz_strm_bzip.c"
+        ]
+      #endif /* os(Windows) */
       #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude += [
           "mz_strm_libcomp.c"
