@@ -112,8 +112,10 @@ namespace
 
 #ifdef IMF_HAVE_SSE4_1
 
-void
-reconstruct_sse41 (char* buf, size_t outSize)
+#if defined(_WIN32)
+OPENEXR_TARGET_ATTRIBUTE("avx")
+#endif // defined(_WIN32)
+void reconstruct_sse41 (char* buf, size_t outSize)
 {
     static const size_t bytesPerChunk = sizeof (__m128i);
     const size_t        vOutSize      = outSize / bytesPerChunk;

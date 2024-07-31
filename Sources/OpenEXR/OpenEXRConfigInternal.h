@@ -54,6 +54,21 @@
 
 #undef OPENEXR_MISSING_ARM_VLD1
 
+/*
+ * OPENEXR_TARGET_ATTRIBUTE(attrs) - override the compilation target for a function.
+ *
+ * This accepts one or more comma-separated suffixes to the -m prefix jointly
+ * forming the name of a machine-dependent option.  On gcc-like compilers, this
+ * enables codegen for the given targets, including arbitrary compiler-generated
+ * code as well as the corresponding intrinsics.  On other compilers this macro
+ * expands to nothing, though MSVC allows intrinsics to be used anywhere anyway.
+ */
+#if defined(__GNUC__) || __has_attribute(target)
+#  define OPENEXR_TARGET_ATTRIBUTE(attrs)	__attribute__((target(attrs)))
+#else
+#  define OPENEXR_TARGET_ATTRIBUTE(attrs)
+#endif
+
 // clang-format on
 
 #endif // INCLUDED_OPENEXR_INTERNAL_CONFIG_H

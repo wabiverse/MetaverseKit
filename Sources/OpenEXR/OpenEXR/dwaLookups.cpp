@@ -21,7 +21,7 @@
 #    include <thread>
 #endif
 
-#ifdef OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN
+#if defined(OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN) && __has_include(<unistd.h>)
 #    include <unistd.h>
 #endif
 
@@ -415,7 +415,7 @@ cpuCount ()
     cpuCount = std::thread::hardware_concurrency ();
 #else
 
-#    if defined(OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN)
+#    if defined(OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN) && __has_include(<unistd.h>)
 
     cpuCount = sysconf (_SC_NPROCESSORS_ONLN);
 
