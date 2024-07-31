@@ -330,6 +330,9 @@ private:
         return m_nativespec.format;
     }
 
+    void lock() const { m_mutex.lock(); }
+    void unlock() const { m_mutex.unlock(); }
+
     const ImageBufImpl operator=(const ImageBufImpl& src);  // unimplemented
     friend class ImageBuf;
 };
@@ -511,26 +514,8 @@ ImageBuf::ImageBuf(string_view filename, int subimage, int miplevel,
 
 
 
-ImageBuf::ImageBuf(string_view filename, ImageCache* imagecache)
-    : m_impl(new ImageBufImpl(filename, 0, 0, imagecache), &impl_deleter)
-{
-}
-
-
-
 ImageBuf::ImageBuf(const ImageSpec& spec, InitializePixels zero)
     : m_impl(new ImageBufImpl("", 0, 0, NULL, &spec), &impl_deleter)
-{
-    m_impl->alloc(spec);
-    if (zero == InitializePixels::Yes && !deep())
-        ImageBufAlgo::zero(*this);
-}
-
-
-
-ImageBuf::ImageBuf(string_view filename, const ImageSpec& spec,
-                   InitializePixels zero)
-    : m_impl(new ImageBufImpl(filename, 0, 0, NULL, &spec), &impl_deleter)
 {
     m_impl->alloc(spec);
     if (zero == InitializePixels::Yes && !deep())
@@ -543,14 +528,6 @@ ImageBuf::ImageBuf(const ImageSpec& spec, void* buffer, stride_t xstride,
                    stride_t ystride, stride_t zstride)
     : m_impl(new ImageBufImpl("", 0, 0, NULL, &spec, buffer, nullptr, nullptr,
                               xstride, ystride, zstride),
-             &impl_deleter)
-{
-}
-
-
-
-ImageBuf::ImageBuf(string_view filename, const ImageSpec& spec, void* buffer)
-    : m_impl(new ImageBufImpl(filename, 0, 0, NULL, &spec, buffer),
              &impl_deleter)
 {
 }
@@ -800,14 +777,6 @@ ImageBuf::reset(string_view filename, int subimage, int miplevel,
 
 
 void
-ImageBuf::reset(string_view filename, ImageCache* imagecache)
-{
-    m_impl->reset(filename, 0, 0, imagecache, nullptr, nullptr);
-}
-
-
-
-void
 ImageBufImpl::reset(string_view filename, const ImageSpec& spec,
                     const ImageSpec* nativespec, void* buffer, stride_t xstride,
                     stride_t ystride, stride_t zstride)
@@ -843,17 +812,6 @@ ImageBufImpl::reset(string_view filename, const ImageSpec& spec,
     }
     if (nativespec)
         m_nativespec = *nativespec;
-}
-
-
-
-void
-ImageBuf::reset(string_view filename, const ImageSpec& spec,
-                InitializePixels zero)
-{
-    m_impl->reset(filename, spec);
-    if (initialized() && zero == InitializePixels::Yes && !deep())
-        ImageBufAlgo::zero(*this);
 }
 
 
@@ -1006,7 +964,7 @@ ImageBufImpl::init_spec(string_view filename, int subimage, int miplevel,
         if (m_nsubimages) {
             m_badfile          = false;
             m_pixelaspect      = m_spec.get_float_attribute("pixelaspectratio",
-                                                       1.0f);
+                                                            1.0f);
             m_current_subimage = subimage;
             m_current_miplevel = miplevel;
             m_spec_valid       = true;
@@ -1054,6 +1012,9 @@ ImageBufImpl::init_spec(string_view filename, int subimage, int miplevel,
         m_blackpixel.resize(
             round_to_multiple(m_xstride, OIIO_SIMD_MAX_SIZE_BYTES));
         // ^^^ NB make it big enough for SIMD
+        m_nsubimages = input->supports("multiimage")
+                           ? m_spec.get_int_attribute("oiio:subimages")
+                           : 1;
 
         // Go ahead and read any thumbnail that exists. Is that bad?
         if (m_spec["thumbnail_width"].get<int>()
@@ -1415,8 +1376,23 @@ ImageBuf::write(ImageOutput* out, ProgressCallback progress_callback,
             int chunk = clamp(round_to_multiple(int(budget / slsize), 64), 1,
                               1024);
             std::unique_ptr<char[]> tmp(new char[chunk * slsize]);
+
+            // Special handling for flipped vertical scanline order. Right now, OpenEXR
+            // is the only format that allows it, so we special case it by name. For
+            // just one format, trying to be more general just seems even more awkward.
+            const bool isDecreasingY = !strcmp(out->format_name(), "openexr")
+                                       && outspec.get_string_attribute(
+                                              "openexr:lineOrder")
+                                              == "decreasingY";
+            const int numChunks  = outspec.height > 0
+                                       ? 1 + ((outspec.height - 1) / chunk)
+                                       : 0;
+            const int yLoopStart = isDecreasingY ? (numChunks - 1) * chunk : 0;
+            const int yDelta     = isDecreasingY ? -chunk : chunk;
+            const int yLoopEnd   = yLoopStart + numChunks * yDelta;
+
             for (int z = 0; z < outspec.depth; ++z) {
-                for (int y = 0; y < outspec.height && ok; y += chunk) {
+                for (int y = yLoopStart; y != yLoopEnd && ok; y += yDelta) {
                     int yend = std::min(y + outspec.y + chunk,
                                         outspec.y + outspec.height);
                     ok &= get_pixels(ROI(outspec.x, outspec.x + outspec.width,
@@ -1427,10 +1403,12 @@ ImageBuf::write(ImageOutput* out, ProgressCallback progress_callback,
                                                z + outspec.z, bufformat,
                                                &tmp[0]);
                     if (progress_callback
-                        && progress_callback(progress_callback_data,
-                                             (float)(z * outspec.height + y)
-                                                 / (outspec.height
-                                                    * outspec.depth)))
+                        && progress_callback(
+                            progress_callback_data,
+                            (float)(z * outspec.height
+                                    + (isDecreasingY ? (outspec.height - 1 - y)
+                                                     : y))
+                                / (outspec.height * outspec.depth)))
                         return ok;
                 }
             }
@@ -1562,14 +1540,6 @@ ImageBuf::make_writable(bool keep_cache_type)
                     keep_cache_type ? m_impl->m_cachedpixeltype : TypeDesc());
     }
     return true;
-}
-
-
-
-bool
-ImageBuf::make_writeable(bool keep_cache_type)
-{
-    return make_writable(keep_cache_type);
 }
 
 
@@ -1731,6 +1701,15 @@ ImageBuf::uname(void) const
 {
     return m_impl->m_name;
 }
+
+
+
+void
+ImageBuf::set_name(string_view name)
+{
+    m_impl->m_name = name;
+}
+
 
 
 string_view
@@ -1934,7 +1913,7 @@ copy_pixels_impl(ImageBuf& dst, const ImageBuf& src, ROI roi, int nthreads = 0)
     std::atomic<bool> ok(true);
     ImageBufAlgo::parallel_image(roi, { "copy_pixels", nthreads }, [&](ROI roi) {
         int nchannels = roi.nchannels();
-        if (is_same<D, S>::value) {
+        if (std::is_same<D, S>::value) {
             // If both bufs are the same type, just directly copy the values
             if (src.localpixels() && roi.chbegin == 0
                 && roi.chend == dst.nchannels()
@@ -2043,7 +2022,7 @@ ImageBuf::copy(const ImageBuf& src, TypeDesc format)
         ImageSpec newspec(src.spec());
         newspec.set_format(format);
         newspec.channelformats.clear();
-        reset(src.name(), newspec);
+        reset(newspec);
     }
     return this->copy_pixels(src);
 }
@@ -2127,7 +2106,7 @@ interppixel_(const ImageBuf& img, float x, float y, float* pixel,
     int n             = img.spec().nchannels;
     float* localpixel = OIIO_ALLOCA(float, n * 4);
     float* p[4]       = { localpixel, localpixel + n, localpixel + 2 * n,
-                    localpixel + 3 * n };
+                          localpixel + 3 * n };
     x -= 0.5f;
     y -= 0.5f;
     int xtexel, ytexel;
@@ -2167,20 +2146,6 @@ ImageBuf::interppixel(float x, float y, float* pixel, WrapMode wrap) const
 
 void
 ImageBuf::interppixel_NDC(float x, float y, float* pixel, WrapMode wrap) const
-{
-    const ImageSpec& spec(m_impl->spec());
-    interppixel(static_cast<float>(spec.full_x)
-                    + x * static_cast<float>(spec.full_width),
-                static_cast<float>(spec.full_y)
-                    + y * static_cast<float>(spec.full_height),
-                pixel, wrap);
-}
-
-
-
-void
-ImageBuf::interppixel_NDC_full(float x, float y, float* pixel,
-                               WrapMode wrap) const
 {
     const ImageSpec& spec(m_impl->spec());
     interppixel(static_cast<float>(spec.full_x)
@@ -2881,15 +2846,29 @@ ImageBuf::do_wrap(int& x, int& y, int& z, WrapMode wrap) const
 
 
 
+static const ustring wrapnames[] = { ustring("default"), ustring("black"),
+                                     ustring("clamp"), ustring("periodic"),
+                                     ustring("mirror") };
+
+
 ImageBuf::WrapMode
 ImageBuf::WrapMode_from_string(string_view name)
 {
-    static const char* names[] = { "default",  "black",  "clamp",
-                                   "periodic", "mirror", nullptr };
-    for (int i = 0; names[i]; ++i)
-        if (name == names[i])
+    int i = 0;
+    for (auto w : wrapnames) {
+        if (name == w)
             return WrapMode(i);
+        ++i;
+    }
     return WrapDefault;  // name not found
+}
+
+
+ustring
+ImageBuf::wrapmode_name(WrapMode wrap)
+{
+    unsigned int w(wrap);
+    return w <= 4 ? wrapnames[w] : wrapnames[0];
 }
 
 
@@ -2946,7 +2925,7 @@ ImageBufImpl::retile(int x, int y, int z, ImageCache::Tile*& tile,
         tilezbegin = m_spec.z + ztile * td;
         tilexend   = tilexbegin + tw;
         tile       = m_imagecache->get_tile(m_name, m_current_subimage,
-                                      m_current_miplevel, x, y, z);
+                                            m_current_miplevel, x, y, z);
         if (!tile) {
             // Even though tile is NULL, ensure valid black pixel data
             std::string e = m_imagecache->geterror();
@@ -2976,18 +2955,6 @@ ImageBuf::retile(int x, int y, int z, ImageCache::Tile*& tile, int& tilexbegin,
                  int& tileybegin, int& tilezbegin, int& tilexend,
                  bool& haderror, bool exists, WrapMode wrap) const
 {
-    return m_impl->retile(x, y, z, tile, tilexbegin, tileybegin, tilezbegin,
-                          tilexend, haderror, exists, wrap);
-}
-
-
-// DEPRECATED(2.4)
-const void*
-ImageBuf::retile(int x, int y, int z, ImageCache::Tile*& tile, int& tilexbegin,
-                 int& tileybegin, int& tilezbegin, int& tilexend, bool exists,
-                 WrapMode wrap) const
-{
-    bool haderror;
     return m_impl->retile(x, y, z, tile, tilexbegin, tileybegin, tilezbegin,
                           tilexend, haderror, exists, wrap);
 }
@@ -3102,30 +3069,45 @@ ImageBuf::IteratorBase::range_is_image()
 
 
 void
+ImageBuf::IteratorBase::make_writable()
+{
+    std::lock_guard<const ImageBuf> lock(*m_ib);
+    if (m_ib->storage() != IMAGECACHE)
+        return;  // already done
+    const_cast<ImageBuf*>(m_ib)->make_writable(true);
+    OIIO_DASSERT(m_ib->storage() != IMAGECACHE);
+    if (m_tile)
+        release_tile();
+    m_tile        = nullptr;
+    m_proxydata   = nullptr;
+    m_localpixels = !m_deep;
+    pos(m_x, m_y, m_z);
+}
+
+
+
+void
 ImageBuf::IteratorBase::init_ib(WrapMode wrap, bool write)
 {
+    ImageBufImpl::lock_t lock(m_ib->m_impl->m_mutex);
     const ImageSpec& spec(m_ib->spec());
     m_deep        = spec.deep;
     m_localpixels = (m_ib->localpixels() != nullptr);
-    if (!m_localpixels && write) {
-        const_cast<ImageBuf*>(m_ib)->make_writable(true);
-        OIIO_DASSERT(m_ib->storage() != IMAGECACHE);
-        m_tile      = nullptr;
-        m_proxydata = nullptr;
-    }
-    m_img_xbegin = spec.x;
-    m_img_xend   = spec.x + spec.width;
-    m_img_ybegin = spec.y;
-    m_img_yend   = spec.y + spec.height;
-    m_img_zbegin = spec.z;
-    m_img_zend   = spec.z + spec.depth;
-    m_nchannels  = spec.nchannels;
-    //            m_tilewidth = spec.tile_width;
+    // if (write)
+    //      ensure_writable();  // Not here; do it lazily
+    m_img_xbegin   = spec.x;
+    m_img_xend     = spec.x + spec.width;
+    m_img_ybegin   = spec.y;
+    m_img_yend     = spec.y + spec.height;
+    m_img_zbegin   = spec.z;
+    m_img_zend     = spec.z + spec.depth;
+    m_nchannels    = spec.nchannels;
     m_pixel_stride = m_ib->pixel_stride();
     m_x            = 1 << 31;
     m_y            = 1 << 31;
     m_z            = 1 << 31;
     m_wrap         = (wrap == WrapDefault ? WrapBlack : wrap);
+    m_pixeltype    = spec.format.basetype;
 }
 
 
@@ -3232,6 +3214,21 @@ ImageBuf::IteratorBase::rerange(int xbegin, int xend, int ybegin, int yend,
     m_rng_zbegin = zbegin;
     m_rng_zend   = zend;
     pos(xbegin, ybegin, zbegin);
+}
+
+
+
+void
+ImageBuf::lock() const
+{
+    m_impl->lock();
+}
+
+
+void
+ImageBuf::unlock() const
+{
+    m_impl->unlock();
 }
 
 

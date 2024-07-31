@@ -39,15 +39,8 @@
 #    include <windows.h>
 #endif
 
-#if 0
 
-// Use boost::lockfree::queue for the task queue
-#    include <boost/lockfree/queue.hpp>
-template<typename T> using Queue = boost::lockfree::queue<T>;
-
-#else
-
-#    include <queue>
+#include <queue>
 
 OIIO_NAMESPACE_BEGIN
 namespace pvt {
@@ -91,7 +84,6 @@ private:
 }  // namespace pvt
 OIIO_NAMESPACE_END
 
-#endif
 
 
 OIIO_NAMESPACE_BEGIN
@@ -457,14 +449,6 @@ thread_pool::is_worker(std::thread::id id) const
 }
 
 
-// DEPRECATED(2.1)
-bool
-thread_pool::is_worker(std::thread::id id)
-{
-    return m_impl->is_worker(id);
-}
-
-
 bool
 thread_pool::very_busy() const
 {
@@ -666,17 +650,6 @@ parallel_for_chunked(int64_t begin, int64_t end, int64_t chunksize,
 
 
 
-// DEPRECATED(2.3)
-void
-parallel_for_chunked(int64_t begin, int64_t end, int64_t chunksize,
-                     std::function<void(int id, int64_t b, int64_t e)>&& task,
-                     parallel_options opt)
-{
-    parallel_for_chunked_id(begin, end, chunksize, std::move(task), opt);
-}
-
-
-
 template<typename Index>
 inline void
 parallel_for_impl(Index begin, Index end, function_view<void(Index)> task,
@@ -814,22 +787,6 @@ parallel_for_range(uint64_t begin, uint64_t end,
 
 
 
-// DEPRECATED(2.3)
-void
-parallel_for(int64_t begin, int64_t end,
-             std::function<void(int id, int64_t index)>&& task, paropt opt)
-{
-    parallel_for_chunked_id(
-        begin, end, 0,
-        [&task](int id, int64_t i, int64_t e) {
-            for (; i < e; ++i)
-                task(id, i);
-        },
-        opt);
-}
-
-
-
 void
 parallel_for_chunked_2D_id(
     int64_t xbegin, int64_t xend, int64_t xchunksize, int64_t ybegin,
@@ -864,34 +821,6 @@ parallel_for_chunked_2D_id(
         }
     }
     parallel_recursive_depth(-1);
-}
-
-
-
-// DEPRECATED(2.3)
-void
-parallel_for_chunked_2D(
-    int64_t xbegin, int64_t xend, int64_t xchunksize, int64_t ybegin,
-    int64_t yend, int64_t ychunksize,
-    std::function<void(int id, int64_t, int64_t, int64_t, int64_t)>&& task,
-    parallel_options opt)
-{
-    parallel_for_chunked_2D_id(xbegin, xend, xchunksize, ybegin, yend,
-                               ychunksize, std::move(task), opt);
-}
-
-
-
-// DEPRECATED(2.3)
-void
-parallel_for_chunked_2D(
-    int64_t xbegin, int64_t xend, int64_t xchunksize, int64_t ybegin,
-    int64_t yend, int64_t ychunksize,
-    std::function<void(int id, int64_t, int64_t, int64_t, int64_t)>&& task,
-    paropt opt)
-{
-    parallel_for_chunked_2D_id(xbegin, xend, xchunksize, ybegin, yend,
-                               ychunksize, std::move(task), opt);
 }
 
 

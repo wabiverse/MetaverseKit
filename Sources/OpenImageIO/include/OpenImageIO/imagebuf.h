@@ -190,9 +190,6 @@ public:
                       const ImageSpec* config      = nullptr,
                       Filesystem::IOProxy* ioproxy = nullptr);
 
-    // Deprecated synonym for `ImageBuf(name, 0, 0, imagecache, nullptr)`.
-    ImageBuf(string_view name, ImageCache* imagecache);
-
     /// Construct a writable ImageBuf with the given specification
     /// (including resolution, data type, metadata, etc.). The ImageBuf will
     /// allocate and own its own pixel memory and will free that memory
@@ -219,10 +216,14 @@ public:
     explicit ImageBuf(const ImageSpec& spec,
                       InitializePixels zero = InitializePixels::Yes);
 
-    // Deprecated/useless synonym for `ImageBuf(spec,zero)` but also gives
-    // it an internal name.
+    // Synonym for `ImageBuf(spec,zero)` but also gives it an internal name
+    // that will be used if write() is called with an empty filename.
     ImageBuf(string_view name, const ImageSpec& spec,
-             InitializePixels zero = InitializePixels::Yes);
+             InitializePixels zero = InitializePixels::Yes)
+        : ImageBuf(spec, zero)
+    {
+        set_name(name);
+    }
 
     /// Construct a writable ImageBuf that "wraps" existing pixel memory
     /// owned by the calling application. The ImageBuf does not own the
@@ -250,10 +251,6 @@ public:
     ImageBuf(const ImageSpec& spec, void* buffer, stride_t xstride = AutoStride,
              stride_t ystride = AutoStride, stride_t zstride = AutoStride);
 
-    // Deprecated/useless synonym for `ImageBuf(spec,buffer)` but also gives
-    // it an internal name.
-    ImageBuf(string_view name, const ImageSpec& spec, void* buffer);
-
     /// Construct a copy of an ImageBuf.
     ImageBuf(const ImageBuf& src);
 
@@ -268,9 +265,6 @@ public:
     /// constructor (holding no image, with storage
     /// `IBStorage::UNINITIALIZED`).
     void reset() { clear(); }
-
-    // Deprecated/useless synonym for `reset(name, 0, 0, imagecache, nullptr)`
-    void reset(string_view name, ImageCache* imagecache);
 
     /// Destroy any previous contents of the ImageBuf and re-initialize it
     /// as if newly constructed with the same arguments, as a read-only
@@ -294,10 +288,13 @@ public:
     void reset(const ImageSpec& spec,
                InitializePixels zero = InitializePixels::Yes);
 
-    // Deprecated/useless synonym for `reset(spec, zero)` and also give it an
-    // internal name.
+    /// Synonym for `reset(spec, zero)` and also give it an internal name.
     void reset(string_view name, const ImageSpec& spec,
-               InitializePixels zero = InitializePixels::Yes);
+               InitializePixels zero = InitializePixels::Yes)
+    {
+        reset(spec, zero);
+        set_name(name);
+    }
 
     /// Destroy any previous contents of the ImageBuf and re-initialize it
     /// as if newly constructed with the same arguments, to "wrap" existing
@@ -322,10 +319,6 @@ public:
     ///             Return `true` if it works (including if no read was
     ///             necessary), `false` if something went horribly wrong.
     bool make_writable(bool keep_cache_type = false);
-
-    // DEPRECATED(2.2): This is an alternate, and less common, spelling.
-    // Let's standardize on "writable". We will eventually remove this.
-    bool make_writeable(bool keep_cache_type = false);
 
     /// @}
 
@@ -507,18 +500,6 @@ public:
                string_view fileformat             = string_view(),
                ProgressCallback progress_callback = nullptr,
                void* progress_callback_data       = nullptr) const;
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-    // DEPRECATED(1.9): old version did not have the data type
-    OIIO_DEPRECATED("use other write() that takes the dtype argument (1.9)")
-    bool write(string_view filename, string_view fileformat,
-               ProgressCallback progress_callback = nullptr,
-               void* progress_callback_data       = nullptr) const
-    {
-        return write(filename, TypeUnknown, fileformat, progress_callback,
-                     progress_callback_data);
-    }
-#endif  // DOXYGEN_SHOULD_SKIP_THIS
 
     /// Set the pixel data format that will be used for subsequent `write()`
     /// calls that do not themselves request a specific data type request.
@@ -724,13 +705,6 @@ public:
     void interppixel_NDC(float s, float t, float* pixel,
                          WrapMode wrap = WrapBlack) const;
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-    // DEPRECATED (1.5) synonym for interppixel_NDC.
-    OIIO_DEPRECATED("use interppixel_NDC (1.5)")
-    void interppixel_NDC_full(float s, float t, float* pixel,
-                              WrapMode wrap = WrapBlack) const;
-#endif
-
     /// Bicubic interpolation at pixel coordinates (x,y).
     void interppixel_bicubic(float x, float y, float* pixel,
                              WrapMode wrap = WrapBlack) const;
@@ -879,6 +853,10 @@ public:
     /// Return the name of the buffer as a ustring.
     ustring uname(void) const;
 
+    /// Set the name of the ImageBuf, will be used later as default
+    /// filename if write() is called with an empty filename.
+    void set_name(string_view name);
+
     /// Return the name of the image file format of the file this ImageBuf
     /// refers to (for example `"openexr"`).  Returns an empty string for an
     /// ImageBuf that was not constructed as a direct reference to a file.
@@ -890,9 +868,16 @@ public:
     /// contained only one image.
     int subimage() const;
 
-    /// Return the number of subimages in the file this ImageBuf refers to.
-    /// This will always be 1 for an ImageBuf that was not constructed as a
-    /// direct reference to a file.
+    /// Return the number of subimages in the file this ImageBuf refers to, if
+    /// it can be determined efficiently. This will always be 1 for an
+    /// ImageBuf that was not constructed as a direct reference to a file, or
+    /// for an ImageBuf that refers to a file type that is not capable of
+    /// containing multiple subimages.
+    ///
+    /// Note that a return value of 0 indicates that the number of subimages
+    /// cannot easily be known without reading the entire image file to
+    /// discover the total. To compute this yourself, you would need check
+    /// every subimage successively until you get an error.
     int nsubimages() const;
 
     /// Return the index of the miplevel with a file's subimage that the
@@ -1068,35 +1053,6 @@ public:
         error(Strutil::fmt::format(fmt, args...));
     }
 
-    /// Error reporting for ImageBuf: call this with printf-like arguments
-    /// to report an error. It is not necessary to have the error message
-    /// contain a trailing newline.
-    template<typename... Args>
-    void errorf(const char* fmt, const Args&... args) const
-    {
-        error(Strutil::sprintf(fmt, args...));
-    }
-
-    /// Error reporting for ImageBuf: call this with Strutil::format
-    /// formatting conventions.  It is not necessary to have the error
-    /// message contain a trailing newline. Beware, this is in transition,
-    /// is currently printf-like but will someday change to python-like!
-    template<typename... Args>
-    OIIO_FORMAT_DEPRECATED void error(const char* fmt,
-                                      const Args&... args) const
-    {
-        error(Strutil::format(fmt, args...));
-    }
-
-    // Error reporting for ImageBuf: call this with Python / {fmt} /
-    // std::format style formatting specification.
-    template<typename... Args>
-    OIIO_DEPRECATED("use `errorfmt` instead")
-    void fmterror(const char* fmt, const Args&... args) const
-    {
-        error(Strutil::fmt::format(fmt, args...));
-    }
-
     /// Returns `true` if the ImageBuf has had an error and has an error
     /// message ready to retrieve via `geterror()`.
     bool has_error(void) const;
@@ -1176,11 +1132,68 @@ public:
 
     /// @}
 
+    /// @{
+    /// @name  Locking the internal mutex
+
+    void lock() const;
+    void unlock() const;
+    /// @}
+
     /// Return the `WrapMode` corresponding to the name (`"default"`,
     /// `"black"`, `"clamp"`, `"periodic"`, `"mirror"`). For an unknown
     /// name, this will return `WrapDefault`.
     static WrapMode WrapMode_from_string(string_view name);
 
+    /// Return the name corresponding to the wrap mode.
+    static ustring wrapmode_name(WrapMode wrap);
+
+#if !defined(OIIO_DOXYGEN) && !defined(OIIO_INTERNAL)
+    // Deprecated things -- might be removed at any time
+
+    OIIO_DEPRECATED("Use `ImageBuf(name, 0, 0, imagecache, nullptr)` (2.2)")
+    ImageBuf(string_view name, ImageCache* imagecache)
+        : ImageBuf(name, 0, 0, imagecache)
+    {
+    }
+
+    OIIO_DEPRECATED(
+        "The name parameter is not used, use `ImageBuf(spec,buffer)` (2.2)")
+    ImageBuf(string_view name, const ImageSpec& spec, void* buffer)
+        : ImageBuf(spec, buffer)
+    {
+    }
+
+    OIIO_DEPRECATED("Use `reset(name, 0, 0, imagecache)` (2.2)")
+    void reset(string_view name, ImageCache* imagecache)
+    {
+        reset(name, 0, 0, imagecache);
+    }
+
+    OIIO_DEPRECATED("Use make_writable (2.2)")
+    bool make_writeable(bool keep_cache_type = false)
+    {
+        return make_writable(keep_cache_type);
+    }
+
+    OIIO_DEPRECATED("use interppixel_NDC (1.5)")
+    void interppixel_NDC_full(float s, float t, float* pixel,
+                              WrapMode wrap = WrapBlack) const
+    {
+        const ImageSpec& spec(this->spec());
+        interppixel(static_cast<float>(spec.full_x)
+                        + s * static_cast<float>(spec.full_width),
+                    static_cast<float>(spec.full_y)
+                        + t * static_cast<float>(spec.full_height),
+                    pixel, wrap);
+    }
+
+    template<typename... Args>
+    OIIO_DEPRECATED("Use errorfmt")
+    void error(const char* fmt, const Args&... args) const
+    {
+        error(Strutil::old::format(fmt, args...));
+    }
+#endif
 
     friend class IteratorBase;
 
@@ -1301,7 +1314,7 @@ public:
         ROI range() const
         {
             return ROI(m_rng_xbegin, m_rng_xend, m_rng_ybegin, m_rng_yend,
-                       m_rng_zbegin, m_rng_zend, 0, m_ib->nchannels());
+                       m_rng_zbegin, m_rng_zend, 0, m_nchannels);
         }
 
         /// Reset the iteration range for this iterator and reposition to
@@ -1324,11 +1337,23 @@ public:
             return m_ib->deep_value_uint(m_x, m_y, m_z, c, s);
         }
 
+        bool localpixels() const { return m_localpixels; }
+
         // Did we encounter an error while we iterated?
         bool has_error() const { return m_readerror; }
 
         // Clear the error flag
         void clear_error() { m_readerror = false; }
+
+        // Store into `span<T> dest` the channel values of the pixel the
+        // iterator points to.
+        template<typename T = float> void store(span<T> dest) const
+        {
+            OIIO_DASSERT(dest.size() >= oiio_span_size_type(m_nchannels));
+            convert_pixel_values(TypeDesc::BASETYPE(m_pixeltype), m_proxydata,
+                                 TypeDescFromC<T>::value(), dest.data(),
+                                 m_nchannels);
+        }
 
     protected:
         friend class ImageBuf;
@@ -1352,6 +1377,7 @@ public:
         char* m_proxydata = nullptr;
         WrapMode m_wrap   = WrapBlack;
         bool m_readerror  = false;
+        unsigned char m_pixeltype;
 
         // Helper called by ctrs -- set up some locally cached values
         // that are copied or derived from the ImageBuf.
@@ -1369,6 +1395,7 @@ public:
             OIIO_DASSERT(m_exists && m_valid);   // precondition
             OIIO_DASSERT(valid(m_x, m_y, m_z));  // should be true by definition
             if (m_localpixels) {
+                OIIO_DASSERT(m_proxydata != nullptr);
                 m_proxydata += m_pixel_stride;
                 if (OIIO_UNLIKELY(m_x >= m_img_xend))
                     pos_xincr_local_past_end();
@@ -1398,6 +1425,15 @@ public:
         // elsewhere to prevent imagebuf.h needing to know anything more
         // about ImageCache.
         void OIIO_API release_tile();
+
+        // Check if the IB is writable, make it so if it isn't.
+        OIIO_FORCEINLINE void ensure_writable()
+        {
+            if (OIIO_UNLIKELY(m_ib->storage() == IMAGECACHE))
+                make_writable();
+        }
+        // Do the dirty work of making the IB writable.
+        void OIIO_API make_writable();
     };
 
     /// Templated class for referring to an individual pixel in an
@@ -1406,7 +1442,7 @@ public:
     /// [xbegin..xend) X [ybegin..yend).  It is templated on BUFT, the
     /// type known to be in the internal representation of the ImageBuf,
     /// and USERT, the type that the user wants to retrieve or set the
-    /// data (defaulting to float).  the whole idea is to allow this:
+    /// data (defaulting to float). The whole idea is to allow this:
     /// \code
     ///   ImageBuf img (...);
     ///   ImageBuf::Iterator<float> pixel (img, 0, 512, 0, 512);
@@ -1456,36 +1492,70 @@ public:
 
         ~Iterator() {}
 
+    private:
+        // Private helper struct that encapsulates an Interator& and an index,
+        // awaiting a later read or write (which will call the iterator's
+        // get() or set(), respectively).
+        struct IteratorValRef {
+            Iterator& it;
+            int index;
+            IteratorValRef(Iterator& it, int index)
+                : it(it)
+                , index(index)
+            {
+            }
+            operator USERT() const { return it.get(index); }
+            void operator=(USERT val) { it.set(index, val); }
+        };
+
+    public:
         /// Dereferencing the iterator gives us a proxy for the pixel,
         /// which we can index for reading or assignment.
         DataArrayProxy<BUFT, USERT>& operator*()
         {
+            ensure_writable();
             return *(DataArrayProxy<BUFT, USERT>*)(void*)&m_proxydata;
+        }
+
+        /// Retrieve the value of channel i at the current iterator.
+        USERT get(int i) const
+        {
+            ConstDataArrayProxy<BUFT, USERT> proxy((const BUFT*)m_proxydata);
+            return proxy[i];
+        }
+
+        /// Set the value of channel i at the current iterator. If the buffer
+        /// is not writable (for example, it is backed by an ImageCache), it
+        /// will be made writable by copying into a henceforth-local buffer.
+        void set(int i, USERT val)
+        {
+            ensure_writable();
+            DataArrayProxy<BUFT, USERT> proxy((BUFT*)m_proxydata);
+            proxy[i] = val;
         }
 
         /// Array indexing retrieves the value of the i-th channel of
         /// the current pixel.
-        USERT operator[](int i) const
-        {
-            DataArrayProxy<BUFT, USERT> proxy((BUFT*)m_proxydata);
-            return proxy[i];
-        }
-
-        /// Array referencing retrieve a proxy (which may be "assigned
-        /// to") of i-th channel of the current pixel, so that this
-        /// works: me[i] = val;
-        DataProxy<BUFT, USERT> operator[](int i)
-        {
-            DataArrayProxy<BUFT, USERT> proxy((BUFT*)m_proxydata);
-            return proxy[i];
-        }
+        IteratorValRef operator[](int i) { return IteratorValRef(*this, i); }
 
         void* rawptr() const { return m_proxydata; }
+
+        // Load values from `span<T> src` into the pixel the iterator refers
+        // to, doing any conversions necessary.
+        template<typename T = float> void load(cspan<T> src)
+        {
+            OIIO_DASSERT(src.size() >= oiio_span_size_type(m_nchannels));
+            ensure_writable();
+            convert_pixel_values(TypeDescFromC<T>::value(), src.data(),
+                                 TypeDesc::BASETYPE(m_pixeltype), m_proxydata,
+                                 m_nchannels);
+        }
 
         /// Set the number of deep data samples at this pixel. (Only use
         /// this if deep_alloc() has not yet been called on the buffer.)
         void set_deep_samples(int n)
         {
+            ensure_writable();
             return const_cast<ImageBuf*>(m_ib)->set_deep_samples(m_x, m_y, m_z,
                                                                  n);
         }
@@ -1494,11 +1564,13 @@ public:
         /// if deep_alloc() has been called.)
         void set_deep_value(int c, int s, float value)
         {
+            ensure_writable();
             return const_cast<ImageBuf*>(m_ib)->set_deep_value(m_x, m_y, m_z, c,
                                                                s, value);
         }
         void set_deep_value(int c, int s, uint32_t value)
         {
+            ensure_writable();
             return const_cast<ImageBuf*>(m_ib)->set_deep_value(m_x, m_y, m_z, c,
                                                                s, value);
         }
@@ -1570,11 +1642,6 @@ protected:
                        int& tilexbegin, int& tileybegin, int& tilezbegin,
                        int& tilexend, bool& haderr, bool exists,
                        WrapMode wrap) const;
-
-    // DEPRECATED(2.4)
-    const void* retile(int x, int y, int z, pvt::ImageCacheTile*& tile,
-                       int& tilexbegin, int& tileybegin, int& tilezbegin,
-                       int& tilexend, bool exists, WrapMode wrap) const;
 
     const void* blackpixel() const;
 

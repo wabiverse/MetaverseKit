@@ -85,7 +85,7 @@ inline uint64_t fasthash64(const void *buf, size_t len, uint64_t seed=1771)
 		OIIO_PRAGMA_WARNING_PUSH
 		OIIO_GCC_ONLY_PRAGMA(GCC diagnostic ignored "-Wmaybe-uninitialized")
 		v  = *pos++;
-		OIIO_PRAGMA_WARNING_PUSH
+		OIIO_PRAGMA_WARNING_POP
 		h ^= mix(v);
 		h *= m;
 	}
@@ -320,7 +320,7 @@ OIIO_HOSTDEVICE inline constexpr uint128_t Uint128(uint64_t lo, uint64_t hi) {
     return lo + (((uint128_t)hi) << 64);
 }
 
-OIIO_HOSTDEVICE inline OIIO_CONSTEXPR14 void
+OIIO_HOSTDEVICE inline constexpr void
 CopyUint128(uint128_t &dst, const uint128_t src) {
     dst = src;
 }
@@ -336,11 +336,11 @@ OIIO_HOSTDEVICE inline constexpr uint64_t Uint128High64(const uint128_t x) {
     return x.second;
 }
 
-OIIO_HOSTDEVICE inline OIIO_CONSTEXPR14 uint128_t Uint128(uint64_t lo, uint64_t hi) {
+OIIO_HOSTDEVICE inline constexpr uint128_t Uint128(uint64_t lo, uint64_t hi) {
     return uint128_t(lo, hi);
 }
 
-OIIO_HOSTDEVICE inline OIIO_CONSTEXPR14 void
+OIIO_HOSTDEVICE inline constexpr void
 CopyUint128(uint128_t &dst, const uint128_t src) {
     dst.first  = src.first;
     dst.second = src.second;
@@ -402,7 +402,7 @@ uint128_t OIIO_API Hash128WithSeed(const char* s, size_t len, uint128_t seed);
 // This is intended to be a reasonably good hash function.
 // May change from time to time, may differ on different platforms, may differ
 // depending on NDEBUG.
-OIIO_HOSTDEVICE inline OIIO_CONSTEXPR14 uint64_t Hash128to64(uint128_t x) {
+OIIO_HOSTDEVICE inline constexpr uint64_t Hash128to64(uint128_t x) {
   // Murmur-inspired hashing.
   const uint64_t kMul = 0x9ddfea08eb382d69ULL;
   uint64_t a = (Uint128Low64(x) ^ Uint128High64(x)) * kMul;
@@ -426,7 +426,7 @@ uint128_t OIIO_API Fingerprint128(const char* s, size_t len);
 
 // This is intended to be a good fingerprinting primitive.
 // See below for more overloads.
-OIIO_HOSTDEVICE inline OIIO_CONSTEXPR14 uint64_t Fingerprint(uint128_t x) {
+OIIO_HOSTDEVICE inline constexpr uint64_t Fingerprint(uint128_t x) {
   // Murmur-inspired hashing.
   const uint64_t kMul = 0x9ddfea08eb382d69ULL;
   uint64_t a = (Uint128Low64(x) ^ Uint128High64(x)) * kMul;
@@ -440,7 +440,7 @@ OIIO_HOSTDEVICE inline OIIO_CONSTEXPR14 uint64_t Fingerprint(uint128_t x) {
 }
 
 // This is intended to be a good fingerprinting primitive.
-OIIO_HOSTDEVICE inline OIIO_CONSTEXPR14 uint64_t Fingerprint(uint64_t x) {
+OIIO_HOSTDEVICE inline constexpr uint64_t Fingerprint(uint64_t x) {
   // Murmur-inspired hashing.
   const uint64_t kMul = 0x9ddfea08eb382d69ULL;
   uint64_t b = x * kMul;
@@ -578,6 +578,11 @@ public:
     SHA1 (const void *data=NULL, size_t size=0);
     ~SHA1 ();
 
+    SHA1 (string_view str) : SHA1(str.data(), str.size()) { }
+
+    template<typename T>
+    SHA1 (span<T> v) : SHA1(v.data(), v.size()) { }
+
     /// Append more data
     void append (const void *data, size_t size);
 
@@ -587,7 +592,7 @@ public:
     }
 
     /// Append more data from a span, without thinking about sizes.
-    template<class T> void append (span<T> v) {
+    template<typename T> void append (span<T> v) {
         append (v.data(), v.size()*sizeof(T));
     }
 

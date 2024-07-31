@@ -50,7 +50,8 @@ static const Imath::C3f test_colors[n_test_colors]
 
 
 #if 0 || !defined(NDEBUG) /* allow color configuration debugging */
-static bool colordebug = Strutil::stoi(Sysutil::getenv("OIIO_COLOR_DEBUG"));
+static bool colordebug = Strutil::stoi(Sysutil::getenv("OIIO_DEBUG_COLOR"))
+                       || Strutil::stoi(Sysutil::getenv("OIIO_DEBUG_ALL"));
 #    define DBG(...)    \
         if (colordebug) \
         Strutil::print(__VA_ARGS__)
@@ -563,11 +564,11 @@ ColorConfig::Impl::test_conversion_yields(const char* from, const char* to,
     if (!proc)
         return false;
     OIIO_DASSERT(test_colors.size() == result_colors.size());
-    int n              = std::ssize(test_colors);
+    auto n             = test_colors.size();
     Imath::C3f* colors = OIIO_ALLOCA(Imath::C3f, n);
     std::copy(test_colors.data(), test_colors.data() + n, colors);
-    proc->apply((float*)colors, n, 1, 3, sizeof(float), 3 * sizeof(float),
-                n * 3 * sizeof(float));
+    proc->apply((float*)colors, int(n), 1, 3, sizeof(float), 3 * sizeof(float),
+                int(n) * 3 * sizeof(float));
     return close_colors({ colors, n }, result_colors);
 }
 
@@ -930,14 +931,6 @@ bool
 ColorConfig::has_error() const
 {
     return (getImpl()->haserror());
-}
-
-
-
-bool
-ColorConfig::error() const
-{
-    return has_error();
 }
 
 
@@ -2072,30 +2065,6 @@ ColorConfig::createDisplayTransform(ustring display, ustring view,
 
 
 ColorProcessorHandle
-ColorConfig::createDisplayTransform(string_view display, string_view view,
-                                    string_view inputColorSpace,
-                                    string_view looks, string_view context_key,
-                                    string_view context_value) const
-{
-    return createDisplayTransform(ustring(display), ustring(view),
-                                  ustring(inputColorSpace), ustring(looks),
-                                  false, ustring(context_key),
-                                  ustring(context_value));
-}
-
-ColorProcessorHandle
-ColorConfig::createDisplayTransform(ustring display, ustring view,
-                                    ustring inputColorSpace, ustring looks,
-                                    ustring context_key,
-                                    ustring context_value) const
-{
-    return createDisplayTransform(display, view, inputColorSpace, looks, false,
-                                  context_key, context_value);
-}
-
-
-
-ColorProcessorHandle
 ColorConfig::createFileTransform(string_view name, bool inverse) const
 {
     return createFileTransform(ustring(name), inverse);
@@ -2259,7 +2228,7 @@ ImageBufAlgo::colorconvert(ImageBuf& dst, const ImageBuf& src, string_view from,
                                                 colorconfig->resolve(to),
                                                 context_key, context_value);
         if (!processor) {
-            if (colorconfig->error())
+            if (colorconfig->has_error())
                 dst.errorfmt("{}", colorconfig->geterror());
             else
 #ifdef USE_OCIO
@@ -2347,7 +2316,7 @@ colorconvert_impl(ImageBuf& R, const ImageBuf& A,
         unpremult = false;
     // clang-format off
     parallel_image(
-        roi, parallel_options(nthreads),
+        roi, paropt(nthreads),
         [&, unpremult, channelsToCopy, processor](ROI roi) {
             int width = roi.width();
             // Temporary space to hold one RGBA scanline
@@ -2433,7 +2402,7 @@ colorconvert_impl_float_rgba(ImageBuf& R, const ImageBuf& A,
     OIIO_ASSERT(R.localpixels() && A.localpixels()
                 && R.spec().format == TypeFloat && A.spec().format == TypeFloat
                 && R.nchannels() == 4 && A.nchannels() == 4);
-    parallel_image(roi, parallel_options(nthreads), [&](ROI roi) {
+    parallel_image(roi, paropt(nthreads), [&](ROI roi) {
         int width = roi.width();
         // Temporary space to hold one RGBA scanline
         vfloat4* scanline;
@@ -2577,7 +2546,7 @@ ImageBufAlgo::ociolook(ImageBuf& dst, const ImageBuf& src, string_view looks,
                                                      colorconfig->resolve(to),
                                                      inverse, key, value);
         if (!processor) {
-            if (colorconfig->error())
+            if (colorconfig->has_error())
                 dst.errorfmt("{}", colorconfig->geterror());
             else
 #ifdef USE_OCIO
@@ -2642,7 +2611,7 @@ ImageBufAlgo::ociodisplay(ImageBuf& dst, const ImageBuf& src,
                                                   colorconfig->resolve(from),
                                                   looks, inverse, key, value);
         if (!processor) {
-            if (colorconfig->error())
+            if (colorconfig->has_error())
                 dst.errorfmt("{}", colorconfig->geterror());
             else
 #ifdef USE_OCIO
@@ -2680,33 +2649,6 @@ ImageBufAlgo::ociodisplay(const ImageBuf& src, string_view display,
 
 
 
-// DEPRECATED(2.5)
-bool
-ImageBufAlgo::ociodisplay(ImageBuf& dst, const ImageBuf& src,
-                          string_view display, string_view view,
-                          string_view from, string_view looks, bool unpremult,
-                          string_view key, string_view value,
-                          const ColorConfig* colorconfig, ROI roi, int nthreads)
-{
-    return ociodisplay(dst, src, display, view, from, looks, unpremult, false,
-                       key, value, colorconfig, roi, nthreads);
-}
-
-
-
-// DEPRECATED(2.5)
-ImageBuf
-ImageBufAlgo::ociodisplay(const ImageBuf& src, string_view display,
-                          string_view view, string_view from, string_view looks,
-                          bool unpremult, string_view key, string_view value,
-                          const ColorConfig* colorconfig, ROI roi, int nthreads)
-{
-    return ociodisplay(src, display, view, from, looks, unpremult, false, key,
-                       value, colorconfig, roi, nthreads);
-}
-
-
-
 bool
 ImageBufAlgo::ociofiletransform(ImageBuf& dst, const ImageBuf& src,
                                 string_view name, bool unpremult, bool inverse,
@@ -2724,7 +2666,7 @@ ImageBufAlgo::ociofiletransform(ImageBuf& dst, const ImageBuf& src,
             colorconfig = &ColorConfig::default_colorconfig();
         processor = colorconfig->createFileTransform(name, inverse);
         if (!processor) {
-            if (colorconfig->error())
+            if (colorconfig->has_error())
                 dst.errorfmt("{}", colorconfig->geterror());
             else
 #ifdef USE_OCIO

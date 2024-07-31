@@ -12,8 +12,6 @@
 
 #include <tsl/robin_map.h>
 
-#include <boost/thread/tss.hpp>
-
 #include <OpenImageIO/Imath.h>
 #include <OpenImageIO/export.h>
 #include <OpenImageIO/hash.h>
@@ -41,8 +39,6 @@ namespace pvt {
 #define FILE_CACHE_SHARDS 64
 #define TILE_CACHE_SHARDS 128
 
-using boost::thread_specific_ptr;
-
 struct TileID;
 class ImageCacheImpl;
 class ImageCachePerThreadInfo;
@@ -55,7 +51,7 @@ texture_type_name(TexFormat f);
 
 
 /// Structure to hold IC and TS statistics.  We combine into a single
-/// structure to minimize the number of costly thread_specific_ptr
+/// structure to minimize the number of costly ImageCachePerThreadInfo
 /// retrievals.  If somebody is using the ImageCache without a
 /// TextureSystem, a few extra stats come along for the ride, but this
 /// has no performance penalty.
@@ -168,11 +164,11 @@ public:
     }
     const ImageSpec& spec(int subimage, int miplevel) const
     {
-        return levelinfo(subimage, miplevel).spec;
+        return levelinfo(subimage, miplevel).spec();
     }
     ImageSpec& spec(int subimage, int miplevel)
     {
-        return levelinfo(subimage, miplevel).spec;
+        return levelinfo(subimage, miplevel).spec();
     }
     const ImageSpec& nativespec(int subimage, int miplevel) const
     {
@@ -254,18 +250,27 @@ public:
     /// Info for each MIP level that isn't in the ImageSpec, or that we
     /// precompute.
     struct LevelInfo {
-        ImageSpec spec;         ///< ImageSpec for the mip level
-        ImageSpec nativespec;   ///< Native ImageSpec for the mip level
+        std::unique_ptr<ImageSpec> m_spec;  ///< ImageSpec for the mip level,
+            // only specified if different from nativespec
+        ImageSpec nativespec;  ///< Native ImageSpec for the mip level
+        mutable std::unique_ptr<float[]> polecolor;  ///< Pole colors
+        atomic_ll* tiles_read;  ///< Bitfield for tiles read at least once
+        int nxtiles, nytiles, nztiles;  ///< Number of tiles in each dimension
         bool full_pixel_range;  ///< pixel data window matches image window
         bool onetile;           ///< Whole level fits on one tile
-        mutable bool polecolorcomputed;        ///< Pole color was computed
-        mutable std::vector<float> polecolor;  ///< Pole colors
-        int nxtiles, nytiles, nztiles;  ///< Number of tiles in each dimension
-        atomic_ll* tiles_read;  ///< Bitfield for tiles read at least once
-        LevelInfo(const ImageSpec& spec,
+        mutable bool polecolorcomputed;  ///< Pole color was computed
+
+        LevelInfo(std::unique_ptr<ImageSpec> spec,
                   const ImageSpec& nativespec);  ///< Initialize based on spec
-        LevelInfo(const LevelInfo& src);         // needed for vector<LevelInfo>
+        LevelInfo(const ImageSpec& nativespec)
+            : LevelInfo(nullptr, nativespec)
+        {
+        }
+        LevelInfo(const LevelInfo& src);  // needed for vector<LevelInfo>
         ~LevelInfo() { delete[] tiles_read; }
+
+        ImageSpec& spec() { return m_spec ? *m_spec : nativespec; }
+        const ImageSpec& spec() const { return m_spec ? *m_spec : nativespec; }
     };
 
     /// Info for each subimage
@@ -282,8 +287,8 @@ public:
         bool full_pixel_range    = false;  ///< data window matches image window
         bool is_constant_image   = false;  ///< Is the image a constant color?
         bool has_average_color   = false;  ///< We have an average color
-        std::vector<float> average_color;  ///< Average color
         spin_mutex average_color_mutex;    ///< protect average_color
+        std::vector<float> average_color;  ///< Average color
         std::unique_ptr<Imath::M44f> Mlocal;  ///< shadows/volumes: world-to-local
         // The scale/offset accounts for crops or overscans, converting
         // 0-1 texture space relative to the "display/full window" into
@@ -298,8 +303,8 @@ public:
         SubimageInfo() {}
         void init(ImageCacheFile& icfile, const ImageSpec& spec,
                   bool forcefloat);
-        ImageSpec& spec(int m) { return levels[m].spec; }
-        const ImageSpec& spec(int m) const { return levels[m].spec; }
+        ImageSpec& spec(int m) { return levels[m].spec(); }
+        const ImageSpec& spec(int m) const { return levels[m].spec(); }
         const ImageSpec& nativespec(int m) const
         {
             return levels[m].nativespec;
@@ -367,11 +372,16 @@ private:
     bool m_broken;                 ///< has errors; can't be used properly
     bool m_allow_release = true;   ///< Allow the file to release()?
     std::string m_broken_message;  ///< Error message for why it's broken
+#if __cpp_lib_atomic_shared_ptr >= 201711L /* C++20 has atomic<shared_pr> */
+    // Open ImageInput, NULL if closed
+    std::atomic<std::shared_ptr<ImageInput>> m_input;
+#else
     std::shared_ptr<ImageInput> m_input;  ///< Open ImageInput, NULL if closed
         // Note that m_input, the shared pointer itself, is NOT safe to
         // access directly. ALWAYS retrieve its value with get_imageinput
         // (it's thread-safe to use that result) and set its value with
         // set_imageinput -- those are guaranteed thread-safe.
+#endif
     std::vector<SubimageInfo> m_subimages;  ///< Info on each subimage
     TexFormat m_texformat;                  ///< Which texture format
     TextureOpt::Wrap m_swrap;               ///< Default wrap modes
@@ -566,9 +576,11 @@ struct TileID {
         static_assert(
             sizeof(*this) == member_size,
             "All TileID members must be accounted for so we can hash the entire class.");
+#ifdef __LP64__
         static_assert(
             sizeof(*this) % sizeof(uint64_t) == 0,
             "FastHash uses the fewest instructions when data size is a multiple of 8 bytes.");
+#endif
         return fasthash::fasthash64(this, sizeof(*this));
     }
 
@@ -752,7 +764,6 @@ public:
     ImageCacheTileRef tile, lasttile;
     atomic_int purge;  // If set, tile ptrs need purging!
     ImageCacheStatistics m_stats;
-    bool shared = false;  // Pointed to by the IC and thread_specific_ptr
 
     ImageCachePerThreadInfo()
     {
@@ -1106,19 +1117,6 @@ public:
     Perthread* create_thread_info() override;
     void destroy_thread_info(Perthread* thread_info) override;
 
-    /// Called when the IC is destroyed.  We have a list of all the
-    /// perthread pointers -- go through and delete the ones for which we
-    /// hold the only remaining pointer.
-    void erase_perthread_info();
-
-    /// This is called when the thread terminates.  If p->m_imagecache
-    /// is non-NULL, there's still an imagecache alive that might want
-    /// the per-thread info (say, for statistics, though it's safe to
-    /// clear its tile microcache), so don't delete the perthread info
-    /// (it will be owned thereafter by the IC).  If there is no IC still
-    /// depending on it (signalled by m_imagecache == NULL), delete it.
-    static void cleanup_perthread_info(Perthread* thread_info);
-
     /// Ensure that the max_memory_bytes is at least newsize bytes.
     /// Override the previous value if necessary, with thread-safety.
     void set_min_cache_size(long long newsize);
@@ -1165,8 +1163,8 @@ private:
     /// Clear the fingerprint list, thread-safe.
     void clear_fingerprints();
 
-    thread_specific_ptr<ImageCachePerThreadInfo> m_perthread_info;
-    std::vector<ImageCachePerThreadInfo*> m_all_perthread_info;
+    uint64_t imagecache_id;
+    std::vector<std::unique_ptr<ImageCachePerThreadInfo>> m_all_perthread_info;
     static spin_mutex m_perthread_info_mutex;  ///< Thread safety for perthread
     int m_max_open_files;
     atomic_ll m_max_memory_bytes;
@@ -1206,10 +1204,6 @@ private:
     atomic_ll m_mem_used;       ///< Memory being used for tiles
     int m_statslevel;           ///< Statistics level
     int m_max_errors_per_file;  ///< Max errors to print for each file.
-
-    /// Saved error string, per-thread
-    ///
-    mutable thread_specific_ptr<std::string> m_errormessage;
 
     // For debugging -- keep track of who holds the tile and file mutex
 

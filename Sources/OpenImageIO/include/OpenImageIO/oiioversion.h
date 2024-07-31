@@ -43,8 +43,8 @@
 // guarantees at all.
 //
 #define OIIO_VERSION_MAJOR 2
-#define OIIO_VERSION_MINOR 5
-#define OIIO_VERSION_PATCH 4
+#define OIIO_VERSION_MINOR 7
+#define OIIO_VERSION_PATCH 0
 #define OIIO_VERSION_TWEAK 0
 #define OIIO_VERSION_RELEASE_TYPE 
 

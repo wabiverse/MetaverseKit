@@ -26,6 +26,10 @@
 
 using namespace OIIO;
 
+#ifndef OIIOTOOL_METADATA_HISTORY_DEFAULT
+#    define OIIOTOOL_METADATA_HISTORY_DEFAULT 0
+#endif
+
 
 // # FIXME: Refactor all statics into a struct
 
@@ -87,7 +91,7 @@ colorconvert_help_string()
 
     s += " (choices: ";
     ColorConfig colorconfig;
-    if (colorconfig.error() || colorconfig.getNumColorSpaces() == 0) {
+    if (colorconfig.has_error() || colorconfig.getNumColorSpaces() == 0) {
         s += "NONE";
     } else {
         for (int i = 0; i < colorconfig.getNumColorSpaces(); ++i) {
@@ -181,6 +185,13 @@ getargs(int argc, char* argv[], ImageSpec& configspec)
     bool cdf                   = false;
     float cdfsigma             = 1.0f / 6;
     int cdfbits                = 8;
+#if OIIOTOOL_METADATA_HISTORY_DEFAULT
+    bool metadata_history = Strutil::from_string<int>(
+        getenv("OIIOTOOL_METADATA_HISTORY", "1"));
+#else
+    bool metadata_history = Strutil::from_string<int>(
+        getenv("OIIOTOOL_METADATA_HISTORY"));
+#endif
     std::string incolorspace;
     std::string outcolorspace;
     std::string colorconfigname;
@@ -275,6 +286,10 @@ getargs(int argc, char* argv[], ImageSpec& configspec)
       .help("Sets string metadata attribute (name, value)");
     ap.arg("--sansattrib", &sansattrib)
       .help("Write command line into Software & ImageHistory but remove --sattrib and --attrib options");
+    ap.arg("--history", &metadata_history)
+      .help("Write full command line into Exif:ImageHistory, Software metadata attributes");
+    ap.arg("--no-history %!", &metadata_history)
+      .help("Do not write full command line into Exif:ImageHistory, Software metadata attributes");
     ap.arg("--constant-color-detect", &constant_color_detect)
       .help("Create 1-tile textures from constant color inputs");
     ap.arg("--monochrome-detect", &monochrome_detect)
@@ -447,9 +462,10 @@ getargs(int argc, char* argv[], ImageSpec& configspec)
     configspec.attribute("maketx:cdfsigma", cdfsigma);
     configspec.attribute("maketx:cdfbits", cdfbits);
 
-    std::string cmdline
-        = Strutil::sprintf("OpenImageIO %s : %s", OIIO_VERSION_STRING,
-                           command_line_string(argc, argv, sansattrib));
+    std::string cmdline = command_line_string(argc, argv, sansattrib);
+    cmdline = Strutil::fmt::format("OpenImageIO {} : {}", OIIO_VERSION_STRING,
+                                   metadata_history ? cmdline
+                                                    : SHA1(cmdline).digest());
     configspec.attribute("Software", cmdline);
     configspec.attribute("maketx:full_command_line", cmdline);
 
@@ -496,47 +512,47 @@ getargs(int argc, char* argv[], ImageSpec& configspec)
 
 
 
-// int
-// main(int argc, char* argv[])
-// {
-//     Timer alltimer;
+int
+main(int argc, char* argv[])
+{
+    Timer alltimer;
 
-//     // Helpful for debugging to make sure that any crashes dump a stack
-//     // trace.
-//     Sysutil::setup_crash_stacktrace("stdout");
+    // Helpful for debugging to make sure that any crashes dump a stack
+    // trace.
+    Sysutil::setup_crash_stacktrace("stdout");
 
-//     // Globally force classic "C" locale, and turn off all formatting
-//     // internationalization, for the entire maketx application.
-//     std::locale::global(std::locale::classic());
+    // Globally force classic "C" locale, and turn off all formatting
+    // internationalization, for the entire maketx application.
+    std::locale::global(std::locale::classic());
 
-//     ImageSpec configspec;
-//     Filesystem::convert_native_arguments(argc, (const char**)argv);
-//     getargs(argc, argv, configspec);
+    ImageSpec configspec;
+    Filesystem::convert_native_arguments(argc, (const char**)argv);
+    getargs(argc, argv, configspec);
 
-//     OIIO::attribute("threads", nthreads);
+    OIIO::attribute("threads", nthreads);
 
-//     // N.B. This will apply to the default IC that any ImageBuf's get.
-//     ImageCache* ic = ImageCache::create();   // get the shared one
-//     ic->attribute("forcefloat", 1);          // Force float upon read
-//     ic->attribute("max_memory_MB", 1024.0);  // 1 GB cache
+    // N.B. This will apply to the default IC that any ImageBuf's get.
+    ImageCache* ic = ImageCache::create();   // get the shared one
+    ic->attribute("forcefloat", 1);          // Force float upon read
+    ic->attribute("max_memory_MB", 1024.0);  // 1 GB cache
 
-//     ImageBufAlgo::MakeTextureMode mode = ImageBufAlgo::MakeTxTexture;
-//     if (shadowmode)
-//         mode = ImageBufAlgo::MakeTxShadow;
-//     if (envlatlmode)
-//         mode = ImageBufAlgo::MakeTxEnvLatl;
-//     if (lightprobemode)
-//         mode = ImageBufAlgo::MakeTxEnvLatlFromLightProbe;
-//     if (bumpslopesmode)
-//         mode = ImageBufAlgo::MakeTxBumpWithSlopes;
+    ImageBufAlgo::MakeTextureMode mode = ImageBufAlgo::MakeTxTexture;
+    if (shadowmode)
+        mode = ImageBufAlgo::MakeTxShadow;
+    if (envlatlmode)
+        mode = ImageBufAlgo::MakeTxEnvLatl;
+    if (lightprobemode)
+        mode = ImageBufAlgo::MakeTxEnvLatlFromLightProbe;
+    if (bumpslopesmode)
+        mode = ImageBufAlgo::MakeTxBumpWithSlopes;
 
-//     bool ok = ImageBufAlgo::make_texture(mode, filenames[0], outputfilename,
-//                                          configspec, &std::cout);
-//     if (!ok)
-//         std::cout << "make_texture ERROR: " << OIIO::geterror() << "\n";
-//     if (runstats)
-//         std::cout << "\n" << ic->getstats();
+    bool ok = ImageBufAlgo::make_texture(mode, filenames[0], outputfilename,
+                                         configspec, &std::cout);
+    if (!ok)
+        std::cout << "make_texture ERROR: " << OIIO::geterror() << "\n";
+    if (runstats)
+        std::cout << "\n" << ic->getstats();
 
-//     shutdown();
-//     return ok ? 0 : EXIT_FAILURE;
-// }
+    shutdown();
+    return ok ? 0 : EXIT_FAILURE;
+}

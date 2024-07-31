@@ -451,7 +451,6 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("."),
-        .define("OpenImageIO_Util_EXPORTS", to: "1"),
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
       ],
       linkerSettings: getConfig(for: .oiioUtil).linkerSettings
@@ -477,11 +476,13 @@ let package = Package(
         .headerSearchPath("include/OpenImageIO/detail"),
         .define("EMBED_PLUGINS", to: "1"),
         .define("OpenImageIO_EXPORTS", to: "1"),
+        .define("OpenImageIO_Util_EXPORTS", to: "1"),
         .define("DISABLE_PSD", to: "1"),
         .define("DISABLE_BMP", to: "1"),
         .define("DISABLE_TERM", to: "1"),
         .define("DISABLE_PNM", to: "1"),
         .define("DISABLE_WEBP", to: "1", .when(platforms: [.windows])),
+        .define("DISABLE_OPENVDB", to: "1", .when(platforms: [.windows])),
         // FIXME: We broke the ABI for fmt::detail::get_file
         // to stop the swift compiler from crashing at this
         // function, we should fix this in the future.
@@ -1022,7 +1023,18 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       ]
 
       #if os(Windows)
-        config.exclude += ["webp.imageio"]
+        config.exclude += [
+          // drop webp for now,
+          // need to add target
+          // attributes to webp
+          // functions for this
+          // to compile.
+          "webp.imageio",
+          // drop openvdb for now,
+          // else windows needs a
+          // dependency on Boost.
+          "openvdb.imageio"
+        ]
       #endif
     case .ocioBundle:
       break

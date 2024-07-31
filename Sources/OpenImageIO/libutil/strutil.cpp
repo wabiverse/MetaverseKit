@@ -3,15 +3,24 @@
 // https://github.com/AcademySoftwareFoundation/OpenImageIO
 
 
-#include <cmath>
+#include <OpenImageIO/platform.h>
+
+// Special dance to disable warnings in the included files related to
+// the deprecation of unicode conversion functions.
+OIIO_PRAGMA_WARNING_PUSH
+OIIO_CLANG_PRAGMA(clang diagnostic ignored "-Wdeprecated-declarations")
 #include <codecvt>
+#include <locale>
+OIIO_PRAGMA_WARNING_POP
+
+#include <algorithm>
+#include <cmath>
 #include <cstdarg>
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <limits>
-#include <locale>
 #include <mutex>
 #include <numeric>
 #include <sstream>
@@ -21,11 +30,7 @@
 #    include <xlocale.h>
 #endif
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/find.hpp>
-
 #include <OpenImageIO/dassert.h>
-#include <OpenImageIO/platform.h>
 #include <OpenImageIO/string_view.h>
 #include <OpenImageIO/strutil.h>
 #include <OpenImageIO/thread.h>
@@ -233,7 +238,7 @@ Strutil::vsprintf(const char* fmt, va_list ap)
 #ifdef va_copy
         va_copy(ap, apsave);
 #else
-        ap     = apsave;
+        ap = apsave;
 #endif
     }
 }
@@ -527,7 +532,6 @@ Strutil::ends_with(string_view a, string_view b)
     if (asize < bsize)  // a can't start with b if a is smaller
         return false;
     return strncmp(a.data() + asize - bsize, b.data(), bsize) == 0;
-    // return boost::algorithm::ends_with(a, b);
 }
 
 
@@ -539,7 +543,6 @@ Strutil::iends_with(string_view a, string_view b)
     if (asize < bsize)  // a can't start with b if a is smaller
         return false;
     return strncasecmp(a.data() + asize - bsize, b.data(), bsize) == 0;
-    // return boost::algorithm::iends_with(a, b, std::locale::classic());
 }
 
 
@@ -547,9 +550,6 @@ bool
 Strutil::contains(string_view a, string_view b)
 {
     return find(a, b) != string_view::npos;
-    // We used to use the boost contains, but it seems to be about 2x more
-    // expensive than (find() != npos).
-    // return boost::algorithm::contains(a, b);
 }
 
 
@@ -557,9 +557,6 @@ bool
 Strutil::icontains(string_view a, string_view b)
 {
     return ifind(a, b) != string_view::npos;
-    // We used to use the boost icontains, but it seems to be about 2x more
-    // expensive than (ifind() != npos).
-    // return boost::algorithm::icontains(a, b, std::locale::classic());
 }
 
 
@@ -600,8 +597,19 @@ Strutil::ifind(string_view a, string_view b)
         return string_view::npos;
     if (b.empty())
         return 0;
-    auto f = boost::algorithm::ifind_first(a, b, std::locale::classic());
-    return f.empty() ? string_view::npos : f.begin() - a.data();
+
+    if (b.size() <= a.size()) {
+        const char* start = a.data();
+        const char* last  = a.data() + a.size() - b.size();
+        while (start <= last) {
+            if (Strutil::strncasecmp(start, b.data(), b.size()) == 0) {
+                return size_t(start - a.data());
+            }
+            start++;
+        }
+    }
+
+    return string_view::npos;
 }
 
 
@@ -612,22 +620,36 @@ Strutil::irfind(string_view a, string_view b)
         return string_view::npos;
     if (b.empty())
         return a.size();
-    auto f = boost::algorithm::ifind_last(a, b, std::locale::classic());
-    return f.empty() ? string_view::npos : f.begin() - a.data();
+
+    if (b.size() <= a.size()) {
+        const char* start = a.data() + (a.size() - b.size());
+        while (start >= a.data()) {
+            if (Strutil::strncasecmp(start, b.data(), b.size()) == 0) {
+                return size_t(start - a.data());
+            }
+            start--;
+        }
+    }
+
+    return string_view::npos;
 }
 
 
 void
 Strutil::to_lower(std::string& a)
 {
-    boost::algorithm::to_lower(a, std::locale::classic());
+    const std::locale& loc = std::locale::classic();
+    std::transform(a.cbegin(), a.cend(), a.begin(),
+                   [&loc](char c) { return std::tolower(c, loc); });
 }
 
 
 void
 Strutil::to_upper(std::string& a)
 {
-    boost::algorithm::to_upper(a, std::locale::classic());
+    const std::locale& loc = std::locale::classic();
+    std::transform(a.cbegin(), a.cend(), a.begin(),
+                   [&loc](char c) { return std::toupper(c, loc); });
 }
 
 
@@ -636,7 +658,6 @@ bool
 Strutil::StringIEqual::operator()(const char* a, const char* b) const noexcept
 {
     return Strutil::strcasecmp(a, b) == 0;
-    // return boost::algorithm::iequals(a, b, std::locale::classic());
 }
 
 
@@ -644,8 +665,6 @@ bool
 Strutil::StringILess::operator()(const char* a, const char* b) const noexcept
 {
     return Strutil::strcasecmp(a, b) < 0;
-    // return boost::algorithm::ilexicographical_compare(a, b,
-    //                                                   std::locale::classic());
 }
 
 
@@ -1851,6 +1870,32 @@ size_t
 Strutil::edit_distance(string_view a, string_view b, EditDistMetric metric)
 {
     return levenshtein_distance(a, b);
+}
+
+
+
+/// Interpret a string as a boolean value using the following heuristic:
+///   - If the string is a valid numeric value (represents an integer or
+///     floating point value), return true if it's non-zero, false if it's
+///     zero.
+///   - If the string is one of "false", "no", or "off", or if it contains
+///     only whitespace, return false.
+///   - All other non-empty strings return true.
+/// The comparisons are case-insensitive and ignore leading and trailing
+/// whitespace.
+bool
+Strutil::eval_as_bool(string_view value)
+{
+    Strutil::trim_whitespace(value);
+    if (Strutil::string_is_int(value)) {
+        return Strutil::stoi(value) != 0;
+    } else if (Strutil::string_is_float(value)) {
+        return Strutil::stof(value) != 0.0f;
+    } else {
+        return !(value.empty() || Strutil::iequals(value, "false")
+                 || Strutil::iequals(value, "no")
+                 || Strutil::iequals(value, "off"));
+    }
 }
 
 OIIO_NAMESPACE_END

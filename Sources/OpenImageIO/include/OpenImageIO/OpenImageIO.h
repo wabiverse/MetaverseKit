@@ -3,6 +3,7 @@
 
 #include <OpenImageIO/oiioversion.h>
 #include <OpenImageIO/version.h>
+#include <OpenImageIO/bit.h>
 #include <OpenImageIO/half.h>
 #include <OpenImageIO/argparse.h>
 #include <OpenImageIO/array_view.h>

@@ -22,7 +22,7 @@
 
 
 #ifdef TIFF_VERSION_BIG
-// In old versions of TIFF, this was defined in tiffimpl.h.  It's gone from
+// In old versions of TIFF, this was defined in tiff.h.  It's gone from
 // "BIG TIFF" (libtiff 4.x), so we just define it here.
 
 struct TIFFHeader {
@@ -130,7 +130,7 @@ enum TIFFTAG {
 
 
 
-/// Given a TIFF data type code (defined in tiffimpl.h) and a count, return the
+/// Given a TIFF data type code (defined in tiff.h) and a count, return the
 /// equivalent TypeDesc where one exists. Return TypeUnknown if there is no
 /// obvious equivalent.
 OIIO_API TypeDesc tiff_datatype_to_typedesc (TIFFDataType tifftype, size_t tiffcount=1);
@@ -160,16 +160,11 @@ tiff_dir_data (const TIFFDirEntry &td, cspan<uint8_t> data);
 OIIO_API bool decode_exif (cspan<uint8_t> exif, ImageSpec &spec);
 OIIO_API bool decode_exif (string_view exif, ImageSpec &spec);
 
-OIIO_DEPRECATED("use version that takes a cspan<> (1.8)")
-OIIO_API bool decode_exif (const void *exif, int length, ImageSpec &spec); // DEPRECATED (1.8)
-
 /// Construct an Exif data block from the ImageSpec, appending the Exif
 /// data as a big blob to the char vector. Endianness can be specified with
 /// endianreq, defaulting to the native endianness of the running platform.
 OIIO_API void encode_exif (const ImageSpec &spec, std::vector<char> &blob,
-                           OIIO::endian endianreq /* = endian::native*/);
-// DEPRECATED(2.1)
-OIIO_API void encode_exif (const ImageSpec &spec, std::vector<char> &blob);
+                           OIIO::endian endianreq = endian::native);
 
 /// Helper: For the given OIIO metadata attribute name, look up the Exif tag
 /// ID, TIFFDataType (expressed as an int), and count. Return true and fill
@@ -202,10 +197,6 @@ OIIO_API void encode_iptc_iim (const ImageSpec &spec, std::vector<char> &iptc);
 /// functionality within each plugin.
 OIIO_API bool decode_xmp (cspan<uint8_t> xml, ImageSpec &spec);
 OIIO_API bool decode_xmp (string_view xml, ImageSpec &spec);
-// DEPRECATED(2.1):
-OIIO_API bool decode_xmp (const char* xml, ImageSpec &spec);
-OIIO_API bool decode_xmp (const std::string& xml, ImageSpec &spec);
-
 
 /// Find all the relevant metadata (IPTC, Exif, etc.) in spec and
 /// assemble it into an XMP XML string.  This is a utility function to

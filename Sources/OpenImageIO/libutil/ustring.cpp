@@ -281,7 +281,7 @@ private:
 #endif
 
 // This string is here so that we can return sensible values of str when the ustring's pointer is NULL
-std::string ustring::empty_std_string;
+OIIO_UTIL_API std::string ustring::empty_std_string;
 
 // The reverse map that lets you look up a string by its initial hash.
 using ReverseMap

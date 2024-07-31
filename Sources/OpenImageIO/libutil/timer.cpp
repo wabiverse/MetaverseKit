@@ -14,8 +14,8 @@
 
 OIIO_NAMESPACE_BEGIN
 
-double Timer::seconds_per_tick;
-Timer::ticks_t Timer::ticks_per_second;
+OIIO_EXPORT double Timer::seconds_per_tick;
+OIIO_EXPORT Timer::ticks_t Timer::ticks_per_second;
 
 class TimerSetupOnce {
 public:

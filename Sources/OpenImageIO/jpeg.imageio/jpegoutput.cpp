@@ -9,6 +9,7 @@
 #include <OpenImageIO/filesystem.h>
 #include <OpenImageIO/fmath.h>
 #include <OpenImageIO/imageio.h>
+#include <OpenImageIO/span_util.h>
 #include <OpenImageIO/tiffutils.h>
 
 #include "jpeg_pvt.h"
