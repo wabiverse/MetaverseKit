@@ -28,7 +28,9 @@
 #include <assert.h>
 #include <cstdio>
 #include <inttypes.h>
+#if !defined(_WIN32)
 #include <pthread.h>
+#endif // KMP_OS_WINDOWS
 #include <stdint.h>
 
 ompd_device_type_sizes_t type_sizes;

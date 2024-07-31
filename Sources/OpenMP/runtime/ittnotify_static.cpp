@@ -381,7 +381,7 @@ ITT_VERSIONIZE(ITT_JOIN(_N_(domain_createW), _init))(const wchar_t *name) {
   }
   for (h_tail = NULL, h = _N_(_ittapi_global).domain_list; h != NULL;
        h_tail = h, h = h->next) {
-    if (h->nameW != NULL && !wcscmp(h->nameW, name))
+    if (h->nameW != NULL && !wcscmp((wchar_t *)h->nameW, name))
       break;
   }
   if (h == NULL) {
@@ -501,7 +501,7 @@ static __itt_string_handle *ITTAPI ITT_VERSIONIZE(
   }
   for (h_tail = NULL, h = _N_(_ittapi_global).string_list; h != NULL;
        h_tail = h, h = h->next) {
-    if (h->strW != NULL && !wcscmp(h->strW, name))
+    if (h->strW != NULL && !wcscmp((wchar_t *)h->strW, name))
       break;
   }
   if (h == NULL) {
@@ -589,9 +589,9 @@ static __itt_counter ITTAPI ITT_VERSIONIZE(ITT_JOIN(
   }
   for (h_tail = NULL, h = _N_(_ittapi_global).counter_list; h != NULL;
        h_tail = h, h = h->next) {
-    if (h->nameW != NULL && h->type == (int)type && !wcscmp(h->nameW, name) &&
+    if (h->nameW != NULL && h->type == (int)type && !wcscmp((wchar_t *)h->nameW, name) &&
         ((h->domainW == NULL && domain == NULL) ||
-         (h->domainW != NULL && domain != NULL && !wcscmp(h->domainW, domain))))
+         (h->domainW != NULL && domain != NULL && !wcscmp((wchar_t *)h->domainW, domain))))
       break;
   }
   if (h == NULL) {
@@ -686,9 +686,9 @@ static __itt_counter ITTAPI ITT_VERSIONIZE(ITT_JOIN(_N_(counter_create_typedW),
   }
   for (h_tail = NULL, h = _N_(_ittapi_global).counter_list; h != NULL;
        h_tail = h, h = h->next) {
-    if (h->nameW != NULL && h->type == (int)type && !wcscmp(h->nameW, name) &&
+    if (h->nameW != NULL && h->type == (int)type && !wcscmp((wchar_t *)h->nameW, name) &&
         ((h->domainW == NULL && domain == NULL) ||
-         (h->domainW != NULL && domain != NULL && !wcscmp(h->domainW, domain))))
+         (h->domainW != NULL && domain != NULL && !wcscmp((wchar_t *)h->domainW, domain))))
       break;
   }
   if (h == NULL) {
@@ -785,7 +785,7 @@ static __itt_histogram *ITTAPI ITT_VERSIONIZE(ITT_JOIN(_N_(histogram_createW),
        h_tail = h, h = h->next) {
     if (h->domain == NULL)
       continue;
-    else if (h->domain != domain && h->nameW != NULL && !wcscmp(h->nameW, name))
+    else if (h->domain != domain && h->nameW != NULL && !wcscmp((wchar_t *)h->nameW, name))
       break;
   }
   if (h == NULL) {

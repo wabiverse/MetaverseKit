@@ -11,7 +11,9 @@
 //===----------------------------------------------------------------------===//
 
 #include <stdlib.h>
+#if !defined(_WIN32)
 #include <unistd.h>
+#endif /* !defined(_WIN32) */
 
 #include <iomanip>
 #include <iostream>

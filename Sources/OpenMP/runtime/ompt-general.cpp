@@ -685,8 +685,7 @@ ompt_start_tool(unsigned int omp_version, const char *runtime_version) {
   // runtime library is linked before the tool. Since glibc 2.2 strong symbols
   // don't override weak symbols that have been found before unless the user
   // sets the environment variable LD_DYNAMIC_WEAK.
-  ompt_start_tool_t next_tool =
-      (ompt_start_tool_t)dlsym(RTLD_NEXT, "ompt_start_tool");
+  ompt_start_tool_t next_tool = (ompt_start_tool_t)KMP_DLSYM_NEXT("ompt_start_tool");
   if (next_tool) {
     ret = next_tool(omp_version, runtime_version);
   }
@@ -764,6 +763,23 @@ ompt_tool_windows(unsigned int omp_version, const char *runtime_version) {
 #else
 #error Activation of OMPT is not supported on this platform.
 #endif
+
+#if KMP_OS_WINDOWS
+/** 
+ * dlerror() does not exist on windows,
+ * this is a custom implementation. */
+static char* dlerror()
+{
+  LPVOID lpMsgBuf;
+  char* win32Error;
+  if (FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                     NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&lpMsgBuf, 0, NULL)) {
+    win32Error = (LPSTR)lpMsgBuf;
+  }
+  LocalFree(lpMsgBuf);
+  return win32Error;
+}
+#endif // KMP_OS_WINDOWS
 
 static ompt_start_tool_result_t *
 ompt_try_start_tool(unsigned int omp_version, const char *runtime_version) {

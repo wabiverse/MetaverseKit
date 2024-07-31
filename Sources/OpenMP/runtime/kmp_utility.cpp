@@ -369,7 +369,11 @@ void __kmp_expand_file_name(char *result, size_t rlen, char *pattern) {
         } break;
         case 'I':
         case 'i': {
+          #if KMP_OS_WINDOWS
+          unsigned long id = GetCurrentProcessId();
+          #else // !KMP_OS_WINDOWS
           pid_t id = getpid();
+          #endif // KMP_OS_WINDOWS
 #if KMP_ARCH_X86_64 && defined(__MINGW32__)
           snp_result = KMP_SNPRINTF(pos, end - pos + 1, "%0*lld", width, id);
 #else

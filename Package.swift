@@ -212,6 +212,9 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .headerSearchPath("runtime"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        // 'RTLD_NEXT' is not symbol on Windows.
+        .define("RTLD_NEXT", to: "", .when(platforms: [.windows]))
       ]
     ),
 
@@ -812,13 +815,24 @@ func getConfig(for target: PkgTarget) -> TargetInfo
     case .openmp:
       config.exclude = [
         "runtime/extractExternal.cpp",
-        "runtime/z_Windows_NT_util.cpp",
-        "runtime/z_Windows_NT-586_util.cpp",
-        "runtime/z_Windows_NT-586_asm.asm",
         "runtime/kmp_stub.cpp",
         "runtime/kmp_import.cpp",
         "runtime/test-touch.c",
       ]
+      #if !os(Windows)
+        config.exclude += [
+          "runtime/z_Windows_NT_util.cpp",
+          "runtime/z_Windows_NT-586_util.cpp",
+          "runtime/z_Windows_NT-586_asm.asm",
+        ]
+      #endif /* os(Windows) */
+      #if os(Windows)
+        config.exclude += [
+          "runtime/z_Linux_util.cpp",
+          "runtime/z_Linux_asm.S",
+          "runtime/kmp_gsupport.cpp"
+        ]
+      #endif /* os(Windows) */
     case .glfw:
       config.exclude = [
         "wl_init.c",
