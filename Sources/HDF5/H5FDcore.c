@@ -35,6 +35,14 @@
 #include "H5Pprivate.h"     /* Property lists               */
 #include "H5SLprivate.h"    /* Skip lists                   */
 
+#if defined(H5_HAVE_WIN32_API)
+# include <fcntl.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <io.h>
+# include <stdio.h>
+#endif // defined(H5_HAVE_WIN32_API)
+
 /* The driver identification number, initialized at runtime */
 static hid_t H5FD_CORE_g = 0;
 

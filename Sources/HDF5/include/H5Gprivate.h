@@ -230,7 +230,7 @@ H5_DLL herr_t H5G_link_to_info(const struct H5O_link_t *lnk, H5L_info_t *linfo);
 H5_DLL herr_t H5G_obj_insert(const struct H5O_loc_t *grp_oloc, const char *name,
     struct H5O_link_t *obj_lnk, hbool_t adj_link, H5O_type_t obj_type,
     const void *crt_info, hid_t dxpl_id);
-H5_DLL ssize_t H5G_obj_get_name_by_idx(const struct H5O_loc_t *oloc, H5_index_t idx_type,
+H5_DLL h5_posix_io_ret_t H5G_obj_get_name_by_idx(const struct H5O_loc_t *oloc, H5_index_t idx_type,
     H5_iter_order_t order, hsize_t n, char* name, size_t size, hid_t dxpl_id);
 H5_DLL herr_t H5G_obj_remove(const struct H5O_loc_t *oloc, H5RS_str_t *grp_full_path_r,
     const char *name, hid_t dxpl_id);
@@ -263,9 +263,9 @@ H5_DLL herr_t H5G_name_replace(const struct H5O_link_t *lnk, H5G_names_op_t op,
 H5_DLL herr_t H5G_name_reset(H5G_name_t *name);
 H5_DLL herr_t H5G_name_copy(H5G_name_t *dst, const H5G_name_t *src, H5_copy_depth_t depth);
 H5_DLL herr_t H5G_name_free(H5G_name_t *name);
-H5_DLL ssize_t H5G_get_name(const H5G_loc_t *loc, char *name/*out*/, size_t size,
+H5_DLL h5_posix_io_ret_t H5G_get_name(const H5G_loc_t *loc, char *name/*out*/, size_t size,
     hbool_t *cached, hid_t lapl_id, hid_t dxpl_id);
-H5_DLL ssize_t H5G_get_name_by_addr(hid_t fid, hid_t lapl_id, hid_t dxpl_id,
+H5_DLL h5_posix_io_ret_t H5G_get_name_by_addr(hid_t fid, hid_t lapl_id, hid_t dxpl_id,
     const struct H5O_loc_t *loc, char* name, size_t size);
 H5_DLL H5RS_str_t *H5G_build_fullpath_refstr_str(H5RS_str_t *path_r, const char *name);
 
@@ -286,7 +286,7 @@ H5_DLL herr_t H5G_loc_info(H5G_loc_t *loc, const char *name,
     hid_t dxpl_id);
 H5_DLL herr_t H5G_loc_set_comment(H5G_loc_t *loc, const char *name,
     const char *comment, hid_t lapl_id, hid_t dxpl_id);
-H5_DLL ssize_t H5G_loc_get_comment(H5G_loc_t *loc, const char *name,
+H5_DLL h5_posix_io_ret_t H5G_loc_get_comment(H5G_loc_t *loc, const char *name,
     char *comment/*out*/, size_t bufsize, hid_t lapl_id, hid_t dxpl_id);
 H5_DLL herr_t H5G_loc_reset(H5G_loc_t *loc);
 H5_DLL herr_t H5G_loc_free(H5G_loc_t *loc);

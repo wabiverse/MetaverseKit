@@ -76,11 +76,11 @@
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5I_get_name_test(hid_t id, char *name/*out*/, size_t size, hbool_t *cached)
 {
     H5G_loc_t     loc;          /* Object location */
-    ssize_t       ret_value = -1;       /* Return value */
+    h5_posix_io_ret_t       ret_value = -1;       /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 

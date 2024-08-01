@@ -303,7 +303,7 @@ typedef struct H5O_fill_t {
 
     unsigned	        version;	/* Encoding version number           */
     H5T_t		*type;		/*type. Null implies same as dataset */
-    ssize_t		size;		/*number of bytes in the fill value  */
+    h5_posix_io_ret_t		size;		/*number of bytes in the fill value  */
     void		*buf;		/*the fill value		     */
     H5D_alloc_time_t	alloc_time;	/* time to allocate space	     */
     H5D_fill_time_t	fill_time;	/* time to write fill value	     */

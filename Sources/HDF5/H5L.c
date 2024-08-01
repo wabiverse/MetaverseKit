@@ -148,7 +148,7 @@ typedef struct {
 
     /* Out */
     char *name;                         /* Buffer to return name to user */
-    ssize_t name_len;                   /* Length of full name */
+    h5_posix_io_ret_t name_len;                   /* Length of full name */
 } H5L_trav_gnbi_t;
 
 /********************/
@@ -1132,7 +1132,7 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5Lget_name_by_idx(hid_t loc_id, const char *group_name,
     H5_index_t idx_type, H5_iter_order_t order, hsize_t n,
     char *name /*out*/, size_t size, hid_t lapl_id)
@@ -1140,7 +1140,7 @@ H5Lget_name_by_idx(hid_t loc_id, const char *group_name,
     H5G_loc_t	loc;            /* Location of group */
     H5L_trav_gnbi_t udata;      /* User data for callback */
     hid_t   dxpl_id = H5AC_ind_read_dxpl_id; /* dxpl used by library */
-    ssize_t ret_value;          /* Return value */
+    h5_posix_io_ret_t ret_value;          /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE8("Zs", "i*sIiIohxzi", loc_id, group_name, idx_type, order, n, name, size,

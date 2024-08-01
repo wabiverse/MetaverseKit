@@ -1841,7 +1841,7 @@ H5O_merge_null(H5F_t *f, hid_t dxpl_id, H5O_t *oh)
                 /* Loop over messages again, looking for null message in same chunk */
                 for(v = 0, curr_msg2 = &oh->mesg[0]; v < oh->nmesgs; v++, curr_msg2++) {
                     if(u != v && H5O_NULL_ID == curr_msg2->type->id && curr_msg->chunkno == curr_msg2->chunkno) {
-                        ssize_t adj_raw;        /* Amount to adjust raw message pointer */
+                        h5_posix_io_ret_t adj_raw;        /* Amount to adjust raw message pointer */
                         size_t adj_raw_size;    /* Amount to adjust raw message size */
 
                         /* Check for second message after first message */
@@ -1856,7 +1856,7 @@ H5O_merge_null(H5F_t *f, hid_t dxpl_id, H5O_t *oh)
                         /* Check for second message before first message */
                         else if((curr_msg->raw - H5O_SIZEOF_MSGHDR_OH(oh)) == (curr_msg2->raw + curr_msg2->raw_size)) {
                             /* Adjust first message address and extend length to cover second message */
-                            adj_raw = -((ssize_t)((size_t)H5O_SIZEOF_MSGHDR_OH(oh) + curr_msg2->raw_size));
+                            adj_raw = -((h5_posix_io_ret_t)((size_t)H5O_SIZEOF_MSGHDR_OH(oh) + curr_msg2->raw_size));
                             adj_raw_size = (size_t)H5O_SIZEOF_MSGHDR_OH(oh) + curr_msg2->raw_size;
 
                             /* Message has been merged */

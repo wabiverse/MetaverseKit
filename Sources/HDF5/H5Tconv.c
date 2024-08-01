@@ -677,7 +677,7 @@
     ST	src_aligned;			/*source aligned type		*/    \
     DT	dst_aligned;			/*destination aligned type	*/    \
     hbool_t	s_mv, d_mv;		/*move data to align it?	*/    \
-    ssize_t	s_stride, d_stride;	/*src and dst strides		*/    \
+    h5_posix_io_ret_t	s_stride, d_stride;	/*src and dst strides		*/    \
     size_t      safe;                   /*how many elements are safe to process in each pass */ \
     H5P_genplist_t      *plist;         /*Property list pointer         */    \
     H5T_conv_cb_t       cb_struct;      /*conversion callback structure */    \
@@ -706,7 +706,7 @@
 	if (buf_stride) {						      \
             HDassert(buf_stride >= sizeof(ST));				      \
             HDassert(buf_stride >= sizeof(DT));				      \
-	    s_stride = d_stride = (ssize_t)buf_stride;			      \
+	    s_stride = d_stride = (h5_posix_io_ret_t)buf_stride;			      \
 	} else {							      \
             s_stride = sizeof(ST);					      \
             d_stride = sizeof(DT);					      \
@@ -1620,7 +1620,7 @@ H5T__conv_b_b(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
 {
     uint8_t	*buf = (uint8_t*)_buf;
     H5T_t	*src = NULL, *dst = NULL;	/*source and dest datatypes	*/
-    ssize_t	direction;		/*direction of traversal	*/
+    h5_posix_io_ret_t	direction;		/*direction of traversal	*/
     size_t	elmtno;			/*element number		*/
     size_t	olap;			/*num overlapping elements	*/
     size_t	half_size;		/*1/2 of total size for swapping*/
@@ -1697,9 +1697,9 @@ H5T__conv_b_b(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
             src_rev = (uint8_t *)H5MM_calloc(src->shared->size);
 
             /* The conversion loop */
-            H5_CHECK_OVERFLOW(buf_stride, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(src->shared->size, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(dst->shared->size, size_t, ssize_t);
+            H5_CHECK_OVERFLOW(buf_stride, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(src->shared->size, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(dst->shared->size, size_t, h5_posix_io_ret_t);
             for(elmtno = 0; elmtno < nelmts; elmtno++) {
 
                 /*
@@ -1826,12 +1826,12 @@ H5T__conv_b_b(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
                 if(d == dbuf)
                     HDmemcpy(dp, d, dst->shared->size);
                 if(buf_stride) {
-                    sp += direction * (ssize_t)buf_stride; /* Note that cast is checked with H5_CHECK_OVERFLOW, above */
-                    dp += direction * (ssize_t)buf_stride; /* Note that cast is checked with H5_CHECK_OVERFLOW, above */
+                    sp += direction * (h5_posix_io_ret_t)buf_stride; /* Note that cast is checked with H5_CHECK_OVERFLOW, above */
+                    dp += direction * (h5_posix_io_ret_t)buf_stride; /* Note that cast is checked with H5_CHECK_OVERFLOW, above */
                 } /* end if */
                 else {
-                    sp += direction * (ssize_t)src->shared->size; /* Note that cast is checked with H5_CHECK_OVERFLOW, above */
-                    dp += direction * (ssize_t)dst->shared->size; /* Note that cast is checked with H5_CHECK_OVERFLOW, above */
+                    sp += direction * (h5_posix_io_ret_t)src->shared->size; /* Note that cast is checked with H5_CHECK_OVERFLOW, above */
+                    dp += direction * (h5_posix_io_ret_t)dst->shared->size; /* Note that cast is checked with H5_CHECK_OVERFLOW, above */
                 } /* end else */
             } /* end for */
 
@@ -2164,8 +2164,8 @@ H5T__conv_struct(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
     H5T_cmemb_t	*src_memb = NULL;	/*source struct member descript.*/
     H5T_cmemb_t	*dst_memb = NULL;	/*destination struct memb desc.	*/
     size_t	offset;			/*byte offset wrt struct	*/
-    ssize_t	src_delta;	        /*source stride	*/
-    ssize_t	bkg_delta;	        /*background stride	*/
+    h5_posix_io_ret_t	src_delta;	        /*source stride	*/
+    h5_posix_io_ret_t	bkg_delta;	        /*background stride	*/
     size_t	elmtno;
     unsigned	u;		        /*counters			*/
     int	        i;			/*counters			*/
@@ -2223,22 +2223,22 @@ H5T__conv_struct(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
              * Direction of conversion and striding through background.
              */
             if(buf_stride) {
-                H5_CHECKED_ASSIGN(src_delta, ssize_t, buf_stride, size_t);
+                H5_CHECKED_ASSIGN(src_delta, h5_posix_io_ret_t, buf_stride, size_t);
                 if(!bkg_stride) {
-                    H5_CHECKED_ASSIGN(bkg_delta, ssize_t, dst->shared->size, size_t);
+                    H5_CHECKED_ASSIGN(bkg_delta, h5_posix_io_ret_t, dst->shared->size, size_t);
                 } /* end if */
                 else
-                    H5_CHECKED_ASSIGN(bkg_delta, ssize_t, bkg_stride, size_t);
+                    H5_CHECKED_ASSIGN(bkg_delta, h5_posix_io_ret_t, bkg_stride, size_t);
             } /* end if */
             else if(dst->shared->size <= src->shared->size) {
-                H5_CHECKED_ASSIGN(src_delta, ssize_t, src->shared->size, size_t);
-                H5_CHECKED_ASSIGN(bkg_delta, ssize_t, dst->shared->size, size_t);
+                H5_CHECKED_ASSIGN(src_delta, h5_posix_io_ret_t, src->shared->size, size_t);
+                H5_CHECKED_ASSIGN(bkg_delta, h5_posix_io_ret_t, dst->shared->size, size_t);
             } /* end else-if */
             else {
-                H5_CHECK_OVERFLOW(src->shared->size, size_t, ssize_t);
-                src_delta = -(ssize_t)src->shared->size;
-                H5_CHECK_OVERFLOW(dst->shared->size, size_t, ssize_t);
-                bkg_delta = -(ssize_t)dst->shared->size;
+                H5_CHECK_OVERFLOW(src->shared->size, size_t, h5_posix_io_ret_t);
+                src_delta = -(h5_posix_io_ret_t)src->shared->size;
+                H5_CHECK_OVERFLOW(dst->shared->size, size_t, h5_posix_io_ret_t);
+                bkg_delta = -(h5_posix_io_ret_t)dst->shared->size;
                 xbuf += (nelmts - 1) * src->shared->size;
                 xbkg += (nelmts - 1) * dst->shared->size;
             } /* end else */
@@ -2314,7 +2314,7 @@ H5T__conv_struct(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
 
             /* If the bkg_delta was set to -(dst->shared->size), make it positive now */
             if(buf_stride == 0 && dst->shared->size > src->shared->size)
-                H5_CHECKED_ASSIGN(bkg_delta, ssize_t, dst->shared->size, size_t);
+                H5_CHECKED_ASSIGN(bkg_delta, h5_posix_io_ret_t, dst->shared->size, size_t);
 
             /*
              * Copy the background buffer back into the in-place conversion
@@ -2800,7 +2800,7 @@ H5T__conv_enum(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
     uint8_t	*buf = (uint8_t*)_buf;	/*cast for pointer arithmetic	*/
     H5T_t	*src = NULL, *dst = NULL;	/*src and dst datatypes	*/
     uint8_t	*s = NULL, *d = NULL;	/*src and dst BUF pointers	*/
-    ssize_t	src_delta, dst_delta;	/*conversion strides		*/
+    h5_posix_io_ret_t	src_delta, dst_delta;	/*conversion strides		*/
     int	n;			/*src value cast as native int	*/
     H5T_enum_struct_t *priv = (H5T_enum_struct_t*)(cdata->priv);
     H5P_genplist_t      *plist;         /*property list pointer         */
@@ -2865,18 +2865,18 @@ H5T__conv_enum(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
              * Direction of conversion.
              */
             if(buf_stride) {
-                H5_CHECK_OVERFLOW(buf_stride, size_t, ssize_t);
-                src_delta = dst_delta = (ssize_t)buf_stride;
+                H5_CHECK_OVERFLOW(buf_stride, size_t, h5_posix_io_ret_t);
+                src_delta = dst_delta = (h5_posix_io_ret_t)buf_stride;
                 s = d = buf;
             } else if(dst->shared->size <= src->shared->size) {
-                H5_CHECKED_ASSIGN(src_delta, ssize_t, src->shared->size, size_t);
-                H5_CHECKED_ASSIGN(dst_delta, ssize_t, dst->shared->size, size_t);
+                H5_CHECKED_ASSIGN(src_delta, h5_posix_io_ret_t, src->shared->size, size_t);
+                H5_CHECKED_ASSIGN(dst_delta, h5_posix_io_ret_t, dst->shared->size, size_t);
                 s = d = buf;
             } else {
-                H5_CHECK_OVERFLOW(src->shared->size, size_t, ssize_t);
-                H5_CHECK_OVERFLOW(dst->shared->size, size_t, ssize_t);
-                src_delta = -(ssize_t)src->shared->size;
-                dst_delta = -(ssize_t)dst->shared->size;
+                H5_CHECK_OVERFLOW(src->shared->size, size_t, h5_posix_io_ret_t);
+                H5_CHECK_OVERFLOW(dst->shared->size, size_t, h5_posix_io_ret_t);
+                src_delta = -(h5_posix_io_ret_t)src->shared->size;
+                dst_delta = -(h5_posix_io_ret_t)dst->shared->size;
                 s = buf + (nelmts - 1) * src->shared->size;
                 d = buf + (nelmts - 1) * dst->shared->size;
             }
@@ -3110,8 +3110,8 @@ H5T__conv_vlen(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
     uint8_t	*s = NULL;		/*source buffer			*/
     uint8_t	*d = NULL;		/*destination buffer		*/
     uint8_t	*b = NULL;		/*background buffer		*/
-    ssize_t	s_stride, d_stride;	/*src and dst strides		*/
-    ssize_t	b_stride;	        /*bkg stride			*/
+    h5_posix_io_ret_t	s_stride, d_stride;	/*src and dst strides		*/
+    h5_posix_io_ret_t	b_stride;	        /*bkg stride			*/
     size_t      safe;                   /*how many elements are safe to process in each pass */
     size_t	bg_seq_len = 0;
     size_t	src_base_size, dst_base_size;/*source & destination base size*/
@@ -3166,18 +3166,18 @@ H5T__conv_vlen(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
             if(buf_stride) {
                 HDassert(buf_stride >= src->shared->size);
                 HDassert(buf_stride >= dst->shared->size);
-                H5_CHECK_OVERFLOW(buf_stride, size_t, ssize_t);
-                s_stride = d_stride = (ssize_t)buf_stride;
+                H5_CHECK_OVERFLOW(buf_stride, size_t, h5_posix_io_ret_t);
+                s_stride = d_stride = (h5_posix_io_ret_t)buf_stride;
             } /* end if */
             else {
-                H5_CHECK_OVERFLOW(src->shared->size, size_t, ssize_t);
-                H5_CHECK_OVERFLOW(dst->shared->size, size_t, ssize_t);
-                s_stride = (ssize_t)src->shared->size;
-                d_stride = (ssize_t)dst->shared->size;
+                H5_CHECK_OVERFLOW(src->shared->size, size_t, h5_posix_io_ret_t);
+                H5_CHECK_OVERFLOW(dst->shared->size, size_t, h5_posix_io_ret_t);
+                s_stride = (h5_posix_io_ret_t)src->shared->size;
+                d_stride = (h5_posix_io_ret_t)dst->shared->size;
             } /* end else */
             if(bkg) {
                 if(bkg_stride)
-                    b_stride = (ssize_t)bkg_stride;
+                    b_stride = (h5_posix_io_ret_t)bkg_stride;
                 else
                     b_stride = d_stride;
             } /* end if */
@@ -3269,7 +3269,7 @@ H5T__conv_vlen(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
                             HGOTO_ERROR(H5E_DATATYPE, H5E_WRITEERROR, FAIL, "can't set VL data to 'nil'")
                     } /* end if */
                     else {
-                        ssize_t sseq_len;   /* (signed) The number of elements in the current sequence*/
+                        h5_posix_io_ret_t sseq_len;   /* (signed) The number of elements in the current sequence*/
                         size_t 	seq_len;    /* The number of elements in the current sequence*/
 
                         /* Get length of element sequences */
@@ -3437,7 +3437,7 @@ H5T__conv_array(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
     H5T_t	*src = NULL;	        /*source datatype		     */
     H5T_t	*dst = NULL;	        /*destination datatype		     */
     uint8_t	*sp, *dp;	        /*source and dest traversal ptrs     */
-    ssize_t	src_delta, dst_delta;	/*source & destination stride	     */
+    h5_posix_io_ret_t	src_delta, dst_delta;	/*source & destination stride	     */
     int	        direction;		/*direction of traversal	     */
     size_t	elmtno;			/*element number counter	     */
     unsigned    u;                      /* local index variable */
@@ -3502,11 +3502,11 @@ H5T__conv_array(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
             /*
              * Direction & size of buffer traversal.
              */
-            H5_CHECK_OVERFLOW(buf_stride, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(src->shared->size, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(dst->shared->size, size_t, ssize_t);
-            src_delta = (ssize_t)direction * (ssize_t)(buf_stride ? buf_stride : src->shared->size);
-            dst_delta = (ssize_t)direction * (ssize_t)(buf_stride ? buf_stride : dst->shared->size);
+            H5_CHECK_OVERFLOW(buf_stride, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(src->shared->size, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(dst->shared->size, size_t, h5_posix_io_ret_t);
+            src_delta = (h5_posix_io_ret_t)direction * (h5_posix_io_ret_t)(buf_stride ? buf_stride : src->shared->size);
+            dst_delta = (h5_posix_io_ret_t)direction * (h5_posix_io_ret_t)(buf_stride ? buf_stride : dst->shared->size);
 
             /* Set up conversion path for base elements */
             if(NULL == (tpath = H5T_path_find(src->shared->parent, dst->shared->parent, NULL, NULL, dxpl_id, FALSE))) {
@@ -3596,7 +3596,7 @@ H5T__conv_i_i(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
 {
     H5T_t	*src = NULL;		/*source datatype		*/
     H5T_t	*dst = NULL;		/*destination datatype		*/
-    ssize_t	src_delta, dst_delta;	/*source & destination stride	*/
+    h5_posix_io_ret_t	src_delta, dst_delta;	/*source & destination stride	*/
     int		direction;		/*direction of traversal	*/
     size_t	elmtno;			/*element number		*/
     size_t	half_size;		/*half the type size		*/
@@ -3605,7 +3605,7 @@ H5T__conv_i_i(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
     uint8_t     *src_rev=NULL;          /*order-reversed source buffer  */
     uint8_t	dbuf[64];		/*temp destination buffer	*/
     size_t	first;
-    ssize_t	sfirst;			/*a signed version of `first'	*/
+    h5_posix_io_ret_t	sfirst;			/*a signed version of `first'	*/
     size_t	i;                      /*Local index variables         */
     H5P_genplist_t      *plist;         /*property list pointer         */
     H5T_conv_cb_t       cb_struct={NULL, NULL};      /*conversion callback structure */
@@ -3664,11 +3664,11 @@ H5T__conv_i_i(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
             /*
              * Direction & size of buffer traversal.
              */
-            H5_CHECK_OVERFLOW(buf_stride, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(src->shared->size, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(dst->shared->size, size_t, ssize_t);
-            src_delta = (ssize_t)direction * (ssize_t)(buf_stride ? buf_stride : src->shared->size);
-            dst_delta = (ssize_t)direction * (ssize_t)(buf_stride ? buf_stride : dst->shared->size);
+            H5_CHECK_OVERFLOW(buf_stride, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(src->shared->size, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(dst->shared->size, size_t, h5_posix_io_ret_t);
+            src_delta = (h5_posix_io_ret_t)direction * (h5_posix_io_ret_t)(buf_stride ? buf_stride : src->shared->size);
+            dst_delta = (h5_posix_io_ret_t)direction * (h5_posix_io_ret_t)(buf_stride ? buf_stride : dst->shared->size);
 
             /* Get the plist structure */
             if(NULL == (plist = H5P_object_verify(dxpl_id, H5P_DATASET_XFER)))
@@ -3859,7 +3859,7 @@ H5T__conv_i_i(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
                      * destination is set to a negative number with the largest
                      * possible magnitude.
                      */
-                    ssize_t sfz = H5T__bit_find (s, src->shared->u.atomic.offset,
+                    h5_posix_io_ret_t sfz = H5T__bit_find (s, src->shared->u.atomic.offset,
                                     src->shared->u.atomic.prec-1, H5T_BIT_MSB, FALSE);
                     size_t fz = (size_t)sfz;
 
@@ -4013,13 +4013,13 @@ H5T__conv_f_f(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
     H5T_t	*dst_p;			/*destination datatype		*/
     H5T_atomic_t src;			/*atomic source info		*/
     H5T_atomic_t dst;			/*atomic destination info	*/
-    ssize_t	src_delta, dst_delta;	/*source & destination stride	*/
+    h5_posix_io_ret_t	src_delta, dst_delta;	/*source & destination stride	*/
     int	direction;		        /*forward or backward traversal	*/
     size_t	elmtno;			/*element number		*/
     size_t	half_size;		/*half the type size		*/
     size_t      tsize;                  /*type size for swapping bytes  */
     size_t	olap;			/*num overlapping elements	*/
-    ssize_t	bitno = 0;		/*bit number			*/
+    h5_posix_io_ret_t	bitno = 0;		/*bit number			*/
     uint8_t	*s, *sp, *d, *dp;	/*source and dest traversal ptrs*/
     uint8_t     *src_rev = NULL;        /*order-reversed source buffer  */
     uint8_t	dbuf[64];		/*temp destination buffer	*/
@@ -4099,11 +4099,11 @@ H5T__conv_f_f(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
             /*
              * Direction & size of buffer traversal.
              */
-            H5_CHECK_OVERFLOW(buf_stride, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(src_p->shared->size, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(dst_p->shared->size, size_t, ssize_t);
-            src_delta = (ssize_t)direction * (ssize_t)(buf_stride ? buf_stride : src_p->shared->size);
-            dst_delta = (ssize_t)direction * (ssize_t)(buf_stride ? buf_stride : dst_p->shared->size);
+            H5_CHECK_OVERFLOW(buf_stride, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(src_p->shared->size, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(dst_p->shared->size, size_t, h5_posix_io_ret_t);
+            src_delta = (h5_posix_io_ret_t)direction * (h5_posix_io_ret_t)(buf_stride ? buf_stride : src_p->shared->size);
+            dst_delta = (h5_posix_io_ret_t)direction * (h5_posix_io_ret_t)(buf_stride ? buf_stride : dst_p->shared->size);
 
             /* Get the plist structure */
             if(NULL == (plist = H5P_object_verify(dxpl_id,H5P_DATASET_XFER)))
@@ -4401,7 +4401,7 @@ H5T__conv_f_f(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
                  * mantissa bit is `1', else it is `10' binary.
                  */
                 if (msize>0 && mrsh<=dst.u.f.msize && mrsh+msize>dst.u.f.msize) {
-                    bitno = (ssize_t)(mrsh + msize - dst.u.f.msize);
+                    bitno = (h5_posix_io_ret_t)(mrsh + msize - dst.u.f.msize);
                     HDassert(bitno >= 0 && (size_t)bitno <= msize);
                     /* If the 1st bit being cut off is set and source isn't denormalized.*/
                     if(H5T__bit_get_d(s, (mpos + (size_t)bitno) - 1, (size_t)1) && !denormalized) {
@@ -4583,7 +4583,7 @@ H5T__conv_s_s(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
 {
     H5T_t	*src=NULL;		/*source datatype		*/
     H5T_t	*dst=NULL;		/*destination datatype		*/
-    ssize_t	src_delta, dst_delta;	/*source & destination stride	*/
+    h5_posix_io_ret_t	src_delta, dst_delta;	/*source & destination stride	*/
     int	        direction;		/*direction of traversal	*/
     size_t	elmtno;			/*element number		*/
     size_t	olap;			/*num overlapping elements	*/
@@ -4654,11 +4654,11 @@ H5T__conv_s_s(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
             /*
              * Direction & size of buffer traversal.
              */
-            H5_CHECK_OVERFLOW(buf_stride, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(src->shared->size, size_t, ssize_t);
-            H5_CHECK_OVERFLOW(dst->shared->size, size_t, ssize_t);
-            src_delta = (ssize_t)direction * (ssize_t)(buf_stride ? buf_stride : src->shared->size);
-            dst_delta = (ssize_t)direction * (ssize_t)(buf_stride ? buf_stride : dst->shared->size);
+            H5_CHECK_OVERFLOW(buf_stride, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(src->shared->size, size_t, h5_posix_io_ret_t);
+            H5_CHECK_OVERFLOW(dst->shared->size, size_t, h5_posix_io_ret_t);
+            src_delta = (h5_posix_io_ret_t)direction * (h5_posix_io_ret_t)(buf_stride ? buf_stride : src->shared->size);
+            dst_delta = (h5_posix_io_ret_t)direction * (h5_posix_io_ret_t)(buf_stride ? buf_stride : dst->shared->size);
 
             /* Allocate the overlap buffer */
             if(NULL == (dbuf = (uint8_t *)H5MM_malloc(dst->shared->size)))
@@ -8894,7 +8894,7 @@ H5T__conv_f_i(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
     size_t      buf_size;               /*buffer size for temporary value */
     size_t	i;			/*miscellaneous counters	*/
     size_t	first;                  /*first bit(MSB) in an integer  */
-    ssize_t	sfirst;			/*a signed version of `first'	*/
+    h5_posix_io_ret_t	sfirst;			/*a signed version of `first'	*/
     H5P_genplist_t      *plist;         /*Property list pointer         */
     H5T_conv_cb_t       cb_struct={NULL, NULL};      /*conversion callback structure */
     hbool_t     truncated;              /*if fraction value is dropped  */
@@ -9198,7 +9198,7 @@ H5T__conv_f_i(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
                  * 10...010111, expo=20, expo-msize=-3.  Right-shift the sequence, we get
                  * 00010...10.  The last three bits were dropped.
                  */
-                H5T__bit_shift(int_buf, expo - (ssize_t)src.u.f.msize, (size_t)0, buf_size * 8);
+                H5T__bit_shift(int_buf, expo - (h5_posix_io_ret_t)src.u.f.msize, (size_t)0, buf_size * 8);
 
                 /*
                  * If expo is less than mantissa size, the frantional value is dropped off
@@ -9403,11 +9403,11 @@ H5T__conv_f_i(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
                 if (d==dbuf)
                     HDmemcpy (dp, d, dst_p->shared->size);
                 if (buf_stride) {
-                    sp += direction * (ssize_t) buf_stride;
-                    dp += direction * (ssize_t) buf_stride;
+                    sp += direction * (h5_posix_io_ret_t) buf_stride;
+                    dp += direction * (h5_posix_io_ret_t) buf_stride;
                 } else {
-                    sp += direction * (ssize_t) src_p->shared->size;
-                    dp += direction * (ssize_t) dst_p->shared->size;
+                    sp += direction * (h5_posix_io_ret_t) src_p->shared->size;
+                    dp += direction * (h5_posix_io_ret_t) dst_p->shared->size;
                 }
 
                 HDmemset(int_buf, 0, buf_size);
@@ -9483,7 +9483,7 @@ H5T__conv_i_f(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
     size_t      buf_size;               /*buffer size for temporary value */
     size_t	i;			/*miscellaneous counters	*/
     size_t	first;                  /*first bit(MSB) in an integer  */
-    ssize_t	sfirst;			/*a signed version of `first'	*/
+    h5_posix_io_ret_t	sfirst;			/*a signed version of `first'	*/
     H5P_genplist_t      *plist;         /*Property list pointer         */
     H5T_conv_cb_t       cb_struct = {NULL, NULL};      /*conversion callback structure */
     H5T_conv_ret_t      except_ret;     /*return of callback function   */
@@ -9648,7 +9648,7 @@ H5T__conv_i_f(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
 			 * (create a carry) to help conversion.  i.e. a character type number 0x80
 			 * is treated as 0x100.
 			 */
-                        sfirst = (ssize_t)(src.prec - 1);
+                        sfirst = (h5_posix_io_ret_t)(src.prec - 1);
                         is_max_neg = 0;
                     }
                     if(sfirst < 0)
@@ -9720,7 +9720,7 @@ H5T__conv_i_f(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
 		    }
 
                     /* Right shift to drop off extra bits */
-                    H5T__bit_shift(int_buf, (ssize_t)(dst.u.f.msize - first), (size_t)0, buf_size * 8);
+                    H5T__bit_shift(int_buf, (h5_posix_io_ret_t)(dst.u.f.msize - first), (size_t)0, buf_size * 8);
 
                     if(do_round) {
                         H5T__bit_inc(int_buf, (size_t)0, buf_size * 8);
@@ -9740,7 +9740,7 @@ H5T__conv_i_f(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
 				/* Right shift 1 bit to let the carried 1 fit in the mantissa,
 				 * and increment exponent by 1.
 				 */
-                                H5T__bit_shift(int_buf, (ssize_t)-1, (size_t)0, buf_size * 8);
+                                H5T__bit_shift(int_buf, (h5_posix_io_ret_t)-1, (size_t)0, buf_size * 8);
 			 	expo++;
 			    }
 			}
@@ -9748,7 +9748,7 @@ H5T__conv_i_f(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
                 } else {
                     /* The bit sequence can fit mantissa part.  Left shift to fit in from high-order of
 		     * bit position. */
-                    H5T__bit_shift(int_buf, (ssize_t)(dst.u.f.msize - first), (size_t)0, dst.u.f.msize);
+                    H5T__bit_shift(int_buf, (h5_posix_io_ret_t)(dst.u.f.msize - first), (size_t)0, dst.u.f.msize);
                 }
 
 
@@ -9832,11 +9832,11 @@ H5T__conv_i_f(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts,
                 if (d==dbuf)
                     HDmemcpy (dp, d, dst_p->shared->size);
                 if (buf_stride) {
-                    sp += direction * (ssize_t) buf_stride;
-                    dp += direction * (ssize_t) buf_stride;
+                    sp += direction * (h5_posix_io_ret_t) buf_stride;
+                    dp += direction * (h5_posix_io_ret_t) buf_stride;
                 } else {
-                    sp += direction * (ssize_t) src_p->shared->size;
-                    dp += direction * (ssize_t) dst_p->shared->size;
+                    sp += direction * (h5_posix_io_ret_t) src_p->shared->size;
+                    dp += direction * (h5_posix_io_ret_t) dst_p->shared->size;
                 }
 
                 HDmemset(int_buf, 0, buf_size);

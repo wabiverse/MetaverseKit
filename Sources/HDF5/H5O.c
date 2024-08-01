@@ -848,11 +848,11 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5Oget_comment(hid_t obj_id, char *comment, size_t bufsize)
 {
     H5G_loc_t	loc;                    /* Location of group */
-    ssize_t     ret_value;              /* Return value */
+    h5_posix_io_ret_t     ret_value;              /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE3("Zs", "i*sz", obj_id, comment, bufsize);
@@ -886,13 +886,13 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5Oget_comment_by_name(hid_t loc_id, const char *name, char *comment, size_t bufsize,
     hid_t lapl_id)
 {
     H5G_loc_t	loc;                    /* Location of group */
     hid_t       dxpl_id = H5AC_ind_read_dxpl_id; /* dxpl used by library */
-    ssize_t     ret_value;              /* Return value */
+    h5_posix_io_ret_t     ret_value;              /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE5("Zs", "i*s*szi", loc_id, name, comment, bufsize, lapl_id);

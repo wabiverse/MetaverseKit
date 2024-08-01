@@ -20,28 +20,27 @@
  * Purpose:	"All" selection data space I/O functions.
  */
 
-#include "H5Smodule.h"          /* This source code file is part of the H5S module */
+#include "H5Smodule.h" /* This source code file is part of the H5S module */
 
-
-#include "H5private.h"		/* Generic Functions			*/
-#include "H5Eprivate.h"		/* Error handling		        */
-#include "H5Iprivate.h"		/* ID Functions		                */
-#include "H5Spkg.h"		/* Dataspace functions			*/
-#include "H5VMprivate.h"         /* Vector functions                     */
+#include "H5private.h"   /* Generic Functions			*/
+#include "H5Eprivate.h"  /* Error handling		        */
+#include "H5Iprivate.h"  /* ID Functions		                */
+#include "H5Spkg.h"      /* Dataspace functions			*/
+#include "H5VMprivate.h" /* Vector functions                     */
 
 /* Static function prototypes */
 
 /* Selection callbacks */
 static herr_t H5S_all_copy(H5S_t *dst, const H5S_t *src, hbool_t share_selection);
 static herr_t H5S_all_get_seq_list(const H5S_t *space, unsigned flags,
-    H5S_sel_iter_t *iter, size_t maxseq, size_t maxbytes,
-    size_t *nseq, size_t *nbytes, hsize_t *off, size_t *len);
+                                   H5S_sel_iter_t *iter, size_t maxseq, size_t maxbytes,
+                                   size_t *nseq, size_t *nbytes, hsize_t *off, size_t *len);
 static herr_t H5S_all_release(H5S_t *space);
 static htri_t H5S_all_is_valid(const H5S_t *space);
 static hssize_t H5S_all_serial_size(const H5S_t *space);
 static herr_t H5S_all_serialize(const H5S_t *space, uint8_t **p);
 static herr_t H5S_all_deserialize(H5S_t *space, uint32_t version, uint8_t flags,
-    const uint8_t **p);
+                                  const uint8_t **p);
 static herr_t H5S_all_bounds(const H5S_t *space, hsize_t *start, hsize_t *end);
 static herr_t H5S_all_offset(const H5S_t *space, hsize_t *off);
 static int H5S__all_unlim_dim(const H5S_t *space);
@@ -101,7 +100,6 @@ static const H5S_sel_iter_class_t H5S_sel_iter_all[1] = {{
     H5S_all_iter_release,
 }};
 
-
 /*-------------------------------------------------------------------------
  * Function:	H5S_all_iter_init
  *
@@ -117,27 +115,26 @@ static const H5S_sel_iter_class_t H5S_sel_iter_all[1] = {{
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5S_all_iter_init (H5S_sel_iter_t *iter, const H5S_t *space)
+H5S_all_iter_init(H5S_sel_iter_t *iter, const H5S_t *space)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert (space && H5S_SEL_ALL==H5S_GET_SELECT_TYPE(space));
-    HDassert (iter);
+  /* Check args */
+  HDassert(space && H5S_SEL_ALL == H5S_GET_SELECT_TYPE(space));
+  HDassert(iter);
 
-    /* Initialize the number of elements to iterate over */
-    iter->elmt_left=H5S_GET_SELECT_NPOINTS(space);
+  /* Initialize the number of elements to iterate over */
+  iter->elmt_left = H5S_GET_SELECT_NPOINTS(space);
 
-    /* Start at the upper left location */
-    iter->u.all.elmt_offset=0;
-    iter->u.all.byte_offset=0;
+  /* Start at the upper left location */
+  iter->u.all.elmt_offset = 0;
+  iter->u.all.byte_offset = 0;
 
-    /* Initialize type of selection iterator */
-    iter->type=H5S_sel_iter_all;
+  /* Initialize type of selection iterator */
+  iter->type = H5S_sel_iter_all;
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_iter_init() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_iter_init() */
 
 /*-------------------------------------------------------------------------
  * Function:	H5S_all_iter_coords
@@ -155,24 +152,23 @@ H5S_all_iter_init (H5S_sel_iter_t *iter, const H5S_t *space)
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5S_all_iter_coords (const H5S_sel_iter_t *iter, hsize_t *coords)
+H5S_all_iter_coords(const H5S_sel_iter_t *iter, hsize_t *coords)
 {
-    herr_t ret_value=SUCCEED;        /* Return value */
+  herr_t ret_value = SUCCEED; /* Return value */
 
-    FUNC_ENTER_NOAPI_NOINIT
+  FUNC_ENTER_NOAPI_NOINIT
 
-    /* Check args */
-    HDassert (iter);
-    HDassert (coords);
+  /* Check args */
+  HDassert(iter);
+  HDassert(coords);
 
-    /* Calculate the coordinates for the current iterator offset */
-    if(H5VM_array_calc(iter->u.all.elmt_offset,iter->rank,iter->dims,coords)<0)
-        HGOTO_ERROR(H5E_DATASPACE, H5E_CANTGET, FAIL, "can't retrieve coordinates");
+  /* Calculate the coordinates for the current iterator offset */
+  if (H5VM_array_calc(iter->u.all.elmt_offset, iter->rank, iter->dims, coords) < 0)
+    HGOTO_ERROR(H5E_DATASPACE, H5E_CANTGET, FAIL, "can't retrieve coordinates");
 
 done:
-    FUNC_LEAVE_NOAPI(ret_value)
-}   /* H5S_all_iter_coords() */
-
+  FUNC_LEAVE_NOAPI(ret_value)
+} /* H5S_all_iter_coords() */
 
 /*-------------------------------------------------------------------------
  * Function:	H5S_all_iter_block
@@ -190,30 +186,30 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5S_all_iter_block (const H5S_sel_iter_t *iter, hsize_t *start, hsize_t *end)
+H5S_all_iter_block(const H5S_sel_iter_t *iter, hsize_t *start, hsize_t *end)
 {
-    unsigned u;                 /* Local index variable */
+  unsigned u; /* Local index variable */
 
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert (iter);
-    HDassert (start);
-    HDassert (end);
+  /* Check args */
+  HDassert(iter);
+  HDassert(start);
+  HDassert(end);
 
-    for(u=0; u<iter->rank; u++) {
-        /* Set the start of the 'all' block */
-        /* (Always '0' coordinates for now) */
-        start[u]=0;
+  for (u = 0; u < iter->rank; u++)
+  {
+    /* Set the start of the 'all' block */
+    /* (Always '0' coordinates for now) */
+    start[u] = 0;
 
-        /* Compute the end of the 'all' block */
-        /* (Always size of the extent for now) */
-        end[u]=iter->dims[u]-1;
-    } /* end for */
+    /* Compute the end of the 'all' block */
+    /* (Always size of the extent for now) */
+    end[u] = iter->dims[u] - 1;
+  } /* end for */
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_iter_coords() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_iter_coords() */
 
 /*-------------------------------------------------------------------------
  * Function:	H5S_all_iter_nelmts
@@ -230,16 +226,15 @@ H5S_all_iter_block (const H5S_sel_iter_t *iter, hsize_t *start, hsize_t *end)
  *-------------------------------------------------------------------------
  */
 static hsize_t
-H5S_all_iter_nelmts (const H5S_sel_iter_t *iter)
+H5S_all_iter_nelmts(const H5S_sel_iter_t *iter)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert (iter);
+  /* Check args */
+  HDassert(iter);
 
-    FUNC_LEAVE_NOAPI(iter->elmt_left)
-}   /* H5S_all_iter_nelmts() */
-
+  FUNC_LEAVE_NOAPI(iter->elmt_left)
+} /* H5S_all_iter_nelmts() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -259,16 +254,15 @@ H5S_all_iter_nelmts (const H5S_sel_iter_t *iter)
  REVISION LOG
 --------------------------------------------------------------------------*/
 static htri_t
-H5S_all_iter_has_next_block (const H5S_sel_iter_t H5_ATTR_UNUSED *iter)
+H5S_all_iter_has_next_block(const H5S_sel_iter_t H5_ATTR_UNUSED *iter)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert (iter);
+  /* Check args */
+  HDassert(iter);
 
-    FUNC_LEAVE_NOAPI(FALSE)
-}   /* H5S_all_iter_has_next_block() */
-
+  FUNC_LEAVE_NOAPI(FALSE)
+} /* H5S_all_iter_has_next_block() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -291,19 +285,18 @@ H5S_all_iter_has_next_block (const H5S_sel_iter_t H5_ATTR_UNUSED *iter)
 static herr_t
 H5S_all_iter_next(H5S_sel_iter_t *iter, size_t nelem)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert (iter);
-    HDassert (nelem>0);
+  /* Check args */
+  HDassert(iter);
+  HDassert(nelem > 0);
 
-    /* Increment the iterator */
-    iter->u.all.elmt_offset+=nelem;
-    iter->u.all.byte_offset+=(nelem*iter->elmt_size);
+  /* Increment the iterator */
+  iter->u.all.elmt_offset += nelem;
+  iter->u.all.byte_offset += (nelem * iter->elmt_size);
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_iter_next() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_iter_next() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -325,14 +318,13 @@ H5S_all_iter_next(H5S_sel_iter_t *iter, size_t nelem)
 static herr_t
 H5S_all_iter_next_block(H5S_sel_iter_t H5_ATTR_UNUSED *iter)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert (iter);
+  /* Check args */
+  HDassert(iter);
 
-    FUNC_LEAVE_NOAPI(FAIL)
-}   /* H5S_all_iter_next_block() */
-
+  FUNC_LEAVE_NOAPI(FAIL)
+} /* H5S_all_iter_next_block() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -352,16 +344,15 @@ H5S_all_iter_next_block(H5S_sel_iter_t H5_ATTR_UNUSED *iter)
  REVISION LOG
 --------------------------------------------------------------------------*/
 static herr_t
-H5S_all_iter_release (H5S_sel_iter_t H5_ATTR_UNUSED * iter)
+H5S_all_iter_release(H5S_sel_iter_t H5_ATTR_UNUSED *iter)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert (iter);
+  /* Check args */
+  HDassert(iter);
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_iter_release() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_iter_release() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -383,17 +374,16 @@ H5S_all_iter_release (H5S_sel_iter_t H5_ATTR_UNUSED * iter)
 static herr_t
 H5S_all_release(H5S_t *space)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert(space);
+  /* Check args */
+  HDassert(space);
 
-    /* Reset the number of elements in the selection */
-    space->select.num_elem = 0;
+  /* Reset the number of elements in the selection */
+  space->select.num_elem = 0;
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_release() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_release() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -417,17 +407,16 @@ H5S_all_release(H5S_t *space)
 static herr_t
 H5S_all_copy(H5S_t *dst, const H5S_t H5_ATTR_UNUSED *src, hbool_t H5_ATTR_UNUSED share_selection)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    HDassert(src);
-    HDassert(dst);
+  HDassert(src);
+  HDassert(dst);
 
-    /* Set number of elements in selection */
-    dst->select.num_elem = (hsize_t)H5S_GET_EXTENT_NPOINTS(dst);
+  /* Set number of elements in selection */
+  dst->select.num_elem = (hsize_t)H5S_GET_EXTENT_NPOINTS(dst);
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
+  FUNC_LEAVE_NOAPI(SUCCEED)
 } /* end H5S_all_copy() */
-
 
 /*--------------------------------------------------------------------------
  NAME
@@ -450,15 +439,14 @@ H5S_all_copy(H5S_t *dst, const H5S_t H5_ATTR_UNUSED *src, hbool_t H5_ATTR_UNUSED
  REVISION LOG
 --------------------------------------------------------------------------*/
 static htri_t
-H5S_all_is_valid (const H5S_t H5_ATTR_UNUSED *space)
+H5S_all_is_valid(const H5S_t H5_ATTR_UNUSED *space)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    HDassert(space);
+  HDassert(space);
 
-    FUNC_LEAVE_NOAPI(TRUE)
+  FUNC_LEAVE_NOAPI(TRUE)
 } /* end H5S_all_is_valid() */
-
 
 /*--------------------------------------------------------------------------
  NAME
@@ -480,19 +468,18 @@ H5S_all_is_valid (const H5S_t H5_ATTR_UNUSED *space)
  REVISION LOG
 --------------------------------------------------------------------------*/
 static hssize_t
-H5S_all_serial_size (const H5S_t H5_ATTR_UNUSED *space)
+H5S_all_serial_size(const H5S_t H5_ATTR_UNUSED *space)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    HDassert(space);
+  HDassert(space);
 
-    /* Basic number of bytes required to serialize point selection:
-     *  <type (4 bytes)> + <version (4 bytes)> + <padding (4 bytes)> +
-     *      <length (4 bytes)> = 16 bytes
-     */
-    FUNC_LEAVE_NOAPI(16)
+  /* Basic number of bytes required to serialize point selection:
+   *  <type (4 bytes)> + <version (4 bytes)> + <padding (4 bytes)> +
+   *      <length (4 bytes)> = 16 bytes
+   */
+  FUNC_LEAVE_NOAPI(16)
 } /* end H5S_all_serial_size() */
-
 
 /*--------------------------------------------------------------------------
  NAME
@@ -518,27 +505,26 @@ H5S_all_serial_size (const H5S_t H5_ATTR_UNUSED *space)
 static herr_t
 H5S_all_serialize(const H5S_t *space, uint8_t **p)
 {
-    uint8_t *pp = (*p);         /* Local pointer for decoding */
+  uint8_t *pp = (*p); /* Local pointer for decoding */
 
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert(space);
-    HDassert(p);
-    HDassert(pp);
+  /* Check args */
+  HDassert(space);
+  HDassert(p);
+  HDassert(pp);
 
-    /* Store the preamble information */
-    UINT32ENCODE(pp, (uint32_t)H5S_GET_SELECT_TYPE(space));  /* Store the type of selection */
-    UINT32ENCODE(pp, (uint32_t)1);  /* Store the version number */
-    UINT32ENCODE(pp, (uint32_t)0);  /* Store the un-used padding */
-    UINT32ENCODE(pp, (uint32_t)0);  /* Store the additional information length */
+  /* Store the preamble information */
+  UINT32ENCODE(pp, (uint32_t)H5S_GET_SELECT_TYPE(space)); /* Store the type of selection */
+  UINT32ENCODE(pp, (uint32_t)1);                          /* Store the version number */
+  UINT32ENCODE(pp, (uint32_t)0);                          /* Store the un-used padding */
+  UINT32ENCODE(pp, (uint32_t)0);                          /* Store the additional information length */
 
-    /* Update encoding pointer */
-    *p = pp;
+  /* Update encoding pointer */
+  *p = pp;
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_serialize() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_serialize() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -566,24 +552,23 @@ H5S_all_serialize(const H5S_t *space, uint8_t **p)
 --------------------------------------------------------------------------*/
 static herr_t
 H5S_all_deserialize(H5S_t *space, uint32_t H5_ATTR_UNUSED version, uint8_t H5_ATTR_UNUSED flags,
-        const uint8_t H5_ATTR_UNUSED **p)
+                    const uint8_t H5_ATTR_UNUSED **p)
 {
-    herr_t ret_value = SUCCEED;   /* return value */
+  herr_t ret_value = SUCCEED; /* return value */
 
-    FUNC_ENTER_NOAPI(FAIL)
+  FUNC_ENTER_NOAPI(FAIL)
 
-    HDassert(space);
-    HDassert(p);
-    HDassert(*p);
+  HDassert(space);
+  HDassert(p);
+  HDassert(*p);
 
-    /* Change to "all" selection */
-    if(H5S_select_all(space, TRUE) < 0)
-        HGOTO_ERROR(H5E_DATASPACE, H5E_CANTDELETE, FAIL, "can't change selection")
+  /* Change to "all" selection */
+  if (H5S_select_all(space, TRUE) < 0)
+    HGOTO_ERROR(H5E_DATASPACE, H5E_CANTDELETE, FAIL, "can't change selection")
 
 done:
-    FUNC_LEAVE_NOAPI(ret_value)
-}   /* H5S_all_deserialize() */
-
+  FUNC_LEAVE_NOAPI(ret_value)
+} /* H5S_all_deserialize() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -613,27 +598,27 @@ done:
 static herr_t
 H5S_all_bounds(const H5S_t *space, hsize_t *start, hsize_t *end)
 {
-    unsigned rank;                  /* Dataspace rank */
-    unsigned i;                     /* index variable */
+  unsigned rank; /* Dataspace rank */
+  unsigned i;    /* index variable */
 
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    HDassert(space);
-    HDassert(start);
-    HDassert(end);
+  HDassert(space);
+  HDassert(start);
+  HDassert(end);
 
-    /* Get the dataspace extent rank */
-    rank = space->extent.rank;
+  /* Get the dataspace extent rank */
+  rank = space->extent.rank;
 
-    /* Just copy over the complete extent */
-    for(i = 0; i < rank; i++) {
-        start[i] = 0;
-        end[i] = space->extent.size[i] - 1;
-    } /* end for */
+  /* Just copy over the complete extent */
+  for (i = 0; i < rank; i++)
+  {
+    start[i] = 0;
+    end[i] = space->extent.size[i] - 1;
+  } /* end for */
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_bounds() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_bounds() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -658,17 +643,16 @@ H5S_all_bounds(const H5S_t *space, hsize_t *start, hsize_t *end)
 static herr_t
 H5S_all_offset(const H5S_t H5_ATTR_UNUSED *space, hsize_t *offset)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    HDassert(space);
-    HDassert(offset);
+  HDassert(space);
+  HDassert(offset);
 
-    /* 'All' selections always start at offset 0 */
-    *offset = 0;
+  /* 'All' selections always start at offset 0 */
+  *offset = 0;
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_offset() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_offset() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -694,11 +678,10 @@ H5S_all_offset(const H5S_t H5_ATTR_UNUSED *space, hsize_t *offset)
 static int
 H5S__all_unlim_dim(const H5S_t H5_ATTR_UNUSED *space)
 {
-    FUNC_ENTER_STATIC_NOERR
+  FUNC_ENTER_STATIC_NOERR
 
-    FUNC_LEAVE_NOAPI(-1)
+  FUNC_LEAVE_NOAPI(-1)
 } /* end H5S__all_unlim_dim() */
-
 
 /*--------------------------------------------------------------------------
  NAME
@@ -721,13 +704,12 @@ H5S__all_unlim_dim(const H5S_t H5_ATTR_UNUSED *space)
 static htri_t
 H5S_all_is_contiguous(const H5S_t H5_ATTR_UNUSED *space)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    HDassert(space);
+  HDassert(space);
 
-    FUNC_LEAVE_NOAPI(TRUE)
-}   /* H5S_all_is_contiguous() */
-
+  FUNC_LEAVE_NOAPI(TRUE)
+} /* H5S_all_is_contiguous() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -750,13 +732,12 @@ H5S_all_is_contiguous(const H5S_t H5_ATTR_UNUSED *space)
 static htri_t
 H5S_all_is_single(const H5S_t H5_ATTR_UNUSED *space)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    HDassert(space);
+  HDassert(space);
 
-    FUNC_LEAVE_NOAPI(TRUE)
-}   /* H5S_all_is_single() */
-
+  FUNC_LEAVE_NOAPI(TRUE)
+} /* H5S_all_is_single() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -780,14 +761,13 @@ H5S_all_is_single(const H5S_t H5_ATTR_UNUSED *space)
 static htri_t
 H5S_all_is_regular(const H5S_t H5_ATTR_UNUSED *space)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert(space);
+  /* Check args */
+  HDassert(space);
 
-    FUNC_LEAVE_NOAPI(TRUE)
-}   /* H5S_all_is_regular() */
-
+  FUNC_LEAVE_NOAPI(TRUE)
+} /* H5S_all_is_regular() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -810,15 +790,14 @@ H5S_all_is_regular(const H5S_t H5_ATTR_UNUSED *space)
 static herr_t
 H5S_all_adjust_u(H5S_t H5_ATTR_UNUSED *space, const hsize_t H5_ATTR_UNUSED *offset)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert(space);
-    HDassert(offset);
+  /* Check args */
+  HDassert(space);
+  HDassert(offset);
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_adjust_u() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_adjust_u() */
 
 /*-------------------------------------------------------------------------
  * Function:	H5S_all_project_scalar
@@ -836,18 +815,17 @@ H5S_all_adjust_u(H5S_t H5_ATTR_UNUSED *space, const hsize_t H5_ATTR_UNUSED *offs
 static herr_t
 H5S_all_project_scalar(const H5S_t H5_ATTR_UNUSED *space, hsize_t *offset)
 {
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert(space && H5S_SEL_ALL == H5S_GET_SELECT_TYPE(space));
-    HDassert(offset);
+  /* Check args */
+  HDassert(space && H5S_SEL_ALL == H5S_GET_SELECT_TYPE(space));
+  HDassert(offset);
 
-    /* Set offset of selection in projected buffer */
-    *offset = 0;
+  /* Set offset of selection in projected buffer */
+  *offset = 0;
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
-}   /* H5S_all_project_scalar() */
-
+  FUNC_LEAVE_NOAPI(SUCCEED)
+} /* H5S_all_project_scalar() */
 
 /*-------------------------------------------------------------------------
  * Function:	H5S_all_project_simple
@@ -865,23 +843,22 @@ H5S_all_project_scalar(const H5S_t H5_ATTR_UNUSED *space, hsize_t *offset)
 static herr_t
 H5S_all_project_simple(const H5S_t *base_space, H5S_t *new_space, hsize_t *offset)
 {
-    herr_t ret_value = SUCCEED;         /* Return value */
+  herr_t ret_value = SUCCEED; /* Return value */
 
-    FUNC_ENTER_NOAPI_NOINIT
+  FUNC_ENTER_NOAPI_NOINIT
 
-    /* Check args */
-    HDassert(base_space && H5S_SEL_ALL == H5S_GET_SELECT_TYPE(base_space));
-    HDassert(new_space);
-    HDassert(offset);
+  /* Check args */
+  HDassert(base_space && H5S_SEL_ALL == H5S_GET_SELECT_TYPE(base_space));
+  HDassert(new_space);
+  HDassert(offset);
 
-    /* Select the entire new space */
-    if(H5S_select_all(new_space, TRUE) < 0)
-        HGOTO_ERROR(H5E_DATASPACE, H5E_CANTSET, FAIL, "unable to set all selection")
+  /* Select the entire new space */
+  if (H5S_select_all(new_space, TRUE) < 0)
+    HGOTO_ERROR(H5E_DATASPACE, H5E_CANTSET, FAIL, "unable to set all selection")
 
 done:
-    FUNC_LEAVE_NOAPI(ret_value)
-}   /* H5S_all_project_simple() */
-
+  FUNC_LEAVE_NOAPI(ret_value)
+} /* H5S_all_project_simple() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -904,28 +881,27 @@ done:
 herr_t
 H5S_select_all(H5S_t *space, hbool_t rel_prev)
 {
-    herr_t ret_value = SUCCEED;  /* return value */
+  herr_t ret_value = SUCCEED; /* return value */
 
-    FUNC_ENTER_NOAPI(FAIL)
+  FUNC_ENTER_NOAPI(FAIL)
 
-    /* Check args */
-    HDassert(space);
+  /* Check args */
+  HDassert(space);
 
-    /* Remove current selection first */
-    if(rel_prev)
-        if(H5S_SELECT_RELEASE(space) < 0)
-            HGOTO_ERROR(H5E_DATASPACE, H5E_CANTDELETE, FAIL, "can't release selection")
+  /* Remove current selection first */
+  if (rel_prev)
+    if (H5S_SELECT_RELEASE(space) < 0)
+      HGOTO_ERROR(H5E_DATASPACE, H5E_CANTDELETE, FAIL, "can't release selection")
 
-    /* Set number of elements in selection */
-    space->select.num_elem = (hsize_t)H5S_GET_EXTENT_NPOINTS(space);
+  /* Set number of elements in selection */
+  space->select.num_elem = (hsize_t)H5S_GET_EXTENT_NPOINTS(space);
 
-    /* Set selection type */
-    space->select.type = H5S_sel_all;
+  /* Set selection type */
+  space->select.type = H5S_sel_all;
 
 done:
-    FUNC_LEAVE_NOAPI(ret_value)
-}   /* H5S_select_all() */
-
+  FUNC_LEAVE_NOAPI(ret_value)
+} /* H5S_select_all() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -947,24 +923,23 @@ done:
 herr_t
 H5Sselect_all(hid_t spaceid)
 {
-    H5S_t *space;               /* Dataspace to modify selection of */
-    herr_t ret_value = SUCCEED; /* return value */
+  H5S_t *space;               /* Dataspace to modify selection of */
+  herr_t ret_value = SUCCEED; /* return value */
 
-    FUNC_ENTER_API(FAIL)
-    H5TRACE1("e", "i", spaceid);
+  FUNC_ENTER_API(FAIL)
+  H5TRACE1("e", "i", spaceid);
 
-    /* Check args */
-    if(NULL == (space = (H5S_t *)H5I_object_verify(spaceid, H5I_DATASPACE)))
-        HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "not a data space")
+  /* Check args */
+  if (NULL == (space = (H5S_t *)H5I_object_verify(spaceid, H5I_DATASPACE)))
+    HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "not a data space")
 
-    /* Call internal routine to do the work */
-    if(H5S_select_all(space, TRUE) < 0)
-        HGOTO_ERROR(H5E_DATASPACE, H5E_CANTDELETE, FAIL, "can't change selection")
+  /* Call internal routine to do the work */
+  if (H5S_select_all(space, TRUE) < 0)
+    HGOTO_ERROR(H5E_DATASPACE, H5E_CANTDELETE, FAIL, "can't change selection")
 
 done:
-    FUNC_LEAVE_API(ret_value)
-}   /* H5Sselect_all() */
-
+  FUNC_LEAVE_API(ret_value)
+} /* H5Sselect_all() */
 
 /*--------------------------------------------------------------------------
  NAME
@@ -999,43 +974,42 @@ done:
 --------------------------------------------------------------------------*/
 static herr_t
 H5S_all_get_seq_list(const H5S_t H5_ATTR_UNUSED *space, unsigned H5_ATTR_UNUSED flags, H5S_sel_iter_t *iter,
-    size_t H5_ATTR_UNUSED maxseq, size_t maxelem, size_t *nseq, size_t *nelem,
-    hsize_t *off, size_t *len)
+                     size_t H5_ATTR_UNUSED maxseq, size_t maxelem, size_t *nseq, size_t *nelem,
+                     hsize_t *off, size_t *len)
 {
-    size_t elem_used;           /* The number of elements used */
+  size_t elem_used; /* The number of elements used */
 
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
+  FUNC_ENTER_NOAPI_NOINIT_NOERR
 
-    /* Check args */
-    HDassert(space);
-    HDassert(iter);
-    HDassert(maxseq>0);
-    HDassert(maxelem>0);
-    HDassert(nseq);
-    HDassert(nelem);
-    HDassert(off);
-    HDassert(len);
+  /* Check args */
+  HDassert(space);
+  HDassert(iter);
+  HDassert(maxseq > 0);
+  HDassert(maxelem > 0);
+  HDassert(nseq);
+  HDassert(nelem);
+  HDassert(off);
+  HDassert(len);
 
-    /* Determine the actual number of elements to use */
-    H5_CHECK_OVERFLOW(iter->elmt_left,hsize_t,size_t);
-    elem_used=MIN(maxelem,(size_t)iter->elmt_left);
-    HDassert(elem_used > 0);
+  /* Determine the actual number of elements to use */
+  H5_CHECK_OVERFLOW(iter->elmt_left, hsize_t, size_t);
+  elem_used = MIN(maxelem, (size_t)iter->elmt_left);
+  HDassert(elem_used > 0);
 
-    /* Compute the offset in the dataset */
-    off[0]=iter->u.all.byte_offset;
-    len[0]=elem_used*iter->elmt_size;
+  /* Compute the offset in the dataset */
+  off[0] = iter->u.all.byte_offset;
+  len[0] = elem_used * iter->elmt_size;
 
-    /* Should only need one sequence for 'all' selections */
-    *nseq=1;
+  /* Should only need one sequence for 'all' selections */
+  *nseq = 1;
 
-    /* Set the number of elements used */
-    *nelem=elem_used;
+  /* Set the number of elements used */
+  *nelem = elem_used;
 
-    /* Update the iterator */
-    iter->elmt_left-=elem_used;
-    iter->u.all.elmt_offset+=elem_used;
-    iter->u.all.byte_offset+=len[0];
+  /* Update the iterator */
+  iter->elmt_left -= elem_used;
+  iter->u.all.elmt_offset += elem_used;
+  iter->u.all.byte_offset += len[0];
 
-    FUNC_LEAVE_NOAPI(SUCCEED)
+  FUNC_LEAVE_NOAPI(SUCCEED)
 } /* end H5S_all_get_seq_list() */
-

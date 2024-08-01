@@ -2104,11 +2104,11 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5Iget_name(hid_t id, char *name/*out*/, size_t size)
 {
     H5G_loc_t     loc;          /* Object location */
-    ssize_t       ret_value;    /* Return value */
+    h5_posix_io_ret_t       ret_value;    /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE3("Zs", "ixz", id, name, size);

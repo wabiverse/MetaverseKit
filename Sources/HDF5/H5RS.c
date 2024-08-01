@@ -407,7 +407,7 @@ H5RS_cmp(const H5RS_str_t *rs1, const H5RS_str_t *rs2)
  PURPOSE
     Compute the length of a ref-counted string
  USAGE
-    ssize_t H5RS_cmp(rs)
+    h5_posix_io_ret_t H5RS_cmp(rs)
         const H5RS_str_t *rs;  IN: Ref-counted string to compute length of
 
  RETURNS
@@ -419,7 +419,7 @@ H5RS_cmp(const H5RS_str_t *rs1, const H5RS_str_t *rs2)
  EXAMPLES
  REVISION LOG
 --------------------------------------------------------------------------*/
-ssize_t
+h5_posix_io_ret_t
 H5RS_len(const H5RS_str_t *rs)
 {
     FUNC_ENTER_NOAPI_NOINIT_NOERR
@@ -428,7 +428,7 @@ H5RS_len(const H5RS_str_t *rs)
     HDassert(rs);
     HDassert(rs->s);
 
-    FUNC_LEAVE_NOAPI((ssize_t)HDstrlen(rs->s))
+    FUNC_LEAVE_NOAPI((h5_posix_io_ret_t)HDstrlen(rs->s))
 } /* end H5RS_len() */
 
 

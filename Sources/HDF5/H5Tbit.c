@@ -183,7 +183,7 @@ H5T__bit_copy(uint8_t *dst, size_t dst_offset, const uint8_t *src,
  *-------------------------------------------------------------------------
  */
 herr_t
-H5T__bit_shift(uint8_t *buf, ssize_t shift_dist, size_t offset, size_t size)
+H5T__bit_shift(uint8_t *buf, h5_posix_io_ret_t shift_dist, size_t offset, size_t size)
 {
     uint8_t tmp_buf[512];       /* Temporary buffer */
     H5WB_t *wb = NULL;          /* Wrapped buffer for temporary buffer */
@@ -422,14 +422,14 @@ H5T__bit_set(uint8_t *buf, size_t offset, size_t size, hbool_t value)
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5T__bit_find(uint8_t *buf, size_t offset, size_t size, H5T_sdir_t direction,
 	      hbool_t value)
 {
-    ssize_t	base = (ssize_t)offset;
-    ssize_t	idx, i;
+    h5_posix_io_ret_t	base = (h5_posix_io_ret_t)offset;
+    h5_posix_io_ret_t	idx, i;
     size_t	iu;
-    ssize_t     ret_value = (-1);         /* Return value */
+    h5_posix_io_ret_t     ret_value = (-1);         /* Return value */
 
     /* Use FUNC_ENTER_PACKAGE_NOERR here to avoid performance issues */
     FUNC_ENTER_PACKAGE_NOERR
@@ -440,14 +440,14 @@ H5T__bit_find(uint8_t *buf, size_t offset, size_t size, H5T_sdir_t direction,
     switch(direction) {
         case H5T_BIT_LSB:
             /* Calculate index */
-            idx = (ssize_t)(offset / 8);
+            idx = (h5_posix_io_ret_t)(offset / 8);
             offset %= 8;
 
             /* Beginning */
             if(offset) {
                 for(iu = offset; iu < 8 && size > 0; iu++, size--)
                     if(value == (hbool_t)((buf[idx] >> iu) & 0x01))
-                        HGOTO_DONE(8 * idx + (ssize_t)iu - base);
+                        HGOTO_DONE(8 * idx + (h5_posix_io_ret_t)iu - base);
 
                 offset = 0;
                 idx++;
@@ -465,21 +465,21 @@ H5T__bit_find(uint8_t *buf, size_t offset, size_t size, H5T_sdir_t direction,
             } /* end while */
 
             /* End */
-            for(i = 0; i < (ssize_t)size; i++)
+            for(i = 0; i < (h5_posix_io_ret_t)size; i++)
                 if(value == (hbool_t)((buf[idx] >> i) & 0x01))
                     HGOTO_DONE(8 * idx + i - base);
             break;
 
         case H5T_BIT_MSB:
             /* Calculate index */
-            idx = (ssize_t)((offset + size - 1) / 8);
+            idx = (h5_posix_io_ret_t)((offset + size - 1) / 8);
             offset %= 8;
 
             /* Beginning */
             if(size > 8 - offset && (offset + size) % 8) {
                 for(iu = (offset + size) % 8; iu > 0; --iu, --size)
                     if(value == (hbool_t)((buf[idx] >> (iu - 1)) & 0x01))
-                        HGOTO_DONE(8 * idx + (ssize_t)(iu - 1) - base);
+                        HGOTO_DONE(8 * idx + (h5_posix_io_ret_t)(iu - 1) - base);
 
                 --idx;
             } /* end if */
@@ -500,7 +500,7 @@ H5T__bit_find(uint8_t *buf, size_t offset, size_t size, H5T_sdir_t direction,
             if(size > 0) {
                 for(iu = offset + size; iu > offset; --iu)
                     if(value == (hbool_t)((buf[idx] >> (iu - 1)) & 0x01))
-                        HGOTO_DONE(8 * idx + (ssize_t)(iu - 1) - base);
+                        HGOTO_DONE(8 * idx + (h5_posix_io_ret_t)(iu - 1) - base);
             } /* end if */
             break;
 

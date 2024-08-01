@@ -43,8 +43,8 @@ H5VM_stride_optimize2(unsigned *np/*in,out*/, hsize_t *elmt_size/*in,out*/,
 #ifdef LATER
 static void
 H5VM_stride_copy2(hsize_t nelmts, hsize_t elmt_size,
-     unsigned dst_n, const hsize_t *dst_size, const ssize_t *dst_stride, void *_dst,
-     unsigned src_n, const hsize_t *src_size, const ssize_t *src_stride, const void *_src);
+     unsigned dst_n, const hsize_t *dst_size, const h5_posix_io_ret_t *dst_stride, void *_dst,
+     unsigned src_n, const hsize_t *src_size, const h5_posix_io_ret_t *src_stride, const void *_src);
 #endif /* LATER */
 
 
@@ -1361,7 +1361,7 @@ H5VM_chunk_index_scaled(unsigned ndims, const hsize_t *coord, const uint32_t *ch
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5VM_opvv(size_t dst_max_nseq, size_t *dst_curr_seq, size_t dst_len_arr[],
     hsize_t dst_off_arr[],
     size_t src_max_nseq, size_t *src_curr_seq, size_t src_len_arr[],
@@ -1374,7 +1374,7 @@ H5VM_opvv(size_t dst_max_nseq, size_t *dst_curr_seq, size_t dst_len_arr[],
     hsize_t tmp_dst_off, tmp_src_off;   /* Temporary source and destination offset values */
     size_t tmp_dst_len, tmp_src_len;    /* Temporary source and destination length values */
     size_t acc_len;             /* Accumulated length of sequences */
-    ssize_t ret_value = 0;      /* Return value (Total size of sequence in bytes) */
+    h5_posix_io_ret_t ret_value = 0;      /* Return value (Total size of sequence in bytes) */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -1442,7 +1442,7 @@ src_smaller:
         } while(tmp_src_len < tmp_dst_len);
 
         /* Roll accumulated sequence lengths into return value */
-        ret_value += (ssize_t)acc_len;
+        ret_value += (h5_posix_io_ret_t)acc_len;
 
         /* Transition to next state */
         if(tmp_dst_len < tmp_src_len)
@@ -1484,7 +1484,7 @@ dst_smaller:
         } while(tmp_dst_len < tmp_src_len);
 
         /* Roll accumulated sequence lengths into return value */
-        ret_value += (ssize_t)acc_len;
+        ret_value += (h5_posix_io_ret_t)acc_len;
 
         /* Transition to next state */
         if(tmp_src_len < tmp_dst_len)
@@ -1523,7 +1523,7 @@ equal:
         } while(tmp_dst_len == tmp_src_len);
 
         /* Roll accumulated sequence lengths into return value */
-        ret_value += (ssize_t)acc_len;
+        ret_value += (h5_posix_io_ret_t)acc_len;
 
         /* Transition to next state */
         if(tmp_dst_len < tmp_src_len)
@@ -1534,7 +1534,7 @@ equal:
 
 finished:
     /* Roll accumulated sequence lengths into return value */
-    ret_value += (ssize_t)acc_len;
+    ret_value += (h5_posix_io_ret_t)acc_len;
 
     /* Update current sequence vectors */
     *dst_curr_seq = (size_t)(dst_off_ptr - dst_off_arr);
@@ -1568,7 +1568,7 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5VM_memcpyvv(void *_dst,
     size_t dst_max_nseq, size_t *dst_curr_seq, size_t dst_len_arr[], hsize_t dst_off_arr[],
     const void *_src,
@@ -1582,7 +1582,7 @@ H5VM_memcpyvv(void *_dst,
     size_t tmp_dst_len;         /* Temporary dest. length value */
     size_t tmp_src_len;         /* Temporary source length value */
     size_t acc_len;             /* Accumulated length of sequences */
-    ssize_t ret_value = 0;      /* Return value (Total size of sequence in bytes) */
+    h5_posix_io_ret_t ret_value = 0;      /* Return value (Total size of sequence in bytes) */
 
     FUNC_ENTER_NOAPI_NOINIT_NOERR
 
@@ -1654,7 +1654,7 @@ src_smaller:
         } while(tmp_src_len < tmp_dst_len);
 
         /* Roll accumulated sequence lengths into return value */
-        ret_value += (ssize_t)acc_len;
+        ret_value += (h5_posix_io_ret_t)acc_len;
 
         /* Transition to next state */
         if(tmp_dst_len < tmp_src_len)
@@ -1697,7 +1697,7 @@ dst_smaller:
         } while(tmp_dst_len < tmp_src_len);
 
         /* Roll accumulated sequence lengths into return value */
-        ret_value += (ssize_t)acc_len;
+        ret_value += (h5_posix_io_ret_t)acc_len;
 
         /* Transition to next state */
         if(tmp_src_len < tmp_dst_len)
@@ -1735,7 +1735,7 @@ equal:
         } while(tmp_dst_len == tmp_src_len);
 
         /* Roll accumulated sequence lengths into return value */
-        ret_value += (ssize_t)acc_len;
+        ret_value += (h5_posix_io_ret_t)acc_len;
 
         /* Transition to next state */
         if(tmp_dst_len < tmp_src_len)
@@ -1746,7 +1746,7 @@ equal:
 
 finished:
     /* Roll accumulated sequence lengths into return value */
-    ret_value += (ssize_t)acc_len;
+    ret_value += (h5_posix_io_ret_t)acc_len;
 
     /* Update current sequence vectors */
     *dst_curr_seq = (size_t)(dst_off_ptr - dst_off_arr);

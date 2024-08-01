@@ -317,12 +317,12 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5SM_get_index(const H5SM_master_table_t *table, unsigned type_id)
 {
     size_t x;
     unsigned type_flag;
-    ssize_t ret_value = FAIL;
+    h5_posix_io_ret_t ret_value = FAIL;
 
     FUNC_ENTER_NOAPI_NOINIT
 
@@ -335,7 +335,7 @@ H5SM_get_index(const H5SM_master_table_t *table, unsigned type_id)
      */
     for(x = 0; x < table->num_indexes; ++x)
         if(table->indexes[x].mesg_types & type_flag)
-            HGOTO_DONE((ssize_t)x)
+            HGOTO_DONE((h5_posix_io_ret_t)x)
 
     /* At this point, ret_value is either the location of the correct
      * index or it's still FAIL because we didn't find an index.
@@ -419,7 +419,7 @@ H5SM_get_fheap_addr(H5F_t *f, hid_t dxpl_id, unsigned type_id, haddr_t *fheap_ad
 {
     H5SM_master_table_t *table = NULL;  /* Shared object master table */
     H5SM_table_cache_ud_t cache_udata;  /* User-data for callback */
-    ssize_t index_num;                  /* Which index */
+    h5_posix_io_ret_t index_num;                  /* Which index */
     herr_t ret_value = SUCCEED;         /* Return value */
 
     FUNC_ENTER_NOAPI_TAG(dxpl_id, H5AC__SOHM_TAG, FAIL)
@@ -933,11 +933,11 @@ done:
  */
 htri_t
 H5SM_can_share(H5F_t *f, hid_t dxpl_id, H5SM_master_table_t *table,
-    ssize_t *sohm_index_num, unsigned type_id, const void *mesg)
+    h5_posix_io_ret_t *sohm_index_num, unsigned type_id, const void *mesg)
 {
     size_t              mesg_size;
     H5SM_master_table_t *my_table = NULL;
-    ssize_t             index_num;
+    h5_posix_io_ret_t             index_num;
     htri_t              tri_ret;
     htri_t              ret_value = TRUE;
 
@@ -1057,7 +1057,7 @@ H5SM_try_share(H5F_t *f, hid_t dxpl_id, H5O_t *open_oh, unsigned defer_flags,
     H5SM_master_table_t *table = NULL;
     H5SM_table_cache_ud_t cache_udata;      /* User-data for callback */
     unsigned            cache_flags = H5AC__NO_FLAGS_SET;
-    ssize_t             index_num;
+    h5_posix_io_ret_t             index_num;
     htri_t              tri_ret;
 #ifndef NDEBUG
     unsigned            deferred_type = -1u;
@@ -1550,7 +1550,7 @@ H5SM_delete(H5F_t *f, hid_t dxpl_id, H5O_t *open_oh, H5O_shared_t *sh_mesg)
     H5SM_master_table_t  *table = NULL;
     unsigned              cache_flags = H5AC__NO_FLAGS_SET;
     H5SM_table_cache_ud_t cache_udata;      /* User-data for callback */
-    ssize_t               index_num;
+    h5_posix_io_ret_t               index_num;
     void                 *mesg_buf = NULL;
     void                 *native_mesg = NULL;
     unsigned              type_id;              /* Message type ID to operate on */
@@ -2176,7 +2176,7 @@ H5SM_get_refcount(H5F_t *f, hid_t dxpl_id, unsigned type_id,
     H5SM_index_header_t *header=NULL;   /* Index header for message type */
     H5SM_mesg_key_t key;                /* Key for looking up message */
     H5SM_sohm_t message;                /* Shared message returned from callback */
-    ssize_t index_num;                  /* Table index for message type */
+    h5_posix_io_ret_t index_num;                  /* Table index for message type */
     size_t buf_size;                    /* Size of the encoded message */
     void * encoding_buf = NULL;         /* Buffer for encoded message */
     herr_t ret_value = SUCCEED;         /* Return value */

@@ -264,6 +264,7 @@ let package = Package(
         .define("VK_USE_PLATFORM_IOS_MVK", to: "1", .when(platforms: [.iOS, .visionOS])),
         .headerSearchPath("."),
         .headerSearchPath("backends"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ],
       linkerSettings: [
         .linkedFramework("Cocoa", .when(platforms: [.macOS])),
@@ -307,6 +308,7 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .define("GL_SILENCE_DEPRECATION", to: "1"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
       ]
     ),
 
@@ -315,7 +317,10 @@ let package = Package(
       dependencies: [
         .target(name: "MaterialX"),
       ],
-      exclude: getConfig(for: .mxGraphEditor).exclude
+      exclude: getConfig(for: .mxGraphEditor).exclude,
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
+      ]
     ),
 
     .target(
@@ -361,6 +366,7 @@ let package = Package(
       publicHeadersPath: "src/Imath",
       cxxSettings: [
         .headerSearchPath("src/python/PyImath"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
       ],
       linkerSettings: [
         .linkedFramework("OpenGL", .when(platforms: [.macOS])),
@@ -529,26 +535,26 @@ let package = Package(
       ]
     ),
 
-    .target(
-      name: "MetaPy",
-      dependencies: [
-        .target(name: "Imath"),
-        .target(name: "OpenEXR"),
-        .target(name: "OpenVDB"),
-        .target(name: "Alembic"),
-        .target(name: "OpenImageIO"),
-        .target(name: "MaterialX"),
-        Arch.OS.python(),
-        Arch.OS.boost()
-      ],
-      exclude: getConfig(for: .mpy).exclude,
-      publicHeadersPath: "include/python",
-      cxxSettings: [
-        .headerSearchPath("include/python/PyImath"),
-        .headerSearchPath("include/python/PyAlembic"),
-        .headerSearchPath("include/python/PyOIIO"),
-      ]
-    ),
+    // .target(
+    //   name: "MetaPy",
+    //   dependencies: [
+    //     .target(name: "Imath"),
+    //     .target(name: "OpenEXR"),
+    //     .target(name: "OpenVDB"),
+    //     .target(name: "Alembic"),
+    //     .target(name: "OpenImageIO"),
+    //     .target(name: "MaterialX"),
+    //     Arch.OS.python(),
+    //     Arch.OS.boost()
+    //   ],
+    //   exclude: getConfig(for: .mpy).exclude,
+    //   publicHeadersPath: "include/python",
+    //   cxxSettings: [
+    //     .headerSearchPath("include/python/PyImath"),
+    //     .headerSearchPath("include/python/PyAlembic"),
+    //     .headerSearchPath("include/python/PyOIIO"),
+    //   ]
+    // ),
 
     .target(
       name: "Ptex",
@@ -564,6 +570,9 @@ let package = Package(
 
     .target(
       name: "HDF5",
+      dependencies: [
+        .target(name: "ZLibDataCompression")
+      ],
       publicHeadersPath: "include",
       cSettings: [
         .define("H5_USE_18_API", to: "1"),
@@ -571,6 +580,7 @@ let package = Package(
         .define("H5_HAVE_C99_FUNC", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("H5_HAVE_FUNCTION", to: "1", .when(platforms: Arch.OS.linux.platform)),
         .define("H5_TIME_WITH_SYS_TIME", to: "1", .when(platforms: Arch.OS.linux.platform)),
+        .define("hdf5_shared_EXPORTS", .when(platforms: [.windows])),
       ]
     ),
 
@@ -937,6 +947,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "backends/ImplSDL.cpp",
         "backends/ImplSDLRenderer.cpp",
       ]
+      #if os(Windows)
+        config.exclude += [
+          "backends/ImplGLUT.cpp",
+          "backends/ImplGLFW.cpp",
+        ]
+      #endif /* os(Windows) */
       #if !os(macOS) && !os(iOS) && !os(tvOS)
         /* fixup metaversalvulkanframework,
          we should be able to rig moltenvk
@@ -1067,12 +1083,12 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "SystemMonitor_windows.cpp",
         ]
       #endif /* !os(Windows) */
-    case .mpy:
-      config.exclude = [
-        "PyAlembic/msvc14fixes.cpp",
-        "PyOpenVDB",
-        "PyMaterialX",
-      ]
+    // case .mpy:
+    //   config.exclude = [
+    //     "PyAlembic/msvc14fixes.cpp",
+    //     "PyOpenVDB",
+    //     "PyMaterialX",
+    //   ]
     case .ptex:
       break
     case .hdf5:
@@ -1152,10 +1168,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           name: "DEFLATE",
           targets: ["DEFLATE"]
         ),
-        .library(
-          name: "MetaPy",
-          targets: ["MetaPy"]
-        ),
+        // .library(
+        //   name: "MetaPy",
+        //   targets: ["MetaPy"]
+        // ),
         .library(
           name: "HDF5",
           targets: ["HDF5"]
@@ -1650,7 +1666,7 @@ enum PkgTarget: String
   case oiioUtil = "OpenImageIO_Util"
   case ocio = "OpenColorIO"
   case ocioBundle = "OCIOBundle"
-  case mpy = "MetaPy"
+  // case mpy = "MetaPy"
   case ptex = "Ptex"
   case hdf5 = "HDF5"
   case alembic = "Alembic"

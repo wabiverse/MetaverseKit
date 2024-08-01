@@ -1000,7 +1000,7 @@ H5P__dcrt_fill_value_enc(const void *value, void **_pp, size_t *size)
 
     /* Sanity check */
     HDcompile_assert(sizeof(size_t) <= sizeof(uint64_t));
-    HDcompile_assert(sizeof(ssize_t) <= sizeof(int64_t));
+    HDcompile_assert(sizeof(h5_posix_io_ret_t) <= sizeof(int64_t));
     HDassert(fill);
     HDassert(size);
 
@@ -1091,7 +1091,7 @@ H5P__dcrt_fill_value_dec(const void **_pp, void *_value)
     FUNC_ENTER_STATIC
 
     HDcompile_assert(sizeof(size_t) <= sizeof(uint64_t));
-    HDcompile_assert(sizeof(ssize_t) <= sizeof(int64_t));
+    HDcompile_assert(sizeof(h5_posix_io_ret_t) <= sizeof(int64_t));
 
     /* Set property to default value */
     *fill = H5D_def_fill_g;
@@ -2519,13 +2519,13 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5Pget_virtual_filename(hid_t dcpl_id, size_t index, char *name/*out*/,
     size_t size)
 {
     H5P_genplist_t *plist;      /* Property list pointer */
     H5O_layout_t layout;        /* Layout information */
-    ssize_t ret_value;            /* Return value */
+    h5_posix_io_ret_t ret_value;            /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE4("Zs", "izxz", dcpl_id, index, name, size);
@@ -2547,7 +2547,7 @@ H5Pget_virtual_filename(hid_t dcpl_id, size_t index, char *name/*out*/,
     HDassert(layout.storage.u.virt.list[index].source_file_name);
     if(name && (size > 0))
         (void)HDstrncpy(name, layout.storage.u.virt.list[index].source_file_name, size);
-    ret_value = (ssize_t)HDstrlen(layout.storage.u.virt.list[index].source_file_name);
+    ret_value = (h5_posix_io_ret_t)HDstrlen(layout.storage.u.virt.list[index].source_file_name);
 
 done:
     FUNC_LEAVE_API(ret_value)
@@ -2582,13 +2582,13 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5Pget_virtual_dsetname(hid_t dcpl_id, size_t index, char *name/*out*/,
     size_t size)
 {
     H5P_genplist_t *plist;      /* Property list pointer */
     H5O_layout_t layout;        /* Layout information */
-    ssize_t ret_value;            /* Return value */
+    h5_posix_io_ret_t ret_value;            /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE4("Zs", "izxz", dcpl_id, index, name, size);
@@ -2610,7 +2610,7 @@ H5Pget_virtual_dsetname(hid_t dcpl_id, size_t index, char *name/*out*/,
     HDassert(layout.storage.u.virt.list[index].source_dset_name);
     if(name && (size > 0))
         (void)HDstrncpy(name, layout.storage.u.virt.list[index].source_dset_name, size);
-    ret_value = (ssize_t)HDstrlen(layout.storage.u.virt.list[index].source_dset_name);
+    ret_value = (h5_posix_io_ret_t)HDstrlen(layout.storage.u.virt.list[index].source_dset_name);
 
 done:
     FUNC_LEAVE_API(ret_value)
@@ -3227,7 +3227,7 @@ H5Pset_fill_value(hid_t plist_id, hid_t type_id, const void *value)
 	/* Set the fill value */
         if(NULL == (fill.type = H5T_copy(type, H5T_COPY_TRANSIENT)))
             HGOTO_ERROR(H5E_PLIST, H5E_CANTCOPY, FAIL, "can't copy datatype")
-        fill.size = (ssize_t)H5T_get_size(type);
+        fill.size = (h5_posix_io_ret_t)H5T_get_size(type);
         if(NULL == (fill.buf = H5MM_malloc((size_t)fill.size)))
             HGOTO_ERROR(H5E_RESOURCE, H5E_CANTINIT, FAIL, "memory allocation failed for fill value")
         HDmemcpy(fill.buf, value, (size_t)fill.size);

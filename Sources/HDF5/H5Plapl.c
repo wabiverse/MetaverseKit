@@ -1037,13 +1037,13 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5Pget_elink_prefix(hid_t plist_id, char *prefix, size_t size)
 {
     H5P_genplist_t *plist;              /* Property list pointer */
     char *my_prefix;                    /* Library's copy of the prefix */
     size_t	len;                    /* Length of prefix string */
-    ssize_t 	ret_value;              /* Return value */
+    h5_posix_io_ret_t 	ret_value;              /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE3("Zs", "i*sz", plist_id, prefix, size);
@@ -1070,7 +1070,7 @@ H5Pget_elink_prefix(hid_t plist_id, char *prefix, size_t size)
         len = 0;
 
     /* Set return value */
-    ret_value = (ssize_t)len;
+    ret_value = (h5_posix_io_ret_t)len;
 
 done:
     FUNC_LEAVE_API(ret_value)

@@ -38,6 +38,14 @@
 #include "H5MMprivate.h"    /* Memory management        */
 #include "H5Pprivate.h"     /* Property lists           */
 
+#if defined(H5_HAVE_WIN32_API)
+# include <fcntl.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <io.h>
+# include <stdio.h>
+#endif // defined(H5_HAVE_WIN32_API)
+
 /* The driver identification number, initialized at runtime */
 static hid_t H5FD_SEC2_g = 0;
 

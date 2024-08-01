@@ -98,22 +98,30 @@
 /* #undef H5_HAVE_CURL_CURL_H */
 
 /* Define if Darwin or Mac OS X */
-#define H5_HAVE_DARWIN 1
+#if defined(__APPLE__)
+# define H5_HAVE_DARWIN 1
+#endif // defined(__APPLE__)
 
 /* Define if the direct I/O virtual file driver (VFD) should be compiled */
 /* #undef H5_HAVE_DIRECT */
 
 /* Define to 1 if you have the <dirent.h> header file. */
-#define H5_HAVE_DIRENT_H 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_DIRENT_H 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-#define H5_HAVE_DLFCN_H 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_DLFCN_H 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define if library information should be embedded in the executables */
 #define H5_HAVE_EMBEDDED_LIBINFO 1
 
 /* Define to 1 if you have the `fcntl' function. */
-#define H5_HAVE_FCNTL 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_FCNTL 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the <features.h> header file. */
 /* #undef H5_HAVE_FEATURES_H */
@@ -128,7 +136,9 @@
 /* #undef H5_HAVE_FLOAT128 */
 
 /* Define to 1 if you have the `flock' function. */
-#define H5_HAVE_FLOCK 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_FLOCK 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the `fork' function. */
 #define H5_HAVE_FORK 1
@@ -143,16 +153,22 @@
 #define H5_HAVE_GETHOSTNAME 1
 
 /* Define to 1 if you have the `getpwuid' function. */
-#define H5_HAVE_GETPWUID 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_GETPWUID 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the `getrusage' function. */
-#define H5_HAVE_GETRUSAGE 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_GETRUSAGE 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the `gettextinfo' function. */
 /* #undef H5_HAVE_GETTEXTINFO */
 
 /* Define to 1 if you have the `gettimeofday' function. */
-#define H5_HAVE_GETTIMEOFDAY 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_GETTIMEOFDAY 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the <hdfs.h> header file. */
 /* #undef H5_HAVE_HDFS_H */
@@ -262,7 +278,9 @@
 #define H5_HAVE_RANDOM 1
 
 /* Define to 1 if you have the `rand_r' function. */
-#define H5_HAVE_RAND_R 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_RAND_R 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define whether the Read-Only S3 virtual file driver (VFD) should be
    compiled */
@@ -305,16 +323,24 @@
 /* #undef H5_HAVE_SUBFILING_VFD */
 
 /* Define to 1 if you have the `symlink' function. */
-#define H5_HAVE_SYMLINK 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_SYMLINK 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the <sys/file.h> header file. */
-#define H5_HAVE_SYS_FILE_H 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_SYS_FILE_H 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
-#define H5_HAVE_SYS_IOCTL_H 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_SYS_IOCTL_H 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the <sys/resource.h> header file. */
-#define H5_HAVE_SYS_RESOURCE_H 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_SYS_RESOURCE_H 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the <sys/socket.h> header file. */
 #define H5_HAVE_SYS_SOCKET_H 1
@@ -323,7 +349,9 @@
 #define H5_HAVE_SYS_STAT_H 1
 
 /* Define to 1 if you have the <sys/time.h> header file. */
-#define H5_HAVE_SYS_TIME_H 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_SYS_TIME_H 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define H5_HAVE_SYS_TYPES_H 1
@@ -351,19 +379,21 @@
 # ifdef H5_HAVE_TM_GMTOFF
 #  undef H5_HAVE_TM_GMTOFF
 # endif
-#else  /* !defined(__linux__) */
+#elif defined(__APPLE__)
 # define H5_HAVE_TM_GMTOFF 1
-#endif /* !defined(__linux__) */
+#endif /* __linux__ */
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#define H5_HAVE_UNISTD_H 1
+#if defined(__linux__) || defined(__APPLE__)
+# define H5_HAVE_UNISTD_H 1
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /* Define to 1 if you have the `vasprintf' function. */
 #ifdef __linux__
 # ifdef H5_HAVE_VASPRINTF
 #  undef H5_HAVE_VASPRINTF
 # endif
-#else /* !defined(__linux__) */
+#elif defined(__APPLE__)
 # define H5_HAVE_VASPRINTF 1
 #endif /* !defined(__linux__) */
 
@@ -371,13 +401,21 @@
 #define H5_HAVE_WAITPID 1
 
 /* Define if on the Windows platform using the Win32 API */
-/* #undef H5_HAVE_WIN32_API */
+#if defined(_WIN32)
+# define H5_HAVE_WIN32_API 1
+# define H5_HAVE_VISUAL_STUDIO 1
+# define H5_HAVE_WINSOCK2_H 1
+#endif // defined(_WIN32)
 
 /* Define if this is a Windows machine */
-/* #undef H5_HAVE_WINDOWS */
+#if defined(_WIN32)
+# define H5_HAVE_WINDOWS 1
+#endif // defined(_WIN32)
 
 /* Define if your system has window style path name. */
-/* #undef H5_HAVE_WINDOW_PATH */
+#if defined(_WIN32)
+# define H5_HAVE_WINDOW_PATH 1
+#endif // defined(_WIN32)
 
 /* Define to 1 if you have the <zlib.h> header file. */
 #define H5_HAVE_ZLIB_H 1

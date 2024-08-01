@@ -373,7 +373,7 @@ H5_DLL herr_t H5G__stab_iterate(const H5O_loc_t *oloc, hid_t dxpl_id, H5_iter_or
 H5_DLL herr_t H5G__stab_count(struct H5O_loc_t *oloc, hsize_t *num_objs, hid_t dxpl_id);
 H5_DLL herr_t H5G__stab_bh_size(H5F_t *f, hid_t dxpl_id, const H5O_stab_t *stab,
     H5_ih_info_t *bh_info);
-H5_DLL ssize_t H5G__stab_get_name_by_idx(const H5O_loc_t *oloc, H5_iter_order_t order,
+H5_DLL h5_posix_io_ret_t H5G__stab_get_name_by_idx(const H5O_loc_t *oloc, H5_iter_order_t order,
     hsize_t n, char* name, size_t size, hid_t dxpl_id);
 H5_DLL herr_t H5G__stab_remove(const H5O_loc_t *oloc, hid_t dxpl_id,
     H5RS_str_t *grp_full_path_r, const char *name);
@@ -441,7 +441,7 @@ H5_DLL herr_t H5G__link_name_replace(H5F_t *file, hid_t dxpl_id,
 /* Functions that understand "compact" link storage */
 H5_DLL herr_t H5G__compact_insert(const H5O_loc_t *grp_oloc, H5O_link_t *obj_lnk,
     hid_t dxpl_id);
-H5_DLL ssize_t H5G__compact_get_name_by_idx(const H5O_loc_t *oloc, hid_t dxpl_id,
+H5_DLL h5_posix_io_ret_t H5G__compact_get_name_by_idx(const H5O_loc_t *oloc, hid_t dxpl_id,
     const H5O_linfo_t *linfo, H5_index_t idx_type, H5_iter_order_t order,
     hsize_t idx, char *name, size_t size);
 H5_DLL herr_t H5G__compact_remove(const H5O_loc_t *oloc, hid_t dxpl_id,
@@ -477,7 +477,7 @@ H5_DLL herr_t H5G__dense_lookup_by_idx(H5F_t *f, hid_t dxpl_id,
 H5_DLL herr_t H5G__dense_iterate(H5F_t *f, hid_t dxpl_id, const H5O_linfo_t *linfo,
     H5_index_t idx_type, H5_iter_order_t order, hsize_t skip, hsize_t *last_lnk,
     H5G_lib_iterate_t op, void *op_data);
-H5_DLL ssize_t H5G__dense_get_name_by_idx(H5F_t  *f, hid_t dxpl_id,
+H5_DLL h5_posix_io_ret_t H5G__dense_get_name_by_idx(H5F_t  *f, hid_t dxpl_id,
     H5O_linfo_t *linfo, H5_index_t idx_type, H5_iter_order_t order, hsize_t n,
     char *name, size_t size);
 H5_DLL herr_t H5G__dense_remove(H5F_t *f, hid_t dxpl_id, const H5O_linfo_t *linfo,

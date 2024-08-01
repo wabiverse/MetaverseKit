@@ -1098,14 +1098,14 @@ done:
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5Pget_data_transform(hid_t plist_id, char *expression /*out*/, size_t size)
 {
     H5P_genplist_t *plist;      /* Property list pointer */
     H5Z_data_xform_t *data_xform_prop = NULL;    /* New data xform property */
     size_t	len;
     const char*	pexp;
-    ssize_t 	ret_value;   /* return value */
+    h5_posix_io_ret_t 	ret_value;   /* return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE3("Zs", "ixz", plist_id, expression, size);
@@ -1132,7 +1132,7 @@ H5Pget_data_transform(hid_t plist_id, char *expression /*out*/, size_t size)
             expression[size - 1] = '\0';
     } /* end if */
 
-    ret_value = (ssize_t)len;
+    ret_value = (h5_posix_io_ret_t)len;
 
 done:
     FUNC_LEAVE_API(ret_value)

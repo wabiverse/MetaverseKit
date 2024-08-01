@@ -219,7 +219,7 @@ H5O_fill_new_decode(H5F_t H5_ATTR_UNUSED *f, hid_t H5_ATTR_UNUSED dxpl_id, H5O_t
         if(fill->fill_defined) {
             INT32DECODE(p, fill->size);
             if(fill->size > 0) {
-                H5_CHECK_OVERFLOW(fill->size, ssize_t, size_t);
+                H5_CHECK_OVERFLOW(fill->size, h5_posix_io_ret_t, size_t);
                 if(NULL == (fill->buf = H5MM_malloc((size_t)fill->size)))
                     HGOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, NULL, "memory allocation failed for fill value")
                 HDmemcpy(fill->buf, p, (size_t)fill->size);
@@ -257,7 +257,7 @@ H5O_fill_new_decode(H5F_t H5_ATTR_UNUSED *f, hid_t H5_ATTR_UNUSED dxpl_id, H5O_t
             UINT32DECODE(p, fill->size);
 
             /* Fill value */
-            H5_CHECK_OVERFLOW(fill->size, ssize_t, size_t);
+            H5_CHECK_OVERFLOW(fill->size, h5_posix_io_ret_t, size_t);
             if(NULL == (fill->buf = H5MM_malloc((size_t)fill->size)))
                 HGOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, NULL, "memory allocation failed for fill value")
             HDmemcpy(fill->buf, p, (size_t)fill->size);
@@ -388,7 +388,7 @@ H5O_fill_new_encode(H5F_t H5_ATTR_UNUSED *f, uint8_t *p, const void *_fill)
             UINT32ENCODE(p, fill->size);
             if(fill->size > 0)
                 if(fill->buf) {
-                    H5_CHECK_OVERFLOW(fill->size, ssize_t, size_t);
+                    H5_CHECK_OVERFLOW(fill->size, h5_posix_io_ret_t, size_t);
                     HDmemcpy(p, fill->buf, (size_t)fill->size);
                 } /* end if */
         } /* end if */
@@ -427,7 +427,7 @@ H5O_fill_new_encode(H5F_t H5_ATTR_UNUSED *f, uint8_t *p, const void *_fill)
 
             /* Encode the fill value */
             HDassert(fill->buf);
-            H5_CHECK_OVERFLOW(fill->size, ssize_t, size_t);
+            H5_CHECK_OVERFLOW(fill->size, h5_posix_io_ret_t, size_t);
             HDmemcpy(p, fill->buf, (size_t)fill->size);
         } /* end if */
         else {
@@ -517,7 +517,7 @@ H5O_fill_copy(const void *_src, void *_dst)
 
     /* Copy fill value and its size */
     if(src->buf) {
-        H5_CHECK_OVERFLOW(src->size, ssize_t, size_t);
+        H5_CHECK_OVERFLOW(src->size, h5_posix_io_ret_t, size_t);
 	if(NULL == (dst->buf = H5MM_malloc((size_t)src->size)))
 	    HGOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, NULL, "memory allocation failed for fill value")
 	HDmemcpy(dst->buf, src->buf, (size_t)src->size);
@@ -978,7 +978,7 @@ H5O_fill_convert(H5O_fill_t *fill, H5T_t *dset_type, hbool_t *fill_changed, hid_
         } /* end if */
         H5T_close(fill->type);
         fill->type = NULL;
-        H5_CHECKED_ASSIGN(fill->size, ssize_t, H5T_get_size(dset_type), size_t);
+        H5_CHECKED_ASSIGN(fill->size, h5_posix_io_ret_t, H5T_get_size(dset_type), size_t);
 
         /* Note that the fill value info has changed */
         *fill_changed = TRUE;

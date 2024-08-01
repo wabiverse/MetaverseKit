@@ -43,8 +43,8 @@
  * type). This is the only number that must be changed since all other bit
  * field sizes and masks are calculated from TYPE_BITS.
  */
-#define TYPE_BITS	7
-#define TYPE_MASK	(((hid_t)1 << TYPE_BITS) - 1)
+#define TYPE_BITS 7
+#define TYPE_MASK (((hid_t)1 << TYPE_BITS) - 1)
 
 #define H5I_MAX_NUM_TYPES TYPE_MASK
 
@@ -52,12 +52,11 @@
  * Number of bits to use for the Atom index in each atom (assumes 8-bit
  * bytes). We don't use the sign bit.
  */
-#define ID_BITS		((sizeof(hid_t) * 8) - (TYPE_BITS + 1))
-#define ID_MASK		(((hid_t)1 << ID_BITS) - 1)
+#define ID_BITS ((sizeof(hid_t) * 8) - (TYPE_BITS + 1))
+#define ID_MASK (((hid_t)1 << ID_BITS) - 1)
 
 /* Map an atom to an ID type number */
-#define H5I_TYPE(a)	((H5I_type_t)(((hid_t)(a) >> ID_BITS) & TYPE_MASK))
-
+#define H5I_TYPE(a) ((H5I_type_t)(((hid_t)(a) >> ID_BITS) & TYPE_MASK))
 
 /****************************/
 /* Package Private Typedefs */
@@ -69,8 +68,8 @@
 
 /* Testing functions */
 #ifdef H5I_TESTING
-H5_DLL ssize_t H5I_get_name_test(hid_t id, char *name/*out*/, size_t size,
-    hbool_t *cached);
+H5_DLL h5_posix_io_ret_t H5I_get_name_test(hid_t id, char *name /*out*/, size_t size,
+                                           hbool_t *cached);
 #endif /* H5I_TESTING */
 
 #endif /*_H5Ipkg_H*/

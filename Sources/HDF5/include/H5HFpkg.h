@@ -645,7 +645,7 @@ H5_DLL herr_t H5HF_hdr_decr(H5HF_hdr_t *hdr);
 H5_DLL herr_t H5HF_hdr_fuse_incr(H5HF_hdr_t *hdr);
 H5_DLL size_t H5HF_hdr_fuse_decr(H5HF_hdr_t *hdr);
 H5_DLL herr_t H5HF_hdr_dirty(H5HF_hdr_t *hdr);
-H5_DLL herr_t H5HF_hdr_adj_free(H5HF_hdr_t *hdr, ssize_t amt);
+H5_DLL herr_t H5HF_hdr_adj_free(H5HF_hdr_t *hdr, h5_posix_io_ret_t amt);
 H5_DLL herr_t H5HF_hdr_adjust_heap(H5HF_hdr_t *hdr, hsize_t new_size, hssize_t extra_free);
 H5_DLL herr_t H5HF_hdr_inc_alloc(H5HF_hdr_t *hdr, size_t alloc_size);
 H5_DLL herr_t H5HF_hdr_start_iter(H5HF_hdr_t *hdr, H5HF_indirect_t *iblock, hsize_t curr_off, unsigned curr_entry);

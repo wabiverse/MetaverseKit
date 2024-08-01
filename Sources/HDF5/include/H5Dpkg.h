@@ -137,10 +137,10 @@ typedef herr_t (*H5D_layout_read_func_t)(struct H5D_io_info_t *io_info,
 typedef herr_t (*H5D_layout_write_func_t)(struct H5D_io_info_t *io_info,
     const H5D_type_info_t *type_info, hsize_t nelmts, const H5S_t *file_space,
     const H5S_t *mem_space, struct H5D_chunk_map_t *fm);
-typedef ssize_t (*H5D_layout_readvv_func_t)(const struct H5D_io_info_t *io_info,
+typedef h5_posix_io_ret_t (*H5D_layout_readvv_func_t)(const struct H5D_io_info_t *io_info,
     size_t dset_max_nseq, size_t *dset_curr_seq, size_t dset_len_arr[], hsize_t dset_offset_arr[],
     size_t mem_max_nseq, size_t *mem_curr_seq, size_t mem_len_arr[], hsize_t mem_offset_arr[]);
-typedef ssize_t (*H5D_layout_writevv_func_t)(const struct H5D_io_info_t *io_info,
+typedef h5_posix_io_ret_t (*H5D_layout_writevv_func_t)(const struct H5D_io_info_t *io_info,
     size_t dset_max_nseq, size_t *dset_curr_seq, size_t dset_len_arr[], hsize_t dset_offset_arr[],
     size_t mem_max_nseq, size_t *mem_curr_seq, size_t mem_len_arr[], hsize_t mem_offset_arr[]);
 typedef herr_t (*H5D_layout_flush_func_t)(H5D_t *dataset, hid_t dxpl_id);

@@ -1496,7 +1496,7 @@ H5MF_sects_cb(H5FS_section_info_t *_sect, void *_udata)
  *
  *-------------------------------------------------------------------------
  */
-ssize_t
+h5_posix_io_ret_t
 H5MF_get_free_sections(H5F_t *f, hid_t dxpl_id, H5FD_mem_t type, size_t nsects, H5F_sect_info_t *sect_info)
 {
     size_t 	total_sects = 0;	/* total number of sections */
@@ -1505,7 +1505,7 @@ H5MF_get_free_sections(H5F_t *f, hid_t dxpl_id, H5FD_mem_t type, size_t nsects, 
     H5AC_ring_t orig_ring = H5AC_RING_INV;      /* Original ring value */
     H5FD_mem_t	start_type, end_type;   /* Memory types to iterate over */
     H5FD_mem_t 	ty;     		/* Memory type for iteration */
-    ssize_t 	ret_value = -1;         /* Return value */
+    h5_posix_io_ret_t 	ret_value = -1;         /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -1573,7 +1573,7 @@ H5MF_get_free_sections(H5F_t *f, hid_t dxpl_id, H5FD_mem_t type, size_t nsects, 
     } /* end for */
 
     /* Set return value */
-    ret_value = (ssize_t)total_sects;
+    ret_value = (h5_posix_io_ret_t)total_sects;
 
 done:
     /* Reset the ring in the DXPL */

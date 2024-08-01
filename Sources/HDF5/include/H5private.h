@@ -468,8 +468,8 @@
 #   define ULLONG_MAX  ((unsigned long long)((long long)(-1)))
 #endif
 #ifndef SIZET_MAX
-#   define SIZET_MAX  ((size_t)(ssize_t)(-1))
-#   define SSIZET_MAX  ((ssize_t)(((size_t)1<<(8*sizeof(ssize_t)-1))-1))
+#   define SIZET_MAX  ((size_t)(h5_posix_io_ret_t)(-1))
+#   define SSIZET_MAX  ((h5_posix_io_ret_t)(((size_t)1<<(8*sizeof(h5_posix_io_ret_t)-1))-1))
 #endif
 
 /*
@@ -1623,7 +1623,7 @@ extern char *strdup(const char *s);
 /* Use FUNC to safely handle variations of C99 __func__ keyword handling */
 #if defined(H5_HAVE_C99_FUNC) || defined(__APPLE__)
 #define FUNC __func__
-#elif defined(H5_HAVE_FUNCTION) || defined(__linux__)
+#elif defined(H5_HAVE_FUNCTION) || defined(__linux__) || defined(_WIN32)
 #define FUNC __FUNCTION__
 #else
 #error "We need __func__ or __FUNCTION__ to test function names!"

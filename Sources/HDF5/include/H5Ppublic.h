@@ -374,9 +374,9 @@ H5_DLL herr_t H5Pset_virtual(hid_t dcpl_id, hid_t vspace_id,
 H5_DLL herr_t H5Pget_virtual_count(hid_t dcpl_id, size_t *count/*out*/);
 H5_DLL hid_t H5Pget_virtual_vspace(hid_t dcpl_id, size_t index);
 H5_DLL hid_t H5Pget_virtual_srcspace(hid_t dcpl_id, size_t index);
-H5_DLL ssize_t H5Pget_virtual_filename(hid_t dcpl_id, size_t index,
+H5_DLL h5_posix_io_ret_t H5Pget_virtual_filename(hid_t dcpl_id, size_t index,
     char *name/*out*/, size_t size);
-H5_DLL ssize_t H5Pget_virtual_dsetname(hid_t dcpl_id, size_t index,
+H5_DLL h5_posix_io_ret_t H5Pget_virtual_dsetname(hid_t dcpl_id, size_t index,
     char *name/*out*/, size_t size);
 H5_DLL herr_t H5Pset_external(hid_t plist_id, const char *name, off_t offset,
           hsize_t size);
@@ -419,11 +419,11 @@ H5_DLL herr_t H5Pset_append_flush(hid_t plist_id, unsigned ndims,
 H5_DLL herr_t H5Pget_append_flush(hid_t plist_id, unsigned dims,
     hsize_t boundary[], H5D_append_cb_t *func, void **udata);
 H5_DLL herr_t H5Pset_efile_prefix(hid_t dapl_id, const char* prefix);
-H5_DLL ssize_t H5Pget_efile_prefix(hid_t dapl_id, char* prefix /*out*/, size_t size);
+H5_DLL h5_posix_io_ret_t H5Pget_efile_prefix(hid_t dapl_id, char* prefix /*out*/, size_t size);
 
 /* Dataset xfer property list (DXPL) routines */
 H5_DLL herr_t H5Pset_data_transform(hid_t plist_id, const char* expression);
-H5_DLL ssize_t H5Pget_data_transform(hid_t plist_id, char* expression /*out*/, size_t size);
+H5_DLL h5_posix_io_ret_t H5Pget_data_transform(hid_t plist_id, char* expression /*out*/, size_t size);
 H5_DLL herr_t H5Pset_buffer(hid_t plist_id, size_t size, void *tconv,
         void *bkg);
 H5_DLL size_t H5Pget_buffer(hid_t plist_id, void **tconv/*out*/,
@@ -480,7 +480,7 @@ H5_DLL herr_t H5Pget_char_encoding(hid_t plist_id, H5T_cset_t *encoding /*out*/)
 H5_DLL herr_t H5Pset_nlinks(hid_t plist_id, size_t nlinks);
 H5_DLL herr_t H5Pget_nlinks(hid_t plist_id, size_t *nlinks);
 H5_DLL herr_t H5Pset_elink_prefix(hid_t plist_id, const char *prefix);
-H5_DLL ssize_t H5Pget_elink_prefix(hid_t plist_id, char *prefix, size_t size);
+H5_DLL h5_posix_io_ret_t H5Pget_elink_prefix(hid_t plist_id, char *prefix, size_t size);
 H5_DLL hid_t H5Pget_elink_fapl(hid_t lapl_id);
 H5_DLL herr_t H5Pset_elink_fapl(hid_t lapl_id, hid_t fapl_id);
 H5_DLL herr_t H5Pset_elink_acc_flags(hid_t lapl_id, unsigned flags);

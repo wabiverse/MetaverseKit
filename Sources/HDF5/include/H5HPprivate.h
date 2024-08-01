@@ -40,14 +40,16 @@ typedef struct H5HP_t H5HP_t;
 
 /* Typedef for objects which can be inserted into heaps */
 /* This _must_ be the first field in objects which can be inserted into heaps */
-typedef struct H5HP_info_t {
-    size_t heap_loc;                    /* Location of object in heap */
-}H5HP_info_t;
+typedef struct H5HP_info_t
+{
+  size_t heap_loc; /* Location of object in heap */
+} H5HP_info_t;
 
 /* Typedef for type of heap to create */
-typedef enum {
-    H5HP_MIN_HEAP,      /* Minimum values in heap are at the "top" */
-    H5HP_MAX_HEAP       /* Maximum values in heap are at the "top" */
+typedef enum
+{
+  H5HP_MIN_HEAP, /* Minimum values in heap are at the "top" */
+  H5HP_MAX_HEAP  /* Maximum values in heap are at the "top" */
 } H5HP_type_t;
 
 /**********/
@@ -59,7 +61,7 @@ typedef enum {
 /********************/
 H5_DLL H5HP_t *H5HP_create(H5HP_type_t heap_type);
 H5_DLL herr_t H5HP_insert(H5HP_t *heap, int val, void *obj);
-H5_DLL ssize_t H5HP_count(const H5HP_t *heap);
+H5_DLL h5_posix_io_ret_t H5HP_count(const H5HP_t *heap);
 H5_DLL herr_t H5HP_top(const H5HP_t *heap, int *val);
 H5_DLL herr_t H5HP_remove(H5HP_t *heap, int *val, void **ptr);
 H5_DLL herr_t H5HP_change(H5HP_t *heap, int val, void *obj);
@@ -68,4 +70,3 @@ H5_DLL herr_t H5HP_decr(H5HP_t *heap, unsigned amt, void *obj);
 H5_DLL herr_t H5HP_close(H5HP_t *heap);
 
 #endif /* _H5HPprivate_H */
-

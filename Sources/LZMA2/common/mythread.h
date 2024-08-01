@@ -15,6 +15,10 @@
 
 #include "sysdefs.h"
 
+#if defined(_WIN32)
+# include <stdint.h>
+#endif // defined(_WIN32)
+
 // If any type of threading is enabled, #define MYTHREAD_ENABLED.
 #if defined(MYTHREAD_POSIX) || defined(MYTHREAD_WIN95) \
 		|| defined(MYTHREAD_VISTA)

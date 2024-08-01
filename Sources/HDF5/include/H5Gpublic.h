@@ -167,7 +167,7 @@ H5_DLL herr_t H5Giterate(hid_t loc_id, const char *name, int *idx,
 H5_DLL herr_t H5Gget_num_objs(hid_t loc_id, hsize_t *num_objs);
 H5_DLL herr_t H5Gget_objinfo(hid_t loc_id, const char *name,
     hbool_t follow_link, H5G_stat_t *statbuf/*out*/);
-H5_DLL ssize_t H5Gget_objname_by_idx(hid_t loc_id, hsize_t idx, char* name,
+H5_DLL h5_posix_io_ret_t H5Gget_objname_by_idx(hid_t loc_id, hsize_t idx, char* name,
     size_t size);
 H5_DLL H5G_obj_t H5Gget_objtype_by_idx(hid_t loc_id, hsize_t idx);
 
