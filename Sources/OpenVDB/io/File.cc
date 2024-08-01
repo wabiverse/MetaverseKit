@@ -11,8 +11,12 @@
 #include <cstdint>
 
 #ifdef OPENVDB_USE_DELAYED_LOADING
-#include <boost/iostreams/copy.hpp>
+#if defined(_WIN32)
+#include <iterator>
+#include <algorithm>
+#endif // defined(_WIN32)
 #ifndef _WIN32
+#include <boost/iostreams/copy.hpp>
 #include <sys/types.h>
 #include <unistd.h>
 #endif
@@ -311,7 +315,15 @@ File::open(bool /*delayLoad = true*/)
                 TempFile tempFile;
                 std::ifstream fstrm(filename().c_str(),
                     std::ios_base::in | std::ios_base::binary);
+                #if defined(_WIN32)
+                std::copy(
+                  std::istreambuf_iterator<char>(fstrm),
+                  std::istreambuf_iterator<char>(),
+                  std::ostreambuf_iterator<char>(tempFile)
+                );
+                #else // !defined(_WIN32)
                 boost::iostreams::copy(fstrm, tempFile);
+                #endif // defined(_WIN32)
                 fname = tempFile.filename();
                 isTempFile = true;
             } catch (std::exception& e) {

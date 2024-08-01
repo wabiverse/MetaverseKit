@@ -21,7 +21,10 @@ let package = Package(
   targets: [
     .target(
       name: "Eigen",
-      publicHeadersPath: "include"
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ]
     ),
 
     .target(
@@ -83,6 +86,7 @@ let package = Package(
       cxxSettings: [
         .define("_XOPEN_SOURCE"),
         .define("TBB_USE_PROFILING_TOOLS", to: "2"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -99,7 +103,10 @@ let package = Package(
       dependencies: [],
       exclude: getConfig(for: .lzma2).exclude,
       publicHeadersPath: "include",
-      cSettings: getConfig(for: .lzma2).cSettings
+      cSettings: getConfig(for: .lzma2).cSettings,
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ]
     ),
 
     .target(
@@ -123,6 +130,9 @@ let package = Package(
         .define("ZLIB_COMPAT", to: "1"),
         .define("MZ_ZIP_NO_CRYPTO", to: "1"),
       ],
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ],
       linkerSettings: [
         .linkedLibrary("bz2"),
       ]
@@ -139,6 +149,9 @@ let package = Package(
         .define("WITH_GZFILEOP", to: "1"),
         .define("HAVE_UNISTD_H", to: "1", .when(platforms: Arch.OS.nix.platform)),
         .define("Z_HAVE_STDARG_H", to: "1"),
+      ],
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -161,7 +174,10 @@ let package = Package(
       ],
       exclude: getConfig(for: .png).exclude,
       publicHeadersPath: "include",
-      cSettings: getConfig(for: .png).cSettings
+      cSettings: getConfig(for: .png).cSettings,
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ]
     ),
 
     .target(
@@ -174,6 +190,9 @@ let package = Package(
         .define("D_LOSSLESS_SUPPORTED", to: "1"),
         .define("PPM_SUPPORTED", to: "1"),
         .define("BITS_IN_JSAMPLE", to: "12"),
+      ],
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -192,6 +211,7 @@ let package = Package(
         .define("FROM_TIF_JPEG_12", to: "1"),
         .define("HAVE_JPEGTURBO_DUAL_MODE_8_12", to: "1"),
         .define("BITS_IN_JSAMPLE", to: "12"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -200,6 +220,9 @@ let package = Package(
       publicHeadersPath: "include",
       cSettings: [
         .headerSearchPath("."),
+      ],
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -240,6 +263,7 @@ let package = Package(
         .headerSearchPath("."),
         .define("HAVE_UNISTD_H", to: "1", .when(platforms: Arch.OS.nix.platform)),
         .define("Z_HAVE_STDARG_H", to: "1"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -287,6 +311,9 @@ let package = Package(
       ],
       resources: [
         .process("Resources/Images"),
+      ],
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
@@ -530,6 +557,9 @@ let package = Package(
       resources: [
         .copy("Resources/colormanagement"),
       ],
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
@@ -581,6 +611,9 @@ let package = Package(
         .define("H5_HAVE_FUNCTION", to: "1", .when(platforms: Arch.OS.linux.platform)),
         .define("H5_TIME_WITH_SYS_TIME", to: "1", .when(platforms: Arch.OS.linux.platform)),
         .define("hdf5_shared_EXPORTS", .when(platforms: [.windows])),
+      ],
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     ),
 
@@ -606,6 +639,9 @@ let package = Package(
         Arch.OS.python()
       ],
       publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ],
       linkerSettings: [
         .linkedLibrary("python3.10", .when(platforms: Arch.OS.linux.platform)),
       ]
@@ -619,6 +655,10 @@ let package = Package(
       ],
       exclude: getConfig(for: .blosc).exclude,
       publicHeadersPath: "include/blosc",
+      cSettings: [
+        .headerSearchPath("include"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ],
       linkerSettings: [
         .linkedLibrary("pthread", .when(platforms: Arch.OS.linux.platform)),
       ]
@@ -647,6 +687,9 @@ let package = Package(
         .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
         .target(name: "ImGui"),
       ],
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
@@ -668,6 +711,7 @@ let package = Package(
     .executableTarget(
       name: "MetaversalDemo",
       dependencies: [
+        .target(name: "OneTBB"),
         .target(name: "ImGui"),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
@@ -682,6 +726,9 @@ let package = Package(
         .target(name: "Draco"),
         Arch.OS.python()
       ],
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
@@ -690,6 +737,9 @@ let package = Package(
     .testTarget(
       name: "MetaverseKitTests",
       dependencies: getConfig(for: .all).dependencies,
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ],
       swiftSettings: [
         .interoperabilityMode(.Cxx),
       ]
@@ -892,6 +942,11 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "win32_window.c",
         ]
       #endif /* !os(Windows) */
+      #if os(Windows)
+        config.exclude += [
+          "posix_thread.c"
+        ]
+      #endif
       #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude += [
           "nsgl_context.m",
@@ -919,6 +974,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("_GLFW_X11", to: "1", .when(platforms: Arch.OS.linux.platform)),
         .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
         .define("GL_SILENCE_DEPRECATION", to: "1"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
       #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
         config.linkerSettings = [
@@ -1034,6 +1090,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
       config.cxxSettings = [
         .headerSearchPath("glLoader"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
     case .exr:
       break
@@ -1121,6 +1178,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("OPENVDB_USE_DELAYED_LOADING", to: "1"),
         .define("OPENVDB_USE_BLOSC", to: "1"),
         .define("OPENVDB_USE_ZLIB", to: "1"),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        .define("OPENVDB_PRIVATE")
       ]
       #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
         config.linkerSettings = [

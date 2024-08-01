@@ -77,7 +77,7 @@
 #  include "x86/crc32_pclmul_template.h"
 #endif
 
-#if GCC_PREREQ(8, 1) || CLANG_PREREQ(6, 0, 10000000) || MSVC_PREREQ(1920)
+#if GCC_PREREQ(8, 1) || CLANG_PREREQ(6, 0, 10000000) || (defined(_MSC_VER) && _MSC_VER >= 1920)
 /*
  * VPCLMULQDQ/AVX512 implementation with 256-bit vectors.  This takes advantage
  * of some AVX-512 instructions but uses 256-bit vectors rather than 512-bit.

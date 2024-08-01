@@ -32,7 +32,7 @@ import Foundation
 import OpenColorIO
 #if os(Linux)
   import Glibc
-#else
+#elseif os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
   import Darwin.C
 #endif
 

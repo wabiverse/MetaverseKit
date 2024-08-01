@@ -10,7 +10,9 @@
 
 #include <openvdb/Platform.h>
 #include <openvdb/version.h>
+#if !defined(_WIN32)
 #include <boost/numeric/conversion/conversion_traits.hpp>
+#endif // !defined(_WIN32)
 #include <algorithm> // for std::max()
 #include <cassert>
 #include <cmath>     // for std::ceil(), std::fabs(), std::pow(), std::sqrt(), etc.
@@ -18,7 +20,7 @@
 #include <cstring>   // for memcpy
 #include <random>
 #include <string>
-#include <type_traits> // for std::is_arithmetic
+#include <type_traits> // for std::is_arithmetic, std::common_type
 
 
 // Compile pragmas
@@ -916,11 +918,23 @@ enum RotationOrder {
     ZXZ_ROTATION
 };
 
+#if defined(_WIN32)
+// wabi: hacked to compile. revisit this.
+template<typename S, typename T>
+struct PromotedType {
+  using supertype = S;
+};
 
+template <typename S, typename T>
+struct promote {
+    using type = typename PromotedType<S, typename std::common_type<S, T>>::supertype;
+};
+#else // !defined(_WIN32)
 template <typename S, typename T>
 struct promote {
     using type = typename boost::numeric::conversion_traits<S, T>::supertype;
 };
+#endif // defined(_WIN32)
 
 /// @brief Return the index [0,1,2] of the smallest value in a 3D vector.
 /// @note This methods assumes operator[] exists.

@@ -30,6 +30,15 @@
 #include <utility> // std::pair, std::make_pair
 #include <vector>
 
+#if defined(_WIN32)
+#include <any>
+
+namespace boost
+{
+  using namespace std;
+}
+#endif // defined(_WIN32)
+
 class TestPointDataLeaf;
 
 namespace openvdb {

@@ -10,7 +10,13 @@
 #include <cstdint>
 
 #ifdef OPENVDB_USE_DELAYED_LOADING
+#if defined(_WIN32)
+# include <fstream>
+# include <iterator>
+# include <algorithm>
+#else // !defined(_WIN32)
 #include <boost/iostreams/copy.hpp>
+#endif // defined(_WIN32)
 #endif
 
 #include <cstdio> // for remove()
@@ -91,7 +97,15 @@ Stream::Stream(std::istream& is, bool delayLoad): mImpl(new Impl)
                 << "; will read directly from the input stream instead");
         }
         if (tempFile) {
+            #if defined(_WIN32)
+            std::copy(
+              std::istreambuf_iterator<char>(is),
+              std::istreambuf_iterator<char>(),
+              std::ostreambuf_iterator<char>(*tempFile)
+            );
+            #else // !defined(_WIN32)
             boost::iostreams::copy(is, *tempFile);
+            #endif // defined(_WIN32)
             const std::string& filename = tempFile->filename();
             mImpl->mFile.reset(new File(filename));
             mImpl->mFile->setCopyMaxBytes(0); // don't make a copy of the temporary file

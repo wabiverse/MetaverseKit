@@ -7,12 +7,22 @@
 #include <openvdb/Platform.h>
 #include <openvdb/Types.h> // for SharedPtr
 #include <openvdb/version.h>
-#include <boost/any.hpp>
 #include <functional>
 #include <iosfwd> // for std::ios_base
 #include <map>
 #include <memory>
 #include <string>
+
+#if defined(_WIN32)
+#include <any>
+
+namespace boost
+{
+  using namespace std;
+}
+#else // !defined(_WIN32)
+#include <boost/any.hpp>
+#endif // defined(_WIN32)
 
 class TestMappedFile;
 

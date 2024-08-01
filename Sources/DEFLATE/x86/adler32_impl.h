@@ -53,7 +53,7 @@
  * AVX-VNNI implementation.  This is used on CPUs that have AVX2 and AVX-VNNI
  * but don't have AVX-512, for example Intel Alder Lake.
  */
-#if GCC_PREREQ(11, 1) || CLANG_PREREQ(12, 0, 13000000) || MSVC_PREREQ(1930)
+#if GCC_PREREQ(11, 1) || CLANG_PREREQ(12, 0, 13000000) || (defined(_MSC_VER) && _MSC_VER >= 1930)
 #  define adler32_x86_avx2_vnni  adler32_x86_avx2_vnni
 #  define SUFFIX           _x86_avx2_vnni
 #  define ATTRIBUTES    _target_attribute("avx2,avxvnni")
@@ -63,7 +63,7 @@
 #  include "adler32_template.h"
 #endif
 
-#if GCC_PREREQ(8, 1) || CLANG_PREREQ(6, 0, 10000000) || MSVC_PREREQ(1920)
+#if GCC_PREREQ(8, 1) || CLANG_PREREQ(6, 0, 10000000) || (defined(_MSC_VER) && _MSC_VER >= 1920)
 /*
  * AVX512VNNI implementation using 256-bit vectors.  This is very similar to the
  * AVX-VNNI implementation but takes advantage of masking and more registers.
