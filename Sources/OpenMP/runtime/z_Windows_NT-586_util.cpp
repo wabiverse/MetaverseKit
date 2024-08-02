@@ -80,11 +80,11 @@ kmp_int8 __kmp_test_then_add8(volatile kmp_int8 *p, kmp_int8 d) {
 
   old_value = TCR_1(*p);
   new_value = old_value + d;
-  while (!__kmp_compare_and_store8(p, old_value, new_value)) {
-    KMP_CPU_PAUSE();
-    old_value = TCR_1(*p);
-    new_value = old_value + d;
-  }
+  // while (!__kmp_compare_and_store8(p, old_value, new_value)) {
+  //   KMP_CPU_PAUSE();
+  //   old_value = TCR_1(*p);
+  //   new_value = old_value + d;
+  // }
   return old_value;
 }
 

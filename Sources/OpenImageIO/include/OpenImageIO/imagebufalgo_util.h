@@ -43,7 +43,7 @@ parallel_image(ROI roi, paropt opt, std::function<void(ROI)> f)
     // Try not to assign a thread less than 16k pixels, or it's not worth
     // the thread startup/teardown cost.
     opt.maxthreads(
-        std::min(opt.maxthreads(), 1 + int(roi.npixels() / opt.minitems())));
+        (std::min)(opt.maxthreads(), 1 + int(roi.npixels() / opt.minitems())));
     if (opt.singlethread()) {
         // Just one thread, or a small image region, or if recursive use of
         // parallel_image is disallowed: use this thread only
@@ -66,10 +66,10 @@ parallel_image(ROI roi, paropt opt, std::function<void(ROI)> f)
         // ychunk = std::max (64, minitems/xchunk);
     } else if (splitdir == paropt::SplitDir::Tile) {
         int64_t n = std::min<imagesize_t>(opt.minitems(), roi.npixels());
-        xchunk = ychunk = std::max(1, int(std::sqrt(n)) / 4);
+        xchunk = ychunk = (std::max)(1, int(std::sqrt(n)) / 4);
     } else {
-        xchunk = ychunk = std::max(int64_t(1),
-                                   int64_t(std::sqrt(opt.maxthreads())) / 2);
+        xchunk = ychunk = (std::max)(int64_t(1),
+                                     int64_t(std::sqrt(opt.maxthreads())) / 2);
     }
 
     auto task = [&](int64_t xbegin, int64_t xend, int64_t ybegin,

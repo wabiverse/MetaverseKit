@@ -39,8 +39,14 @@ import OpenImageIO
 import OpenSubdiv
 import OpenTime
 import OpenTimelineIO
+#if !os(Windows)
+// windows doesn't like the
+// mismatched std.version
+// coming in from TBB from
+// the OpenVDB import.
 import OpenVDB
 import Ptex
+#endif // !os(Windows)
 #if canImport(Python)
   import PyBundle
   import Python
@@ -143,7 +149,7 @@ class Creator
   static func configImaging()
   {
     /* create some exr images. */
-    let dtp = OIIO.TypeDesc.TypeFloat
+    let dtp = OIIO.TypeDesc(.init("FLOAT"))
     let fmt = OIIO.ImageSpec(512, 89, 4, dtp)
 
     var fg = OIIO.ImageBuf(.init(std.string("fg.exr")), fmt, OIIO.InitializePixels.Yes)

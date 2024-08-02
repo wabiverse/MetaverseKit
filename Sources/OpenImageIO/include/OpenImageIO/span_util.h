@@ -112,12 +112,12 @@ size_t
 spancpy(span<T> dst, size_t dstoffset, cspan<T> src, size_t srcoffset, size_t n)
 {
     // Where do the requests end (limited by span boundaries)?
-    size_t dstend = std::min(dstoffset + n, std::size(dst));
-    size_t srcend = std::min(srcoffset + n, std::size(src));
+    size_t dstend = (std::min)(dstoffset + n, std::size(dst));
+    size_t srcend = (std::min)(srcoffset + n, std::size(src));
     // How many can/should we copy?
     size_t ndst = dstend - dstoffset;
     size_t nsrc = srcend - srcoffset;
-    n           = std::min(ndst, nsrc);
+    n           = (std::min)(ndst, nsrc);
     memcpy(dst.data() + dstoffset, src.data() + srcoffset, n * sizeof(T));
     return n;
 }
@@ -137,7 +137,7 @@ size_t
 spanset(span<T> dst, size_t offset, const T& val, size_t n)
 {
     // Where does the request end (limited by span boundary)?
-    size_t dstend = std::min(offset + n, std::size(dst));
+    size_t dstend = (std::min)(offset + n, std::size(dst));
     // How many can/should we copy?
     n = dstend - offset;
     for (size_t i = 0; i < n; ++i)
@@ -160,7 +160,7 @@ size_t
 spanzero(span<T> dst, size_t offset, size_t n)
 {
     // Where does the request end (limited by span boundary)?
-    size_t dstend = std::min(offset + n, std::size(dst));
+    size_t dstend = (std::min)(offset + n, std::size(dst));
     // How many can/should we copy?
     n = dstend - offset;
     memset(dst.data() + offset, 0, n * sizeof(T));

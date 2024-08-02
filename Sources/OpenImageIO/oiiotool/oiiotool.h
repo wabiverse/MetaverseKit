@@ -321,7 +321,7 @@ public:
     size_t check_peak_memory()
     {
         size_t mem  = Sysutil::memory_used();
-        peak_memory = std::max(peak_memory, mem);
+        peak_memory = (std::max)(peak_memory, mem);
         return mem;
     }
 
@@ -887,8 +887,8 @@ public:
             for (int m = 0, nmip = ir(0)->miplevels(); m < nmip; ++m) {
                 m_current_miplevel = m;
                 for (int i = 0; i < nimages(); ++i)
-                    m_img[i] = &((*ir(i))(std::min(s, ir(i)->subimages() - 1),
-                                          std::min(m, ir(i)->miplevels(s))));
+                    m_img[i] = &((*ir(i))((std::min)(s, ir(i)->subimages() - 1),
+                                          (std::min)(m, ir(i)->miplevels(s))));
 
                 if (subimage_is_active(s)) {
                     // Call the impl kernel for this subimage

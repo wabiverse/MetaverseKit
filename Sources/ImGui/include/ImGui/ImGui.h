@@ -70,6 +70,12 @@ ImFontAtlasFlags, ImFontAtlas, ImFont)
 #endif
 #include <ImGui/ImConfig.h>
 
+#if defined(_WIN32)
+#  if defined(_M_AMD64) || defined(__x86_64)
+#    include <xmmintrin.h>
+#  endif // defined(_M_AMD64) || defined(__x86_64)
+#endif // defined(_WIN32)
+
 #ifndef IMGUI_DISABLE
 
 //-----------------------------------------------------------------------------

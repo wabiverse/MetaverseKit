@@ -203,7 +203,7 @@ public:
     constexpr size_type size() const noexcept { return m_len; }
     constexpr size_type length() const noexcept { return m_len; }
     constexpr size_type max_size() const noexcept {
-        return std::numeric_limits<size_type>::max();
+        return (std::numeric_limits<size_type>::max)();
     }
     /// Is the basic_string_view empty, containing no characters?
     constexpr bool empty() const noexcept { return m_len == 0; }

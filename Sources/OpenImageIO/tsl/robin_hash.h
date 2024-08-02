@@ -69,7 +69,7 @@ struct is_power_of_two_policy<tsl::rh::power_of_two_growth_policy<GrowthFactor>>
 // Only available in C++17, we need to be compatible with C++11
 template <class T>
 const T& clamp(const T& v, const T& lo, const T& hi) {
-  return std::min(hi, std::max(lo, v));
+  return (std::min)(hi, (std::max)(lo, v));
 }
 
 template <typename T, typename U>
@@ -874,7 +874,7 @@ class robin_hash : private Hash, private KeyEqual, private GrowthPolicy {
 
     const std::size_t ireturn_bucket =
         ito_move_closer_value -
-        std::min(
+        (std::min)(
             ito_move_closer_value - icloser_bucket,
             std::size_t(
                 m_buckets[ito_move_closer_value].dist_from_ideal_bucket()));
@@ -883,7 +883,7 @@ class robin_hash : private Hash, private KeyEqual, private GrowthPolicy {
            m_buckets[ito_move_closer_value].dist_from_ideal_bucket() > 0) {
       icloser_bucket =
           ito_move_closer_value -
-          std::min(
+          (std::min)(
               ito_move_closer_value - icloser_bucket,
               std::size_t(
                   m_buckets[ito_move_closer_value].dist_from_ideal_bucket()));
@@ -1053,7 +1053,7 @@ class robin_hash : private Hash, private KeyEqual, private GrowthPolicy {
   size_type bucket_count() const { return m_bucket_count; }
 
   size_type max_bucket_count() const {
-    return std::min(GrowthPolicy::max_bucket_count(),
+    return (std::min)(GrowthPolicy::max_bucket_count(),
                     m_buckets_data.max_size());
   }
 
@@ -1085,8 +1085,8 @@ class robin_hash : private Hash, private KeyEqual, private GrowthPolicy {
   }
 
   void rehash(size_type count_) {
-    count_ = std::max(count_,
-                      size_type(std::ceil(float(size()) / max_load_factor())));
+    count_ = (std::max)(count_,
+                        size_type(std::ceil(float(size()) / max_load_factor())));
     rehash_impl(count_);
   }
 

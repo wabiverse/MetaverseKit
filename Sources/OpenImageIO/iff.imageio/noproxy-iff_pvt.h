@@ -198,7 +198,7 @@ private:
     {
         const uint32_t big = 1024;
         char strbuf[big];
-        len     = std::min(len, big);
+        len     = (std::min)(len, big);
         bool ok = fread(strbuf, len, 1, m_fd);
         val.assign(strbuf, len);
         for (uint32_t pad = len % round; pad; --pad)

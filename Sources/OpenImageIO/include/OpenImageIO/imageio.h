@@ -53,7 +53,7 @@ using imagesize_t = uint64_t;
 
 /// Special value to indicate a stride length that should be
 /// auto-computed.
-const stride_t AutoStride = std::numeric_limits<stride_t>::min();
+const stride_t AutoStride = (std::numeric_limits<stride_t>::min)();
 
 
 
@@ -102,7 +102,7 @@ struct ROI {
 
     /// Default constructor is an undefined region. Note that this is also
     /// interpreted as All().
-    constexpr ROI () noexcept : xbegin(std::numeric_limits<int>::min()), xend(0),
+    constexpr ROI () noexcept : xbegin((std::numeric_limits<int>::min)()), xend(0),
              ybegin(0), yend(0), zbegin(0), zend(0), chbegin(0), chend(0)
     { }
 
@@ -115,7 +115,7 @@ struct ROI {
     { }
 
     /// Is a region defined?
-    constexpr bool defined () const noexcept { return (xbegin != std::numeric_limits<int>::min()); }
+    constexpr bool defined () const noexcept { return (xbegin != (std::numeric_limits<int>::min)()); }
 
     ///@{
     /// @name Spatial size functions.
@@ -187,20 +187,20 @@ struct ROI {
 /// Union of two regions, the smallest region containing both.
 inline constexpr ROI roi_union (const ROI &A, const ROI &B) noexcept {
     return (A.defined() && B.defined())
-        ? ROI (std::min (A.xbegin,  B.xbegin),  std::max (A.xend,  B.xend),
-               std::min (A.ybegin,  B.ybegin),  std::max (A.yend,  B.yend),
-               std::min (A.zbegin,  B.zbegin),  std::max (A.zend,  B.zend),
-               std::min (A.chbegin, B.chbegin), std::max (A.chend, B.chend))
+        ? ROI ((std::min) (A.xbegin,  B.xbegin),  (std::max) (A.xend,  B.xend),
+               (std::min) (A.ybegin,  B.ybegin),  (std::max) (A.yend,  B.yend),
+               (std::min) (A.zbegin,  B.zbegin),  (std::max) (A.zend,  B.zend),
+               (std::min) (A.chbegin, B.chbegin), (std::max) (A.chend, B.chend))
         : (A.defined() ? A : B);
 }
 
 /// Intersection of two regions.
 inline constexpr ROI roi_intersection (const ROI &A, const ROI &B) noexcept {
     return (A.defined() && B.defined())
-        ? ROI (std::max (A.xbegin,  B.xbegin),  std::min (A.xend,  B.xend),
-               std::max (A.ybegin,  B.ybegin),  std::min (A.yend,  B.yend),
-               std::max (A.zbegin,  B.zbegin),  std::min (A.zend,  B.zend),
-               std::max (A.chbegin, B.chbegin), std::min (A.chend, B.chend))
+        ? ROI ((std::max) (A.xbegin,  B.xbegin),  (std::min) (A.xend,  B.xend),
+               (std::max) (A.ybegin,  B.ybegin),  (std::min) (A.yend,  B.yend),
+               (std::max) (A.zbegin,  B.zbegin),  (std::min) (A.zend,  B.zend),
+               (std::max) (A.chbegin, B.chbegin), (std::min) (A.chend, B.chend))
         : (A.defined() ? A : B);
 }
 
@@ -429,7 +429,7 @@ public:
     /// to allocate and read all at once, so client apps beware and check
     /// these routines for overflows!
     bool size_t_safe() const noexcept {
-        const imagesize_t big = std::numeric_limits<size_t>::max();
+        const imagesize_t big = (std::numeric_limits<size_t>::max)();
         return image_bytes() < big && scanline_bytes() < big &&
             tile_bytes() < big;
     }

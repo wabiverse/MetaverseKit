@@ -17,7 +17,6 @@
   The individual functions give references were applicable.
 */
 
-
 // clang-format off
 
 /// \file
@@ -255,7 +254,7 @@ inline OIIO_HOSTDEVICE V round_down_to_multiple (V value, M multiple)
 inline OIIO_HOSTDEVICE uint32_t
 clamped_mult32(uint32_t a, uint32_t b)
 {
-    const uint32_t Err = std::numeric_limits<uint32_t>::max();
+    const uint32_t Err = (std::numeric_limits<uint32_t>::max)();
     uint64_t r = (uint64_t)a * (uint64_t)b;  // Multiply into a bigger int
     return r < Err ? (uint32_t)r : Err;
 }
@@ -269,7 +268,7 @@ clamped_mult64(uint64_t a, uint64_t b)
 {
     uint64_t ab = a * b;
     if (b && ab / b != a)
-        return std::numeric_limits<uint64_t>::max();
+        return (std::numeric_limits<uint64_t>::max)();
     else
         return ab;
 }
@@ -329,38 +328,38 @@ clamp (const T& a, const T& low, const T& high)
 template<> OIIO_FORCEINLINE simd::vfloat4
 clamp (const simd::vfloat4& a, const simd::vfloat4& low, const simd::vfloat4& high)
 {
-    return simd::min (high, simd::max (low, a));
+    return (simd::min) (high, (simd::max) (low, a));
 }
 
 template<> OIIO_FORCEINLINE simd::vfloat8
 clamp (const simd::vfloat8& a, const simd::vfloat8& low, const simd::vfloat8& high)
 {
-    return simd::min (high, simd::max (low, a));
+    return (simd::min) (high, (simd::max) (low, a));
 }
 
 template<> OIIO_FORCEINLINE simd::vfloat16
 clamp (const simd::vfloat16& a, const simd::vfloat16& low, const simd::vfloat16& high)
 {
-    return simd::min (high, simd::max (low, a));
+    return (simd::min) (high, (simd::max) (low, a));
 }
 
 // Specialization of clamp for vint4
 template<> OIIO_FORCEINLINE simd::vint4
 clamp (const simd::vint4& a, const simd::vint4& low, const simd::vint4& high)
 {
-    return simd::min (high, simd::max (low, a));
+    return (simd::min) (high, (simd::max) (low, a));
 }
 
 template<> OIIO_FORCEINLINE simd::vint8
 clamp (const simd::vint8& a, const simd::vint8& low, const simd::vint8& high)
 {
-    return simd::min (high, simd::max (low, a));
+    return (simd::min) (high, (simd::max) (low, a));
 }
 
 template<> OIIO_FORCEINLINE simd::vint16
 clamp (const simd::vint16& a, const simd::vint16& low, const simd::vint16& high)
 {
-    return simd::min (high, simd::max (low, a));
+    return (simd::min) (high, (simd::max) (low, a));
 }
 #endif
 
@@ -785,7 +784,7 @@ void convert_type (const S *src, D *dst, size_t n, D _min, D _max)
     }
     typedef typename big_enough_float<D>::float_t F;
     F scale = std::numeric_limits<S>::is_integer ?
-        (F(1)) / F(std::numeric_limits<S>::max()) : F(1);
+        (F(1)) / F((std::numeric_limits<S>::max)()) : F(1);
     if (std::numeric_limits<D>::is_integer) {
         // Converting to an integer-like type.
         F min = (F)_min;  // std::numeric_limits<D>::min();
@@ -846,7 +845,7 @@ inline void convert_type<uint8_t,float> (const uint8_t *src,
                                          float *dst, size_t n,
                                          float /*_min*/, float /*_max*/)
 {
-    float scale (1.0f/std::numeric_limits<uint8_t>::max());
+    float scale (1.0f/(std::numeric_limits<uint8_t>::max)());
     simd::vfloat4 scale_simd (scale);
     for ( ; n >= 4; n -= 4, src += 4, dst += 4) {
         simd::vfloat4 s_simd (src);
@@ -864,7 +863,7 @@ inline void convert_type<uint16_t,float> (const uint16_t *src,
                                           float *dst, size_t n,
                                           float /*_min*/, float /*_max*/)
 {
-    float scale (1.0f/std::numeric_limits<uint16_t>::max());
+    float scale (1.0f/(std::numeric_limits<uint16_t>::max)());
     simd::vfloat4 scale_simd (scale);
     for ( ; n >= 4; n -= 4, src += 4, dst += 4) {
         simd::vfloat4 s_simd (src);
@@ -881,8 +880,8 @@ inline void
 convert_type<float,uint16_t> (const float *src, uint16_t *dst, size_t n,
                               uint16_t /*_min*/, uint16_t /*_max*/)
 {
-    float min = std::numeric_limits<uint16_t>::min();
-    float max = std::numeric_limits<uint16_t>::max();
+    float min = (std::numeric_limits<uint16_t>::min)();
+    float max = (std::numeric_limits<uint16_t>::max)();
     float scale = max;
     simd::vfloat4 max_simd (max);
     simd::vfloat4 zero_simd (0.0f);
@@ -902,8 +901,8 @@ inline void
 convert_type<float,uint8_t> (const float *src, uint8_t *dst, size_t n,
                              uint8_t /*_min*/, uint8_t /*_max*/)
 {
-    float min = std::numeric_limits<uint8_t>::min();
-    float max = std::numeric_limits<uint8_t>::max();
+    float min = (std::numeric_limits<uint8_t>::min)();
+    float max = (std::numeric_limits<uint8_t>::max)();
     float scale = max;
     simd::vfloat4 max_simd (max);
     simd::vfloat4 zero_simd (0.0f);
@@ -983,8 +982,8 @@ template<typename S, typename D>
 inline void convert_type (const S *src, D *dst, size_t n)
 {
     convert_type<S,D> (src, dst, n,
-                       std::numeric_limits<D>::min(),
-                       std::numeric_limits<D>::max());
+                       (std::numeric_limits<D>::min)(),
+                       (std::numeric_limits<D>::max)());
 }
 
 
@@ -1005,11 +1004,11 @@ convert_type (const S &src)
     }
     typedef typename big_enough_float<D>::float_t F;
     F scale = std::numeric_limits<S>::is_integer ?
-        F(1) / F(std::numeric_limits<S>::max()) : F(1);
+        F(1) / F((std::numeric_limits<S>::max)()) : F(1);
     if (std::numeric_limits<D>::is_integer) {
         // Converting to an integer-like type.
-        F min = (F) std::numeric_limits<D>::min();
-        F max = (F) std::numeric_limits<D>::max();
+        F min = (F) (std::numeric_limits<D>::min)();
+        F max = (F) (std::numeric_limits<D>::max)();
         scale *= max;
         return scaled_conversion<S,D,F> (src, scale, min, max);
     } else {
@@ -1260,7 +1259,7 @@ private:
     void init () noexcept {
         float scale = 1.0f / 255.0f;
         if (std::numeric_limits<T>::is_integer)
-            scale *= (float)std::numeric_limits<T>::max();
+            scale *= (float)(std::numeric_limits<T>::max)();
         for (int i = 0;  i < 256;  ++i)
             val[i] = (T)(i * scale);
     }
@@ -1362,8 +1361,8 @@ OIIO_FORCEINLINE OIIO_HOSTDEVICE T safe_acos (T x) {
 template <typename T>
 OIIO_FORCEINLINE OIIO_HOSTDEVICE T safe_log2 (T x) {
     // match clamping from fast version
-    if (x < std::numeric_limits<T>::min()) x = std::numeric_limits<T>::min();
-    if (x > std::numeric_limits<T>::max()) x = std::numeric_limits<T>::max();
+    if (x < (std::numeric_limits<T>::min)()) x = (std::numeric_limits<T>::min)();
+    if (x > (std::numeric_limits<T>::max)()) x = (std::numeric_limits<T>::max)();
     return std::log2(x);
 }
 
@@ -1371,8 +1370,8 @@ OIIO_FORCEINLINE OIIO_HOSTDEVICE T safe_log2 (T x) {
 template <typename T>
 OIIO_FORCEINLINE OIIO_HOSTDEVICE T safe_log (T x) {
     // slightly different than fast version since clamping happens before scaling
-    if (x < std::numeric_limits<T>::min()) x = std::numeric_limits<T>::min();
-    if (x > std::numeric_limits<T>::max()) x = std::numeric_limits<T>::max();
+    if (x < (std::numeric_limits<T>::min)()) x = (std::numeric_limits<T>::min)();
+    if (x > (std::numeric_limits<T>::max)()) x = (std::numeric_limits<T>::max)();
     return std::log(x);
 }
 
@@ -1380,15 +1379,15 @@ OIIO_FORCEINLINE OIIO_HOSTDEVICE T safe_log (T x) {
 template <typename T>
 OIIO_FORCEINLINE OIIO_HOSTDEVICE T safe_log10 (T x) {
     // slightly different than fast version since clamping happens before scaling
-    if (x < std::numeric_limits<T>::min()) x = std::numeric_limits<T>::min();
-    if (x > std::numeric_limits<T>::max()) x = std::numeric_limits<T>::max();
+    if (x < (std::numeric_limits<T>::min)()) x = (std::numeric_limits<T>::min)();
+    if (x > (std::numeric_limits<T>::max)()) x = (std::numeric_limits<T>::max)();
     return log10f(x);
 }
 
 /// Safe logb: clamp to valid domain.
 template <typename T>
 OIIO_FORCEINLINE OIIO_HOSTDEVICE T safe_logb (T x) {
-    return (x != T(0)) ? std::logb(x) : -std::numeric_limits<T>::max();
+    return (x != T(0)) ? std::logb(x) : -(std::numeric_limits<T>::max)();
 }
 
 /// Safe pow: clamp the domain so it never returns Inf or NaN or has divide
@@ -1402,7 +1401,7 @@ OIIO_FORCEINLINE OIIO_HOSTDEVICE T safe_pow (T x, T y) {
     // FIXME: this does not match "fast" variant because clamping limits are different
     T r = std::pow(x, y);
     // Clamp to avoid returning Inf.
-    const T big = std::numeric_limits<T>::max();
+    const T big = (std::numeric_limits<T>::max)();
     return clamp (r, -big, big);
 }
 
@@ -1752,7 +1751,7 @@ OIIO_FORCEINLINE OIIO_HOSTDEVICE T fast_log2 (const T& xval) {
     using namespace simd;
     typedef typename T::vint_t intN;
     // See float fast_log2 for explanations
-    T x = clamp (xval, T(std::numeric_limits<float>::min()), T(std::numeric_limits<float>::max()));
+    T x = clamp (xval, T((std::numeric_limits<float>::min)()), T((std::numeric_limits<float>::max)()));
     intN bits = bitcast_to_int(x);
     intN exponent = srl (bits, 23) - intN(127);
     T f = bitcast_to_float ((bits & intN(0x007FFFFF)) | intN(0x3f800000)) - T(1.0f);
@@ -1772,7 +1771,7 @@ template<>
 OIIO_FORCEINLINE OIIO_HOSTDEVICE float fast_log2 (const float& xval) {
 #ifndef __CUDA_ARCH__
     // NOTE: clamp to avoid special cases and make result "safe" from large negative values/nans
-    float x = clamp (xval, std::numeric_limits<float>::min(), std::numeric_limits<float>::max());
+    float x = clamp (xval, (std::numeric_limits<float>::min)(), (std::numeric_limits<float>::max)());
     // based on https://github.com/LiraNuna/glsl-sse2/blob/master/source/vec4.h
     unsigned int bits = bitcast<unsigned int, float>(x);
     int exponent = int(bits >> 23) - 127;
@@ -1831,8 +1830,8 @@ OIIO_FORCEINLINE OIIO_HOSTDEVICE float fast_logb (float x) {
 #ifndef __CUDA_ARCH__
     // don't bother with denormals
     x = fabsf(x);
-    if (x < std::numeric_limits<float>::min()) x = std::numeric_limits<float>::min();
-    if (x > std::numeric_limits<float>::max()) x = std::numeric_limits<float>::max();
+    if (x < (std::numeric_limits<float>::min)()) x = (std::numeric_limits<float>::min)();
+    if (x > (std::numeric_limits<float>::max)()) x = (std::numeric_limits<float>::max)();
     unsigned int bits = bitcast<unsigned int, float>(x);
     return float (int(bits >> 23) - 127);
 #else
@@ -2039,9 +2038,9 @@ OIIO_FORCEINLINE OIIO_HOSTDEVICE float fast_safe_pow (float x, float y) {
         return x;
     if (y == 2.0f) {
 #ifndef __CUDA_ARCH__
-        return std::min (x*x, std::numeric_limits<float>::max());
+        return (std::min) (x*x, (std::numeric_limits<float>::max)());
 #else
-        return fminf (x*x, std::numeric_limits<float>::max());
+        return fminf (x*x, (std::numeric_limits<float>::max)());
 #endif
     }
     float sign = 1.0f;
@@ -2245,9 +2244,9 @@ interpolate_linear (float x, span_strided<const float> y)
     int segnum;
     x = floorfrac (x*nsegs, &segnum);
 #ifndef __CUDA_ARCH__
-    int nextseg = std::min (segnum+1, nsegs);
+    int nextseg = (std::min) (segnum+1, nsegs);
 #else
-    int nextseg = min (segnum+1, nsegs);
+    int nextseg = (min) (segnum+1, nsegs);
 #endif
     return lerp (y[segnum], y[nextseg], x);
 }

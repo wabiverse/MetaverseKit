@@ -16,7 +16,7 @@
 
 #include "exr_pvt.h"
 
-#include <OpenEXR/OpenEXR.h>
+#include <OpenEXR/openexr.h>
 
 #include "imageio_pvt.h"
 #include <OpenImageIO/dassert.h>

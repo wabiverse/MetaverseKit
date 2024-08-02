@@ -382,12 +382,16 @@
 #if _MSC_VER
     #if !__TBB_NO_IMPLICIT_LINKAGE
         #ifdef _DEBUG
-            #pragma comment(lib, "tbb12_debug.lib")
-        #else
-            #pragma comment(lib, "tbb12.lib")
-        #endif
-    #endif
-#endif
+            #if !defined(TBB_NO_LIB_LINKAGE)
+                #pragma comment(lib, "tbb12_debug.lib")
+            #endif // !defined(TBB_NO_LIB_LINKAGE)
+        #else // !defined(_DEBUG)
+            #if !defined(TBB_NO_LIB_LINKAGE)
+                #pragma comment(lib, "tbb12.lib")
+            #endif // !defined(TBB_NO_LIB_LINKAGE)
+        #endif // _DEBUG
+    #endif // !__TBB_NO_IMPLICIT_LINKAGE
+#endif // _MSC_VER
 
 #ifndef __TBB_SCHEDULER_OBSERVER
     #define __TBB_SCHEDULER_OBSERVER 1

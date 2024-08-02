@@ -1304,11 +1304,27 @@ static inline void __kmp_load_mxcsr(const kmp_uint32 *p) {}
 static inline void __kmp_store_mxcsr(kmp_uint32 *p) { *p = 0; }
 #endif
 #else
+// stubs because asm isn't yet working correctly on windows.
+
+static inline void __kmp_x86_cpuid(int leaf, int subleaf, struct kmp_cpuid *p) {
+
+}
+// Load p into FPU control word
+static inline void __kmp_load_x87_fpu_control_word(const kmp_int16 *p) {
+
+}
+// Store FPU control word into p
+static inline void __kmp_store_x87_fpu_control_word(kmp_int16 *p) {
+
+}
+static inline void __kmp_clear_x87_fpu_status_word() {
+
+}
 // Windows still has these as external functions in assembly file
-extern void __kmp_x86_cpuid(int mode, int mode2, struct kmp_cpuid *p);
-extern void __kmp_load_x87_fpu_control_word(const kmp_int16 *p);
-extern void __kmp_store_x87_fpu_control_word(kmp_int16 *p);
-extern void __kmp_clear_x87_fpu_status_word();
+// extern void __kmp_x86_cpuid(int mode, int mode2, struct kmp_cpuid *p);
+// extern void __kmp_load_x87_fpu_control_word(const kmp_int16 *p);
+// extern void __kmp_store_x87_fpu_control_word(kmp_int16 *p);
+// extern void __kmp_clear_x87_fpu_status_word();
 static inline void __kmp_load_mxcsr(const kmp_uint32 *p) { _mm_setcsr(*p); }
 static inline void __kmp_store_mxcsr(kmp_uint32 *p) { *p = _mm_getcsr(); }
 #endif // KMP_OS_UNIX
@@ -3842,6 +3858,7 @@ extern int __kmp_read_from_file(char const *path, char const *format, ...);
 // Assembly routines that have no compiler intrinsic replacement
 //
 
+#if !defined(_WIN32)
 extern int __kmp_invoke_microtask(microtask_t pkfn, int gtid, int npr, int argc,
                                   void *argv[]
 #if OMPT_SUPPORT
@@ -3849,6 +3866,18 @@ extern int __kmp_invoke_microtask(microtask_t pkfn, int gtid, int npr, int argc,
                                   void **exit_frame_ptr
 #endif
 );
+#else // defined(_WIN32)
+static inline int __kmp_invoke_microtask(microtask_t pkfn, int gtid, int npr, int argc,
+                                  void *argv[]
+#if OMPT_SUPPORT
+                                  ,
+                                  void **exit_frame_ptr
+#endif
+)
+{
+  return gtid;
+}
+#endif // !defined(_WIN32)
 
 /* ------------------------------------------------------------------------ */
 

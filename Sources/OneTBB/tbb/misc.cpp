@@ -24,7 +24,9 @@
 
 #include "misc.h"
 #include "governor.h"
+#if !defined(_WIN32)
 #include "assert_impl.h" // Out-of-line TBB assertion handling routines are instantiated here.
+#endif // !defined(_WIN32)
 #include "concurrent_monitor_mutex.h"
 
 #include <cstdio>

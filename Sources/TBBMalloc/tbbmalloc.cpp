@@ -73,7 +73,7 @@ void init_tbbmalloc() {
 }
 
 #if !__TBB_SOURCE_DIRECTLY_INCLUDED
-#if USE_WINTHREAD
+#if USE_WINTHREAD && !defined(TBBMALLOC_NO_DLLMAIN)
 extern "C" BOOL WINAPI DllMain( HINSTANCE /*hInst*/, DWORD callReason, LPVOID lpvReserved)
 {
     if (callReason==DLL_THREAD_DETACH)
@@ -86,7 +86,7 @@ extern "C" BOOL WINAPI DllMain( HINSTANCE /*hInst*/, DWORD callReason, LPVOID lp
     }
     return TRUE;
 }
-#else /* !USE_WINTHREAD */
+#else /* !USE_WINTHREAD || defined(TBBMALLOC_NO_DLLMAIN) */
 struct RegisterProcessShutdownNotification {
 // Work around non-reentrancy in dlopen() on Android
     RegisterProcessShutdownNotification() {

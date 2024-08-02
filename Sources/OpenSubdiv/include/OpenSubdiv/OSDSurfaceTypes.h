@@ -75,7 +75,7 @@ struct PatchArray {
              int numPatches_in, int indexBase_in, int primitiveIdBase_in)
       : regDesc(regDesc_in), desc(irregDesc_in), numPatches(numPatches_in),
         indexBase(indexBase_in),
-        stride(std::max(regDesc_in.GetNumControlVertices(),
+        stride((std::max)(regDesc_in.GetNumControlVertices(),
                         irregDesc_in.GetNumControlVertices())),
         primitiveIdBase(primitiveIdBase_in) {}
 

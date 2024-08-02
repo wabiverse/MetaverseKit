@@ -506,7 +506,15 @@ extern kmp_int8 __kmp_test_then_and8(volatile kmp_int8 *p, kmp_int8 v);
 extern kmp_int32 __kmp_test_then_add32(volatile kmp_int32 *p, kmp_int32 v);
 extern kmp_uint32 __kmp_test_then_or32(volatile kmp_uint32 *p, kmp_uint32 v);
 extern kmp_uint32 __kmp_test_then_and32(volatile kmp_uint32 *p, kmp_uint32 v);
+
+#if !defined(_WIN32)
 extern kmp_int64 __kmp_test_then_add64(volatile kmp_int64 *p, kmp_int64 v);
+#else // defined(_WIN32)
+static inline kmp_int64 __kmp_test_then_add64(volatile kmp_int64 *p, kmp_int64 v)
+{
+  return v;
+}
+#endif // !defined(_WIN32)
 extern kmp_uint64 __kmp_test_then_or64(volatile kmp_uint64 *p, kmp_uint64 v);
 extern kmp_uint64 __kmp_test_then_and64(volatile kmp_uint64 *p, kmp_uint64 v);
 
@@ -620,6 +628,7 @@ inline kmp_int32 __kmp_compare_and_store_ptr(void *volatile *p, void *cv,
 
 #else // !KMP_ARCH_AARCH64
 
+#if !defined(_WIN32)
 // Routines that we still need to implement in assembly.
 extern kmp_int8 __kmp_test_then_add8(volatile kmp_int8 *p, kmp_int8 v);
 
@@ -646,6 +655,76 @@ extern kmp_int32 __kmp_xchg_fixed32(volatile kmp_int32 *p, kmp_int32 v);
 extern kmp_int64 __kmp_xchg_fixed64(volatile kmp_int64 *p, kmp_int64 v);
 extern kmp_real32 __kmp_xchg_real32(volatile kmp_real32 *p, kmp_real32 v);
 extern kmp_real64 __kmp_xchg_real64(volatile kmp_real64 *p, kmp_real64 v);
+#else // defined(_WIN32)
+// stubs because asm isn't yet working correctly on windows.
+extern kmp_int8 __kmp_test_then_add8(volatile kmp_int8 *p, kmp_int8 v);
+
+static inline kmp_int8 __kmp_compare_and_store8(volatile kmp_int8 *p, kmp_int8 cv,
+                                                kmp_int8 sv)
+{
+  return sv;
+}
+static inline kmp_int16 __kmp_compare_and_store16(volatile kmp_int16 *p, kmp_int16 cv,
+                                                  kmp_int16 sv)
+{
+  return sv;
+}
+static inline kmp_int32 __kmp_compare_and_store32(volatile kmp_int32 *p, kmp_int32 cv,
+                                                  kmp_int32 sv)
+{
+  return sv;
+}
+static inline kmp_int32 __kmp_compare_and_store64(volatile kmp_int64 *p, kmp_int64 cv,
+                                                  kmp_int64 sv)
+{
+  return sv;
+}
+static inline kmp_int8 __kmp_compare_and_store_ret8(volatile kmp_int8 *p, kmp_int8 cv,
+                                                    kmp_int8 sv)
+{
+  return sv;
+}
+static inline kmp_int16 __kmp_compare_and_store_ret16(volatile kmp_int16 *p,
+                                                      kmp_int16 cv, kmp_int16 sv)
+{
+  return sv;
+}
+static inline kmp_int32 __kmp_compare_and_store_ret32(volatile kmp_int32 *p,
+                                                      kmp_int32 cv, kmp_int32 sv)
+{
+  return sv;
+}
+static inline kmp_int64 __kmp_compare_and_store_ret64(volatile kmp_int64 *p,
+                                                      kmp_int64 cv, kmp_int64 sv)
+{
+  return sv;
+}
+
+static inline kmp_int8 __kmp_xchg_fixed8(volatile kmp_int8 *p, kmp_int8 v)
+{
+  return v;
+}
+static inline kmp_int16 __kmp_xchg_fixed16(volatile kmp_int16 *p, kmp_int16 v)
+{
+  return v;
+}
+static inline kmp_int32 __kmp_xchg_fixed32(volatile kmp_int32 *p, kmp_int32 v)
+{
+  return v;
+}
+static inline kmp_int64 __kmp_xchg_fixed64(volatile kmp_int64 *p, kmp_int64 v)
+{
+  return v;
+}
+static inline kmp_real32 __kmp_xchg_real32(volatile kmp_real32 *p, kmp_real32 v)
+{
+  return v;
+}
+static inline kmp_real64 __kmp_xchg_real64(volatile kmp_real64 *p, kmp_real64 v)
+{
+  return v;
+}
+#endif // !defined(_WIN32)
 
 //#define KMP_TEST_THEN_INC32(p) __kmp_test_then_add32((p), 1)
 //#define KMP_TEST_THEN_INC_ACQ32(p) __kmp_test_then_add32((p), 1)

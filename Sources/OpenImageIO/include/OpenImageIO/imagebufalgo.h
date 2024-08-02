@@ -1130,22 +1130,22 @@ bool OIIO_API channel_sum (ImageBuf &dst, const ImageBuf &src,
 /// Either both `A` and `B` are images, or one is an image and the other is
 /// a `cspan<float>` giving a per-channel constant or a single constant
 /// used for all channels.
-ImageBuf OIIO_API max (Image_or_Const A, Image_or_Const B,
-                       ROI roi={}, int nthreads=0);
+ImageBuf OIIO_API (max) (Image_or_Const A, Image_or_Const B,
+                         ROI roi={}, int nthreads=0);
 /// Write to an existing image `dst` (allocating if it is uninitialized).
-bool OIIO_API max (ImageBuf &dst, Image_or_Const A, Image_or_Const B,
-                   ROI roi={}, int nthreads=0);
+bool OIIO_API (max) (ImageBuf &dst, Image_or_Const A, Image_or_Const B,
+                     ROI roi={}, int nthreads=0);
 
 /// Compute per-pixel `min(A, B)`, returning the result image.
 ///
 /// Either both `A` and `B` are images, or one is an image and the other is
 /// a `cspan<float>` giving a per-channel constant or a single constant
 /// used for all channels.
-ImageBuf OIIO_API min (Image_or_Const A, Image_or_Const B,
-                       ROI roi={}, int nthreads=0);
+ImageBuf OIIO_API (min) (Image_or_Const A, Image_or_Const B,
+                         ROI roi={}, int nthreads=0);
 /// Write to an existing image `dst` (allocating if it is uninitialized).
-bool OIIO_API min (ImageBuf &dst, Image_or_Const A, Image_or_Const B,
-                   ROI roi={}, int nthreads=0);
+bool OIIO_API (min) (ImageBuf &dst, Image_or_Const A, Image_or_Const B,
+                     ROI roi={}, int nthreads=0);
 
 
 
@@ -1160,13 +1160,13 @@ bool OIIO_API min (ImageBuf &dst, Image_or_Const A, Image_or_Const B,
 ///              If true, then additionally any alpha channel is clamped
 ///              to the 0-1 range.
 ImageBuf OIIO_API clamp (const ImageBuf &src,
-                         cspan<float> min=-std::numeric_limits<float>::max(),
-                         cspan<float> max=std::numeric_limits<float>::max(),
+                         cspan<float> min=-(std::numeric_limits<float>::max)(),
+                         cspan<float> max=(std::numeric_limits<float>::max)(),
                          bool clampalpha01 = false, ROI roi={}, int nthreads=0);
 /// Write to an existing image `dst` (allocating if it is uninitialized).
 bool OIIO_API clamp (ImageBuf &dst, const ImageBuf &src,
-                     cspan<float> min=-std::numeric_limits<float>::max(),
-                     cspan<float> max=std::numeric_limits<float>::max(),
+                     cspan<float> min=-(std::numeric_limits<float>::max)(),
+                     cspan<float> max=(std::numeric_limits<float>::max)(),
                      bool clampalpha01 = false, ROI roi={}, int nthreads=0);
 
 /// @}
@@ -2563,7 +2563,7 @@ inline bool clamp (ImageBuf &dst, const ImageBuf &src,
 OIIO_DEPRECATED("use version that takes span<> instead of raw pointer (2.0)")
 inline bool isConstantColor (const ImageBuf &src, float *color,
                              ROI roi={}, int nthreads=0) {
-    int nc = roi.defined() ? std::min(roi.chend,src.nchannels()) : src.nchannels();
+    int nc = roi.defined() ? (std::min)(roi.chend,src.nchannels()) : src.nchannels();
     return isConstantColor (src, 0.0f, {color, span_size_t(color ? nc : 0) },
                             roi, nthreads);
 }

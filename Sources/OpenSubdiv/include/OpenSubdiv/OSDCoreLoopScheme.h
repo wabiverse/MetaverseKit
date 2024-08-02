@@ -31,6 +31,12 @@
 #include <cassert>
 #include <cmath>
 
+#if defined(_WIN32)
+# ifndef M_PI
+#  define M_PI 3.14159265358979323846
+# endif // M_PI
+#endif // defined(_WIN32)
+
 namespace OpenSubdiv {
 namespace OPENSUBDIV_VERSION {
 namespace Sdc {

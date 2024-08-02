@@ -264,7 +264,7 @@ private:
 
         double overhead = iteration_overhead() * iterations();
         for (auto& t : m_times)
-            t = std::max(0.0, do_trial(m_iterations, func, args...) - overhead);
+            t = (std::max)(0.0, do_trial(m_iterations, func, args...) - overhead);
         compute_stats();
         return avg();
     }

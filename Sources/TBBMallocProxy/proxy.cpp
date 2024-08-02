@@ -770,6 +770,7 @@ void doMallocReplacement()
     #pragma warning(disable:4447)
 #endif
 
+#if !defined(TBBPROXY_NO_DLLMAIN)
 extern "C" BOOL WINAPI DllMain( HINSTANCE hInst, DWORD callReason, LPVOID reserved )
 {
 
@@ -784,6 +785,7 @@ extern "C" BOOL WINAPI DllMain( HINSTANCE hInst, DWORD callReason, LPVOID reserv
 
     return TRUE;
 }
+#endif // !defined(TBBPROXY_NO_DLLMAIN)
 
 #if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
     #pragma warning(pop)

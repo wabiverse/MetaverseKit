@@ -211,7 +211,7 @@ struct OIIO_UTIL_API TypeDesc {
         } else {
             // need overflow protection
             unsigned long long s = (unsigned long long) a * elementsize();
-            const size_t toobig = std::numeric_limits<size_t>::max();
+            const size_t toobig = (std::numeric_limits<size_t>::max)();
             return s < toobig ? (size_t)s : toobig;
         }
     }

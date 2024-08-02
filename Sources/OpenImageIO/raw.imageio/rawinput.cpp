@@ -1534,7 +1534,7 @@ RawInput::read_native_scanline(int subimage, int miplevel, int y, int /*z*/,
     if (m_do_balance_clamped) {
         half* dst         = static_cast<half*>(data);
         auto balance_func = [&](half& f) -> half {
-            return std::min((float)f, m_balanced_max);
+            return (std::min)((float)f, m_balanced_max);
         };
         std::transform(dst, dst + length, dst, balance_func);
     }

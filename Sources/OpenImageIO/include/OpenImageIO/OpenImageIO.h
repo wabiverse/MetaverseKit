@@ -27,7 +27,6 @@
 #include <OpenImageIO/imagebufalgo_util.h>
 #include <OpenImageIO/imagecache.h>
 #include <OpenImageIO/imageio.h>
-#include <OpenImageIO/missing_math.h>
 #include <OpenImageIO/oiioversion.h>
 #include <OpenImageIO/optparser.h>
 #include <OpenImageIO/parallel.h>

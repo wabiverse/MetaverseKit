@@ -233,8 +233,8 @@ public:
     m_faceAllocator.SetMemStatsDecrement(decrement);
     m_vertexAllocator.SetMemStatsIncrement(increment);
     m_vertexAllocator.SetMemStatsDecrement(decrement);
-    s_memStatsIncrement = increment;
-    s_memStatsDecrement = decrement;
+    s_memStatsIncrement = (HbrMemStatFunction)increment;
+    s_memStatsDecrement = (HbrMemStatFunction)decrement;
   }
 
   // Add a vertex to consider for garbage collection. All

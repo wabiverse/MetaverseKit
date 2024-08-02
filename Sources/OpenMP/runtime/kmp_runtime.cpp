@@ -556,51 +556,51 @@ static void __kmp_fini_allocator() { __kmp_fini_memkind(); }
 #if KMP_DYNAMIC_LIB
 #if KMP_OS_WINDOWS
 
-BOOL WINAPI DllMain(HINSTANCE hInstDLL, DWORD fdwReason, LPVOID lpReserved) {
-  //__kmp_acquire_bootstrap_lock( &__kmp_initz_lock );
+// BOOL WINAPI DllMain(HINSTANCE hInstDLL, DWORD fdwReason, LPVOID lpReserved) {
+//   //__kmp_acquire_bootstrap_lock( &__kmp_initz_lock );
 
-  switch (fdwReason) {
+//   switch (fdwReason) {
 
-  case DLL_PROCESS_ATTACH:
-    KA_TRACE(10, ("DllMain: PROCESS_ATTACH\n"));
+//   case DLL_PROCESS_ATTACH:
+//     KA_TRACE(10, ("DllMain: PROCESS_ATTACH\n"));
 
-    return TRUE;
+//     return TRUE;
 
-  case DLL_PROCESS_DETACH:
-    KA_TRACE(10, ("DllMain: PROCESS_DETACH T#%d\n", __kmp_gtid_get_specific()));
+//   case DLL_PROCESS_DETACH:
+//     KA_TRACE(10, ("DllMain: PROCESS_DETACH T#%d\n", __kmp_gtid_get_specific()));
 
-    // According to Windows* documentation for DllMain entry point:
-    // for DLL_PROCESS_DETACH, lpReserved is used for telling the difference:
-    //   lpReserved == NULL when FreeLibrary() is called,
-    //   lpReserved != NULL when the process is terminated.
-    // When FreeLibrary() is called, worker threads remain alive. So the
-    // runtime's state is consistent and executing proper shutdown is OK.
-    // When the process is terminated, worker threads have exited or been
-    // forcefully terminated by the OS and only the shutdown thread remains.
-    // This can leave the runtime in an inconsistent state.
-    // Hence, only attempt proper cleanup when FreeLibrary() is called.
-    // Otherwise, rely on OS to reclaim resources.
-    if (lpReserved == NULL)
-      __kmp_internal_end_library(__kmp_gtid_get_specific());
+//     // According to Windows* documentation for DllMain entry point:
+//     // for DLL_PROCESS_DETACH, lpReserved is used for telling the difference:
+//     //   lpReserved == NULL when FreeLibrary() is called,
+//     //   lpReserved != NULL when the process is terminated.
+//     // When FreeLibrary() is called, worker threads remain alive. So the
+//     // runtime's state is consistent and executing proper shutdown is OK.
+//     // When the process is terminated, worker threads have exited or been
+//     // forcefully terminated by the OS and only the shutdown thread remains.
+//     // This can leave the runtime in an inconsistent state.
+//     // Hence, only attempt proper cleanup when FreeLibrary() is called.
+//     // Otherwise, rely on OS to reclaim resources.
+//     if (lpReserved == NULL)
+//       __kmp_internal_end_library(__kmp_gtid_get_specific());
 
-    return TRUE;
+//     return TRUE;
 
-  case DLL_THREAD_ATTACH:
-    KA_TRACE(10, ("DllMain: THREAD_ATTACH\n"));
+//   case DLL_THREAD_ATTACH:
+//     KA_TRACE(10, ("DllMain: THREAD_ATTACH\n"));
 
-    /* if we want to register new siblings all the time here call
-     * __kmp_get_gtid(); */
-    return TRUE;
+//     /* if we want to register new siblings all the time here call
+//      * __kmp_get_gtid(); */
+//     return TRUE;
 
-  case DLL_THREAD_DETACH:
-    KA_TRACE(10, ("DllMain: THREAD_DETACH T#%d\n", __kmp_gtid_get_specific()));
+//   case DLL_THREAD_DETACH:
+//     KA_TRACE(10, ("DllMain: THREAD_DETACH T#%d\n", __kmp_gtid_get_specific()));
 
-    __kmp_internal_end_thread(__kmp_gtid_get_specific());
-    return TRUE;
-  }
+//     __kmp_internal_end_thread(__kmp_gtid_get_specific());
+//     return TRUE;
+//   }
 
-  return TRUE;
-}
+//   return TRUE;
+// }
 
 #endif /* KMP_OS_WINDOWS */
 #endif /* KMP_DYNAMIC_LIB */

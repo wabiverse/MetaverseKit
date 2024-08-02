@@ -24,9 +24,9 @@ abs(float x)
     return std::abs(x);
 }
 inline float
-max(float x, float y)
+(max)(float x, float y)
 {
-    return std::max(x, y);
+    return (std::max)(x, y);
 }
 }  // namespace simd
 
@@ -134,7 +134,7 @@ static OIIO::pvt::UnitTestFailureCounter unit_test_failures;
             (void)++unit_test_failures))
 
 #define OIIO_CHECK_EQUAL_THRESH_REL(x, y, epsabs, epsrel)                     \
-    ((std::abs((x) - (y)) <= (epsabs + epsrel * std::max(abs(x), abs(y))))    \
+    ((std::abs((x) - (y)) <= (epsabs + epsrel * (std::max)(abs(x), abs(y))))  \
          ? ((void)0)                                                          \
          : ((std::cout << OIIO::Sysutil::Term(std::cout).ansi("red,bold")     \
                        << __FILE__ << ":" << __LINE__ << ":\n"                \

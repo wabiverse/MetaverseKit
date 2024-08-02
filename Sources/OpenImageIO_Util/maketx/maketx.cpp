@@ -512,47 +512,47 @@ getargs(int argc, char* argv[], ImageSpec& configspec)
 
 
 
-int
-main(int argc, char* argv[])
-{
-    Timer alltimer;
+// int
+// main(int argc, char* argv[])
+// {
+//     Timer alltimer;
 
-    // Helpful for debugging to make sure that any crashes dump a stack
-    // trace.
-    Sysutil::setup_crash_stacktrace("stdout");
+//     // Helpful for debugging to make sure that any crashes dump a stack
+//     // trace.
+//     Sysutil::setup_crash_stacktrace("stdout");
 
-    // Globally force classic "C" locale, and turn off all formatting
-    // internationalization, for the entire maketx application.
-    std::locale::global(std::locale::classic());
+//     // Globally force classic "C" locale, and turn off all formatting
+//     // internationalization, for the entire maketx application.
+//     std::locale::global(std::locale::classic());
 
-    ImageSpec configspec;
-    Filesystem::convert_native_arguments(argc, (const char**)argv);
-    getargs(argc, argv, configspec);
+//     ImageSpec configspec;
+//     Filesystem::convert_native_arguments(argc, (const char**)argv);
+//     getargs(argc, argv, configspec);
 
-    OIIO::attribute("threads", nthreads);
+//     OIIO::attribute("threads", nthreads);
 
-    // N.B. This will apply to the default IC that any ImageBuf's get.
-    ImageCache* ic = ImageCache::create();   // get the shared one
-    ic->attribute("forcefloat", 1);          // Force float upon read
-    ic->attribute("max_memory_MB", 1024.0);  // 1 GB cache
+//     // N.B. This will apply to the default IC that any ImageBuf's get.
+//     ImageCache* ic = ImageCache::create();   // get the shared one
+//     ic->attribute("forcefloat", 1);          // Force float upon read
+//     ic->attribute("max_memory_MB", 1024.0);  // 1 GB cache
 
-    ImageBufAlgo::MakeTextureMode mode = ImageBufAlgo::MakeTxTexture;
-    if (shadowmode)
-        mode = ImageBufAlgo::MakeTxShadow;
-    if (envlatlmode)
-        mode = ImageBufAlgo::MakeTxEnvLatl;
-    if (lightprobemode)
-        mode = ImageBufAlgo::MakeTxEnvLatlFromLightProbe;
-    if (bumpslopesmode)
-        mode = ImageBufAlgo::MakeTxBumpWithSlopes;
+//     ImageBufAlgo::MakeTextureMode mode = ImageBufAlgo::MakeTxTexture;
+//     if (shadowmode)
+//         mode = ImageBufAlgo::MakeTxShadow;
+//     if (envlatlmode)
+//         mode = ImageBufAlgo::MakeTxEnvLatl;
+//     if (lightprobemode)
+//         mode = ImageBufAlgo::MakeTxEnvLatlFromLightProbe;
+//     if (bumpslopesmode)
+//         mode = ImageBufAlgo::MakeTxBumpWithSlopes;
 
-    bool ok = ImageBufAlgo::make_texture(mode, filenames[0], outputfilename,
-                                         configspec, &std::cout);
-    if (!ok)
-        std::cout << "make_texture ERROR: " << OIIO::geterror() << "\n";
-    if (runstats)
-        std::cout << "\n" << ic->getstats();
+//     bool ok = ImageBufAlgo::make_texture(mode, filenames[0], outputfilename,
+//                                          configspec, &std::cout);
+//     if (!ok)
+//         std::cout << "make_texture ERROR: " << OIIO::geterror() << "\n";
+//     if (runstats)
+//         std::cout << "\n" << ic->getstats();
 
-    shutdown();
-    return ok ? 0 : EXIT_FAILURE;
-}
+//     shutdown();
+//     return ok ? 0 : EXIT_FAILURE;
+// }

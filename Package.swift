@@ -47,6 +47,7 @@ let package = Package(
       cxxSettings: [
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        .define("TBBPROXY_NO_DLLMAIN")
       ]
     ),
 
@@ -62,6 +63,7 @@ let package = Package(
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("__TBBMALLOC_BUILD", to: "1"),
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        .define("TBBMALLOC_NO_DLLMAIN")
       ]
     ),
 
@@ -72,6 +74,9 @@ let package = Package(
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("TBB_ALLOCATOR_TRAITS_BROKEN", to: "1", .when(platforms: Arch.OS.linux.platform)),
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        .define("__TBB_BUILD"),
+        .define("__TBB_NO_IMPLICIT_LINKAGE", to: "1", .when(platforms: [.windows])),
+        .define("TBB_NO_LIB_LINKAGE")
       ]
     ),
 
@@ -134,7 +139,7 @@ let package = Package(
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ],
       linkerSettings: [
-        .linkedLibrary("bz2"),
+        .linkedLibrary("bz2", .when(platforms: Arch.OS.nix.platform))
       ]
     ),
 
@@ -521,7 +526,9 @@ let package = Package(
         // to stop the swift compiler from crashing at this
         // function, we should fix this in the future.
         // .define("OIIO_FIX_ABI_FOR_SWIFT", to: "1"),
-        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows]))
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        .define("FMT_LIB_EXPORT"),
+        .define("FMT_HEADER_ONLY")
       ],
       linkerSettings: getConfig(for: .oiio).linkerSettings
     ),
@@ -815,7 +822,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         config.exclude += [
           "mz_strm_os_posix.c",
           "mz_os_posix.c",
-          "mz_strm_bzip.c"
+          "mz_strm_bzip.c",
+          "mz_crypt_winvista.c"
         ]
       #endif /* os(Windows) */
       #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
@@ -926,7 +934,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "wl_init.c",
         "wl_window.c",
         "wl_monitor.c",
-        "wgl_context.c",
         "null_init.c",
         "null_joystick.c",
         "null_monitor.c",
@@ -934,6 +941,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       ]
       #if !os(Windows)
         config.exclude += [
+          "wgl_context.c",
           "win32_init.c",
           "win32_joystick.c",
           "win32_monitor.c",
@@ -976,6 +984,11 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("GL_SILENCE_DEPRECATION", to: "1"),
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
       ]
+      #if os(Windows)
+        config.linkerSettings = [
+          .linkedLibrary("opengl32", .when(platforms: [.windows])),
+        ]
+      #endif // os(Windows)
       #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
         config.linkerSettings = [
           .linkedLibrary("glut"),
@@ -1120,11 +1133,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           // attributes to webp
           // functions for this
           // to compile.
-          "webp.imageio",
-          // drop openvdb for now,
-          // else windows needs a
-          // dependency on Boost.
-          "openvdb.imageio"
+          "webp.imageio"
         ]
       #endif
     case .ocioBundle:

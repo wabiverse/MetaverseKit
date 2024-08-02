@@ -1209,8 +1209,8 @@ vint4 select (const vbool4& mask, const vint4& a, const vint4& b);
 
 // Per-element math
 vint4 abs (const vint4& a);
-vint4 min (const vint4& a, const vint4& b);
-vint4 max (const vint4& a, const vint4& b);
+vint4 (min) (const vint4& a, const vint4& b);
+vint4 (max) (const vint4& a, const vint4& b);
 
 /// Circular bit rotate by s bits, for N values at once.
 vint4 rotl (const vint4& x, const int s);
@@ -1513,8 +1513,8 @@ vint8 select (const vbool8& mask, const vint8& a, const vint8& b);
 
 // Per-element math
 vint8 abs (const vint8& a);
-vint8 min (const vint8& a, const vint8& b);
-vint8 max (const vint8& a, const vint8& b);
+vint8 (min) (const vint8& a, const vint8& b);
+vint8 (max) (const vint8& a, const vint8& b);
 
 /// Circular bit rotate by s bits, for N values at once.
 vint8 rotl (const vint8& x, const int s);
@@ -1824,8 +1824,8 @@ vint16 select (const vbool16& mask, const vint16& a, const vint16& b);
 
 // Per-element math
 vint16 abs (const vint16& a);
-vint16 min (const vint16& a, const vint16& b);
-vint16 max (const vint16& a, const vint16& b);
+vint16 (min) (const vint16& a, const vint16& b);
+vint16 (max) (const vint16& a, const vint16& b);
 
 /// Circular bit rotate by s bits, for N values at once.
 vint16 rotl (const vint16& x, const int s);
@@ -2199,8 +2199,8 @@ vfloat4 rcp_fast (const vfloat4 &a);  ///< Fast, approximate 1/a
 vfloat4 sqrt (const vfloat4 &a);
 vfloat4 rsqrt (const vfloat4 &a);   ///< Fully accurate 1/sqrt
 vfloat4 rsqrt_fast (const vfloat4 &a);  ///< Fast, approximate 1/sqrt
-vfloat4 min (const vfloat4& a, const vfloat4& b); ///< Per-element min
-vfloat4 max (const vfloat4& a, const vfloat4& b); ///< Per-element max
+vfloat4 (min) (const vfloat4& a, const vfloat4& b); ///< Per-element min
+vfloat4 (max) (const vfloat4& a, const vfloat4& b); ///< Per-element max
 template <typename T> OIIO_FORCEINLINE T exp (const T& v);  // template for all SIMD variants
 template <typename T> OIIO_FORCEINLINE T log (const T& v);
 
@@ -2826,8 +2826,8 @@ vfloat8 rcp_fast (const vfloat8 &a);  ///< Fast, approximate 1/a
 vfloat8 sqrt (const vfloat8 &a);
 vfloat8 rsqrt (const vfloat8 &a);   ///< Fully accurate 1/sqrt
 vfloat8 rsqrt_fast (const vfloat8 &a);  ///< Fast, approximate 1/sqrt
-vfloat8 min (const vfloat8& a, const vfloat8& b); ///< Per-element min
-vfloat8 max (const vfloat8& a, const vfloat8& b); ///< Per-element max
+vfloat8 (min) (const vfloat8& a, const vfloat8& b); ///< Per-element min
+vfloat8 (max) (const vfloat8& a, const vfloat8& b); ///< Per-element max
 // vfloat8 exp (const vfloat8& v);  // See template with vfloat4
 // vfloat8 log (const vfloat8& v);  // See template with vfloat4
 
@@ -3152,8 +3152,8 @@ vfloat16 rcp_fast (const vfloat16 &a);  ///< Fast, approximate 1/a
 vfloat16 sqrt (const vfloat16 &a);
 vfloat16 rsqrt (const vfloat16 &a);   ///< Fully accurate 1/sqrt
 vfloat16 rsqrt_fast (const vfloat16 &a);  ///< Fast, approximate 1/sqrt
-vfloat16 min (const vfloat16& a, const vfloat16& b); ///< Per-element min
-vfloat16 max (const vfloat16& a, const vfloat16& b); ///< Per-element max
+vfloat16 (min) (const vfloat16& a, const vfloat16& b); ///< Per-element min
+vfloat16 (max) (const vfloat16& a, const vfloat16& b); ///< Per-element max
 // vfloat16 exp (const vfloat16& v);  // See template with vfloat4
 // vfloat16 log (const vfloat16& v);  // See template with vfloat4
 
@@ -4978,24 +4978,24 @@ OIIO_FORCEINLINE vint4 abs (const vint4& a) {
 
 
 
-OIIO_FORCEINLINE vint4 min (const vint4& a, const vint4& b) {
+OIIO_FORCEINLINE vint4 (min) (const vint4& a, const vint4& b) {
 #if OIIO_SIMD_SSE >= 4 /* SSE >= 4.1 */
     return _mm_min_epi32 (a, b);
 #elif OIIO_SIMD_NEON
     return vminq_s32(a, b);
 #else
-    SIMD_RETURN (vint4, std::min(a[i], b[i]));
+    SIMD_RETURN (vint4, (std::min)(a[i], b[i]));
 #endif
 }
 
 
-OIIO_FORCEINLINE vint4 max (const vint4& a, const vint4& b) {
+OIIO_FORCEINLINE vint4 (max) (const vint4& a, const vint4& b) {
 #if OIIO_SIMD_SSE >= 4 /* SSE >= 4.1 */
     return _mm_max_epi32 (a, b);
 #elif OIIO_SIMD_NEON
     return vmaxq_s32(a, b);
 #else
-    SIMD_RETURN (vint4, std::max(a[i], b[i]));
+    SIMD_RETURN (vint4, (std::max)(a[i], b[i]));
 #endif
 }
 
@@ -5805,20 +5805,20 @@ OIIO_FORCEINLINE vint8 abs (const vint8& a) {
 }
 
 
-OIIO_FORCEINLINE vint8 min (const vint8& a, const vint8& b) {
+OIIO_FORCEINLINE vint8 (min) (const vint8& a, const vint8& b) {
 #if OIIO_SIMD_AVX >= 2
     return _mm256_min_epi32 (a, b);
 #else
-    return vint8 (min(a.lo(), b.lo()), min(a.hi(), b.hi()));
+    return vint8 ((min)(a.lo(), b.lo()), (min)(a.hi(), b.hi()));
 #endif
 }
 
 
-OIIO_FORCEINLINE vint8 max (const vint8& a, const vint8& b) {
+OIIO_FORCEINLINE vint8 (max) (const vint8& a, const vint8& b) {
 #if OIIO_SIMD_AVX >= 2
     return _mm256_max_epi32 (a, b);
 #else
-    return vint8 (max(a.lo(), b.lo()), max(a.hi(), b.hi()));
+    return vint8 ((max)(a.lo(), b.lo()), (max)(a.hi(), b.hi()));
 #endif
 }
 
@@ -6607,20 +6607,20 @@ OIIO_FORCEINLINE vint16 abs (const vint16& a) {
 }
 
 
-OIIO_FORCEINLINE vint16 min (const vint16& a, const vint16& b) {
+OIIO_FORCEINLINE vint16 (min) (const vint16& a, const vint16& b) {
 #if OIIO_SIMD_AVX >= 512
     return _mm512_min_epi32 (a, b);
 #else
-    return vint16 (min(a.lo(), b.lo()), min(a.hi(), b.hi()));
+    return vint16 ((min)(a.lo(), b.lo()), (min)(a.hi(), b.hi()));
 #endif
 }
 
 
-OIIO_FORCEINLINE vint16 max (const vint16& a, const vint16& b) {
+OIIO_FORCEINLINE vint16 (max) (const vint16& a, const vint16& b) {
 #if OIIO_SIMD_AVX >= 512
     return _mm512_max_epi32 (a, b);
 #else
-    return vint16 (max(a.lo(), b.lo()), max(a.hi(), b.hi()));
+    return vint16 ((max)(a.lo(), b.lo()), (max)(a.hi(), b.hi()));
 #endif
 }
 
@@ -7686,7 +7686,7 @@ OIIO_FORCEINLINE vfloat4 rsqrt_fast (const vfloat4 &a)
 }
 
 
-OIIO_FORCEINLINE vfloat4 min (const vfloat4& a, const vfloat4& b)
+OIIO_FORCEINLINE vfloat4 (min) (const vfloat4& a, const vfloat4& b)
 {
 #if OIIO_SIMD_SSE
     return _mm_min_ps (a, b);
@@ -7697,7 +7697,7 @@ OIIO_FORCEINLINE vfloat4 min (const vfloat4& a, const vfloat4& b)
 #endif
 }
 
-OIIO_FORCEINLINE vfloat4 max (const vfloat4& a, const vfloat4& b)
+OIIO_FORCEINLINE vfloat4 (max) (const vfloat4& a, const vfloat4& b)
 {
 #if OIIO_SIMD_SSE
     return _mm_max_ps (a, b);
@@ -7824,8 +7824,8 @@ OIIO_FORCEINLINE T exp (const T& v)
     const float cephes_exp_p5 (5.0000001201E-1f);
     T tmp (0.0f);
     T one (1.0f);
-    x = min (x, T(exp_hi));
-    x = max (x, T(exp_lo));
+    x = (min) (x, T(exp_hi));
+    x = (max) (x, T(exp_lo));
     T fx = madd (x, T(cephes_LOG2EF), T(0.5f));
     int_t emm0 = int_t(fx);
     tmp = T(emm0);
@@ -7873,7 +7873,7 @@ OIIO_FORCEINLINE T log (const T& v)
     bool_t invalid_mask = (x <= zero);
     const int min_norm_pos ((int)0x00800000);
     const int inv_mant_mask ((int)~0x7f800000);
-    x = max(x, bitcast_to_float(int_t(min_norm_pos)));  /* cut off denormalized stuff */
+    x = (max)(x, bitcast_to_float(int_t(min_norm_pos)));  /* cut off denormalized stuff */
     emm0 = srl (bitcast_to_int(x), 23);
     /* keep only the fractional part */
     x = bitcast_to_float (bitcast_to_int(x) & int_t(inv_mant_mask));
@@ -9353,21 +9353,21 @@ OIIO_FORCEINLINE vfloat8 rsqrt_fast (const vfloat8 &a)
 
 
 
-OIIO_FORCEINLINE vfloat8 min (const vfloat8& a, const vfloat8& b)
+OIIO_FORCEINLINE vfloat8 (min) (const vfloat8& a, const vfloat8& b)
 {
 #if OIIO_SIMD_AVX
     return _mm256_min_ps (a, b);
 #else
-    return vfloat8 (min(a.lo(), b.lo()), min(a.hi(), b.hi()));
+    return vfloat8 ((min)(a.lo(), b.lo()), (min)(a.hi(), b.hi()));
 #endif
 }
 
-OIIO_FORCEINLINE vfloat8 max (const vfloat8& a, const vfloat8& b)
+OIIO_FORCEINLINE vfloat8 (max) (const vfloat8& a, const vfloat8& b)
 {
 #if OIIO_SIMD_AVX
     return _mm256_max_ps (a, b);
 #else
-    return vfloat8 (max(a.lo(), b.lo()), max(a.hi(), b.hi()));
+    return vfloat8 ((max)(a.lo(), b.lo()), (max)(a.hi(), b.hi()));
 #endif
 }
 
@@ -10207,21 +10207,21 @@ OIIO_FORCEINLINE vfloat16 rsqrt_fast (const vfloat16 &a)
 }
 
 
-OIIO_FORCEINLINE vfloat16 min (const vfloat16& a, const vfloat16& b)
+OIIO_FORCEINLINE vfloat16 (min) (const vfloat16& a, const vfloat16& b)
 {
 #if OIIO_SIMD_AVX >= 512
     return _mm512_min_ps (a, b);
 #else
-    return vfloat16(min(a.lo(),b.lo()), min(a.hi(),b.hi()));
+    return vfloat16((min)(a.lo(),b.lo()), (min)(a.hi(),b.hi()));
 #endif
 }
 
-OIIO_FORCEINLINE vfloat16 max (const vfloat16& a, const vfloat16& b)
+OIIO_FORCEINLINE vfloat16 (max) (const vfloat16& a, const vfloat16& b)
 {
 #if OIIO_SIMD_AVX >= 512
     return _mm512_max_ps (a, b);
 #else
-    return vfloat16(max(a.lo(),b.lo()), max(a.hi(),b.hi()));
+    return vfloat16((max)(a.lo(),b.lo()), (max)(a.hi(),b.hi()));
 #endif
 }
 
