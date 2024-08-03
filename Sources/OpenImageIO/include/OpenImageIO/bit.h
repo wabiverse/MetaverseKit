@@ -9,6 +9,7 @@
 #include <OpenImageIO/oiioversion.h>
 #include <OpenImageIO/platform.h>
 
+#include <cstring>
 #include <memory>
 
 
