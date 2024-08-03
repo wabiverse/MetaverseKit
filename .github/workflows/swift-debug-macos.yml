@@ -15,5 +15,7 @@ jobs:
         with:
           swift-version: ${{ matrix.swift }}
       - uses: actions/checkout@v4
+      - name: 🗃️ Checkout Submodules
+        run: git submodule update --init --recursive
       - name: 🧪 Test
         run: swift test

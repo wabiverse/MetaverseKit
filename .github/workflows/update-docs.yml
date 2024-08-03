@@ -31,6 +31,8 @@ jobs:
         run: sudo apt install libboost-all-dev
       - name: 🖥️ Install X11
         run: sudo apt install libxcursor-dev libxt-dev libxi-dev libxinerama-dev libxrandr-dev
+      - name: 🗃️ Checkout Submodules
+        run: git submodule update --init --recursive
       - name: Compile Docs
         run: |
           set -eux

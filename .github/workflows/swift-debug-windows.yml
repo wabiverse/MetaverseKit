@@ -16,5 +16,7 @@ jobs:
           branch: swift-5.10-release
           tag: 5.10-RELEASE
       - uses: actions/checkout@v4
+      - name: 🗃️ Checkout Submodules
+        run: git submodule update --init --recursive
       - name: 📦 Build
         run: swift build -c release --target MetaversalDemo
