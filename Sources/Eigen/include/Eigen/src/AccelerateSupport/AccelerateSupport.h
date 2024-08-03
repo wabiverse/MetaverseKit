@@ -1,6 +1,8 @@
 #ifndef EIGEN_ACCELERATESUPPORT_H
 #define EIGEN_ACCELERATESUPPORT_H
 
+#if defined(__APPLE__)
+
 #include <Accelerate/Accelerate.h>
 
 #include <Eigen/Sparse>
@@ -417,5 +419,7 @@ void AccelerateImpl<MatrixType_, UpLo_, Solver_, EnforceSquare_>::_solve_impl(co
 }
 
 }  // end namespace Eigen
+
+#endif // defined(__APPLE__)
 
 #endif  // EIGEN_ACCELERATESUPPORT_H
