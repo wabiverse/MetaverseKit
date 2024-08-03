@@ -39,18 +39,20 @@ import OpenImageIO
 import OpenSubdiv
 import OpenTime
 import OpenTimelineIO
-#if !os(Windows)
+#if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
 // windows doesn't like the
 // mismatched std.version
 // coming in from TBB from
 // the OpenVDB import.
 import OpenVDB
+#endif // os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
+#if !os(Windows)
 import Ptex
 #endif // !os(Windows)
 #if canImport(Python)
   import PyBundle
   import Python
-#endif /* canImport(Python) */
+#endif // canImport(Python)
 
 /* --- xxx --- */
 
