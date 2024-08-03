@@ -9,6 +9,8 @@
 #include <OpenImageIO/oiioversion.h>
 #include <OpenImageIO/platform.h>
 
+#include <memory>
+
 
 OIIO_NAMESPACE_BEGIN
 
