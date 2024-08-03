@@ -49,10 +49,10 @@ import OpenVDB
 #if !os(Windows)
 import Ptex
 #endif // !os(Windows)
-#if canImport(Python)
+#if canImport(Python) && (os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS))
   import PyBundle
   import Python
-#endif // canImport(Python)
+#endif // canImport(Python) && os(macOS)
 
 /* --- xxx --- */
 
@@ -114,11 +114,11 @@ class Creator
   {
     let C: Creator
 
-    #if canImport(Python)
+    #if canImport(Python) && os(macOS)
       /* embed & init python. */
       PyBundler.shared.pyInit()
       PyBundler.shared.pyInfo()
-    #endif /* canImport(Python) */
+    #endif // canImport(Python) && os(macOS)
 
     C = Creator()
 
