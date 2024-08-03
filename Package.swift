@@ -81,6 +81,24 @@ let package = Package(
     ),
 
     .target(
+      name: "tbb",
+      dependencies: [
+        .target(name: "OneTBB"),
+        .target(name: "TBBMalloc"),
+        .target(name: "TBBMallocProxy"),
+      ],
+      publicHeadersPath: "include",
+      cxxSettings: [
+        .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
+        .define("TBB_ALLOCATOR_TRAITS_BROKEN", to: "1", .when(platforms: Arch.OS.linux.platform)),
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+        .define("__TBB_NO_IMPLICIT_LINKAGE", to: "1", .when(platforms: [.windows])),
+        .define("TBB_NO_LIB_LINKAGE"),
+        .define("TBB_USE_PROFILING_TOOLS", to: "2"),
+      ]
+    ),
+
+    .target(
       name: "MetaTBB",
       dependencies: [
         .target(name: "OneTBB"),
@@ -776,6 +794,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       break
     case .tbbMalloc:
       break
+    case .tbb:
+      break
     case .oneTbb:
       break
     case .metaTbb:
@@ -1211,6 +1231,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .library(
           name: "CosmoGraph",
           targets: ["CosmoGraph"]
+        ),
+        .library(
+          name: "tbb",
+          targets: ["tbb"]
         ),
         .library(
           name: "OneTBB",
@@ -1706,6 +1730,7 @@ enum PkgTarget: String
 {
   case cosmo = "CosmoGraph"
   case draco = "Draco"
+  case tbb
   case tbbMallocProxy = "TBBMallocProxy"
   case tbbMalloc = "TBBMalloc"
   case oneTbb = "OneTBB"
