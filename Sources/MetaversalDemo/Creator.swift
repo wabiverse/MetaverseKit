@@ -114,11 +114,11 @@ class Creator
   {
     let C: Creator
 
-    #if canImport(Python) && os(macOS)
+    #if canImport(Python) && (os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS))
       /* embed & init python. */
       PyBundler.shared.pyInit()
       PyBundler.shared.pyInfo()
-    #endif // canImport(Python) && os(macOS)
+    #endif // canImport(Python)
 
     C = Creator()
 
