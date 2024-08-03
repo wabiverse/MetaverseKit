@@ -29,8 +29,8 @@
 #include "PointCount.h"
 #include "PointDataGrid.h"
 
-#include <OneTBB/tbb/parallel_sort.h>
-#include <OneTBB/tbb/parallel_for.h>
+#include <tbb/parallel_sort.h>
+#include <tbb/parallel_for.h>
 
 namespace openvdb {
 OPENVDB_USE_VERSION_NAMESPACE

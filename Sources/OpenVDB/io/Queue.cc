@@ -10,8 +10,8 @@
 #include <openvdb/Exceptions.h>
 #include <openvdb/util/logging.h>
 
-#include <OneTBB/tbb/concurrent_hash_map.h>
-#include <OneTBB/tbb/task_arena.h>
+#include <tbb/concurrent_hash_map.h>
+#include <tbb/task_arena.h>
 
 #include <thread>
 #include <algorithm> // for std::max()

@@ -10,8 +10,8 @@
 #ifndef OPENVDB_TOOLS_LEVEL_SET_ADVECT_HAS_BEEN_INCLUDED
 #define OPENVDB_TOOLS_LEVEL_SET_ADVECT_HAS_BEEN_INCLUDED
 
-#include <OneTBB/tbb/parallel_for.h>
-#include <OneTBB/tbb/parallel_reduce.h>
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_reduce.h>
 #include "LevelSetTracker.h"
 #include "VelocityFields.h" // for EnrightField
 #include <openvdb/Platform.h>

@@ -15,7 +15,7 @@
 #include <openvdb/math/BBox.h>
 #include <openvdb/util/NodeMasks.h> // for backward compatibility only (see readTopology())
 #include <openvdb/version.h>
-#include <OneTBB/tbb/parallel_for.h>
+#include <tbb/parallel_for.h>
 #include <map>
 #include <set>
 #include <sstream>

@@ -17,9 +17,9 @@
 
 #include <openvdb/Types.h>
 #include "RootNode.h" // for NodeChain
-#include <OneTBB/tbb/blocked_range.h>
-#include <OneTBB/tbb/parallel_for.h>
-#include <OneTBB/tbb/parallel_reduce.h>
+#include <tbb/blocked_range.h>
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_reduce.h>
 #include <deque>
 #include <functional>
 #include <type_traits>

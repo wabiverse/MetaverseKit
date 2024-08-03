@@ -21,10 +21,10 @@
 #include "Prune.h"// for prune
 #include "SignedFloodFill.h" // for signedFloodFill()
 
-#include <OneTBB/tbb/blocked_range.h>
-#include <OneTBB/tbb/parallel_for.h>
-#include <OneTBB/tbb/parallel_reduce.h>
-#include <OneTBB/tbb/task_group.h>
+#include <tbb/blocked_range.h>
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_reduce.h>
+#include <tbb/task_group.h>
 
 #include <type_traits>
 #include <functional>

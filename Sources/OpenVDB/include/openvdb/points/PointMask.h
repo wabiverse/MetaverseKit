@@ -16,7 +16,7 @@
 #include "PointDataGrid.h"
 #include "IndexFilter.h"
 
-#include <OneTBB/tbb/combinable.h>
+#include <tbb/combinable.h>
 
 #include <type_traits>
 #include <vector>

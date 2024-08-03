@@ -30,7 +30,7 @@
 
 #include <cassert>
 #include <cstdlib>
-#include <OneTBB/tbb/parallel_for.h>
+#include <tbb/parallel_for.h>
 
 namespace OpenSubdiv {
 namespace OPENSUBDIV_VERSION {

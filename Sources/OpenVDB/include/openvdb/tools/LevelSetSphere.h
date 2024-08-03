@@ -22,10 +22,10 @@
 
 #include <type_traits>
 
-#include <OneTBB/tbb/enumerable_thread_specific.h>
-#include <OneTBB/tbb/parallel_for.h>
-#include <OneTBB/tbb/parallel_reduce.h>
-#include <OneTBB/tbb/blocked_range.h>
+#include <tbb/enumerable_thread_specific.h>
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_reduce.h>
+#include <tbb/blocked_range.h>
 #include <thread>
 
 namespace openvdb {

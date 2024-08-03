@@ -104,6 +104,7 @@ let package = Package(
         .target(name: "OneTBB"),
         .target(name: "TBBMalloc"),
         .target(name: "TBBMallocProxy"),
+        .target(name: "tbb"),
       ],
       exclude: [],
       cxxSettings: [

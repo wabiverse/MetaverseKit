@@ -19,7 +19,7 @@
 
 #include "ValueTransformer.h" // for tools::foreach()
 
-#include <OneTBB/tbb/parallel_for.h>
+#include <tbb/parallel_for.h>
 
 namespace openvdb {
 OPENVDB_USE_VERSION_NAMESPACE

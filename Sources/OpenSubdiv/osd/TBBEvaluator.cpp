@@ -26,10 +26,10 @@
 #include "OpenSubdiv/OSDSurfaceTBBKernel.h"
 
 // Get TBB version from tbb/parallel_for used by OpenSubdiv/OSDSurfaceTBBKernel
-#include <OneTBB/tbb/parallel_for.h>
+#include <tbb/parallel_for.h>
 #if defined(TBB_INTERFACE_VERSION_MAJOR) && (TBB_INTERFACE_VERSION_MAJOR < 12)
 // This is deprecated functionality.
-#include <OneTBB/tbb/task_scheduler_init.h>
+#include <tbb/task_scheduler_init.h>
 #endif
 
 namespace OpenSubdiv {

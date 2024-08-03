@@ -15,7 +15,7 @@
 #include <openvdb/Exceptions.h>
 #include <openvdb/util/Formats.h>
 #include "Prune.h"
-#include <OneTBB/tbb/parallel_for.h>
+#include <tbb/parallel_for.h>
 #include <iostream>
 #include <memory>
 #include <string>

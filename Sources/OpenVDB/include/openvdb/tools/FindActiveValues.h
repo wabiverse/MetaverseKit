@@ -30,9 +30,9 @@
 
 #include "Count.h" // tools::countActiveVoxels()
 
-#include <OneTBB/tbb/blocked_range.h>
-#include <OneTBB/tbb/parallel_for.h>
-#include <OneTBB/tbb/parallel_reduce.h>
+#include <tbb/blocked_range.h>
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_reduce.h>
 
 namespace openvdb {
 OPENVDB_USE_VERSION_NAMESPACE

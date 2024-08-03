@@ -20,7 +20,7 @@
 #include "IndexIterator.h"
 #include "StreamCompression.h"
 
-#include <OneTBB/tbb/spin_mutex.h>
+#include <tbb/spin_mutex.h>
 #include <atomic>
 
 #include <memory>
