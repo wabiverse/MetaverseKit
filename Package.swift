@@ -377,7 +377,7 @@ let package = Package(
     .target(
       name: "OpenSubdiv",
       dependencies: [
-        .target(name: "MetaTBB"),
+        .target(name: "MetaTBB", condition: .when(platforms: Arch.OS.applewindows.platform)),
         .target(name: "OpenMP"),
       ],
       exclude: getConfig(for: .osd).exclude,
@@ -693,7 +693,7 @@ let package = Package(
     .target(
       name: "OpenVDB",
       dependencies: [
-        .target(name: "MetaTBB"),
+        .target(name: "MetaTBB", condition: .when(platforms: Arch.OS.applewindows.platform)),
         .target(name: "Blosc"),
         .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
         .target(name: "Imath"),
@@ -737,7 +737,6 @@ let package = Package(
     .executableTarget(
       name: "MetaversalDemo",
       dependencies: [
-        .target(name: "OneTBB"),
         .target(name: "ImGui"),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
@@ -790,16 +789,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
     case .cosmo:
       break
     case .draco:
-      break
-    case .tbbMallocProxy:
-      break
-    case .tbbMalloc:
-      break
-    case .tbb:
-      break
-    case .oneTbb:
-      break
-    case .metaTbb:
       break
     case .zstd:
       break
@@ -1234,26 +1223,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["CosmoGraph"]
         ),
         .library(
-          name: "tbb",
-          targets: ["tbb"]
-        ),
-        .library(
-          name: "OneTBB",
-          targets: ["OneTBB"]
-        ),
-        .library(
-          name: "MetaTBB",
-          targets: ["MetaTBB"]
-        ),
-        .library(
-          name: "TBBMalloc",
-          targets: ["TBBMalloc"]
-        ),
-        .library(
-          name: "TBBMallocProxy",
-          targets: ["TBBMallocProxy"]
-        ),
-        .library(
           name: "Apple",
           targets: ["Apple"]
         ),
@@ -1521,10 +1490,20 @@ enum Arch
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         var prods: [Product] = [
           .library(name: "Boost", targets: ["Boost"]),
+          .library(name: "tbb", targets: ["tbb"]),
+          .library(name: "OneTBB", targets: ["OneTBB"]),
+          .library(name: "MetaTBB", targets: ["MetaTBB"]),
+          .library(name: "TBBMalloc", targets: ["TBBMalloc"]),
+          .library(name: "TBBMallocProxy", targets: ["TBBMallocProxy"]),
         ]
       #elseif os(Windows) || os(Cygwin) || os(WASI)
         var prods: [Product] = [
           .library(name: "expat", targets: ["expat"]),
+          .library(name: "tbb", targets: ["tbb"]),
+          .library(name: "OneTBB", targets: ["OneTBB"]),
+          .library(name: "MetaTBB", targets: ["MetaTBB"]),
+          .library(name: "TBBMalloc", targets: ["TBBMalloc"]),
+          .library(name: "TBBMallocProxy", targets: ["TBBMallocProxy"]),
         ]
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) */
         var prods: [Product] = []
@@ -1731,11 +1710,6 @@ enum PkgTarget: String
 {
   case cosmo = "CosmoGraph"
   case draco = "Draco"
-  case tbb
-  case tbbMallocProxy = "TBBMallocProxy"
-  case tbbMalloc = "TBBMalloc"
-  case oneTbb = "OneTBB"
-  case metaTbb = "MetaTBB"
   case zstd = "ZStandard"
   case lzma2 = "LZMA2"
   case yaml = "Yaml"
