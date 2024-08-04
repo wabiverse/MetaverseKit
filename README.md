@@ -44,7 +44,7 @@ cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **
 ### Industry Swift Targets
 > [!IMPORTANT]
 > As of **January 10th, 2024**, **Linux** is now supported, in addition to **Apple** platforms,
-> you can grab the latest release [here](https://github.com/wabiverse/MetaverseKit/releases/tag/v1.4.2)! 🎉
+> you can grab the latest release [here](https://github.com/wabiverse/MetaverseKit/releases/tag/v1.7.6)! 🎉
 > And, as of **August 3rd, 2024**, **Microsoft Windows** is now supported.
 
 | Swift Target                                                               | Version           |
