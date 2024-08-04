@@ -43,9 +43,9 @@ cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **
 
 ### Industry Swift Targets
 > [!IMPORTANT]
-> As of **January 10th, 2024** **Linux** is now supported, in addition to **Apple** platforms,
+> As of **January 10th, 2024**, **Linux** is now supported, in addition to **Apple** platforms,
 > you can grab the latest release [here](https://github.com/wabiverse/MetaverseKit/releases/tag/v1.4.2)! 🎉
-> With **Microsoft Windows** support coming sometime in the near future.
+> And, as of **August 3rd, 2024**, **Microsoft Windows** is now supported.
 
 | Swift Target                                                               | Version           |
 | -------------------------------------------------------------------------- | ----------------- |
@@ -89,7 +89,7 @@ cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **
 ##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L85).
 ```swift
 dependencies: [
-  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.4.2"),
+  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.7.6"),
 ]
 ```
 
