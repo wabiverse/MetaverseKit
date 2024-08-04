@@ -17,9 +17,9 @@
 #include "VolumeToMesh.h"
 #include <openvdb/openvdb.h>
 
-#include <tbb/blocked_range.h>
-#include <tbb/parallel_for.h>
-#include <tbb/parallel_reduce.h>
+#include <OneTBB/tbb/blocked_range.h>
+#include <OneTBB/tbb/parallel_for.h>
+#include <OneTBB/tbb/parallel_reduce.h>
 
 #include <algorithm> // for std::min(), std::max()
 #include <cmath> // for std::sqrt()

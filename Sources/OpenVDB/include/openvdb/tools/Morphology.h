@@ -27,9 +27,9 @@
 #include <openvdb/openvdb.h>
 #include <openvdb/points/PointDataGrid.h>
 
-#include <tbb/task_arena.h>
-#include <tbb/enumerable_thread_specific.h>
-#include <tbb/parallel_for.h>
+#include <OneTBB/tbb/task_arena.h>
+#include <OneTBB/tbb/enumerable_thread_specific.h>
+#include <OneTBB/tbb/parallel_for.h>
 
 #include <type_traits>
 #include <vector>

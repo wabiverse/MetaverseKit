@@ -28,8 +28,8 @@
 #include <openvdb/tree/LeafNode.h>
 #include <openvdb/tree/Tree.h>
 
-#include <tbb/blocked_range.h>
-#include <tbb/parallel_for.h>
+#include <OneTBB/tbb/blocked_range.h>
+#include <OneTBB/tbb/parallel_for.h>
 #include <atomic>
 #include <algorithm> // for std::min(), std::max()
 #include <cmath> // for std::sqrt()

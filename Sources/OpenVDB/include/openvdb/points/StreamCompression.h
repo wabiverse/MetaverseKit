@@ -20,7 +20,7 @@
 #define OPENVDB_TOOLS_STREAM_COMPRESSION_HAS_BEEN_INCLUDED
 
 #include <openvdb/io/io.h>
-#include <tbb/spin_mutex.h>
+#include <OneTBB/tbb/spin_mutex.h>
 #include <memory>
 #include <string>
 

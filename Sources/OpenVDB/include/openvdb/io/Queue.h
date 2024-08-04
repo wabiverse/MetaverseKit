@@ -32,7 +32,7 @@ class Archive;
 /// @code
 /// #include <openvdb/openvdb.h>
 /// #include <openvdb/io/Queue.h>
-/// #include <tbb/concurrent_hash_map.h>
+/// #include <OneTBB/tbb/concurrent_hash_map.h>
 /// #include <functional>
 ///
 /// using openvdb::io::Queue;

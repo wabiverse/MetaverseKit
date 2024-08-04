@@ -19,7 +19,7 @@
 #include "PointAttribute.h"
 #include "PointCount.h"
 
-#include <tbb/parallel_reduce.h>
+#include <OneTBB/tbb/parallel_reduce.h>
 
 #include <algorithm>
 #include <random>
