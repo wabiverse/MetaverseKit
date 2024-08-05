@@ -56,6 +56,7 @@ cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **
 | OpenSubdiv                                                                 | 3.6.0             |
 | OpenImageIO                                                                | 2.5.4.0           |
 | OpenColorIO                                                                | 2.3.0             |
+| OpenTimelineIO                                                             | 0.17.0            |
 | OSL                                                                        | 1.12.14.0 (TODO)  |
 | Ptex                                                                       | 2.4.2             |
 | ImGui                                                                      | 1.89.9            |
