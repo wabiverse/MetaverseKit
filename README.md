@@ -54,7 +54,7 @@ cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **
 | PyBind11                                                                   | 2.11.1            |
 | Boost                                                                      | 1.81.2            |
 | OpenSubdiv                                                                 | 3.6.0             |
-| OpenImageIO                                                                | 2.5.4.0           |
+| OpenImageIO                                                                | master [a2f044a](https://github.com/AcademySoftwareFoundation/OpenImageIO/commit/a2f044a34c70b361d4927728b67714517cfd59ed)           |
 | OpenColorIO                                                                | 2.3.0             |
 | OpenTimelineIO                                                             | 0.17.0            |
 | OSL                                                                        | 1.12.14.0 (TODO)  |
