@@ -38,7 +38,7 @@ cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **
 
 | Swift Plugins                                                | Description                                                                                                                                                                                         | Usage                                          |
 | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| [SwiftBundler](https://github.com/stackotter/swift-bundler)  | Create cross-platform Swift apps, (Xcode optional!). Turn Swift Packages into fully bundled Swift apps from the comfort of the command line - including **macOS**, **iOS**, and even **visionOS**. | `swift package plugin bundler run -p visionOS` |
+| [SwiftBundler](https://github.com/stackotter/swift-bundler)  | Create cross-platform Swift apps, (Xcode optional!). Turn Swift Packages into fully bundled Swift apps from the comfort of the command line - including **macOS**, **iOS**, and even **visionOS**. | `swift bundler run -p visionOS` |
 
 
 ### Industry Swift Targets

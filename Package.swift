@@ -15,9 +15,7 @@ let package = Package(
     .watchOS(.v10),
   ],
   products: getConfig(for: .all).products,
-  dependencies: [
-    .package(url: "https://github.com/furby-tm/swift-bundler", from: "2.0.8"),
-  ] + Arch.OS.packageDeps(),
+  dependencies: Arch.OS.packageDeps(),
   targets: [
     .target(
       name: "Eigen",
@@ -721,19 +719,10 @@ let package = Package(
       ]
     ),
 
-    /*
-      * Run this from the command line via:
-      *
-      * swift package --disable-sandbox plugin bundler run -p macOS MetaversalDemo
-      *
-      * It is pending a pull request which I have submitted here:
-      * https://github.com/stackotter/swift-bundler/issues/34
-      *
-      * Once that is merged, the swift bundler will be included
-      * as a swift plugin to all packages that transitively depend
-      * on this package, the bundler now also supports the bundling
-      * of visionOS and iOS targets, in addition to macOS all from
-      * the command line. */
+    /**
+     * Run this from the command line via:
+     *
+     * swift bundler run -p macOS MetaversalDemo */
     .executableTarget(
       name: "MetaversalDemo",
       dependencies: [
