@@ -90,7 +90,7 @@ public:
     if (contains && _vec.size() > rhs._vec.size()) {
       return false;
     }
-    size_t minSize = std::min(_vec.size(), rhs._vec.size());
+    size_t minSize = (std::min)(_vec.size(), rhs._vec.size());
     for (size_t i = 0; i < minSize; i++) {
       if (_vec[i] != rhs._vec[i]) {
         return false;
