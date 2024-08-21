@@ -238,9 +238,9 @@ class VectorD {
     Scalar result(0);
     for (int i = 0; i < dimension; ++i) {
       Scalar next_value = std::abs(v_[i]);
-      if (result > std::numeric_limits<Scalar>::max() - next_value) {
+      if (result > (std::numeric_limits<Scalar>::max)() - next_value) {
         // Return the max if adding would have caused an overflow.
-        return std::numeric_limits<Scalar>::max();
+        return (std::numeric_limits<Scalar>::max)();
       }
       result += next_value;
     }
