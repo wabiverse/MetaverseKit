@@ -50,21 +50,21 @@ DEFINE_NEW_DRACO_INDEX_TYPE(uint32_t, InstanceArrayIndex)
 
 // Constants denoting invalid indices.
 static constexpr MeshIndex kInvalidMeshIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr MeshInstanceIndex kInvalidMeshInstanceIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr MeshGroupIndex kInvalidMeshGroupIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr SceneNodeIndex kInvalidSceneNodeIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr AnimationIndex kInvalidAnimationIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr SkinIndex kInvalidSkinIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr LightIndex kInvalidLightIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr InstanceArrayIndex kInvalidInstanceArrayIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 
 }  // namespace draco
 

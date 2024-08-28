@@ -246,7 +246,7 @@ DynamicIntegerPointsKdTreeEncoder<compression_level_t>::GetAndEncodeAxis(
         for (auto it = begin; it != end; ++it) {
           deviations_[i] += ((*it)[i] < split);
         }
-        deviations_[i] = std::max(size - deviations_[i], deviations_[i]);
+        deviations_[i] = (std::max)(size - deviations_[i], deviations_[i]);
       }
     }
 

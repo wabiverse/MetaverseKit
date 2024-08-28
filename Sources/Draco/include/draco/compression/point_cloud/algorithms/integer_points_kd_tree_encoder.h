@@ -271,7 +271,7 @@ uint32_t IntegerPointsKdTreeEncoder<PointDiT, compression_level_t>::GetAxis(
       }
     }
     for (int i = 0; i < D; i++) {
-      deviations[i] = std::max(size - deviations[i], deviations[i]);
+      deviations[i] = (std::max)(size - deviations[i], deviations[i]);
     }
 
     uint32_t max_value = 0;

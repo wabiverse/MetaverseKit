@@ -160,7 +160,7 @@ template <int compression_level_t>
 template <class OutputIteratorT>
 bool DynamicIntegerPointsKdTreeDecoder<compression_level_t>::DecodePoints(
     DecoderBuffer *buffer, OutputIteratorT &&oit) {
-  return DecodePoints(buffer, oit, std::numeric_limits<uint32_t>::max());
+  return DecodePoints(buffer, oit, (std::numeric_limits<uint32_t>::max)());
 }
 
 template <int compression_level_t>
@@ -176,7 +176,7 @@ template <int compression_level_t>
 template <class OutputIteratorT>
 bool DynamicIntegerPointsKdTreeDecoder<compression_level_t>::DecodePoints(
     DecoderBuffer *buffer, OutputIteratorT &oit) {
-  return DecodePoints(buffer, oit, std::numeric_limits<uint32_t>::max());
+  return DecodePoints(buffer, oit, (std::numeric_limits<uint32_t>::max)());
 }
 
 template <int compression_level_t>

@@ -145,7 +145,7 @@ std::unique_ptr<PointAttribute> PointCloud::CreateAttribute(
     pa->SetExplicitMapping(num_points_);
   } else {
     pa->SetIdentityMapping();
-    num_attribute_values = std::max(num_points_, num_attribute_values);
+    num_attribute_values = (std::max)(num_points_, num_attribute_values);
   }
   if (num_attribute_values > 0) {
     pa->Reset(num_attribute_values);

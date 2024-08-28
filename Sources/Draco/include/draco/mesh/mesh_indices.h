@@ -29,7 +29,7 @@ DEFINE_NEW_DRACO_INDEX_TYPE(uint32_t, MeshFeaturesIndex)
 
 // Constants denoting invalid indices.
 static constexpr MeshFeaturesIndex kInvalidMeshFeaturesIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 
 }  // namespace draco
 

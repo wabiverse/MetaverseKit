@@ -478,7 +478,7 @@ bool KdTreeAttributesDecoder::TransformAttributeBackToSignedType(
       // Up-cast |unsigned_val| to int32_t to ensure we don't overflow it for
       // smaller data types. But first check that the up-casting does not cause
       // signed integer overflow.
-      if (unsigned_val[c] > std::numeric_limits<int32_t>::max()) {
+      if (unsigned_val[c] > (std::numeric_limits<int32_t>::max)()) {
         return false;
       }
       signed_val[c] = static_cast<SignedDataTypeT>(

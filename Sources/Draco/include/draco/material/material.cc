@@ -91,7 +91,7 @@ void Material::Clear() {
   clearcoat_roughness_factor_ = 0.f;
   has_volume_ = false;
   thickness_factor_ = 0.f;
-  attenuation_distance_ = std::numeric_limits<float>::max();  // Infinity.
+  attenuation_distance_ = (std::numeric_limits<float>::max)();  // Infinity.
   attenuation_color_ = Vector3f(1.f, 1.f, 1.f);
   has_ior_ = false;
   ior_ = 1.5f;

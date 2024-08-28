@@ -92,7 +92,7 @@ bool KdTreeAttributesEncoder::TransformAttributesToPortableFormat() {
       // values are going to be used to transform the attribute values to
       // unsigned integers that can be processed by the core kd tree algorithm.
       std::vector<int32_t> min_value(att->num_components(),
-                                     std::numeric_limits<int32_t>::max());
+                                     (std::numeric_limits<int32_t>::max)());
       std::vector<int32_t> act_value(att->num_components());
       for (AttributeValueIndex avi(0); avi < static_cast<uint32_t>(att->size());
            ++avi) {

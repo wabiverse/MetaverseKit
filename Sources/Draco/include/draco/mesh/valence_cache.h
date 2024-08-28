@@ -69,7 +69,7 @@ class ValenceCache {
       vertex_valence_cache_8_bit_.resize(vertex_count.value());
       for (VertexIndex v = VertexIndex(0); v < vertex_count; v += 1) {
         vertex_valence_cache_8_bit_[v] = static_cast<int8_t>(
-            (std::min)(static_cast<int32_t>(std::numeric_limits<int8_t>::max()),
+            (std::min)(static_cast<int32_t>((std::numeric_limits<int8_t>::max)()),
                        table_.Valence(v)));
       }
     }

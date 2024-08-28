@@ -143,7 +143,7 @@ bool EncodeSymbols(const uint32_t *symbols, int num_values, int num_components,
   // The maximum bit length of a single entry value that we can encode using
   // the raw scheme.
   const int max_value_bit_length =
-      MostSignificantBit(std::max(1u, max_value)) + 1;
+      MostSignificantBit((std::max)(1u, max_value)) + 1;
 
   int method = -1;
   if (options != nullptr && options->IsOptionSet("symbol_encoding_method")) {
@@ -307,8 +307,8 @@ bool EncodeRawSymbols(const uint32_t *symbols, int num_values,
     unique_symbols_bit_length += 1;
   }
   // Clamp the bit_length to a valid range.
-  unique_symbols_bit_length = std::min(std::max(1, unique_symbols_bit_length),
-                                       kMaxRawEncodingBitLength);
+  unique_symbols_bit_length = (std::min)((std::max)(1, unique_symbols_bit_length),
+                                         kMaxRawEncodingBitLength);
   target_buffer->Encode(static_cast<uint8_t>(unique_symbols_bit_length));
   // Use appropriate symbol encoder based on the maximum symbol bit length.
   switch (unique_symbols_bit_length) {

@@ -54,7 +54,7 @@ class EncoderOptionsBase : public DracoOptions<AttributeKeyT> {
   int GetSpeed() const {
     const int encoding_speed = this->GetGlobalInt("encoding_speed", -1);
     const int decoding_speed = this->GetGlobalInt("decoding_speed", -1);
-    const int max_speed = std::max(encoding_speed, decoding_speed);
+    const int max_speed = (std::max)(encoding_speed, decoding_speed);
     if (max_speed == -1) {
       return 5;  // Default value.
     }

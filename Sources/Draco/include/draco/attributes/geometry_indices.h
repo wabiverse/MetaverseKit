@@ -36,15 +36,15 @@ DEFINE_NEW_DRACO_INDEX_TYPE(uint32_t, FaceIndex)
 
 // Constants denoting invalid indices.
 static constexpr AttributeValueIndex kInvalidAttributeValueIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr PointIndex kInvalidPointIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr VertexIndex kInvalidVertexIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr CornerIndex kInvalidCornerIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 static constexpr FaceIndex kInvalidFaceIndex(
-    std::numeric_limits<uint32_t>::max());
+    (std::numeric_limits<uint32_t>::max)());
 
 // TODO(ostava): Add strongly typed indices for attribute id and unique
 // attribute id.

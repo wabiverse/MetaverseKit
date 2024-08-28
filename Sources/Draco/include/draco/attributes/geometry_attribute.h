@@ -354,8 +354,8 @@ class GeometryAttribute {
       // is able to represent. Perform the check only for integral types.
       if (!std::is_same<T, bool>::value && std::is_integral<T>::value) {
         static constexpr OutT kOutMin =
-            std::is_signed<T>::value ? std::numeric_limits<OutT>::min() : 0;
-        if (in_value < kOutMin || in_value > std::numeric_limits<OutT>::max()) {
+            std::is_signed<T>::value ? (std::numeric_limits<OutT>::min)() : 0;
+        if (in_value < kOutMin || in_value > (std::numeric_limits<OutT>::max)()) {
           return false;
         }
       }
@@ -383,8 +383,8 @@ class GeometryAttribute {
 
         // Make sure the floating point |in_value| fits within the range of
         // values that integral type OutT is able to represent.
-        if (in_value < std::numeric_limits<OutT>::min() ||
-            in_value >= std::numeric_limits<OutT>::max()) {
+        if (in_value < (std::numeric_limits<OutT>::min)() ||
+            in_value >= (std::numeric_limits<OutT>::max)()) {
           return false;
         }
       }
@@ -395,7 +395,7 @@ class GeometryAttribute {
       // When converting integer to floating point, normalize the value if
       // necessary.
       *out_value = static_cast<OutT>(in_value);
-      *out_value /= static_cast<OutT>(std::numeric_limits<T>::max());
+      *out_value /= static_cast<OutT>((std::numeric_limits<T>::max)());
     } else if (std::is_floating_point<T>::value &&
                std::is_integral<OutT>::value && normalized) {
       // Converting from floating point to a normalized integer.
@@ -413,7 +413,7 @@ class GeometryAttribute {
       // nearest representable value. Use doubles for the math to ensure the
       // integer values are represented properly during the conversion process.
       *out_value = static_cast<OutT>(std::floor(
-          in_value * static_cast<double>(std::numeric_limits<OutT>::max()) +
+          in_value * static_cast<double>((std::numeric_limits<OutT>::max)()) +
           0.5));
     } else {
       *out_value = static_cast<OutT>(in_value);

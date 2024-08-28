@@ -26,7 +26,7 @@ Light::Light()
     : color_(1.0f, 1.0f, 1.0f),
       intensity_(1.0),
       type_(POINT),
-      range_(std::numeric_limits<float>::max()),  // Infinity.
+      range_((std::numeric_limits<float>::max)()),  // Infinity.
       inner_cone_angle_(0.0),
       outer_cone_angle_(DRACO_PI / 4.0) {}
 

@@ -36,9 +36,9 @@ OutputIterator QuantizePoints3(const PointIterator &begin,
 
   float max_range = 0;
   for (auto it = begin; it != end; ++it) {
-    max_range = std::max(std::fabs((*it)[0]), max_range);
-    max_range = std::max(std::fabs((*it)[1]), max_range);
-    max_range = std::max(std::fabs((*it)[2]), max_range);
+    max_range = (std::max)(std::fabs((*it)[0]), max_range);
+    max_range = (std::max)(std::fabs((*it)[1]), max_range);
+    max_range = (std::max)(std::fabs((*it)[2]), max_range);
   }
 
   const uint32_t max_quantized_value((1u << info->quantization_bits) - 1);
