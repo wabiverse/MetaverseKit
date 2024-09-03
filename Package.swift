@@ -719,10 +719,10 @@ let package = Package(
       ]
     ),
 
-    /**
-     * Run this from the command line via:
-     *
-     * swift bundler run -p macOS MetaversalDemo */
+    /* 
+      * Run this from the command line via:
+      *
+      * swift bundler run -p macOS MetaversalDemo */
     .executableTarget(
       name: "MetaversalDemo",
       dependencies: [
