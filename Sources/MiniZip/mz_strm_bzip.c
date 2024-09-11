@@ -8,6 +8,8 @@
    See the accompanying LICENSE file for the full text of the license.
 */
 
+#if !defined(__ANDROID__)
+
 #include "mz.h"
 #include "mz_strm.h"
 #include "mz_strm_bzip.h"
@@ -364,3 +366,5 @@ void *mz_stream_bzip_get_interface(void) {
 extern void bz_internal_error(int errcode) {
     MZ_UNUSED(errcode);
 }
+
+#endif // !defined(__ANDROID__)

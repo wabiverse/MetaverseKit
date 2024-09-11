@@ -13,16 +13,16 @@
 #include <memory>
 #include <string>
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__ANDROID__)
 #include <any>
 
 namespace boost
 {
   using namespace std;
 }
-#else // !defined(_WIN32)
+#else // !defined(_WIN32) && !defined(__ANDROID__)
 #include <boost/any.hpp>
-#endif // defined(_WIN32)
+#endif // defined(_WIN32) || defined(__ANDROID__)
 
 class TestMappedFile;
 

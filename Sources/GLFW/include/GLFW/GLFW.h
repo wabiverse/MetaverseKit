@@ -210,13 +210,23 @@ extern "C" {
 
  #else /*__APPLE__*/
 
-  #include <GL/gl.h>
-  #if defined(GLFW_INCLUDE_GLEXT)
-   #include <GL/glext.h>
-  #endif
-  #if defined(GLFW_INCLUDE_GLU)
-   #include <GL/glu.h>
-  #endif
+  #if defined(__ANDROID__)
+  # include <GLES/gl.h>
+  # if defined(GLFW_INCLUDE_GLEXT)
+  #  include <GLES/glext.h>
+  # endif
+  # if defined(GLFW_INCLUDE_GLU)
+  #  include <GLES/glu.h>
+  # endif
+  #else // !defined(__ANDROID__)
+  # include <GL/gl.h>
+  # if defined(GLFW_INCLUDE_GLEXT)
+  #  include <GL/glext.h>
+  # endif
+  # if defined(GLFW_INCLUDE_GLU)
+  #  include <GL/glu.h>
+  # endif
+  #endif // defined(__ANDROID__)
 
  #endif /*__APPLE__*/
 

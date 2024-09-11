@@ -2,11 +2,11 @@
 // Copyright Contributors to the OpenColorIO Project.
 
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) || defined(__ANDROID__)
 
-#error The file is for the Windows platform only.
+// do nothing.
 
-#endif
+#else // defined(_WIN32) && !defined(__ANDROID__)
 
 #include <windows.h>
 
@@ -194,3 +194,5 @@ void SystemMonitorsImpl::getAllMonitors()
 }
 
 } // namespace OCIO_NAMESPACE
+
+#endif /* !defined(_WIN32) || defined(__ANDROID__) */

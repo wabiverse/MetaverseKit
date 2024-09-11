@@ -8,6 +8,8 @@
    See the accompanying LICENSE file for the full text of the license.
 */
 
+#if !defined(__ANDROID__)
+
 #include "mz.h"
 #include "mz_strm.h"
 #include "mz_strm_libcomp.h"
@@ -344,3 +346,5 @@ void mz_stream_libcomp_delete(void **stream) {
         free(libcomp);
     *stream = NULL;
 }
+
+#endif // !defined(__ANDROID__)

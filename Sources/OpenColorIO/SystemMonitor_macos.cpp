@@ -2,11 +2,11 @@
 // Copyright Contributors to the OpenColorIO Project.
 
 
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) || defined(__ANDROID__)
 
-#error The file is for the macOS platform only.
+// do nothing.
 
-#endif
+#else // defined(__APPLE__) && !defined(__ANDROID__)
 
 #include <TargetConditionals.h>
 
@@ -230,3 +230,5 @@ void SystemMonitorsImpl::getAllMonitors()
 } // namespace OCIO_NAMESPACE
 
 #endif /* !TARGET_OS_IPHONE */
+
+#endif /* !defined(__APPLE__) || defined(__ANDROID__) */

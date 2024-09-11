@@ -62,7 +62,7 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if you have `syscall' and `SYS_getrandom'. */
-#if 0 /* We only get here for glibc and Windows (where the better choices aren't available) and they don't have this fallback either. */
+#if defined(__ANDROID__) /* We only get here for glibc and Windows (where the better choices aren't available) and they don't have this fallback either. */
 #define HAVE_SYSCALL_GETRANDOM 1
 #endif
 

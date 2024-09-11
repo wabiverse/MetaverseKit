@@ -102,7 +102,7 @@ let package = Package(
         .target(name: "OneTBB"),
         .target(name: "TBBMalloc"),
         .target(name: "TBBMallocProxy"),
-        .target(name: "tbb", condition: .when(platforms: Arch.OS.applewindows.platform)),
+        .target(name: "tbb", condition: .when(platforms: Arch.OS.applewindowsdroid.platform)),
       ],
       exclude: [],
       cxxSettings: [
@@ -349,7 +349,7 @@ let package = Package(
         .target(name: "ImGui"),
         .target(name: "OpenImageIO"),
         .target(name: "OpenImageIO_Util"),
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
         .target(name: "MXResources"),
         Arch.OS.python()
       ],
@@ -376,7 +376,7 @@ let package = Package(
       name: "OpenSubdiv",
       dependencies: [
         .target(name: "MetaTBB"),
-        .target(name: "OpenMP"),
+        .target(name: "OpenMP", condition: .when(platforms: Arch.OS.nodroid.platform)),
       ],
       exclude: getConfig(for: .osd).exclude,
       publicHeadersPath: "include",
@@ -395,7 +395,7 @@ let package = Package(
     .target(
       name: "Imath",
       dependencies: [
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
         .target(name: "pystring"),
         Arch.OS.python()
       ],
@@ -450,7 +450,7 @@ let package = Package(
     .target(
       name: "OpenTime",
       dependencies: [
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
         .target(name: "any"),
         .target(name: "nonstd"),
         .target(name: "rapidjson"),
@@ -484,7 +484,7 @@ let package = Package(
       name: "OpenEXR",
       dependencies: [
         .target(name: "Imath"),
-        .target(name: "DEFLATE", condition: .when(platforms: Arch.OS.applewindows.platform)),
+        .target(name: "DEFLATE", condition: .when(platforms: Arch.OS.applewindowsdroid.platform)),
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -523,7 +523,7 @@ let package = Package(
         .target(name: "OpenVDB"),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
       ],
       exclude: getConfig(for: .oiio).exclude,
       publicHeadersPath: "include",
@@ -569,7 +569,7 @@ let package = Package(
         .define("OpenColorIO_EXPORTS", .when(platforms: [.windows])),
       ],
       linkerSettings: [
-        .linkedLibrary("expat", .when(platforms: Arch.OS.nix.platform)),
+        .linkedLibrary("expat", .when(platforms: Arch.OS.nixnodroid.platform)),
       ]
     ),
 
@@ -693,7 +693,7 @@ let package = Package(
       dependencies: [
         .target(name: "MetaTBB"),
         .target(name: "Blosc"),
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nix.platform)),
+        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "ZLibDataCompression"),
@@ -997,7 +997,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           .linkedLibrary("opengl32", .when(platforms: [.windows])),
         ]
       #endif // os(Windows)
-      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+      #if os(Linux) || os(OpenBSD) || os(FreeBSD)
         config.linkerSettings = [
           .linkedLibrary("glut"),
           .linkedLibrary("GL"),
@@ -1006,7 +1006,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           .linkedLibrary("X11"),
           .linkedLibrary("Xt"),
         ]
-      #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) */
+      #endif /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
     case .imgui:
       config.exclude = [
         // no wgpu (for now)
@@ -1198,7 +1198,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
         .define("OPENVDB_PRIVATE")
       ]
-      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+      #if os(Linux) || os(OpenBSD) || os(FreeBSD)
         config.linkerSettings = [
           .linkedLibrary("boost_system"),
           .linkedLibrary("boost_filesystem"),
@@ -1211,7 +1211,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           .linkedLibrary("boost_program_options"),
           .linkedLibrary("boost_python310"),
         ]
-      #endif /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) */
+      #endif /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
     case .demo:
       break
     case .all:
@@ -1416,6 +1416,12 @@ enum Arch
     case nix
     /// everything not linux (apple + windows).
     case applewindows
+    /// everything not linux (apple + windows + android).
+    case applewindowsdroid
+    /// everything nix not android (nix - android).
+    case nixnodroid
+    /// everything not android (all - android).
+    case nodroid
 
     public var platform: [Platform]
     {
@@ -1427,6 +1433,9 @@ enum Arch
         case .web: [.wasi]
         case .nix: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux, .android, .openbsd]
         case .applewindows: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .windows]
+        case .applewindowsdroid: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .windows, .android]
+        case .nixnodroid: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux, .openbsd]
+        case .nodroid: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux, .openbsd, .windows]
       }
     }
 
@@ -1452,7 +1461,7 @@ enum Arch
             checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
           ),
         ]
-      #elseif os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+      #elseif os(Linux) || os(OpenBSD) || os(FreeBSD)
         var targs: [Target] = [
           .systemLibrary(
             name: "Boost",
@@ -1481,7 +1490,7 @@ enum Arch
             ]
           ),
         ]
-      #else /* os(WASI) || os(Windows) || os(Cygwin) */
+      #else /* os(WASI) || os(Android) || os(Windows) || os(Cygwin) */
         var targs: [Target] = []
       #endif
 
@@ -1506,12 +1515,12 @@ enum Arch
           .library(name: "Boost", targets: ["Boost"]),
           .library(name: "tbb", targets: ["tbb"]),
         ]
-      #elseif os(Windows) || os(Cygwin) || os(WASI)
+      #elseif os(Windows) || os(Cygwin) || os(WASI) || os(Android)
         var prods: [Product] = [
           .library(name: "expat", targets: ["expat"]),
           .library(name: "tbb", targets: ["tbb"]),
         ]
-      #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) */
+      #else /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
         var prods: [Product] = []
       #endif
 
@@ -1534,7 +1543,7 @@ enum Arch
       // only add sse2neon on arm arch.
       let sse2neon: [Target.Dependency] = Arch.cpuArch.family.contains(.arm) ? [.target(name: "sse2neon")] : []
 
-      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+      #if os(Linux) || os(OpenBSD) || os(FreeBSD)
         return [
           .target(name: "pystring"),
           .target(name: "Imath"),
@@ -1543,7 +1552,7 @@ enum Arch
           .target(name: "Yaml"),
           .target(name: "Python")
         ] + sse2neon
-      #elseif os(Windows) || os(Cygwin) || os(WASI)
+      #elseif os(Windows) || os(Cygwin) || os(WASI) || os(Android)
         return [
           .target(name: "pystring"),
           .target(name: "Imath"),
@@ -1559,6 +1568,7 @@ enum Arch
           .target(name: "OpenEXR"),
           .target(name: "MiniZip"),
           .target(name: "Yaml"),
+          .target(name: "expat", condition: .when(platforms: [.android])),
           .product(name: "Python", package: "MetaversePythonFramework", condition: .when(platforms: Arch.OS.apple.platform))
         ] + sse2neon
       #endif
@@ -1566,7 +1576,7 @@ enum Arch
 
     public static func boost() -> Target.Dependency
     {
-      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Linux) || os(OpenBSD) || os(FreeBSD)
         .target(name: "Boost")
       #elseif os(Windows) || os(Cygwin) || os(WASI)
         // boost is disabled on Windows, Cygwin, and WASI
@@ -1581,27 +1591,27 @@ enum Arch
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         .product(name: "Python", package: "MetaversePythonFramework", condition: .when(platforms: Arch.OS.apple.platform))
-      #elseif os(Windows) || os(Cygwin) || os(WASI)
+      #elseif os(Windows) || os(Cygwin) || os(WASI) || os(Android)
         // python is disabled on Windows, Cygwin, and WASI
         // just return ZStandard for fast package resolution,
         // things get very slow to resolve if this is optional
         // or if we try to add arrays together.
         .target(name: "ZStandard")
-      #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) */
+      #else /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
         .target(name: "Python")
       #endif
     }
 
     public static func minizipDeps() -> [Target.Dependency]
     {
-      #if os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
+      #if os(Linux) || os(OpenBSD) || os(FreeBSD)
         [
           .target(name: "LZMA2"),
           .target(name: "ZLibDataCompression"),
           .target(name: "ZStandard"),
           .target(name: "BZ2"),
         ]
-      #else /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) */
+      #else /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) || os(Android) */
         [
           .target(name: "LZMA2"),
           .target(name: "ZLibDataCompression"),
@@ -1614,7 +1624,7 @@ enum Arch
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         [
-          .target(name: "Apple"),
+          .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
           .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: [.macOS, .iOS, .tvOS])),
         ]
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
@@ -1670,7 +1680,7 @@ enum Arch
   #elseif os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD)
     static let host = "unknown-linux"
     #if os(Android)
-      static let device = "android"
+      static let device = "android24"
     #else /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
       static let device = "gnu"
     #endif /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
