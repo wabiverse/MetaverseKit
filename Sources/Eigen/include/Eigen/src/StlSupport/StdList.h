@@ -11,7 +11,7 @@
 #define EIGEN_STDLIST_H
 
 #ifndef EIGEN_STDLIST_MODULE_H
-#error "Please include Eigen/StdList instead of including this file directly."
+// #error "Please include Eigen/StdList instead of including this file directly."
 #endif
 
 #include "details.h"

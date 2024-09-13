@@ -12,7 +12,7 @@
 #define EIGEN_STDDEQUE_H
 
 #ifndef EIGEN_STDDEQUE_MODULE_H
-#error "Please include Eigen/StdDeque instead of including this file directly."
+// #error "Please include Eigen/StdDeque instead of including this file directly."
 #endif
 
 #include "details.h"
