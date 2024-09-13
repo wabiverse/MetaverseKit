@@ -13,7 +13,7 @@
 #ifndef EIGEN_LDLT_H
 #define EIGEN_LDLT_H
 
-#include "Eigen/Core.h"
+#include "../../Core"
 
 // IWYU pragma: private
 #include "./InternalHeaderCheck.h"
