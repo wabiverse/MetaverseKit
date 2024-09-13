@@ -312,11 +312,15 @@ PYBIND11_WARNING_POP
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#if defined(__has_include)
-#    if __has_include(<version>)
-#        include <version>
-#    endif
-#endif
+#if defined(_WIN32)
+#    include <MicrosoftSTL/STLVersion.h>
+#else // !defined(_WIN32)
+#    if defined(__has_include)
+#        if __has_include(<version>)
+#            include <version>
+#        endif // __has_include(<version>)
+#    endif // defined(__has_include)
+#endif // defined(_WIN32)
 
 // Must be after including <version> or one of the other headers specified by the standard
 #if defined(__cpp_lib_char8_t) && __cpp_lib_char8_t >= 201811L

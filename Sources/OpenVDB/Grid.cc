@@ -384,8 +384,8 @@ GridBase::addStatsMetadata()
     this->removeMeta(META_FILE_BBOX_MAX);
     this->removeMeta(META_FILE_MEM_BYTES);
     this->removeMeta(META_FILE_VOXEL_COUNT);
-    this->insertMeta(META_FILE_BBOX_MIN,    Vec3IMetadata(bbox.min().asVec3i()));
-    this->insertMeta(META_FILE_BBOX_MAX,    Vec3IMetadata(bbox.max().asVec3i()));
+    this->insertMeta(META_FILE_BBOX_MIN,    Vec3IMetadata((bbox.min)().asVec3i()));
+    this->insertMeta(META_FILE_BBOX_MAX,    Vec3IMetadata((bbox.max)().asVec3i()));
     this->insertMeta(META_FILE_MEM_BYTES,   Int64Metadata(this->memUsage()));
     this->insertMeta(META_FILE_VOXEL_COUNT, Int64Metadata(this->activeVoxelCount()));
 }

@@ -453,8 +453,8 @@ struct RasterizePoints
         this->transform<>(search);
 
         // start the iteration from a leaf origin
-        const Coord min = (search.min() & ~(DIM-1));
-        const Coord& max = search.max();
+        const Coord min = ((search.min)() & ~(DIM-1));
+        const Coord& max = (search.max)();
         PointFilterT localFilter(mFilter);
 
         // loop over overlapping leaf nodes
@@ -475,8 +475,8 @@ struct RasterizePoints
                     localFilter.reset(*pointLeaf);
 
                     // loop over point voxels which contribute to this leaf
-                    const Coord& pmin(pbox.min());
-                    const Coord& pmax(pbox.max());
+                    const Coord& pmin((pbox.min)());
+                    const Coord& pmax((pbox.max)());
                     for (Coord ijk = pmin; ijk.x() <= pmax.x(); ++ijk.x()) {
                         const Index i = ((ijk.x() & (DIM-1u)) << 2*LOG2DIM); // unsigned bit shift mult
                         for (ijk.y() = pmin.y(); ijk.y() <= pmax.y(); ++ijk.y()) {
@@ -527,7 +527,7 @@ private:
     {
         const TransformTransfer* transform =
             static_cast<TransformTransfer*>(&mTransfer);
-        const BBoxd bbox(bounds.min().asVec3d(), bounds.max().asVec3d());
+        const BBoxd bbox((bounds.min)().asVec3d(), (bounds.max)().asVec3d());
         bounds = transform->sourceTransform().worldToIndexCellCentered(
             transform->targetTransform().indexToWorld(bbox));
     }

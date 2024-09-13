@@ -312,7 +312,7 @@ namespace openvdb
             PointIndexType pointCount = 0;
             for (size_t n(range.begin()), N(range.end()); n != N; ++n)
             {
-              pointCount = std::max(pointCount, (mPages[n + 1] - mPages[n]));
+              pointCount = (std::max)(pointCount, (mPages[n + 1] - mPages[n]));
             }
 
             const PointIndexType voxelCount = 1 << (3 * BucketLog2Dim);
@@ -702,7 +702,7 @@ namespace openvdb
             size_t maxSegmentSize = 0;
             for (size_t n = range.begin(), N = range.end(); n != N; ++n)
             {
-              maxSegmentSize = std::max(maxSegmentSize, mIndexSegments[n]->size());
+              maxSegmentSize = (std::max)(maxSegmentSize, mIndexSegments[n]->size());
             }
 
             IndexArray bucketIndices(new PointIndexType[maxSegmentSize]);

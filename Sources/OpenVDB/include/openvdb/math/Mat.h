@@ -119,7 +119,7 @@ public:
     T absMax() const {
         T x = static_cast<T>(std::fabs(mm[0]));
         for (unsigned i = 1; i < numElements(); ++i) {
-            x = std::max(x, static_cast<T>(std::fabs(mm[i])));
+            x = (std::max)(x, static_cast<T>(std::fabs(mm[i])));
         }
         return x;
     }
@@ -928,7 +928,7 @@ lInfinityNorm(const MatType& matrix)
         for (int i = 0; i<n; ++i) {
             column_sum += std::fabs(matrix(i,j));
         }
-        norm = std::max(norm, column_sum);
+        norm = (std::max)(norm, column_sum);
     }
 
     return norm;
@@ -949,7 +949,7 @@ lOneNorm(const MatType& matrix)
         for (int j = 0; j<n; ++j) {
             row_sum += std::fabs(matrix(i,j));
         }
-        norm = std::max(norm, row_sum);
+        norm = (std::max)(norm, row_sum);
     }
 
     return norm;

@@ -38,7 +38,7 @@
 #include <cstdlib>
 #endif // __unix__ && !__ANDROID__
 
-#include "proxy.h"
+#include "TBBMallocProxy/proxy.h"
 
 #include "OneTBB/oneapi/tbb/detail/_config.h"
 #include "OneTBB/oneapi/tbb/scalable_allocator.h"
@@ -59,7 +59,7 @@
 #include <new>
 
 // Synchronization primitives to protect original library pointers and new_handler
-#include "../TBBMalloc/Synchronize.h"
+#include "TBBMallocProxy/Synchronize.h"
 // Use MallocMutex implementation
 typedef MallocMutex ProxyMutex;
 
@@ -139,7 +139,7 @@ static void *orig_msize;
 
 #elif MALLOC_ZONE_OVERLOAD_ENABLED
 
-#include "proxy_overload_osx.h"
+#include "TBBMallocProxy/proxy_overload_osx.h"
 
 #endif // MALLOC_ZONE_OVERLOAD_ENABLED
 
@@ -347,7 +347,7 @@ void operator delete[](void* ptr, const std::nothrow_t&) noexcept {
 
 #include <stdio.h>
 
-#include "function_replacement.h"
+#include "TBBMallocProxy/function_replacement.h"
 
 template<typename T, size_t N> // generic function to find length of array
 inline size_t arrayLength(const T(&)[N]) {

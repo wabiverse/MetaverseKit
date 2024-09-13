@@ -632,7 +632,7 @@ public:
                         lhsIdxNode->setValueOn(offset, rhsIdxData[offset]);
                     } else if (math::isExactlyEqual(rhsValue, lhsValue)) {
                         lhsIdxNode->setValueOn(offset,
-                            std::min(lhsIdxData[offset], rhsIdxData[offset]));
+                            (std::min)(lhsIdxData[offset], rhsIdxData[offset]));
                     }
                 }
             }
@@ -757,7 +757,7 @@ public:
             ijk += step;
         }
 
-        return std::numeric_limits<size_t>::max();
+        return (std::numeric_limits<size_t>::max)();
     }
 
 
@@ -774,7 +774,7 @@ private:
 template<typename TreeType>
 struct LeafNodeConnectivityTable
 {
-    enum { INVALID_OFFSET = std::numeric_limits<size_t>::max() };
+    enum { INVALID_OFFSET = (std::numeric_limits<size_t>::max)() };
 
     using LeafNodeType = typename TreeType::LeafNodeType;
 
@@ -1439,16 +1439,16 @@ struct ComputeIntersectingVoxelSign
                 xyz[2] = double(ijk[2]);
 
 
-                bbox.min() = Coord::maxComponent(ijk.offsetBy(-1), nodeMin);
-                bbox.max() = Coord::minComponent(ijk.offsetBy(1), nodeMax);
+                (bbox.min)() = Coord::maxComponent(ijk.offsetBy(-1), nodeMin);
+                (bbox.max)() = Coord::minComponent(ijk.offsetBy(1), nodeMax);
 
                 bool flipSign = false;
 
-                for (nijk[0] = bbox.min()[0]; nijk[0] <= bbox.max()[0] && !flipSign; ++nijk[0]) {
+                for (nijk[0] = (bbox.min)()[0]; nijk[0] <= (bbox.max)()[0] && !flipSign; ++nijk[0]) {
                     xPos = (nijk[0] & (LeafNodeType::DIM - 1u)) << (2 * LeafNodeType::LOG2DIM);
-                    for (nijk[1]=bbox.min()[1]; nijk[1] <= bbox.max()[1] && !flipSign; ++nijk[1]) {
+                    for (nijk[1]=(bbox.min)()[1]; nijk[1] <= (bbox.max)()[1] && !flipSign; ++nijk[1]) {
                         yPos = xPos + ((nijk[1] & (LeafNodeType::DIM-1u)) << LeafNodeType::LOG2DIM);
-                        for (nijk[2] = bbox.min()[2]; nijk[2] <= bbox.max()[2]; ++nijk[2]) {
+                        for (nijk[2] = (bbox.min)()[2]; nijk[2] <= (bbox.max)()[2]; ++nijk[2]) {
                             pos = yPos + (nijk[2] & (LeafNodeType::DIM - 1u));
 
                             const Int32& polyIdx = idxData[pos];
@@ -1936,7 +1936,7 @@ struct VoxelizationData {
 
 
     VoxelizationData()
-        : distTree(std::numeric_limits<ValueType>::max())
+        : distTree((std::numeric_limits<ValueType>::max)())
         , distAcc(distTree)
         , indexTree(Int32(util::INVALID_IDX))
         , indexAcc(indexTree)
@@ -2086,15 +2086,15 @@ private:
     inline static int evalSubdivisionCount(const Triangle& prim)
     {
         const double ax = prim.a[0], bx = prim.b[0], cx = prim.c[0];
-        const double dx = std::max(ax, std::max(bx, cx)) - std::min(ax, std::min(bx, cx));
+        const double dx = (std::max)(ax, (std::max)(bx, cx)) - (std::min)(ax, (std::min)(bx, cx));
 
         const double ay = prim.a[1], by = prim.b[1], cy = prim.c[1];
-        const double dy = std::max(ay, std::max(by, cy)) - std::min(ay, std::min(by, cy));
+        const double dy = (std::max)(ay, (std::max)(by, cy)) - (std::min)(ay, (std::min)(by, cy));
 
         const double az = prim.a[2], bz = prim.b[2], cz = prim.c[2];
-        const double dz = std::max(az, std::max(bz, cz)) - std::min(az, std::min(bz, cz));
+        const double dz = (std::max)(az, (std::max)(bz, cz)) - (std::min)(az, (std::min)(bz, cz));
 
-        return int(std::max(dx, std::max(dy, dz)) / double(TreeType::LeafNodeType::DIM * 2));
+        return int((std::max)(dx, (std::max)(dy, dz)) / double(TreeType::LeafNodeType::DIM * 2));
     }
 
     void evalTriangle(const Triangle& prim, VoxelizationDataType& data) const
@@ -2210,7 +2210,7 @@ private:
         } else if (math::isExactlyEqual(dist, oldDist)) {
             // makes reduction deterministic when different polygons
             // produce the same distance value.
-            data.indexAcc.setValueOnly(ijk, std::min(prim.index, data.indexAcc.getValue(ijk)));
+            data.indexAcc.setValueOnly(ijk, (std::min)(prim.index, data.indexAcc.getValue(ijk)));
         }
 
         return !(dist > 0.75); // true if the primitive intersects the voxel.
@@ -2532,7 +2532,7 @@ struct ExpandNarrowband
 
             // Gather neighbour information
 
-            CoordBBox bbox(Coord::max(), Coord::min());
+            CoordBBox bbox((Coord::max)(), (Coord::min)());
             for (typename BoolLeafNodeType::ValueOnIter it = maskNode.beginValueOn(); it; ++it) {
                 bbox.expand(it.getCoord());
             }
@@ -2620,8 +2620,8 @@ private:
         tree::ValueAccessor<TreeType>& distAcc, tree::ValueAccessor<Int32TreeType>& indexAcc)
     {
         fragments.clear();
-        const Coord nodeMin = bbox.min() & ~(LeafNodeType::DIM - 1);
-        const Coord nodeMax = bbox.max() & ~(LeafNodeType::DIM - 1);
+        const Coord nodeMin = (bbox.min)() & ~(LeafNodeType::DIM - 1);
+        const Coord nodeMax = (bbox.max)() & ~(LeafNodeType::DIM - 1);
 
         CoordBBox region;
         Coord ijk;
@@ -2630,8 +2630,8 @@ private:
             for (ijk[1] = nodeMin[1]; ijk[1] <= nodeMax[1]; ijk[1] += LeafNodeType::DIM) {
                 for (ijk[2] = nodeMin[2]; ijk[2] <= nodeMax[2]; ijk[2] += LeafNodeType::DIM) {
                     if (LeafNodeType* distleaf = distAcc.probeLeaf(ijk)) {
-                        region.min() = Coord::maxComponent(bbox.min(), ijk);
-                        region.max() = Coord::minComponent(bbox.max(),
+                        (region.min)() = Coord::maxComponent((bbox.min)(), ijk);
+                        (region.max)() = Coord::minComponent((bbox.max)(),
                             ijk.offsetBy(LeafNodeType::DIM - 1));
                         gatherFragments(fragments, region, *distleaf, *indexAcc.probeLeaf(ijk));
                     }
@@ -2650,11 +2650,11 @@ private:
         const ValueType* distData = distLeaf.buffer().data();
         const Int32* idxData = idxLeaf.buffer().data();
 
-        for (int x = bbox.min()[0]; x <= bbox.max()[0]; ++x) {
+        for (int x = (bbox.min)()[0]; x <= (bbox.max)()[0]; ++x) {
             const Index xPos = (x & (LeafNodeType::DIM - 1u)) << (2 * LeafNodeType::LOG2DIM);
-            for (int y = bbox.min()[1]; y <= bbox.max()[1]; ++y) {
+            for (int y = (bbox.min)()[1]; y <= (bbox.max)()[1]; ++y) {
                 const Index yPos = xPos + ((y & (LeafNodeType::DIM - 1u)) << LeafNodeType::LOG2DIM);
-                for (int z = bbox.min()[2]; z <= bbox.max()[2]; ++z) {
+                for (int z = (bbox.min)()[2]; z <= (bbox.max)()[2]; ++z) {
                     const Index pos = yPos + (z & (LeafNodeType::DIM - 1u));
                     if (mask.isOn(pos)) {
                         fragments.push_back(Fragment(idxData[pos],x,y,z, std::abs(distData[pos])));
@@ -2671,7 +2671,7 @@ private:
         const std::vector<Fragment>& fragments, Int32& closestPrimIdx) const
     {
         Vec3d a, b, c, uvw, voxelCenter(ijk[0], ijk[1], ijk[2]);
-        double primDist, tmpDist, dist = std::numeric_limits<double>::max();
+        double primDist, tmpDist, dist = (std::numeric_limits<double>::max)();
         Int32 lastIdx = Int32(util::INVALID_IDX);
 
         for (size_t n = 0, N = fragments.size(); n < N; ++n) {
@@ -3022,7 +3022,7 @@ struct MinCombine
 
             for (; iter; ++iter) {
                 ValueType& val = const_cast<ValueType&>(iter.getValue());
-                val = std::min(val, bufferData[iter.pos()]);
+                val = (std::min)(val, bufferData[iter.pos()]);
             }
         }
     }
@@ -3339,7 +3339,7 @@ meshToVolume(
 
     // Setup
 
-    GridTypePtr distGrid(new GridType(std::numeric_limits<ValueType>::max()));
+    GridTypePtr distGrid(new GridType((std::numeric_limits<ValueType>::max)()));
     distGrid->setTransform(transform.copy());
 
     ValueType exteriorWidth = ValueType(exteriorBandWidth);
@@ -3368,7 +3368,7 @@ meshToVolume(
     exteriorWidth *= voxelSize;
     // Avoid the unit conversion if the interior band width is set to
     // inf or std::numeric_limits<float>::max().
-    if (interiorWidth < std::numeric_limits<ValueType>::max()) {
+    if (interiorWidth < (std::numeric_limits<ValueType>::max)()) {
         interiorWidth *= voxelSize;
     }
 
@@ -3534,11 +3534,11 @@ meshToVolume(
         }
 
         // Progress estimation
-        unsigned maxIterations = std::numeric_limits<unsigned>::max();
+        unsigned maxIterations = (std::numeric_limits<unsigned>::max)();
 
         float progress = 54.0f, step = 0.0f;
         double estimated =
-            2.0 * std::ceil((std::max(interiorWidth, exteriorWidth) - minBandWidth) / voxelSize);
+            2.0 * std::ceil(((std::max)(interiorWidth, exteriorWidth) - minBandWidth) / voxelSize);
 
         if (estimated < double(maxIterations)) {
             maxIterations = unsigned(estimated);
@@ -3614,7 +3614,7 @@ meshToVolume(
 
     // Remove active voxels that exceed the narrow band limits
 
-    if (trimNarrowBand && std::min(interiorWidth, exteriorWidth) < voxelSize * ValueType(4.0)) {
+    if (trimNarrowBand && (std::min)(interiorWidth, exteriorWidth) < voxelSize * ValueType(4.0)) {
 
         std::vector<LeafNodeType*> nodes;
         nodes.reserve(distTree.leafCount());
@@ -4419,8 +4419,8 @@ createLevelSetBox(const math::BBox<VecType>& bbox,
     const openvdb::math::Transform& xform,
     typename VecType::ValueType halfWidth)
 {
-    const Vec3s pmin = Vec3s(xform.worldToIndex(bbox.min()));
-    const Vec3s pmax = Vec3s(xform.worldToIndex(bbox.max()));
+    const Vec3s pmin = Vec3s(xform.worldToIndex((bbox.min)()));
+    const Vec3s pmax = Vec3s(xform.worldToIndex((bbox.max)()));
 
     Vec3s points[8];
     points[0] = Vec3s(pmin[0], pmin[1], pmin[2]);

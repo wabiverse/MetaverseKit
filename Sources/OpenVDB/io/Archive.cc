@@ -24,7 +24,7 @@
 #pragma clang diagnostic pop
 #endif
 #if defined(_WIN32)
-#include <any>
+#include <any/any.hpp>
 #include <iostream>
 #include <strstream>
 #else // !defined(_WIN32)
@@ -43,7 +43,7 @@
 namespace boost
 {
   #if defined(_WIN32)
-  using namespace std;
+  using namespace linb;
   #endif // defined(_WIN32)
 
   namespace interprocess

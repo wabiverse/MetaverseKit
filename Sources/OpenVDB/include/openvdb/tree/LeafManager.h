@@ -371,8 +371,8 @@ public:
     bool swapBuffer(size_t bufferIdx1, size_t bufferIdx2, bool serial = false)
     {
         namespace ph = std::placeholders;
-        const size_t b1 = std::min(bufferIdx1, bufferIdx2);
-        const size_t b2 = std::max(bufferIdx1, bufferIdx2);
+        const size_t b1 = (std::min)(bufferIdx1, bufferIdx2);
+        const size_t b2 = (std::max)(bufferIdx1, bufferIdx2);
         if (b1 == b2 || b2 > mAuxBuffersPerLeaf) return false;
         if (b1 == 0) {
             if (this->isConstTree()) return false;

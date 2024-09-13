@@ -150,7 +150,7 @@ public:
     }
 
     /// @brief Return the largest value in the stencil buffer.
-    inline ValueType max() const
+    inline ValueType (max)() const
     {
         const auto iter = std::max_element(mValues.begin(), mValues.end());
         return *iter;
@@ -212,7 +212,7 @@ protected:
         : mGrid(&grid)
         , mAcc(grid.tree())
         , mValues(size)
-        , mCenter(Coord::max())
+        , mCenter((Coord::max)())
     {
     }
 

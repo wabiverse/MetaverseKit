@@ -15,7 +15,7 @@
 */
 
 #include "TypeDefinitions.h" // Customize.h and proxy.h get included
-#include "tbbmalloc_internal_api.h"
+#include "TBBMalloc/tbbmalloc_internal_api.h"
 
 #include "../tbb/assert_impl.h" // Out-of-line TBB assertion handling routines are instantiated here.
 #include "OneTBB/oneapi/tbb/version.h"

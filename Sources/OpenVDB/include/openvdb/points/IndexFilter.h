@@ -242,7 +242,7 @@ public:
         const float factor = targetPoints > currentPoints ? 1.0f : float(targetPoints) / float(currentPoints);
 
         std::mt19937 generator(seed);
-        std::uniform_int_distribution<unsigned int> dist(0, std::numeric_limits<unsigned int>::max() - 1);
+        std::uniform_int_distribution<unsigned int> dist(0, (std::numeric_limits<unsigned int>::max)() - 1);
 
         Index32 leafCounter = 0;
         float totalPointsFloat = 0.0f;
@@ -284,7 +284,7 @@ public:
         const SeedCountPair& value = it->second;
         const unsigned int seed = static_cast<unsigned int>(value.first);
         const auto total = static_cast<Index>(leaf.pointCount());
-        mCount = std::min(value.second, total);
+        mCount = (std::min)(value.second, total);
 
         mIndices = generateRandomSubset<RandGenT, int>(seed, mCount, total);
 
@@ -295,7 +295,7 @@ public:
     inline void next() const {
         mSubsetOffset++;
         mNextIndex =    mSubsetOffset >= mCount ?
-                        std::numeric_limits<int>::max() :
+                        (std::numeric_limits<int>::max)() :
                         mIndices[mSubsetOffset];
     }
 

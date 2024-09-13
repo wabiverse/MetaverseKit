@@ -29,13 +29,13 @@ struct ScalarMinMax
     ScalarMinMax(const ExtentT& init) : mMinMax(init) {}
     inline void operator()(const ValueT& b)
     {
-        mMinMax.first = std::min(mMinMax.first, b);
-        mMinMax.second = std::max(mMinMax.second, b);
+        mMinMax.first = (std::min)(mMinMax.first, b);
+        mMinMax.second = (std::max)(mMinMax.second, b);
     }
     inline void operator()(const ExtentT& b)
     {
-        mMinMax.first = std::min(mMinMax.first, b.first);
-        mMinMax.second = std::max(mMinMax.second, b.second);
+        mMinMax.first = (std::min)(mMinMax.first, b.first);
+        mMinMax.second = (std::max)(mMinMax.second, b.second);
     }
     inline const ExtentT& get() const { return mMinMax; }
     ExtentT mMinMax;
@@ -172,7 +172,7 @@ bool evalExtents(const PointDataTreeT& points,
                     const size_t size = handle.isUniform() ? 1 : handle.size();
                     ExtentOp op(handle.get(0));
                     for (size_t i = 1; i < size; ++i) {
-                        assert(i < size_t(std::numeric_limits<Index>::max()));
+                        assert(i < size_t((std::numeric_limits<Index>::max)()));
                         op(handle.get(Index(i)));
                     }
                     if (!values.empty()) {
@@ -352,7 +352,7 @@ bool evalAverage(const PointDataTreeT& points,
                     }
                     else {
                         for (size_t i = 1; i < size; ++i) {
-                            assert(i < size_t(std::numeric_limits<Index>::max()));
+                            assert(i < size_t((std::numeric_limits<Index>::max)()));
                             S->add(ResultT(handle.get(Index(i))));
                         }
                     }
@@ -436,7 +436,7 @@ bool accumulate(const PointDataTreeT& points,
                     const size_t size = handle.isUniform() ? 1 : handle.size();
                     auto total = ResultT(handle.get(0));
                     for (size_t i = 1; i < size; ++i) {
-                        assert(i < size_t(std::numeric_limits<Index>::max()));
+                        assert(i < size_t((std::numeric_limits<Index>::max)()));
                         total += ResultT(handle.get(Index(i)));
                     }
                     values[leaf.pos()].reset(new ResultT(total));

@@ -524,7 +524,7 @@ bool TreeToMerge<TreeT>::MaskUnionOp::operator()(RootT& root, size_t /*idx*/) co
         [&](tbb::blocked_range<Index>& range)
         {
             for (Index i = range.begin(); i < range.end(); i++) {
-                children[i] = std::make_unique<ChildT>(Coord::max(), true, true);
+                children[i] = std::make_unique<ChildT>((Coord::max)(), true, true);
             }
         }
     );

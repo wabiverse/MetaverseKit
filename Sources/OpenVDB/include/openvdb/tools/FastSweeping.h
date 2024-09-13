@@ -893,14 +893,14 @@ void FastSweeping<SdfGridT, ExtValueT>::sweep(int nIter, bool finalize)
       //auto e = extrema(mGrid->beginValueOn());// 100x slower!!!!
       if (kernel.mFltMinExists || kernel.mFltMaxExists) {
           tree::NodeManager<SdfTreeT> nodeManager(mSdfGrid->tree());
-          PruneMinMaxFltKernel op(e.min(), e.max());
+          PruneMinMaxFltKernel op((e.min)(), (e.max)());
           nodeManager.foreachTopDown(op, true /* = threaded*/, 1 /* = grainSize*/);
       }
 #ifdef BENCHMARK_FAST_SWEEPING
-      std::cerr << "Min = " << e.min() << " Max = " << e.max() << std::endl;
+      std::cerr << "Min = " << (e.min)() << " Max = " << (e.max)() << std::endl;
       timer.restart("Changing asymmetric background value");
 #endif
-      changeAsymmetricLevelSetBackground(mSdfGrid->tree(), e.max(), e.min());//multi-threaded
+      changeAsymmetricLevelSetBackground(mSdfGrid->tree(), (e.max)(), (e.min)());//multi-threaded
 
 #ifdef BENCHMARK_FAST_SWEEPING
       timer.stop();
@@ -918,7 +918,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::MinMaxKernel
 {
     using LeafMgr = tree::LeafManager<const SdfTreeT>;
     using LeafRange = typename LeafMgr::LeafRange;
-    MinMaxKernel() : mMin(std::numeric_limits<SdfValueT>::max()), mMax(-mMin), mFltMinExists(false), mFltMaxExists(true) {}
+    MinMaxKernel() : mMin((std::numeric_limits<SdfValueT>::max)()), mMax(-mMin), mFltMinExists(false), mFltMaxExists(true) {}
     MinMaxKernel(MinMaxKernel& other, tbb::split) : mMin(other.mMin), mMax(other.mMax), mFltMinExists(other.mFltMinExists), mFltMaxExists(other.mFltMaxExists) {}
 
     math::MinMax<SdfValueT> run(const SdfGridT &grid)
@@ -933,8 +933,8 @@ struct FastSweeping<SdfGridT, ExtValueT>::MinMaxKernel
         for (auto leafIter = r.begin(); leafIter; ++leafIter) {
             for (auto voxelIter = leafIter->beginValueOn(); voxelIter; ++voxelIter) {
                 const SdfValueT v = *voxelIter;
-                const bool vEqFltMin = v == -std::numeric_limits<SdfValueT>::max();
-                const bool vEqFltMax = v == std::numeric_limits<SdfValueT>::max();
+                const bool vEqFltMin = v == -(std::numeric_limits<SdfValueT>::max)();
+                const bool vEqFltMax = v == (std::numeric_limits<SdfValueT>::max)();
                 if (v < mMin && !vEqFltMin) mMin = v;
                 if (v > mMax && !vEqFltMax) mMax = v;
                 if (vEqFltMin) mFltMinExists = true;
@@ -964,10 +964,10 @@ struct FastSweeping<SdfGridT, ExtValueT>::PruneMinMaxFltKernel {
     // Root node
     void operator()(typename SdfTreeT::RootNodeType& node, size_t = 1) const {
         for (auto iter = node.beginValueAll(); iter; ++iter) {
-            if (*iter == -std::numeric_limits<SdfValueT>::max()) {
+            if (*iter == -(std::numeric_limits<SdfValueT>::max)()) {
                 iter.setValue(mMin);
             }
-            if (*iter == std::numeric_limits<SdfValueT>::max()) {
+            if (*iter == (std::numeric_limits<SdfValueT>::max)()) {
                 iter.setValue(mMax);
             }
         }
@@ -978,10 +978,10 @@ struct FastSweeping<SdfGridT, ExtValueT>::PruneMinMaxFltKernel {
     void operator()(NodeT& node, size_t = 1) const
     {
         for (auto iter = node.beginValueAll(); iter; ++iter) {
-            if (*iter == -std::numeric_limits<SdfValueT>::max()) {
+            if (*iter == -(std::numeric_limits<SdfValueT>::max)()) {
                 iter.setValue(mMin);
             }
-            if (*iter == std::numeric_limits<SdfValueT>::max()) {
+            if (*iter == (std::numeric_limits<SdfValueT>::max)()) {
                 iter.setValue(mMax);
             }
         }
@@ -991,10 +991,10 @@ struct FastSweeping<SdfGridT, ExtValueT>::PruneMinMaxFltKernel {
     void operator()(typename SdfTreeT::LeafNodeType& leaf, size_t = 1) const
     {
         for (auto iter = leaf.beginValueOn(); iter; ++iter) {
-            if (*iter == -std::numeric_limits<SdfValueT>::max()) {
+            if (*iter == -(std::numeric_limits<SdfValueT>::max)()) {
                 iter.setValue(mMin);
             }
-            if (*iter == std::numeric_limits<SdfValueT>::max()) {
+            if (*iter == (std::numeric_limits<SdfValueT>::max)()) {
                 iter.setValue(mMax);
             }
         }
@@ -1028,7 +1028,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::DilateKernel
 #ifdef BENCHMARK_FAST_SWEEPING
         timer.restart("Changing background value");
 #endif
-        static const SdfValueT Unknown = std::numeric_limits<SdfValueT>::max();
+        static const SdfValueT Unknown = (std::numeric_limits<SdfValueT>::max)();
         changeLevelSetBackground(mgr, Unknown);//multi-threaded
 
  #ifdef BENCHMARK_FAST_SWEEPING
@@ -1057,7 +1057,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::DilateKernel
         LeafManagerT leafManager(mParent->mSdfGrid->tree());
 
         auto kernel = [&](LeafT& leaf, size_t /*leafIdx*/) {
-            static const SdfValueT Unknown = std::numeric_limits<SdfValueT>::max();
+            static const SdfValueT Unknown = (std::numeric_limits<SdfValueT>::max)();
             const SdfValueT background = mBackground;//local copy
             auto* maskLeaf = mParent->mSweepMask.probeLeaf(leaf.origin());
             SdfConstAccT sdfInputAcc(mSdfGridInput->tree());
@@ -1153,7 +1153,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::InitSdf
         // Process all tiles
         tree::NodeManager<SdfTreeT, SdfTreeT::RootNodeType::LEVEL-1> mgr(tree);
         mgr.foreachBottomUp(*this);//multi-threaded
-        tree.root().setBackground(std::numeric_limits<SdfValueT>::max(), false);
+        tree.root().setBackground((std::numeric_limits<SdfValueT>::max)(), false);
         if (hasActiveTiles) tree.voxelizeActiveTiles();//multi-threaded
 
         // cache the leaf node origins for fast lookup in the sweeping kernels
@@ -1165,7 +1165,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::InitSdf
     {
         SweepMaskAccT sweepMaskAcc(mParent->mSweepMask);
         math::GradStencil<SdfGridT, false> stencil(*mSdfGrid);
-        const SdfValueT isoValue = mIsoValue, above = mAboveSign*std::numeric_limits<SdfValueT>::max();//local copy
+        const SdfValueT isoValue = mIsoValue, above = mAboveSign*(std::numeric_limits<SdfValueT>::max)();//local copy
         const SdfValueT h = mAboveSign*static_cast<SdfValueT>(mSdfGrid->voxelSize()[0]);//Voxel size
         for (auto leafIter = r.begin(); leafIter; ++leafIter) {
             SdfValueT* sdf = leafIter.buffer(1).data();
@@ -1189,13 +1189,13 @@ struct FastSweeping<SdfGridT, ExtValueT>::InitSdf
                         } else {//voxel is neighboring the iso-surface
                             SdfValueT sum = 0;
                             for (int i=0; i<6;) {
-                                SdfValueT d = std::numeric_limits<SdfValueT>::max(), d2;
+                                SdfValueT d = (std::numeric_limits<SdfValueT>::max)(), d2;
                                 if (mask.test(i++)) d = math::Abs(delta/(value-stencil.getValue(i)));
                                 if (mask.test(i++)) {
                                     d2 = math::Abs(delta/(value-stencil.getValue(i)));
                                     if (d2 < d) d = d2;
                                 }
-                                if (d < std::numeric_limits<SdfValueT>::max()) sum += 1/(d*d);
+                                if (d < (std::numeric_limits<SdfValueT>::max)()) sum += 1/(d*d);
                             }
                             sdf[voxelIter.pos()] = isAbove ? h / math::Sqrt(sum) : -h / math::Sqrt(sum);
                         }// voxel is neighboring the iso-surface
@@ -1208,7 +1208,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::InitSdf
     template<typename RootOrInternalNodeT>
     void operator()(const RootOrInternalNodeT& node) const
     {
-        const SdfValueT isoValue = mIsoValue, above = mAboveSign*std::numeric_limits<SdfValueT>::max();
+        const SdfValueT isoValue = mIsoValue, above = mAboveSign*(std::numeric_limits<SdfValueT>::max)();
         for (auto it = node.cbeginValueAll(); it; ++it) {
           SdfValueT& v = const_cast<SdfValueT&>(*it);
           v = v > isoValue ? above : -above;
@@ -1275,7 +1275,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::InitExt
         {// Process all tiles
           tree::NodeManager<SdfTreeT, SdfTreeT::RootNodeType::LEVEL-1> mgr(tree1);
           mgr.foreachBottomUp(*this);//multi-threaded
-          tree1.root().setBackground(std::numeric_limits<SdfValueT>::max(), false);
+          tree1.root().setBackground((std::numeric_limits<SdfValueT>::max)(), false);
           if (hasActiveTiles) {
 #ifdef BENCHMARK_FAST_SWEEPING
             timer.restart("Voxelizing active tiles");
@@ -1315,7 +1315,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::InitExt
         math::GradStencil<SdfGridT, false> stencil(*mSdfGrid);
         const math::Transform& xform = mExtGrid->transform();
         typename OpPoolT::reference op = mOpPool->local();
-        const SdfValueT isoValue = mIsoValue, above = mAboveSign*std::numeric_limits<SdfValueT>::max();//local copy
+        const SdfValueT isoValue = mIsoValue, above = mAboveSign*(std::numeric_limits<SdfValueT>::max)();//local copy
         const SdfValueT h = mAboveSign*static_cast<SdfValueT>(mSdfGrid->voxelSize()[0]);//Voxel size
         for (auto leafIter = r.begin(); leafIter; ++leafIter) {
             SdfValueT *sdf = leafIter.buffer(1).data();
@@ -1346,9 +1346,9 @@ struct FastSweeping<SdfGridT, ExtValueT>::InitExt
                             // where we choose the value of the extension grid corresponding to
                             // the smallest value of d in the 6 direction neighboring the current
                             // voxel.
-                            SdfValueT minD = std::numeric_limits<SdfValueT>::max();
+                            SdfValueT minD = (std::numeric_limits<SdfValueT>::max)();
                             for (int n=0, i=0; i<6;) {
-                                SdfValueT d = std::numeric_limits<SdfValueT>::max(), d2;
+                                SdfValueT d = (std::numeric_limits<SdfValueT>::max)(), d2;
                                 if (mask.test(i++)) {
                                     d = math::Abs(delta/(value-stencil.getValue(i)));
                                     n = i - 1;
@@ -1360,7 +1360,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::InitExt
                                         n = i - 1;
                                     }
                                 }
-                                if (d < std::numeric_limits<SdfValueT>::max()) {
+                                if (d < (std::numeric_limits<SdfValueT>::max)()) {
                                     d2 = 1/(d*d);
                                     sum1 += d2;
                                     const Vec3R xyz(static_cast<SdfValueT>(ijk[0])+d*static_cast<SdfValueT>(FastSweeping::mOffset[n][0]),
@@ -1383,7 +1383,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::InitExt
     template<typename RootOrInternalNodeT>
     void operator()(const RootOrInternalNodeT& node) const
     {
-        const SdfValueT isoValue = mIsoValue, above = mAboveSign*std::numeric_limits<SdfValueT>::max();
+        const SdfValueT isoValue = mIsoValue, above = mAboveSign*(std::numeric_limits<SdfValueT>::max)();
         for (auto it = node.cbeginValueAll(); it; ++it) {
           SdfValueT& v = const_cast<SdfValueT&>(*it);
           v = v > isoValue ? above : -above;
@@ -1416,7 +1416,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::MaskKernel
 #endif
         auto &lsTree = mSdfGrid->tree();
 
-        static const SdfValueT Unknown = std::numeric_limits<SdfValueT>::max();
+        static const SdfValueT Unknown = (std::numeric_limits<SdfValueT>::max)();
 
 #ifdef BENCHMARK_FAST_SWEEPING
         timer.restart("Changing background value");
@@ -1443,7 +1443,7 @@ struct FastSweeping<SdfGridT, ExtValueT>::MaskKernel
         LeafManagerT leafManager(mParent->mSweepMask);
 
         auto kernel = [&](LeafT& leaf, size_t /*leafIdx*/) {
-            static const SdfValueT Unknown = std::numeric_limits<SdfValueT>::max();
+            static const SdfValueT Unknown = (std::numeric_limits<SdfValueT>::max)();
             SdfAccT acc(mSdfGrid->tree());
             // The following hack is safe due to the topology union in
             // init and the fact that SdfValueT is known to be a floating point!
@@ -1673,9 +1673,9 @@ struct FastSweeping<SdfGridT, ExtValueT>::SweepingKernel
                     ijk = origin + LeafT::offsetToLocalCoord(indexIter.pos());
 
                     // Find the closes neighbors in the three axial directions
-                    d1 = std::min(NN(acc1, ijk, 0), NN(acc1, ijk, 1));
-                    d2 = std::min(NN(acc1, ijk, 2), NN(acc1, ijk, 3));
-                    d3 = std::min(NN(acc1, ijk, 4), NN(acc1, ijk, 5));
+                    d1 = (std::min)(NN(acc1, ijk, 0), NN(acc1, ijk, 1));
+                    d2 = (std::min)(NN(acc1, ijk, 2), NN(acc1, ijk, 3));
+                    d3 = (std::min)(NN(acc1, ijk, 4), NN(acc1, ijk, 5));
 
                     if (!(d1 || d2 || d3)) continue;//no valid neighbors
 

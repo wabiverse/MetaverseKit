@@ -320,9 +320,9 @@ struct MathOp
             CoordBBox bbox = it.getBoundingBox();
             Coord xyz;
             int &x = xyz.x(), &y = xyz.y(), &z = xyz.z();
-            for (x = bbox.min().x(); x <= bbox.max().x(); ++x) {
-                for (y = bbox.min().y(); y <= bbox.max().y(); ++y) {
-                    for (z = bbox.min().z(); z <= bbox.max().z(); ++z) {
+            for (x = (bbox.min)().x(); x <= (bbox.max)().x(); ++x) {
+                for (y = (bbox.min)().y(); y <= (bbox.max)().y(); ++y) {
+                    for (z = (bbox.min)().z(); z <= (bbox.max)().z(); ++z) {
                         mStats.add(mOp.result(mAcc, it.getCoord()));
                     }
                 }

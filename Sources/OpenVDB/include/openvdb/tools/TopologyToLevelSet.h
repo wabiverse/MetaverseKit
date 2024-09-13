@@ -114,7 +114,7 @@ struct OffsetAndMinComp
             auto* const data = lhsNode.buffer().data();
             for (Iterator it = lhsNode.beginValueOn(); it; ++it) {
                 ValueType& val = data[it.pos()];
-                val = std::min(val, offset + rhsNodePt->getValue(it.pos()));
+                val = (std::min)(val, offset + rhsNodePt->getValue(it.pos()));
             }
         }
     }
@@ -184,9 +184,9 @@ topologyToLevelSet(const GridT& grid, int halfWidth, int closingSteps, int dilat
 
     // Check inputs
 
-    halfWidth = std::max(halfWidth, 1);
-    closingSteps = std::max(closingSteps, 0);
-    dilation = std::max(dilation, 0);
+    halfWidth = (std::max)(halfWidth, 1);
+    closingSteps = (std::max)(closingSteps, 0);
+    dilation = (std::max)(dilation, 0);
 
     if (!grid.hasUniformVoxels()) {
         OPENVDB_THROW(ValueError, "Non-uniform voxels are not supported!");

@@ -1380,8 +1380,8 @@ template<typename ChildT>
 inline void
 RootNode<ChildT>::getIndexRange(CoordBBox& bbox) const
 {
-    bbox.min() = this->getMinIndex();
-    bbox.max() = this->getMaxIndex();
+    (bbox.min)() = this->getMinIndex();
+    (bbox.max)() = this->getMaxIndex();
 }
 
 
@@ -2144,19 +2144,19 @@ RootNode<ChildT>::fill(const CoordBBox& bbox, const ValueType& value, bool activ
     // Iterate over the fill region in axis-aligned, tile-sized chunks.
     // (The first and last chunks along each axis might be smaller than a tile.)
     Coord xyz, tileMax;
-    for (int x = bbox.min().x(); x <= bbox.max().x(); x = tileMax.x() + 1) {
+    for (int x = (bbox.min)().x(); x <= (bbox.max)().x(); x = tileMax.x() + 1) {
         xyz.setX(x);
-        for (int y = bbox.min().y(); y <= bbox.max().y(); y = tileMax.y() + 1) {
+        for (int y = (bbox.min)().y(); y <= (bbox.max)().y(); y = tileMax.y() + 1) {
             xyz.setY(y);
-            for (int z = bbox.min().z(); z <= bbox.max().z(); z = tileMax.z() + 1) {
+            for (int z = (bbox.min)().z(); z <= (bbox.max)().z(); z = tileMax.z() + 1) {
                 xyz.setZ(z);
 
                 // Get the bounds of the tile that contains voxel (x, y, z).
                 Coord tileMin = coordToKey(xyz);
                 tileMax = tileMin.offsetBy(ChildT::DIM - 1);
 
-                if (xyz != tileMin || Coord::lessThan(bbox.max(), tileMax)) {
-                    // If the box defined by (xyz, bbox.max()) doesn't completely enclose
+                if (xyz != tileMin || Coord::lessThan((bbox.max)(), tileMax)) {
+                    // If the box defined by (xyz, (bbox.max)()) doesn't completely enclose
                     // the tile to which xyz belongs, create a child node (or retrieve
                     // the existing one).
                     ChildT* child = nullptr;
@@ -2177,11 +2177,11 @@ RootNode<ChildT>::fill(const CoordBBox& bbox, const ValueType& value, bool activ
                     }
                     // Forward the fill request to the child.
                     if (child) {
-                        const Coord tmp = Coord::minComponent(bbox.max(), tileMax);
+                        const Coord tmp = Coord::minComponent((bbox.max)(), tileMax);
                         child->fill(CoordBBox(xyz, tmp), value, active);
                     }
                 } else {
-                    // If the box given by (xyz, bbox.max()) completely encloses
+                    // If the box given by (xyz, (bbox.max)()) completely encloses
                     // the tile to which xyz belongs, create the tile (if it
                     // doesn't already exist) and give it the fill value.
                     MapIter iter = this->findOrAddCoord(tileMin);
@@ -2210,11 +2210,11 @@ RootNode<ChildT>::denseFill(const CoordBBox& bbox, const ValueType& value, bool 
     // Iterate over the fill region in axis-aligned, tile-sized chunks.
     // (The first and last chunks along each axis might be smaller than a tile.)
     Coord xyz, tileMin, tileMax;
-    for (int x = bbox.min().x(); x <= bbox.max().x(); x = tileMax.x() + 1) {
+    for (int x = (bbox.min)().x(); x <= (bbox.max)().x(); x = tileMax.x() + 1) {
         xyz.setX(x);
-        for (int y = bbox.min().y(); y <= bbox.max().y(); y = tileMax.y() + 1) {
+        for (int y = (bbox.min)().y(); y <= (bbox.max)().y(); y = tileMax.y() + 1) {
             xyz.setY(y);
-            for (int z = bbox.min().z(); z <= bbox.max().z(); z = tileMax.z() + 1) {
+            for (int z = (bbox.min)().z(); z <= (bbox.max)().z(); z = tileMax.z() + 1) {
                 xyz.setZ(z);
 
                 // Get the bounds of the tile that contains voxel (x, y, z).
@@ -2276,30 +2276,30 @@ RootNode<ChildT>::copyToDense(const CoordBBox& bbox, DenseT& dense) const
     using DenseValueType = typename DenseT::ValueType;
 
     const size_t xStride = dense.xStride(), yStride = dense.yStride(), zStride = dense.zStride();
-    const Coord& min = dense.bbox().min();
+    const Coord& min = (dense.bbox().min)();
     CoordBBox nodeBBox;
-    for (Coord xyz = bbox.min(); xyz[0] <= bbox.max()[0]; xyz[0] = nodeBBox.max()[0] + 1) {
-        for (xyz[1] = bbox.min()[1]; xyz[1] <= bbox.max()[1]; xyz[1] = nodeBBox.max()[1] + 1) {
-            for (xyz[2] = bbox.min()[2]; xyz[2] <= bbox.max()[2]; xyz[2] = nodeBBox.max()[2] + 1) {
+    for (Coord xyz = (bbox.min)(); xyz[0] <= (bbox.max)()[0]; xyz[0] = (nodeBBox.max)()[0] + 1) {
+        for (xyz[1] = (bbox.min)()[1]; xyz[1] <= (bbox.max)()[1]; xyz[1] = (nodeBBox.max)()[1] + 1) {
+            for (xyz[2] = (bbox.min)()[2]; xyz[2] <= (bbox.max)()[2]; xyz[2] = (nodeBBox.max)()[2] + 1) {
 
                 // Get the coordinate bbox of the child node that contains voxel xyz.
                 nodeBBox = CoordBBox::createCube(coordToKey(xyz), ChildT::DIM);
 
                 // Get the coordinate bbox of the interection of inBBox and nodeBBox
-                CoordBBox sub(xyz, Coord::minComponent(bbox.max(), nodeBBox.max()));
+                CoordBBox sub(xyz, Coord::minComponent((bbox.max)(), (nodeBBox.max)()));
 
-                MapCIter iter = this->findKey(nodeBBox.min());
+                MapCIter iter = this->findKey((nodeBBox.min)());
                 if (iter != mTable.end() && isChild(iter)) {//is a child
                     getChild(iter).copyToDense(sub, dense);
                 } else {//is background or a tile value
                     const ValueType value = iter==mTable.end() ? mBackground : getTile(iter).value;
                     sub.translate(-min);
-                    DenseValueType* a0 = dense.data() + zStride*sub.min()[2];
-                    for (Int32 x=sub.min()[0], ex=sub.max()[0]+1; x<ex; ++x) {
+                    DenseValueType* a0 = dense.data() + zStride*(sub.min)()[2];
+                    for (Int32 x=(sub.min)()[0], ex=(sub.max)()[0]+1; x<ex; ++x) {
                         DenseValueType* a1 = a0 + x*xStride;
-                        for (Int32 y=sub.min()[1], ey=sub.max()[1]+1; y<ey; ++y) {
+                        for (Int32 y=(sub.min)()[1], ey=(sub.max)()[1]+1; y<ey; ++y) {
                             DenseValueType* a2 = a1 + y*yStride;
-                            for (Int32 z=sub.min()[2], ez=sub.max()[2]+1; z<ez; ++z, a2 += zStride) {
+                            for (Int32 z=(sub.min)()[2], ez=(sub.max)()[2]+1; z<ez; ++z, a2 += zStride) {
                                 *a2 =  DenseValueType(value);
                             }
                         }

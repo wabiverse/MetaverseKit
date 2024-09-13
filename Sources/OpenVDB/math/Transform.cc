@@ -96,7 +96,7 @@ Transform::read(std::istream& is)
             internal::LegacyFrustum legacyFrustum(is);
 
             CoordBBox bb      = legacyFrustum.getBBox();
-            BBoxd   bbox(bb.min().asVec3d(), bb.max().asVec3d()
+            BBoxd   bbox((bb.min)().asVec3d(), (bb.max)().asVec3d()
                          /* -Vec3d(1,1,1) */
                          );
             double  taper     = legacyFrustum.getTaper();
@@ -330,14 +330,14 @@ Transform::postMult(const Mat3d& m)
 BBoxd
 Transform::indexToWorld(const CoordBBox& indexBBox) const
 {
-    return this->indexToWorld(BBoxd(indexBBox.min().asVec3d(), indexBBox.max().asVec3d()));
+    return this->indexToWorld(BBoxd((indexBBox.min)().asVec3d(), (indexBBox.max)().asVec3d()));
 }
 
 
 BBoxd
 Transform::indexToWorld(const BBoxd& indexBBox) const
 {
-    const Vec3d &imin = indexBBox.min(), &imax = indexBBox.max();
+    const Vec3d &imin = (indexBBox.min)(), &imax = (indexBBox.max)();
 
     Vec3d corners[8];
     corners[0] = imin;
@@ -350,7 +350,7 @@ Transform::indexToWorld(const BBoxd& indexBBox) const
     corners[7] = Vec3d(imin(0), imax(1), imax(2));
 
     BBoxd worldBBox;
-    Vec3d &wmin = worldBBox.min(), &wmax = worldBBox.max();
+    Vec3d &wmin = (worldBBox.min)(), &wmax = (worldBBox.max)();
 
     wmin = wmax = this->indexToWorld(corners[0]);
     for (int i = 1; i < 8; ++i) {
@@ -366,7 +366,7 @@ BBoxd
 Transform::worldToIndex(const BBoxd& worldBBox) const
 {
     Vec3d indexMin, indexMax;
-    calculateBounds(*this, worldBBox.min(), worldBBox.max(), indexMin, indexMax);
+    calculateBounds(*this, (worldBBox.min)(), (worldBBox.max)(), indexMin, indexMax);
     return BBoxd(indexMin, indexMax);
 }
 
@@ -375,7 +375,7 @@ CoordBBox
 Transform::worldToIndexCellCentered(const BBoxd& worldBBox) const
 {
     Vec3d indexMin, indexMax;
-    calculateBounds(*this, worldBBox.min(), worldBBox.max(), indexMin, indexMax);
+    calculateBounds(*this, (worldBBox.min)(), (worldBBox.max)(), indexMin, indexMax);
     return CoordBBox(Coord::round(indexMin), Coord::round(indexMax));
 }
 
@@ -384,7 +384,7 @@ CoordBBox
 Transform::worldToIndexNodeCentered(const BBoxd& worldBBox) const
 {
     Vec3d indexMin, indexMax;
-    calculateBounds(*this, worldBBox.min(), worldBBox.max(), indexMin, indexMax);
+    calculateBounds(*this, (worldBBox.min)(), (worldBBox.max)(), indexMin, indexMax);
     return CoordBBox(Coord::floor(indexMin), Coord::floor(indexMax));
 }
 
@@ -417,8 +417,8 @@ calculateBounds(const Transform& t,
     for (int i = 1; i < 8; ++i) {
         pre_image = t.worldToIndex(corners[i]);
         for (int j = 0; j < 3; ++j) {
-            minIS(j) = std::min(minIS(j), pre_image(j));
-            maxIS(j) = std::max(maxIS(j), pre_image(j));
+            minIS(j) = (std::min)(minIS(j), pre_image(j));
+            maxIS(j) = (std::max)(maxIS(j), pre_image(j));
         }
     }
 }
@@ -494,10 +494,10 @@ Transform::print(std::ostream& os, const std::string& indent) const
         size_t w = 0;
         for (int row = 0; row < 4; ++row) {
             std::string str = Local::rowAsString(linear[row]);
-            w = std::max(w, str.size());
+            w = (std::max)(w, str.size());
             linearRow.push_back(str);
         }
-        w = std::max<size_t>(w, 30);
+        w = (std::max<size_t>)(w, 30);
         const int iw = int(w);
 
         // Print rows of the linear component matrix side-by-side with frustum parameters.
@@ -517,9 +517,9 @@ Transform::print(std::ostream& os, const std::string& indent) const
         } else {
             // If the frustum bounding box doesn't fit on one line, split it into two lines.
             ostr << indent << "   " << std::left << std::setw(iw) << linearRow[2]
-                << "  bounds: " << frustum.getBBox().min() << " ->\n";
+                << "  bounds: " << (frustum.getBBox().min)() << " ->\n";
             ostr << indent << "   " << std::left << std::setw(iw) << linearRow[3]
-                << "             " << frustum.getBBox().max() << "\n";
+                << "             " << (frustum.getBBox().max)() << "\n";
         }
 
     } else {

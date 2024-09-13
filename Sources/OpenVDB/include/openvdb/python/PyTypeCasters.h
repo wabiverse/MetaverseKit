@@ -709,8 +709,8 @@ namespace pybind11 { namespace detail {
                     metadata.reset(new openvdb::BoolMetadata(val.cast<bool>()));
                 } else if (py::isinstance<py::int_>(val)) {
                     const openvdb::Int64 n = val.cast<openvdb::Int64>();
-                    if (n <= std::numeric_limits<openvdb::Int32>::max()
-                        && n >= std::numeric_limits<openvdb::Int32>::min()) {
+                    if (n <= (std::numeric_limits<openvdb::Int32>::max)()
+                        && n >= (std::numeric_limits<openvdb::Int32>::min)()) {
                         metadata.reset(new openvdb::Int32Metadata(static_cast<openvdb::Int32>(n)));
                     } else {
                         metadata.reset(new openvdb::Int64Metadata(n));

@@ -1292,9 +1292,9 @@ LeafNode<ValueMask, Log2Dim>::clip(const CoordBBox& clipBBox, bool background)
     nodeBBox.intersect(clipBBox);
     Coord xyz;
     int &x = xyz.x(), &y = xyz.y(), &z = xyz.z();
-    for (x = nodeBBox.min().x(); x <= nodeBBox.max().x(); ++x) {
-        for (y = nodeBBox.min().y(); y <= nodeBBox.max().y(); ++y) {
-            for (z = nodeBBox.min().z(); z <= nodeBBox.max().z(); ++z) {
+    for (x = (nodeBBox.min)().x(); x <= (nodeBBox.max)().x(); ++x) {
+        for (y = (nodeBBox.min)().y(); y <= (nodeBBox.max)().y(); ++y) {
+            for (z = (nodeBBox.min)().z(); z <= (nodeBBox.max)().z(); ++z) {
                 mask.setOn(static_cast<Index32>(this->coordToOffset(xyz)));
             }
         }
@@ -1319,11 +1319,11 @@ LeafNode<ValueMask, Log2Dim>::fill(const CoordBBox& bbox, bool value, bool)
     clippedBBox.intersect(bbox);
     if (!clippedBBox) return;
 
-    for (Int32 x = clippedBBox.min().x(); x <= clippedBBox.max().x(); ++x) {
+    for (Int32 x = (clippedBBox.min)().x(); x <= (clippedBBox.max)().x(); ++x) {
         const Index offsetX = (x & (DIM-1u))<<2*Log2Dim;
-        for (Int32 y = clippedBBox.min().y(); y <= clippedBBox.max().y(); ++y) {
+        for (Int32 y = (clippedBBox.min)().y(); y <= (clippedBBox.max)().y(); ++y) {
             const Index offsetXY = offsetX + ((y & (DIM-1u))<<  Log2Dim);
-            for (Int32 z = clippedBBox.min().z(); z <= clippedBBox.max().z(); ++z) {
+            for (Int32 z = (clippedBBox.min)().z(); z <= (clippedBBox.max)().z(); ++z) {
                 const Index offset = offsetXY + (z & (DIM-1u));
                 mBuffer.mData.set(offset, value);
             }
@@ -1350,16 +1350,16 @@ LeafNode<ValueMask, Log2Dim>::copyToDense(const CoordBBox& bbox, DenseT& dense) 
     using DenseValueType = typename DenseT::ValueType;
 
     const size_t xStride = dense.xStride(), yStride = dense.yStride(), zStride = dense.zStride();
-    const Coord& min = dense.bbox().min();
-    DenseValueType* t0 = dense.data() + zStride * (bbox.min()[2] - min[2]); // target array
-    const Int32 n0 = bbox.min()[2] & (DIM-1u);
-    for (Int32 x = bbox.min()[0], ex = bbox.max()[0] + 1; x < ex; ++x) {
+    const Coord& min = (dense.bbox().min)();
+    DenseValueType* t0 = dense.data() + zStride * ((bbox.min)()[2] - min[2]); // target array
+    const Int32 n0 = (bbox.min)()[2] & (DIM-1u);
+    for (Int32 x = (bbox.min)()[0], ex = (bbox.max)()[0] + 1; x < ex; ++x) {
         DenseValueType* t1 = t0 + xStride * (x - min[0]);
         const Int32 n1 = n0 + ((x & (DIM-1u)) << 2*LOG2DIM);
-        for (Int32 y = bbox.min()[1], ey = bbox.max()[1] + 1; y < ey; ++y) {
+        for (Int32 y = (bbox.min)()[1], ey = (bbox.max)()[1] + 1; y < ey; ++y) {
             DenseValueType* t2 = t1 + yStride * (y - min[1]);
             Int32 n2 = n1 + ((y & (DIM-1u)) << LOG2DIM);
-            for (Int32 z = bbox.min()[2], ez = bbox.max()[2] + 1; z < ez; ++z, t2 += zStride) {
+            for (Int32 z = (bbox.min)()[2], ez = (bbox.max)()[2] + 1; z < ez; ++z, t2 += zStride) {
                 *t2 = DenseValueType(mBuffer.mData.isOn(n2++));
             }
         }
@@ -1379,16 +1379,16 @@ LeafNode<ValueMask, Log2Dim>::copyFromDense(const CoordBBox& bbox, const DenseT&
     };
 
     const size_t xStride = dense.xStride(), yStride = dense.yStride(), zStride = dense.zStride();
-    const Coord& min = dense.bbox().min();
-    const DenseValueType* s0 = dense.data() + zStride * (bbox.min()[2] - min[2]); // source
-    const Int32 n0 = bbox.min()[2] & (DIM-1u);
-    for (Int32 x = bbox.min()[0], ex = bbox.max()[0] + 1; x < ex; ++x) {
+    const Coord& min = (dense.bbox().min)();
+    const DenseValueType* s0 = dense.data() + zStride * ((bbox.min)()[2] - min[2]); // source
+    const Int32 n0 = (bbox.min)()[2] & (DIM-1u);
+    for (Int32 x = (bbox.min)()[0], ex = (bbox.max)()[0] + 1; x < ex; ++x) {
         const DenseValueType* s1 = s0 + xStride * (x - min[0]);
         const Int32 n1 = n0 + ((x & (DIM-1u)) << 2*LOG2DIM);
-        for (Int32 y = bbox.min()[1], ey = bbox.max()[1] + 1; y < ey; ++y) {
+        for (Int32 y = (bbox.min)()[1], ey = (bbox.max)()[1] + 1; y < ey; ++y) {
             const DenseValueType* s2 = s1 + yStride * (y - min[1]);
             Int32 n2 = n1 + ((y & (DIM-1u)) << LOG2DIM);
-            for (Int32 z = bbox.min()[2], ez = bbox.max()[2]+1; z < ez; ++z, ++n2, s2 += zStride) {
+            for (Int32 z = (bbox.min)()[2], ez = (bbox.max)()[2]+1; z < ez; ++z, ++n2, s2 += zStride) {
                 // Note: if tolerance is true (i.e., 1), then all boolean values compare equal.
                 if (tolerance || (background == Local::toBool(*s2))) {
                     mBuffer.mData.set(n2, background);

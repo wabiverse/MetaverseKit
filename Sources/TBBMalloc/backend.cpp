@@ -16,7 +16,7 @@
 
 #include <string.h>   /* for memset */
 #include <errno.h>
-#include "tbbmalloc_internal.h"
+#include "TBBMalloc/tbbmalloc_internal.h"
 
 namespace rml {
 namespace internal {

@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-#include "tbbmalloc_internal.h"
+#include "TBBMalloc/tbbmalloc_internal.h"
 #include "../tbb/environment.h"
 
 #if defined(_MSC_VER) && !defined(__INTEL_COMPILER)

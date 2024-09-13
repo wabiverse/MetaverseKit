@@ -527,7 +527,7 @@ Filter<GridT, MaskT, InterruptT>::mean(int width, int iterations, const MaskType
 {
     if (iterations <= 0) return;
     mMask = mask;
-    const int w = std::max(1, width);
+    const int w = (std::max)(1, width);
     const bool serial = mGrainSize == 0;
 
     if (mInterrupter) mInterrupter->start("Applying mean filter");
@@ -581,7 +581,7 @@ Filter<GridT, MaskT, InterruptT>::gaussian(int width, int iterations, const Mask
 {
     if (iterations <= 0) return;
     mMask = mask;
-    const int w = std::max(1, width);
+    const int w = (std::max)(1, width);
     const bool serial = mGrainSize == 0;
 
     if (mInterrupter) mInterrupter->start("Applying Gaussian filter");
@@ -638,7 +638,7 @@ Filter<GridT, MaskT, InterruptT>::median(int width, int iterations, const MaskTy
 {
     if (iterations <= 0) return;
     mMask = mask;
-    const int w = std::max(1, width);
+    const int w = (std::max)(1, width);
     const bool serial = mGrainSize == 0;
 
     if (mInterrupter) mInterrupter->start("Applying median filter");

@@ -44,7 +44,7 @@ namespace {
 template<typename GridType>
 inline typename GridType::ValueType lsutilGridMax()
 {
-    return std::numeric_limits<typename GridType::ValueType>::max();
+    return (std::numeric_limits<typename GridType::ValueType>::max)();
 }
 
 template<typename GridType>
@@ -380,13 +380,13 @@ struct FindMinVoxelValue {
     using ValueType = typename LeafNodeType::ValueType;
 
     FindMinVoxelValue(LeafNodeType const * const * const leafnodes)
-        : minValue(std::numeric_limits<ValueType>::max())
+        : minValue((std::numeric_limits<ValueType>::max)())
         , mNodes(leafnodes)
     {
     }
 
     FindMinVoxelValue(FindMinVoxelValue& rhs, tbb::split)
-        : minValue(std::numeric_limits<ValueType>::max())
+        : minValue((std::numeric_limits<ValueType>::max)())
         , mNodes(rhs.mNodes)
     {
     }
@@ -395,12 +395,12 @@ struct FindMinVoxelValue {
         for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
             const ValueType* data = mNodes[n]->buffer().data();
             for (Index i = 0; i < LeafNodeType::SIZE; ++i) {
-                minValue = std::min(minValue, data[i]);
+                minValue = (std::min)(minValue, data[i]);
             }
         }
     }
 
-    void join(FindMinVoxelValue& rhs) { minValue = std::min(minValue, rhs.minValue); }
+    void join(FindMinVoxelValue& rhs) { minValue = (std::min)(minValue, rhs.minValue); }
 
     ValueType minValue;
 
@@ -414,13 +414,13 @@ struct FindMinTileValue {
     using ValueType = typename InternalNodeType::ValueType;
 
     FindMinTileValue(InternalNodeType const * const * const nodes)
-        : minValue(std::numeric_limits<ValueType>::max())
+        : minValue((std::numeric_limits<ValueType>::max)())
         , mNodes(nodes)
     {
     }
 
     FindMinTileValue(FindMinTileValue& rhs, tbb::split)
-        : minValue(std::numeric_limits<ValueType>::max())
+        : minValue((std::numeric_limits<ValueType>::max)())
         , mNodes(rhs.mNodes)
     {
     }
@@ -429,12 +429,12 @@ struct FindMinTileValue {
         for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
             typename InternalNodeType::ValueAllCIter it = mNodes[n]->beginValueAll();
             for (; it; ++it) {
-                minValue = std::min(minValue, *it);
+                minValue = (std::min)(minValue, *it);
             }
         }
     }
 
-    void join(FindMinTileValue& rhs) { minValue = std::min(minValue, rhs.minValue); }
+    void join(FindMinTileValue& rhs) { minValue = (std::min)(minValue, rhs.minValue); }
 
     ValueType minValue;
 
@@ -1089,7 +1089,7 @@ computeInteriorMask(const TreeType& tree, typename TreeType::ValueType iso)
     // have values less than or equal to the background value, so an isovalue
     // greater than or equal to the background value would produce a mask with
     // effectively infinite extent.)
-    iso = std::min(iso,
+    iso = (std::min)(iso,
         static_cast<ValueType>(tree.background() - math::Tolerance<ValueType>::value()));
 
     size_t numLeafNodes = 0, numInternalNodes = 0;
@@ -1925,7 +1925,7 @@ struct FloodFillSign
         , mSegments(!segments.empty() ? &segments.front() : nullptr)
         , mMinValue(ValueType(0.0))
     {
-        ValueType minSDFValue = std::numeric_limits<ValueType>::max();
+        ValueType minSDFValue = (std::numeric_limits<ValueType>::max)();
 
         {
             std::vector<const InternalNodeType*> nodes;
@@ -1934,7 +1934,7 @@ struct FloodFillSign
             if (!nodes.empty()) {
                 FindMinTileValue<InternalNodeType> minOp(nodes.data());
                 tbb::parallel_reduce(tbb::blocked_range<size_t>(0, nodes.size()), minOp);
-                minSDFValue = std::min(minSDFValue, minOp.minValue);
+                minSDFValue = (std::min)(minSDFValue, minOp.minValue);
             }
         }
 
@@ -1944,7 +1944,7 @@ struct FloodFillSign
             if (!nodes.empty()) {
                 FindMinVoxelValue<LeafNodeType> minOp(nodes.data());
                 tbb::parallel_reduce(tbb::blocked_range<size_t>(0, nodes.size()), minOp);
-                minSDFValue = std::min(minSDFValue, minOp.minValue);
+                minSDFValue = (std::min)(minSDFValue, minOp.minValue);
             }
         }
 
@@ -2196,18 +2196,18 @@ sdfToFogVolume(GridType& grid, typename GridType::ValueType cutoffDistance)
         }
 
         // Clamp cutoffDistance to min sdf value
-        ValueType minSDFValue = std::numeric_limits<ValueType>::max();
+        ValueType minSDFValue = (std::numeric_limits<ValueType>::max)();
 
         {
             level_set_util_internal::FindMinTileValue<InternalNodeType> minOp(internalNodes.data());
             tbb::parallel_reduce(tbb::blocked_range<size_t>(0, internalNodes.size()), minOp);
-            minSDFValue = std::min(minSDFValue, minOp.minValue);
+            minSDFValue = (std::min)(minSDFValue, minOp.minValue);
         }
 
         if (minSDFValue > ValueType(0.0)) {
             level_set_util_internal::FindMinVoxelValue<LeafNodeType> minOp(nodes.data());
             tbb::parallel_reduce(tbb::blocked_range<size_t>(0, nodes.size()), minOp);
-            minSDFValue = std::min(minSDFValue, minOp.minValue);
+            minSDFValue = (std::min)(minSDFValue, minOp.minValue);
         }
 
         cutoffDistance = -std::abs(cutoffDistance);
@@ -2516,7 +2516,7 @@ segmentActiveVoxels(const GridOrTreeType& volume,
 
     // 2. Export segments
 
-    const size_t numSegments = std::max(size_t(1), maskSegmentArray.size());
+    const size_t numSegments = (std::max)(size_t(1), maskSegmentArray.size());
     std::vector<TreePtrType> outputSegmentArray(numSegments);
 
     if (maskSegmentArray.empty()) {
@@ -2565,7 +2565,7 @@ segmentSDF(const GridOrTreeType& volume, std::vector<typename GridOrTreeType::Pt
     std::vector<BoolTreePtrType> maskSegmentArray;
     extractActiveVoxelSegmentMasks(*mask, maskSegmentArray);
 
-    const size_t numSegments = std::max(size_t(1), maskSegmentArray.size());
+    const size_t numSegments = (std::max)(size_t(1), maskSegmentArray.size());
     std::vector<TreePtrType> outputSegmentArray(numSegments);
 
     if (maskSegmentArray.empty()) {

@@ -354,13 +354,13 @@ private:
     template <size_t bits>
     using TypeT = typename std::conditional<std::is_integral<T>::value,
         types_internal::int_t<bits, std::is_signed<T>::value>,
-        types_internal::flt_t<std::max(size_t(16), bits)>>::type;
+        types_internal::flt_t<(std::max)(size_t(16), bits)>>::type;
 public:
     static_assert(sizeof(T) <= 8ul, "Unsupported source type for promotion");
 
 #define OPENVDB_TARGET_BITS(SHIFT, PROMOTE) \
-        std::max(size_t(8), \
-            std::min(size_t(64), (PROMOTE ? size_t(8)*(sizeof(T)<<SHIFT) : \
+        (std::max)(size_t(8), \
+            (std::min)(size_t(64), (PROMOTE ? size_t(8)*(sizeof(T)<<SHIFT) : \
                 size_t(8)*(sizeof(T)>>SHIFT))))
     template <size_t Shift = ~0UL> using Promote = typename TypeT<OPENVDB_TARGET_BITS(Shift, true)>::type;
     template <size_t Shift = ~0UL> using Demote = typename TypeT<OPENVDB_TARGET_BITS(Shift, false)>::type;

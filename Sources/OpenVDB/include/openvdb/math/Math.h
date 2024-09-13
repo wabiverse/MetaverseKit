@@ -214,7 +214,7 @@ public:
     /// @param imin,imax  generate integers that are uniformly distributed over [imin, imax]
     RandInt(const EngineType& engine, IntType imin, IntType imax):
         mEngine(engine),
-        mRand(std::min(imin, imax), std::max(imin, imax))
+        mRand((std::min)(imin, imax), (std::max)(imin, imax))
     {}
 
     /// @brief Initialize the generator.
@@ -222,13 +222,13 @@ public:
     /// @param imin,imax  generate integers that are uniformly distributed over [imin, imax]
     RandInt(unsigned int seed, IntType imin, IntType imax):
         mEngine(static_cast<typename EngineType::result_type>(seed)),
-        mRand(std::min(imin, imax), std::max(imin, imax))
+        mRand((std::min)(imin, imax), (std::max)(imin, imax))
     {}
 
     /// Change the range over which integers are distributed to [imin, imax].
     void setRange(IntType imin, IntType imax)
     {
-        mRand = Distr(std::min(imin, imax), std::max(imin, imax));
+        mRand = Distr((std::min)(imin, imax), (std::max)(imin, imax));
     }
 
     /// Set the seed value for the random number generator
@@ -247,7 +247,7 @@ public:
     /// without changing the current range.
     IntType operator()(IntType imin, IntType imax)
     {
-        const IntType lo = std::min(imin, imax), hi = std::max(imin, imax);
+        const IntType lo = (std::min)(imin, imax), hi = (std::max)(imin, imax);
         return mRand(mEngine, typename Distr::param_type(lo, hi));
     }
 };
@@ -596,7 +596,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b)
 {
-    return std::max(a,b);
+    return (std::max)(a,b);
 }
 
 /// Return the maximum of three values
@@ -604,7 +604,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b, const Type& c)
 {
-    return std::max(std::max(a,b), c);
+    return (std::max)((std::max)(a,b), c);
 }
 
 /// Return the maximum of four values
@@ -612,7 +612,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d)
 {
-    return std::max(std::max(a,b), std::max(c,d));
+    return (std::max)((std::max)(a,b), (std::max)(c,d));
 }
 
 /// Return the maximum of five values
@@ -620,7 +620,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d, const Type& e)
 {
-    return std::max(std::max(a,b), Max(c,d,e));
+    return (std::max)((std::max)(a,b), Max(c,d,e));
 }
 
 /// Return the maximum of six values
@@ -628,7 +628,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d, const Type& e, const Type& f)
 {
-    return std::max(Max(a,b,c), Max(d,e,f));
+    return (std::max)(Max(a,b,c), Max(d,e,f));
 }
 
 /// Return the maximum of seven values
@@ -637,7 +637,7 @@ inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d,
     const Type& e, const Type& f, const Type& g)
 {
-    return std::max(Max(a,b,c,d), Max(e,f,g));
+    return (std::max)(Max(a,b,c,d), Max(e,f,g));
 }
 
 /// Return the maximum of eight values
@@ -646,7 +646,7 @@ inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d,
     const Type& e, const Type& f, const Type& g, const Type& h)
 {
-    return std::max(Max(a,b,c,d), Max(e,f,g,h));
+    return (std::max)(Max(a,b,c,d), Max(e,f,g,h));
 }
 
 
@@ -655,19 +655,19 @@ Max(const Type& a, const Type& b, const Type& c, const Type& d,
 /// Return the minimum of two values
 template<typename Type>
 inline const Type&
-Min(const Type& a, const Type& b) { return std::min(a, b); }
+Min(const Type& a, const Type& b) { return (std::min)(a, b); }
 
 /// Return the minimum of three values
 template<typename Type>
 inline const Type&
-Min(const Type& a, const Type& b, const Type& c) { return std::min(std::min(a, b), c); }
+Min(const Type& a, const Type& b, const Type& c) { return (std::min)((std::min)(a, b), c); }
 
 /// Return the minimum of four values
 template<typename Type>
 inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d)
 {
-    return std::min(std::min(a, b), std::min(c, d));
+    return (std::min)((std::min)(a, b), (std::min)(c, d));
 }
 
 /// Return the minimum of five values
@@ -675,7 +675,7 @@ template<typename Type>
 inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d, const Type& e)
 {
-    return std::min(std::min(a,b), Min(c,d,e));
+    return (std::min)((std::min)(a,b), Min(c,d,e));
 }
 
 /// Return the minimum of six values
@@ -683,7 +683,7 @@ template<typename Type>
 inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d, const Type& e, const Type& f)
 {
-    return std::min(Min(a,b,c), Min(d,e,f));
+    return (std::min)(Min(a,b,c), Min(d,e,f));
 }
 
 /// Return the minimum of seven values
@@ -692,7 +692,7 @@ inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d,
     const Type& e, const Type& f, const Type& g)
 {
-    return std::min(Min(a,b,c,d), Min(e,f,g));
+    return (std::min)(Min(a,b,c,d), Min(e,f,g));
 }
 
 /// Return the minimum of eight values
@@ -701,7 +701,7 @@ inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d,
     const Type& e, const Type& f, const Type& g, const Type& h)
 {
-    return std::min(Min(a,b,c,d), Min(e,f,g,h));
+    return (std::min)(Min(a,b,c,d), Min(e,f,g,h));
 }
 
 

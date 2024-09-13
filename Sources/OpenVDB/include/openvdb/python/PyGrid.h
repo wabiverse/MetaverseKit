@@ -179,7 +179,7 @@ evalLeafBoundingBox(const GridType& grid)
 {
     CoordBBox bbox;
     grid.tree().evalLeafBoundingBox(bbox);
-    return std::make_tuple(bbox.min(), bbox.max());
+    return std::make_tuple((bbox.min)(), (bbox.max)());
 }
 
 
@@ -240,7 +240,7 @@ inline std::tuple<typename GridType::ValueType, typename GridType::ValueType>
 evalMinMax(const GridType& grid)
 {
     const math::MinMax<typename GridType::ValueType> extrema = tools::minMax(grid.tree());
-    return std::make_tuple(extrema.min(), extrema.max());
+    return std::make_tuple((extrema.min)(), (extrema.max)());
 }
 
 
@@ -250,7 +250,7 @@ getIndexRange(const GridType& grid)
 {
     CoordBBox bbox;
     grid.tree().getIndexRange(bbox);
-    return std::make_tuple(bbox.min(), bbox.max());
+    return std::make_tuple((bbox.min)(), (bbox.max)());
 }
 
 
@@ -1138,8 +1138,8 @@ public:
     ValueT getValue() const { return *mIter; }
     bool getActive() const { return mIter.isValueOn(); }
     Index getDepth() const { return mIter.getDepth(); }
-    Coord getBBoxMin() const { return mIter.getBoundingBox().min(); }
-    Coord getBBoxMax() const { return mIter.getBoundingBox().max(); }
+    Coord getBBoxMin() const { return (mIter.getBoundingBox().min)(); }
+    Coord getBBoxMax() const { return (mIter.getBoundingBox().max)(); }
     Index64 getVoxelCount() const { return mIter.getVoxelCount(); }
 
     void setValue(const ValueT& val) { SetterT::setValue(mIter, val); }

@@ -56,7 +56,7 @@ public:
     Ray(const Vec3Type& eye = Vec3Type(0,0,0),
         const Vec3Type& direction = Vec3Type(1,0,0),
         RealT t0 = math::Delta<RealT>::value(),
-        RealT t1 = std::numeric_limits<RealT>::max())
+        RealT t1 = (std::numeric_limits<RealT>::max)())
         : mEye(eye), mDir(direction), mInvDir(1/mDir), mTimeSpan(t0, t1)
     {
     }
@@ -75,7 +75,7 @@ public:
 
     inline void setTimes(
         RealT t0 = math::Delta<RealT>::value(),
-        RealT t1 = std::numeric_limits<RealT>::max())
+        RealT t1 = (std::numeric_limits<RealT>::max)())
     {
         assert(t0>0 && t1>0);
         mTimeSpan.set(t0, t1);
@@ -87,7 +87,7 @@ public:
         const Vec3Type& eye,
         const Vec3Type& direction,
         RealT t0 = math::Delta<RealT>::value(),
-        RealT t1 = std::numeric_limits<RealT>::max())
+        RealT t1 = (std::numeric_limits<RealT>::max)())
     {
         this->setEye(eye);
         this->setDir(direction);
@@ -234,8 +234,8 @@ public:
     {
         mTimeSpan.get(t0, t1);
         for (int i = 0; i < 3; ++i) {
-            RealT a = (bbox.min()[i] - mEye[i]) * mInvDir[i];
-            RealT b = (bbox.max()[i] - mEye[i]) * mInvDir[i];
+            RealT a = ((bbox.min)()[i] - mEye[i]) * mInvDir[i];
+            RealT b = ((bbox.max)()[i] - mEye[i]) * mInvDir[i];
             if (a > b) std::swap(a, b);
             if (a > t0) t0 = a;
             if (b < t1) t1 = b;

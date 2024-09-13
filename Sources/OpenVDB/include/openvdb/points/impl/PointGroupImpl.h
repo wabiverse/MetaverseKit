@@ -468,12 +468,12 @@ inline void setGroup(   PointDataTreeT& tree,
             [](const typename IndexTreeManager::LeafRange& range, int64_t value) -> int64_t {
                 for (auto leaf = range.begin(); leaf; ++leaf) {
                     auto it = std::max_element(leaf->indices().begin(), leaf->indices().end());
-                    value = std::max(value, static_cast<int64_t>(*it));
+                    value = (std::max)(value, static_cast<int64_t>(*it));
                 }
                 return value;
             },
             [](const int64_t a, const int64_t b) {
-                return std::max(a, b);
+                return (std::max)(a, b);
             }
         );
 

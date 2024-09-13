@@ -4,7 +4,6 @@
 #include <PtexCache.h>
 #include <PtexExports.h>
 #include <PtexHalf.h>
-#include <PtexHalfTables.h>
 #include <PtexHashMap.h>
 #include <PtexIO.h>
 #include <PtexInt.h>

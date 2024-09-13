@@ -51,7 +51,7 @@
 #include <new>        /* for placement new */
 #endif
 #include "OneTBB/oneapi/tbb/scalable_allocator.h"
-#include "tbbmalloc_internal_api.h"
+#include "TBBMalloc/tbbmalloc_internal_api.h"
 
 /********* Various compile-time options        **************/
 

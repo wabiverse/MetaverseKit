@@ -28,7 +28,7 @@
 #include "OneTBB/oneapi/tbb/detail/_utils.h"
 #include "OneTBB/oneapi/tbb/detail/_assert.h"
 
-#include "Synchronize.h"
+#include "TBBMallocProxy/Synchronize.h"
 
 #if __TBB_USE_ITT_NOTIFY
 #include "../tbb/itt_notify.h"
@@ -70,7 +70,7 @@ inline void do_yield() {
 #define USE_DEFAULT_MEMORY_MAPPING 1
 
 // To support malloc replacement
-#include "proxy.h"
+#include "TBBMallocProxy/proxy.h"
 
 #if MALLOC_UNIXLIKE_OVERLOAD_ENABLED
 #define malloc_proxy __TBB_malloc_proxy

@@ -356,7 +356,7 @@ clip(const GridType& grid, const BBoxd& bbox, bool keepInterior)
 
     // Transform the world-space bounding box into the source grid's index space.
     Vec3d idxMin, idxMax;
-    math::calculateBounds(grid.constTransform(), bbox.min(), bbox.max(), idxMin, idxMax);
+    math::calculateBounds(grid.constTransform(), (bbox.min)(), (bbox.max)(), idxMin, idxMax);
     CoordBBox region(Coord::floor(idxMin), Coord::floor(idxMax));
     // Construct a boolean mask grid that is true inside the index-space bounding box
     // and false everywhere else.
@@ -420,7 +420,7 @@ clip(const GridType& inGrid, const math::NonlinearFrustumMap& frustumMap, bool k
     // Return the frustum index-space bounding box of the corners of
     // the given grid index-space bounding box.
     auto toFrustumIndexSpace = [&](const CoordBBox& inBBox) -> BBoxd {
-        const Coord bounds[2] = { inBBox.min(), inBBox.max() };
+        const Coord bounds[2] = { (inBBox.min)(), (inBBox.max)() };
         Coord ijk;
         BBoxd outBBox;
         for (int i = 0; i < 8; ++i) {
@@ -484,7 +484,7 @@ clip(const GridType& inGrid, const math::NonlinearFrustumMap& frustumMap, bool k
                 break;
             case CopyTile::kFull:
                 // Copy the entire tile.
-                outAcc.addTile(tileIter.getLevel(), tileBBox.min(), tileValue, tileActive);
+                outAcc.addTile(tileIter.getLevel(), (tileBBox.min)(), tileValue, tileActive);
                 break;
             case CopyTile::kPartial:
                 // Copy only voxels inside the clipping region.
@@ -532,13 +532,13 @@ clip(const GridType& inGrid, const math::NonlinearFrustumMap& frustumMap, bool k
         const auto leafFrustumBBox = toFrustumIndexSpace(leafBBox);
         if (keepInterior) {
             if (frustumIndexBBox.hasOverlap(leafFrustumBBox)) {
-                outAcc.touchLeaf(leafBBox.min());
+                outAcc.touchLeaf((leafBBox.min)());
             }
         } else {
             if (!frustumIndexBBox.hasOverlap(leafFrustumBBox)
                 || !frustumIndexBBox.isInside(leafFrustumBBox))
             {
-                outAcc.touchLeaf(leafBBox.min());
+                outAcc.touchLeaf((leafBBox.min)());
             }
         }
     }

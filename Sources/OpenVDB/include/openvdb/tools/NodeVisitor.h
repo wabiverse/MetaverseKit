@@ -130,8 +130,8 @@ namespace tools {
 ///     if (iter.isValueOn())
 ///     {
 ///         openvdb::CoordBBox  b;
-///         b.min() = iter.getCoord();
-///         b.max() = b.min().offsetBy(IterT::ChildNodeType::DIM);
+///         (b.min)() = iter.getCoord();
+///         (b.max)() = (b.min)().offsetBy(IterT::ChildNodeType::DIM);
 ///
 ///         processNodeBlock(b);
 ///     }
@@ -159,8 +159,8 @@ namespace tools {
 ///     for (auto iter = node.beginValueOn(); iter; ++iter)
 ///     {
 ///         openvdb::CoordBBox  b;
-///         b.min() = iter.getCoord();
-///         b.max() = b.min().offsetBy(NodeT::ChildNodeType::DIM);
+///         (b.min)() = iter.getCoord();
+///         (b.max)() = (b.min)().offsetBy(NodeT::ChildNodeType::DIM);
 ///
 ///         processNodeBlock(b);
 ///     }

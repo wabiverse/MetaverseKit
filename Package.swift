@@ -41,7 +41,6 @@ let package = Package(
       dependencies: [
         .target(name: "OneTBB"),
       ],
-      publicHeadersPath: ".",
       cxxSettings: [
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
@@ -55,9 +54,8 @@ let package = Package(
         .target(name: "OneTBB"),
         .target(name: "TBBMallocProxy"),
       ],
-      exclude: [],
-      publicHeadersPath: ".",
       cxxSettings: [
+        .headerSearchPath("include/TBBMalloc"),
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("__TBBMALLOC_BUILD", to: "1"),
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
@@ -67,7 +65,9 @@ let package = Package(
 
     .target(
       name: "OneTBB",
-      publicHeadersPath: "include",
+      dependencies: [
+        .target(name: "MicrosoftSTL", condition: .when(platforms: Arch.OS.windows.platform)),
+      ],
       cxxSettings: [
         .define("_XOPEN_SOURCE", to: "1", .when(platforms: Arch.OS.apple.platform)),
         .define("TBB_ALLOCATOR_TRAITS_BROKEN", to: "1", .when(platforms: Arch.OS.linux.platform)),
@@ -263,9 +263,13 @@ let package = Package(
       ]
     ),
 
+    .target(name: "Apple"),
+
     .target(
-      name: "Apple",
-      publicHeadersPath: "include"
+      name: "MicrosoftSTL",
+      cxxSettings: [
+        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
+      ]
     ),
 
     .target(
@@ -524,6 +528,7 @@ let package = Package(
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
+        .target(name: "MicrosoftSTL", condition: .when(platforms: Arch.OS.windows.platform)),
       ],
       exclude: getConfig(for: .oiio).exclude,
       publicHeadersPath: "include",
@@ -618,7 +623,8 @@ let package = Package(
       publicHeadersPath: "include",
       cxxSettings: [
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
-        .define("PTEX_EXPORTS", .when(platforms: [.windows]))
+        .define("PTEX_EXPORTS", .when(platforms: [.windows])),
+        .define("PTEX_PLATFORM_WINDOWS", .when(platforms: [.windows])),
       ]
     ),
 
@@ -697,6 +703,7 @@ let package = Package(
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "ZLibDataCompression"),
+        .target(name: "any"),
         Arch.OS.python(),
         Arch.OS.boost()
       ],
@@ -1241,6 +1248,10 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["Apple"]
         ),
         .library(
+          name: "MicrosoftSTL",
+          targets: ["MicrosoftSTL"]
+        ),
+        .library(
           name: "DEFLATE",
           targets: ["DEFLATE"]
         ),
@@ -1591,9 +1602,15 @@ enum Arch
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         .product(name: "Python", package: "MetaversePythonFramework", condition: .when(platforms: Arch.OS.apple.platform))
-      #elseif os(Windows) || os(Cygwin) || os(WASI) || os(Android)
-        // python is disabled on Windows, Cygwin, and WASI
-        // just return ZStandard for fast package resolution,
+      #elseif os(Windows) || os(Cygwin)
+        // python is disabled on both Windows, Cygwin here
+        // just return the STL for fast package resolution,
+        // things get very slow to resolve if this is optional
+        // or if we try to add arrays together.
+        .target(name: "MicrosoftSTL")
+      #elseif os(WASI)
+        // python is disabled on WebAssembly, for now just
+        // just return the Zstd for fast package resolution,
         // things get very slow to resolve if this is optional
         // or if we try to add arrays together.
         .target(name: "ZStandard")

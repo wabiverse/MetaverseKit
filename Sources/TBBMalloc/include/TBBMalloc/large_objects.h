@@ -15,7 +15,7 @@
 */
 
 #ifndef __TBB_tbbmalloc_internal_H
-    #error tbbmalloc_internal.h must be included at this point
+    #error TBBMalloc.h must be included at this point
 #endif
 
 #ifndef __TBB_large_objects_H

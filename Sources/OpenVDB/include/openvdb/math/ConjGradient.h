@@ -1156,7 +1156,7 @@ SparseStencilMatrix<ValueType, STENCIL_SIZE>::RowBase<DataType>::dot(
     const VecValueType* inVec, SizeType vecSize) const
 {
     VecValueType result = zeroVal<VecValueType>();
-    for (SizeType idx = 0, N = std::min(vecSize, this->size()); idx < N; ++idx) {
+    for (SizeType idx = 0, N = (std::min)(vecSize, this->size()); idx < N; ++idx) {
         result += static_cast<VecValueType>(this->value(idx) * inVec[this->column(idx)]);
     }
     return result;
@@ -1679,7 +1679,7 @@ solve(
     ValueType rDotZPrev(1); // inner product of <z,r>
 
     // Keep track of the minimum error to monitor convergence.
-    ValueType minL2Error = std::numeric_limits<ValueType>::max();
+    ValueType minL2Error = (std::numeric_limits<ValueType>::max)();
     ValueType l2Error;
 
     int iteration = 0;

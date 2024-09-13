@@ -1249,7 +1249,7 @@ public:
     RootNodeMask operator!() const { RootNodeMask m = *this; m.toggle(); return m; }
     const RootNodeMask& operator&=(const RootNodeMask& other) {
         assert(mIntSize == other.mIntSize);
-        for (Index32 i = 0, N = std::min(mIntSize, other.mIntSize); i < N; ++i) {
+        for (Index32 i = 0, N = (std::min)(mIntSize, other.mIntSize); i < N; ++i) {
             mBits[i] &= other.mBits[i];
         }
         for (Index32 i = other.mIntSize; i < mIntSize; ++i) mBits[i] = 0x00000000;
@@ -1257,14 +1257,14 @@ public:
     }
     const RootNodeMask& operator|=(const RootNodeMask& other) {
         assert(mIntSize == other.mIntSize);
-        for (Index32 i = 0, N = std::min(mIntSize, other.mIntSize); i < N; ++i) {
+        for (Index32 i = 0, N = (std::min)(mIntSize, other.mIntSize); i < N; ++i) {
             mBits[i] |= other.mBits[i];
         }
         return *this;
     }
     const RootNodeMask& operator^=(const RootNodeMask& other) {
         assert(mIntSize == other.mIntSize);
-        for (Index32 i = 0, N = std::min(mIntSize, other.mIntSize); i < N; ++i) {
+        for (Index32 i = 0, N = (std::min)(mIntSize, other.mIntSize); i < N; ++i) {
             mBits[i] ^= other.mBits[i];
         }
         return *this;

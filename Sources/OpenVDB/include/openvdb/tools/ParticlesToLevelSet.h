@@ -813,7 +813,7 @@ private:
                 thread::cancelGroupExecution();
                 return false;
             }
-            const Coord &bmin = bbox.min(), &bmax = bbox.max();
+            const Coord &bmin = (bbox.min)(), &bmax = (bbox.max)();
             Coord c;
             Real cx, cy, cz;
             for (c = bmin, cx = c.x(); c.x() <= bmax.x(); ++c.x(), cx += 1) {

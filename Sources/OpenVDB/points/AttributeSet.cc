@@ -1189,7 +1189,7 @@ AttributeSet::Descriptor::unusedGroupOffset(size_t hint) const
     // all group offsets are in use
 
     if (unusedGroups() == size_t(0)) {
-        return std::numeric_limits<size_t>::max();
+        return (std::numeric_limits<size_t>::max)();
     }
 
     // build a list of group indices
@@ -1204,7 +1204,7 @@ AttributeSet::Descriptor::unusedGroupOffset(size_t hint) const
 
     // return hint if not already in use
 
-    if (hint != std::numeric_limits<Index>::max() &&
+    if (hint != (std::numeric_limits<Index>::max)() &&
         hint < availableGroups() &&
         std::find(indices.begin(), indices.end(), hint) == indices.end()) {
         return hint;

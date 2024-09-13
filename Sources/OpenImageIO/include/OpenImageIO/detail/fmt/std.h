@@ -22,9 +22,13 @@
 #include "format.h"
 #include "ostream.h"
 
-#if FMT_HAS_INCLUDE(<version>)
-#  include <version>
-#endif
+#if defined(_WIN32)
+#  include <MicrosoftSTL/STLVersion.h>
+#else // !defined(_WIN32)
+#  if FMT_HAS_INCLUDE(<version>)
+#    include <version>
+#  endif // FMT_HAS_INCLUDE(<version>)
+#endif // defined(_WIN32)
 // Checking FMT_CPLUSPLUS for warning suppression in MSVC.
 #if FMT_CPLUSPLUS >= 201703L
 #  if FMT_HAS_INCLUDE(<filesystem>)

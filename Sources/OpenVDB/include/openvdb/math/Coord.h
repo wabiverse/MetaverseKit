@@ -40,10 +40,10 @@ public:
     explicit Coord(const Int32* v): mVec{{v[0], v[1], v[2]}} {}
 
     /// @brief Return the smallest possible coordinate
-    static Coord min() { return Coord(Limits::min()); }
+    static Coord (min)() { return Coord((Limits::min)()); }
 
     /// @brief Return the largest possible coordinate
-    static Coord max() { return Coord(Limits::max()); }
+    static Coord (max)() { return Coord((Limits::max)()); }
 
     /// @brief Return @a xyz rounded to the closest integer coordinates
     /// (cell centered conversion).
@@ -174,33 +174,33 @@ public:
     /// Perform a component-wise minimum with the other Coord.
     void minComponent(const Coord& other)
     {
-        mVec[0] = std::min(mVec[0], other.mVec[0]);
-        mVec[1] = std::min(mVec[1], other.mVec[1]);
-        mVec[2] = std::min(mVec[2], other.mVec[2]);
+        mVec[0] = (std::min)(mVec[0], other.mVec[0]);
+        mVec[1] = (std::min)(mVec[1], other.mVec[1]);
+        mVec[2] = (std::min)(mVec[2], other.mVec[2]);
     }
 
     /// Perform a component-wise maximum with the other Coord.
     void maxComponent(const Coord& other)
     {
-        mVec[0] = std::max(mVec[0], other.mVec[0]);
-        mVec[1] = std::max(mVec[1], other.mVec[1]);
-        mVec[2] = std::max(mVec[2], other.mVec[2]);
+        mVec[0] = (std::max)(mVec[0], other.mVec[0]);
+        mVec[1] = (std::max)(mVec[1], other.mVec[1]);
+        mVec[2] = (std::max)(mVec[2], other.mVec[2]);
     }
 
     /// Return the component-wise minimum of the two Coords.
     static inline Coord minComponent(const Coord& lhs, const Coord& rhs)
     {
-        return Coord(std::min(lhs.x(), rhs.x()),
-                     std::min(lhs.y(), rhs.y()),
-                     std::min(lhs.z(), rhs.z()));
+        return Coord((std::min)(lhs.x(), rhs.x()),
+                     (std::min)(lhs.y(), rhs.y()),
+                     (std::min)(lhs.z(), rhs.z()));
     }
 
     /// Return the component-wise maximum of the two Coords.
     static inline Coord maxComponent(const Coord& lhs, const Coord& rhs)
     {
-        return Coord(std::max(lhs.x(), rhs.x()),
-                     std::max(lhs.y(), rhs.y()),
-                     std::max(lhs.z(), rhs.z()));
+        return Coord((std::max)(lhs.x(), rhs.x()),
+                     (std::max)(lhs.y(), rhs.y()),
+                     (std::max)(lhs.z(), rhs.z()));
     }
 
     /// Return true if any of the components of @a a are smaller than the
@@ -261,7 +261,7 @@ public:
     {
     public:
         /// @brief C-tor from a bounding box
-        Iterator(const CoordBBox& b): mPos(b.min()), mMin(b.min()), mMax(b.max()) {}
+        Iterator(const CoordBBox& b): mPos((b.min)()), mMin((b.min)()), mMax((b.max)()) {}
         /// @brief Increment the iterator to point to the next coordinate.
         /// @details Iteration stops one past the maximum coordinate
         /// along the axis determined by the template parameter.
@@ -293,7 +293,7 @@ public:
     using XYZIterator = Iterator</*ZYX=*/false>;
 
     /// @brief The default constructor produces an empty bounding box.
-    CoordBBox(): mMin(Coord::max()), mMax(Coord::min()) {}
+    CoordBBox(): mMin((Coord::max)()), mMax((Coord::min)()) {}
     /// @brief Construct a bounding box with the given @a min and @a max bounds.
     CoordBBox(const Coord& min, const Coord& max): mMin(min), mMax(max) {}
     /// @brief Construct from individual components of the min and max bounds.
@@ -318,15 +318,15 @@ public:
     }
 
     /// Return an "infinite" bounding box, as defined by the Coord value range.
-    static CoordBBox inf() { return CoordBBox(Coord::min(), Coord::max()); }
+    static CoordBBox inf() { return CoordBBox((Coord::min)(), (Coord::max)()); }
 
-    const Coord& min() const { return mMin; }
-    const Coord& max() const { return mMax; }
+    const Coord& (min)() const { return mMin; }
+    const Coord& (max)() const { return mMax; }
 
-    Coord& min() { return mMin; }
-    Coord& max() { return mMax; }
+    Coord& (min)() { return mMin; }
+    Coord& (max)() { return mMax; }
 
-    void reset() { mMin = Coord::max(); mMax = Coord::min(); }
+    void reset() { mMin = (Coord::max)(); mMax = (Coord::min)(); }
     void reset(const Coord& min, const Coord& max) { mMin = min; mMax = max; }
     void resetToCube(const Coord& min, ValueType dim) { mMin = min; mMax = min.offsetBy(dim - 1); }
 
@@ -439,14 +439,14 @@ public:
     /// @brief Union this bounding box with the given bounding box.
     void expand(const CoordBBox& bbox)
     {
-          mMin.minComponent(bbox.min());
-          mMax.maxComponent(bbox.max());
+          mMin.minComponent((bbox.min)());
+          mMax.maxComponent((bbox.max)());
     }
     /// @brief Intersect this bounding box with the given bounding box.
     void intersect(const CoordBBox& bbox)
     {
-        mMin.maxComponent(bbox.min());
-        mMax.minComponent(bbox.max());
+        mMin.maxComponent((bbox.min)());
+        mMax.minComponent((bbox.max)());
     }
     /// @brief Union this bounding box with the cubical bounding box
     /// of the given size and with the given minimum coordinates.
@@ -574,7 +574,7 @@ operator-(const Coord& v1, const Vec3<T>& v0)
 inline std::ostream&
 operator<<(std::ostream& os, const CoordBBox& b)
 {
-    os << b.min() << " -> " << b.max();
+    os << (b.min)() << " -> " << (b.max)();
     return os;
 }
 

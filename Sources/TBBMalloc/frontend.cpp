@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-#include "tbbmalloc_internal.h"
+#include "TBBMalloc/tbbmalloc_internal.h"
 #include <errno.h>
 #include <new>        /* for placement new */
 #include <string.h>   /* for memset */

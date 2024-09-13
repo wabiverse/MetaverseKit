@@ -186,7 +186,7 @@ void DelayedLoadMetadata::readValue(std::istream& is, Index32 numBytes)
 
     is.read(reinterpret_cast<char*>(&bytes), sizeof(Index32));
 
-    if (bytes != std::numeric_limits<Index32>::max()) {
+    if (bytes != (std::numeric_limits<Index32>::max)()) {
         if (bytes > Index32(0)) {
             std::unique_ptr<char[]> compressedBuffer(new char[bytes]);
             is.read(reinterpret_cast<char*>(compressedBuffer.get()), bytes);
@@ -231,8 +231,8 @@ void DelayedLoadMetadata::readValue(std::istream& is, Index32 numBytes)
 void DelayedLoadMetadata::writeValue(std::ostream& os) const
 {
     // metadata has a limit of 2^32 bytes
-    assert(mMask.size() < std::numeric_limits<Index32>::max());
-    assert(mCompressedSize.size() < std::numeric_limits<Index32>::max());
+    assert(mMask.size() < (std::numeric_limits<Index32>::max)());
+    assert(mCompressedSize.size() < (std::numeric_limits<Index32>::max)());
 
     if (mMask.empty() && mCompressedSize.empty())     return;
 
@@ -242,7 +242,7 @@ void DelayedLoadMetadata::writeValue(std::ostream& os) const
     os.write(reinterpret_cast<const char*>(&count), sizeof(Index32));
 
     const Index32 zeroSize(0);
-    const Index32 maxSize(std::numeric_limits<Index32>::max());
+    const Index32 maxSize((std::numeric_limits<Index32>::max)());
 
     { // mask buffer
         size_t compressedBytes(0);
@@ -254,7 +254,7 @@ void DelayedLoadMetadata::writeValue(std::ostream& os) const
         }
 
         if (compressedBuffer) {
-            assert(compressedBytes < std::numeric_limits<Index32>::max());
+            assert(compressedBytes < (std::numeric_limits<Index32>::max)());
             Index32 bytes(static_cast<Index32>(compressedBytes));
             os.write(reinterpret_cast<const char*>(&bytes), sizeof(Index32));
             os.write(reinterpret_cast<const char*>(compressedBuffer.get()), compressedBytes);
@@ -281,7 +281,7 @@ void DelayedLoadMetadata::writeValue(std::ostream& os) const
         }
 
         if (compressedBuffer) {
-            assert(compressedBytes < std::numeric_limits<Index32>::max());
+            assert(compressedBytes < (std::numeric_limits<Index32>::max)());
             Index32 bytes(static_cast<Index32>(compressedBytes));
             os.write(reinterpret_cast<const char*>(&bytes), sizeof(Index32));
             os.write(reinterpret_cast<const char*>(compressedBuffer.get()), compressedBytes);

@@ -235,7 +235,7 @@ LevelSetFilter<GridT, MaskT, InterruptT>::Filter::median(int width)
     mParent->leafs().rebuildAuxBuffers(1, mParent->getGrainSize()==0);
 
     mTask = std::bind(&Filter::medianImpl,
-        std::placeholders::_1, std::placeholders::_2, std::max(1, width));
+        std::placeholders::_1, std::placeholders::_2, (std::max)(1, width));
     this->cook(true);
 
     mParent->track();
@@ -271,7 +271,7 @@ LevelSetFilter<GridT, MaskT, InterruptT>::Filter::box(int width)
 {
     mParent->leafs().rebuildAuxBuffers(1, mParent->getGrainSize()==0);
 
-    width = std::max(1, width);
+    width = (std::max)(1, width);
 
     mTask = std::bind(&Filter::boxXImpl, std::placeholders::_1, std::placeholders::_2, width);
     this->cook(true);

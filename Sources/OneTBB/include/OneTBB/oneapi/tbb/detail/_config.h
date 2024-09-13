@@ -28,11 +28,15 @@
 /* Check which standard library we use. */
 #include <cstddef>
 
-#ifdef __has_include
-#if __has_include(<version>)
-#include <version>
-#endif
-#endif
+#if defined(_WIN32)
+#    include <MicrosoftSTL/STLVersion.h>
+#else // !defined(_WIN32)
+#    ifdef __has_include
+#        if __has_include(<version>)
+#            include <version>
+#        endif // __has_include(<version>)
+#    endif // __has_include
+#endif // defined(_WIN32)
 
 #include "_export.h"
 

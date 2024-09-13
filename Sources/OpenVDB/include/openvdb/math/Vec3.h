@@ -633,9 +633,9 @@ template <typename T>
 inline Vec3<T> minComponent(const Vec3<T> &v1, const Vec3<T> &v2)
 {
     return Vec3<T>(
-            std::min(v1.x(), v2.x()),
-            std::min(v1.y(), v2.y()),
-            std::min(v1.z(), v2.z()));
+            (std::min)(v1.x(), v2.x()),
+            (std::min)(v1.y(), v2.y()),
+            (std::min)(v1.z(), v2.z()));
 }
 
 /// Return component-wise maximum of the two vectors.
@@ -643,9 +643,9 @@ template <typename T>
 inline Vec3<T> maxComponent(const Vec3<T> &v1, const Vec3<T> &v2)
 {
     return Vec3<T>(
-            std::max(v1.x(), v2.x()),
-            std::max(v1.y(), v2.y()),
-            std::max(v1.z(), v2.z()));
+            (std::max)(v1.x(), v2.x()),
+            (std::max)(v1.y(), v2.y()),
+            (std::max)(v1.z(), v2.z()));
 }
 
 /// @brief Return a vector with the exponent applied to each of

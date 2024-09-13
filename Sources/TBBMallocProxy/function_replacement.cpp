@@ -38,7 +38,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "function_replacement.h"
+#include "TBBMallocProxy/function_replacement.h"
 
 // The information about a standard memory allocation function for the replacement log
 struct FunctionInfo {

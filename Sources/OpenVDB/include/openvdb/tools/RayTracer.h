@@ -438,7 +438,7 @@ class PerspectiveCamera: public BaseCamera
                       double focalLength = 50.0,
                       double aperture    = 41.2136,
                       double nearPlane   = 1e-3,
-                      double farPlane    = std::numeric_limits<double>::max())
+                      double farPlane    = (std::numeric_limits<double>::max)())
         : BaseCamera(film, rotation, translation, 0.5*aperture/focalLength, nearPlane, farPlane)
     {
     }
@@ -495,7 +495,7 @@ public:
                        const Vec3R& translation = Vec3R(0.0),
                        double frameWidth = 1.0,
                        double nearPlane  = 1e-3,
-                       double farPlane   = std::numeric_limits<double>::max())
+                       double farPlane   = (std::numeric_limits<double>::max)())
         : BaseCamera(film, rotation, translation, 0.5*frameWidth, nearPlane, farPlane)
     {
     }
@@ -638,7 +638,7 @@ class PositionShader: public BaseShader
 {
 public:
     PositionShader(const math::BBox<Vec3R>& bbox, const GridT& grid)
-        : mMin(bbox.min())
+        : mMin((bbox.min)())
         , mInvDim(1.0/bbox.extents())
         , mAcc(grid.getAccessor())
         , mXform(&grid.transform())
@@ -667,7 +667,7 @@ class PositionShader<Film::RGBA, SamplerType>: public BaseShader
 {
 public:
     PositionShader(const math::BBox<Vec3R>& bbox, const Film::RGBA& c = Film::RGBA(1.0f))
-        : mMin(bbox.min()), mInvDim(1.0/bbox.extents()), mRGBA(c) {}
+        : mMin((bbox.min)()), mInvDim(1.0/bbox.extents()), mRGBA(c) {}
     PositionShader(const PositionShader&) = default;
     ~PositionShader() override = default;
     Film::RGBA operator()(const Vec3R& xyz, const Vec3R&, const Vec3R&) const override

@@ -65,7 +65,7 @@ fillWithSpheres(
     const Vec2i& sphereCount = Vec2i(1, 50),
     bool overlapping = false,
     float minRadius = 1.0,
-    float maxRadius = std::numeric_limits<float>::max(),
+    float maxRadius = (std::numeric_limits<float>::max)(),
     float isovalue = 0.0,
     int instanceCount = 10000,
     InterrupterT* interrupter = nullptr);
@@ -453,7 +453,7 @@ ClosestPointDist<Index32LeafT>::evalNode(size_t pointIndex, size_t nodeIndex) co
         center[2] = mLeafBoundingSpheres[i][2];
         const auto radiusSqr = mLeafBoundingSpheres[i][3];
 
-        distToLeaf = float(std::max(0.0, (pos - center).lengthSqr() - radiusSqr));
+        distToLeaf = float((std::max)(0.0, (pos - center).lengthSqr() - radiusSqr));
 
         if (distToLeaf < minDist) {
             minDist = distToLeaf;
@@ -495,7 +495,7 @@ ClosestPointDist<Index32LeafT>::operator()(const tbb::blocked_range<size_t>& ran
             center[2] = mNodeBoundingSpheres[i][2];
             const auto radiusSqr = mNodeBoundingSpheres[i][3];
 
-            distToNode = float(std::max(0.0, (pos - center).lengthSqr() - radiusSqr));
+            distToNode = float((std::max)(0.0, (pos - center).lengthSqr() - radiusSqr));
 
             if (distToNode < minDist) {
                 minDist = distToNode;
@@ -612,7 +612,7 @@ UpdatePoints::operator()(const tbb::blocked_range<size_t>& range)
         }
 
         if (!mOverlapping) {
-            mDistances[n] = std::min(mDistances[n], (dist - mSphere[3]));
+            mDistances[n] = (std::min)(mDistances[n], (dist - mSphere[3]));
         }
 
         if (mDistances[n] > mRadius) {
@@ -665,7 +665,7 @@ fillWithSpheres(
         // have values less than or equal to the background value, so an isovalue
         // greater than or equal to the background value would produce a mask with
         // effectively infinite extent.)
-        isovalue = std::min(isovalue,
+        isovalue = (std::min)(isovalue,
             static_cast<float>(gridPtr->background() - math::Tolerance<float>::value()));
     } else if (gridPtr->getGridClass() == GRID_FOG_VOLUME) {
         // Clamp the isovalue of a fog volume between epsilon and one,
@@ -696,7 +696,7 @@ fillWithSpheres(
     }
 
     const bool addNarrowBandPoints = (numVoxels < 10000);
-    int instances = std::max(instanceCount, maxSphereCount);
+    int instances = (std::max)(instanceCount, maxSphereCount);
 
     using TreeT = typename GridT::TreeType;
     using BoolTreeT = typename TreeT::template ValueConverter<bool>::Type;
@@ -792,11 +792,11 @@ fillWithSpheres(
     minRadius = float(minRadius * transform.voxelSize()[0]);
     maxRadius = float(maxRadius * transform.voxelSize()[0]);
 
-    for (size_t s = 0, S = std::min(size_t(maxSphereCount), instancePoints.size()); s < S; ++s) {
+    for (size_t s = 0, S = (std::min)(size_t(maxSphereCount), instancePoints.size()); s < S; ++s) {
 
         if (interrupter && interrupter->wasInterrupted()) return;
 
-        largestRadius = std::min(maxRadius, largestRadius);
+        largestRadius = (std::min)(maxRadius, largestRadius);
 
         if ((int(s) >= minSphereCount) && (largestRadius < minRadius)) break;
 
@@ -851,7 +851,7 @@ ClosestSurfacePoint<GridT>::initialize(
         volume_to_mesh_internal::identifySurfaceIntersectingVoxels(mask, tree, ValueT(isovalue));
 
         mSignTreePt.reset(new Int16TreeT(0));
-        mIdxTreePt.reset(new Index32TreeT(std::numeric_limits<Index32>::max()));
+        mIdxTreePt.reset(new Index32TreeT((std::numeric_limits<Index32>::max)()));
 
 
         volume_to_mesh_internal::computeAuxiliaryData(
@@ -936,7 +936,7 @@ ClosestSurfacePoint<GridT>::initialize(
             ++leafCount;
         }
 
-        mMaxNodeLeafs = std::max(leafCount, mMaxNodeLeafs);
+        mMaxNodeLeafs = (std::max)(leafCount, mMaxNodeLeafs);
 
         mLeafRanges[n].second = mLeafNodes.size();
     }

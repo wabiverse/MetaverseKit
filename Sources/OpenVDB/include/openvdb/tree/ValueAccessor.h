@@ -64,7 +64,7 @@ namespace tree {
 template<typename TreeType,
     bool IsSafe = true,
     typename MutexT = void,
-    typename IndexSequence = openvdb::make_index_sequence<std::max(size_t(1),TreeType::DEPTH)-1>>
+    typename IndexSequence = openvdb::make_index_sequence<(std::max)(size_t(1),TreeType::DEPTH)-1>>
 class ValueAccessorImpl;
 
 /// @brief  Default alias for a ValueAccessor. This is simply a helper alias
@@ -82,7 +82,7 @@ class ValueAccessorImpl;
 ///   no locking takes place. In general it's not advised to mutex lock
 ///   ValueAccessor methods (instead consider creating a accessor per thread).
 template<typename TreeType, bool IsSafe = true,
-    size_t CacheLevels = std::max(Index(1),TreeType::DEPTH)-1, typename MutexType = void>
+    size_t CacheLevels =( std::max)(Index(1),TreeType::DEPTH)-1, typename MutexType = void>
 using ValueAccessor =
     ValueAccessorImpl<TreeType, IsSafe, MutexType,
         openvdb::make_index_sequence<CacheLevels>>;
@@ -117,7 +117,7 @@ using ValueAccessor3 =
 
 /// @brief Helper alias for a ValueAccesor which spin locks every API call.
 template<typename TreeType, bool IsSafe = true,
-    size_t CacheLevels = std::max(Index(1),TreeType::DEPTH)-1>
+    size_t CacheLevels = (std::max)(Index(1),TreeType::DEPTH)-1>
 using ValueAccessorRW =
     ValueAccessorImpl<TreeType, IsSafe, tbb::spin_mutex,
         openvdb::make_index_sequence<CacheLevels>>;
@@ -870,7 +870,7 @@ public:
     {
         static constexpr int64_t Idx = NodeLevelList::template Index<NodeT>;
         if constexpr (Idx >= 0) {
-            mKeys[Idx] = Coord::max();
+            mKeys[Idx] = (Coord::max)();
             mNodes.template get<Idx>() = nullptr;
         }
     }
@@ -879,7 +879,7 @@ public:
     ///   hash-keys.
     void clear() override final
     {
-        mKeys.fill(Coord::max());
+        mKeys.fill((Coord::max)());
         mNodes.foreach([](auto& node) { node = nullptr; });
         if constexpr (BypassLeafAPI) {
             LeafCacheT::setBuffer(nullptr);

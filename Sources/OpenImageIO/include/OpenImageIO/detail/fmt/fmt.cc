@@ -31,7 +31,12 @@
 #include <utility>
 #include <variant>
 #include <vector>
-#include <version>
+
+#if defined(_WIN32)
+#  include <MicrosoftSTL/STLVersion.h>
+#else // !defined(_WIN32)
+#  include <version>
+#endif // defined(_WIN32)
 
 #if __has_include(<cxxabi.h>)
 #  include <cxxabi.h>

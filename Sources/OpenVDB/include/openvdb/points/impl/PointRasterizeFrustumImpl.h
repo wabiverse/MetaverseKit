@@ -245,8 +245,8 @@ struct RasterizeOp
             frustumBBox.intersect(*clipBBox);
         }
 
-        Vec3i outMin = frustumBBox.min().asVec3i();
-        Vec3i outMax = frustumBBox.max().asVec3i();
+        Vec3i outMin = (frustumBBox.min)().asVec3i();
+        Vec3i outMax = (frustumBBox.max)().asVec3i();
 
         const bool interrupt = interrupter && frustumBBox.volume() > interruptThreshold;
 
@@ -288,7 +288,7 @@ struct RasterizeOp
         // and compute the enclosing bounding box in the output tree.
         Vec3R frustumMin;
         Vec3R frustumMax;
-        math::calculateBounds(frustum, inputBBoxWS.min(), inputBBoxWS.max(),
+        math::calculateBounds(frustum, (inputBBoxWS.min)(), (inputBBoxWS.max)(),
             frustumMin, frustumMax);
         CoordBBox frustumBBox(Coord::floor(frustumMin), Coord::ceil(frustumMax));
 
@@ -297,8 +297,8 @@ struct RasterizeOp
             frustumBBox.intersect(*clipBBox);
         }
 
-        Vec3i outMin = frustumBBox.min().asVec3i();
-        Vec3i outMax = frustumBBox.max().asVec3i();
+        Vec3i outMin = (frustumBBox.min)().asVec3i();
+        Vec3i outMax = (frustumBBox.max)().asVec3i();
 
         const bool interrupt = interrupter && frustumBBox.volume() > interruptThreshold;
 
@@ -351,7 +351,7 @@ struct RasterizeOp
 
         const float shutterStartDt = mSettings.camera.shutterStart()/mSettings.framesPerSecond;
         const float shutterEndDt = mSettings.camera.shutterEnd()/mSettings.framesPerSecond;
-        const int motionSteps = std::max(1, mSettings.motionSamples-1);
+        const int motionSteps = (std::max)(1, mSettings.motionSamples-1);
 
         std::vector<Vec3d> motionPositions(motionSteps+1, Vec3d());
         std::vector<Vec2s> frustumRadiusSizes(motionSteps+1, Vec2s());
@@ -631,14 +631,14 @@ struct RasterizeOp
                         } else {
                             // max radius is the largest index-space radius factoring in
                             // that in frustum space a sphere is not rasterized as spherical
-                            maxRadius = std::max(startRadius[0], startRadius[1]);
-                            maxRadius = std::max(maxRadius, endRadius[0]);
-                            maxRadius = std::max(maxRadius, endRadius[1]);
+                            maxRadius = (std::max)(startRadius[0], startRadius[1]);
+                            maxRadius = (std::max)(maxRadius, endRadius[0]);
+                            maxRadius = (std::max)(maxRadius, endRadius[1]);
                         }
                     }
 
                     if (doRadius) {
-                        distanceWeight = std::min(distanceWeight, 1.0);
+                        distanceWeight = (std::min)(distanceWeight, 1.0);
 
                         // these arbitrary constants are how tightly spheres are packed together
                         // irrespective of how large they are in index-space - if it is too low, the shape of
@@ -647,7 +647,7 @@ struct RasterizeOp
                         // diminishing returns towards the accuracy of the rasterized path
                         double spherePacking = mSettings.accurateSphereMotionBlur ? 4.0 : 2.0;
 
-                        const int steps = std::max(2, math::Ceil(distance * spherePacking / double(maxRadius)) + 1);
+                        const int steps = (std::max)(2, math::Ceil(distance * spherePacking / double(maxRadius)) + 1);
 
                         Vec3d sample(startPosition);
                         const Vec3d offset(direction / (steps-1));
@@ -686,7 +686,7 @@ struct RasterizeOp
                     } else {
                         // compute direction and store vector length as max time
                         mDdaRay.setMinTime(math::Delta<double>::value());
-                        mDdaRay.setMaxTime(std::max(distance, math::Delta<double>::value()*2.0));
+                        mDdaRay.setMaxTime((std::max)(distance, math::Delta<double>::value()*2.0));
 
                          // DDA requires normalized directions
                         direction.normalize();
@@ -1204,8 +1204,8 @@ FrustumRasterizerMask::FrustumRasterizerMask( const math::Transform& transform,
     if (!bbox.empty()) {
         // create world-space mask (with identity linear transform)
         MaskGrid::Ptr tempMask = MaskGrid::create();
-        CoordBBox coordBBox(Coord::floor(bbox.min()),
-                            Coord::ceil(bbox.max()));
+        CoordBBox coordBBox(Coord::floor((bbox.min)()),
+                            Coord::ceil((bbox.max)()));
         tempMask->sparseFill(coordBBox, true, true);
 
         // resample mask to index space
@@ -1225,8 +1225,8 @@ FrustumRasterizerMask::FrustumRasterizerMask( const math::Transform& transform,
         auto frustumMap = transform.template constMap<math::NonlinearFrustumMap>();
         if (frustumMap) {
             const auto& frustumBBox = frustumMap->getBBox();
-            mClipBBox.reset(Coord::floor(frustumBBox.min()),
-                Coord::ceil(frustumBBox.max()));
+            mClipBBox.reset(Coord::floor((frustumBBox.min)()),
+                Coord::ceil((frustumBBox.max)()));
         }
     }
 }

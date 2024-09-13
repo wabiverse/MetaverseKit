@@ -14,11 +14,11 @@
 #include <string>
 
 #if defined(_WIN32) || defined(__ANDROID__)
-#include <any>
+#include <any/any.hpp>
 
 namespace boost
 {
-  using namespace std;
+  using namespace linb;
 }
 #else // !defined(_WIN32) && !defined(__ANDROID__)
 #include <boost/any.hpp>
@@ -99,7 +99,11 @@ public:
     const MetaMap& gridMetadata() const;
     //@}
 
+    #if !defined(_WIN32)
     using AuxDataMap = std::map<std::string, boost::any>;
+    #else // defined(_WIN32)
+    using AuxDataMap = std::map<std::string, linb::any>;
+    #endif // defined(_WIN32)
     //@{
     /// @brief Return a map that can be populated with arbitrary user data.
     AuxDataMap& auxData();

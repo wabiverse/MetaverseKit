@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-#include "tbbmalloc_internal.h"
+#include "TBBMalloc/tbbmalloc_internal.h"
 #include <new>        /* for placement new */
 
 namespace rml {

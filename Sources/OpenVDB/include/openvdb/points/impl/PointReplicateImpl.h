@@ -132,7 +132,7 @@ replicate(const PointDataGridT& source,
         const auto& sourceLeaf = sourceManager.leaf(pos);
         // @note  This really shoudn't return uint64_t as AttributeArray's size is
         //  limited to the max of a uint32_t...
-        assert(sourceLeaf.pointCount() < Index64(std::numeric_limits<Index>::max()));
+        assert(sourceLeaf.pointCount() < Index64((std::numeric_limits<Index>::max)()));
         const Index sourceCount = static_cast<Index>(sourceLeaf.pointCount());
 
         Index uniformMultiplier = multiplier;
@@ -146,7 +146,7 @@ replicate(const PointDataGridT& source,
         // based on a scale. Should only be called if useScale is true,
         // otherwise the scaleHandle will be reset or null
         auto getPointsToGenerate = [&](const Index index) -> Index {
-            const float scale = std::max(0.0f, scaleHandle->get(index));
+            const float scale = (std::max)(0.0f, scaleHandle->get(index));
             return static_cast<Index>
                 (math::Round(static_cast<float>(multiplier) * scale));
         };
