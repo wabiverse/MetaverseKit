@@ -251,7 +251,10 @@ public:
     inline const CoordBBox& bbox() const { return BaseT::mBBox; }
 
      /// Return the grid's origin in index coordinates.
-    inline const Coord& origin() const { return BaseT::(mBBox.min)(); }
+    inline const Coord& origin() const
+    { 
+      return (BaseT::mBBox.min)();
+    }
 
     /// @brief Return the number of voxels contained in this grid.
     inline Index64 valueCount() const { return BaseT::mBBox.volume(); }
@@ -327,15 +330,16 @@ public:
     inline size_t coordToOffset(const Coord& xyz) const
     {
         assert(BaseT::mBBox.isInside(xyz));
-        return BaseT::coordToOffset(size_t(xyz[0]-BaseT::(mBBox.min)()[0]),
-                                    size_t(xyz[1]-BaseT::(mBBox.min)()[1]),
-                                    size_t(xyz[2]-BaseT::(mBBox.min)()[2]));
+
+        return BaseT::coordToOffset(size_t(xyz[0]-(BaseT::mBBox.min)()[0]),
+                                    size_t(xyz[1]-(BaseT::mBBox.min)()[1]),
+                                    size_t(xyz[2]-(BaseT::mBBox.min)()[2]));
     }
 
     /// @brief Return the global coordinate corresponding to the specified linear offset.
     inline Coord offsetToCoord(size_t n) const
     {
-      return this->offsetToLocalCoord(n) + BaseT::(mBBox.min)();
+        return this->offsetToLocalCoord(n) + (BaseT::mBBox.min)();
     }
 
     /// @brief Return the memory footprint of this Dense grid in bytes.
@@ -501,7 +505,7 @@ public:
             if (block.leaf) {
                 acc.addLeaf(block.leaf);
             } else if (block.tile.second) {//only background tiles are inactive
-                acc.addTile(1, block.(bbox.min)(), block.tile.first, true);//leaf tile
+                acc.addTile(1, (block.bbox.min)(), block.tile.first, true);//leaf tile
             }
         }
         delete mBlocks;
