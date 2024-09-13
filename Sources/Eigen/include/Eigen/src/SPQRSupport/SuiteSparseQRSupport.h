@@ -11,6 +11,8 @@
 #ifndef EIGEN_SUITESPARSEQRSUPPORT_H
 #define EIGEN_SUITESPARSEQRSUPPORT_H
 
+#if 0
+
 // IWYU pragma: private
 #include "./InternalHeaderCheck.h"
 
@@ -335,4 +337,7 @@ struct SPQRMatrixQTransposeReturnType{
 };
 
 }// End namespace Eigen
+
+#endif // 0
+
 #endif

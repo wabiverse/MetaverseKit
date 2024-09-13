@@ -8,6 +8,8 @@
 #ifndef EIGEN_SPQRSUPPORT_MODULE_H
 #define EIGEN_SPQRSUPPORT_MODULE_H
 
+#if 0
+
 #include "SparseCore"
 
 #include "src/Core/util/DisableStupidWarnings.h"
@@ -35,5 +37,7 @@
 // IWYU pragma: end_exports
 
 #include "src/Core/util/ReenableStupidWarnings.h"
+
+#endif // 0
 
 #endif

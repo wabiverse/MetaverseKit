@@ -10,6 +10,8 @@
 #ifndef EIGEN_CHOLMODSUPPORT_H
 #define EIGEN_CHOLMODSUPPORT_H
 
+#if 0
+
 // IWYU pragma: private
 #include "./InternalHeaderCheck.h"
 
@@ -681,5 +683,7 @@ class CholmodDecomposition : public CholmodBase<MatrixType_, UpLo_, CholmodDecom
 };
 
 } // end namespace Eigen
+
+#endif // 0
 
 #endif // EIGEN_CHOLMODSUPPORT_H

@@ -8,6 +8,8 @@
 #ifndef EIGEN_CHOLMODSUPPORT_MODULE_H
 #define EIGEN_CHOLMODSUPPORT_MODULE_H
 
+#if 0
+
 #include "SparseCore"
 
 #include "src/Core/util/DisableStupidWarnings.h"
@@ -45,6 +47,8 @@ extern "C" {
 // IWYU pragma: end_exports
 
 #include "src/Core/util/ReenableStupidWarnings.h"
+
+#endif // 0
 
 #endif // EIGEN_CHOLMODSUPPORT_MODULE_H
 
