@@ -33,6 +33,11 @@
 #ifndef EIGEN_LLT_LAPACKE_H
 #define EIGEN_LLT_LAPACKE_H
 
+#include "../misc/lapacke.h"
+#include "../misc/lapacke_helpers.h"
+
+#include "./LLT.h"
+
 // IWYU pragma: private
 #include "./InternalHeaderCheck.h"
 
