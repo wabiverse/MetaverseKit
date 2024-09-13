@@ -47,6 +47,8 @@
 #ifndef EIGEN_COLAMD_H
 #define EIGEN_COLAMD_H
 
+namespace Eigen {
+
 namespace internal {
 
 namespace Colamd {
@@ -1860,4 +1862,6 @@ static inline  IndexType clear_mark  /* return the new value for tag_mark */
 } // namespace Colamd
 
 } // namespace internal
+
+} // namespace Eigen
 #endif

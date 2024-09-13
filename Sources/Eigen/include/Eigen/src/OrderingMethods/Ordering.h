@@ -14,9 +14,9 @@
 // IWYU pragma: private
 #include "./InternalHeaderCheck.h"
 
-namespace Eigen {
-  
 #include "Eigen_Colamd.h"
+
+namespace Eigen {
 
 namespace internal {
     
