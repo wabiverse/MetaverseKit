@@ -10,6 +10,8 @@
 #include "../numpy.h"
 #include "common.h"
 
+#if 0
+
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 static_assert(__GNUC__ > 5, "Eigen Tensor support in pybind11 requires GCC > 5.0");
 #endif
@@ -514,3 +516,5 @@ public:
 
 PYBIND11_NAMESPACE_END(detail)
 PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
+
+#endif // 0
