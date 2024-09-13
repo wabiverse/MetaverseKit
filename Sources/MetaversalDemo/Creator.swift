@@ -111,6 +111,7 @@ class Creator
       PyBundler.shared.pyInit()
       PyBundler.shared.pyInfo()
     #endif // canImport(Python)
+    print("app launched.")
 
     C = Creator()
 
@@ -252,6 +253,8 @@ class Creator
       Creator.setupGuiStyle(with: ctx)
 
       window = .init()
+
+      print("app launched succesfully.")
 
       return true
     }

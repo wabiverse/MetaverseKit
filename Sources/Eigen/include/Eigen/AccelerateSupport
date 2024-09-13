@@ -43,8 +43,10 @@
   * \endcode
   */
 
+#if defined(__APPLE__)
 // IWYU pragma: begin_exports
-#include "src/AccelerateSupport/AccelerateSupport.h"
+#  include "src/AccelerateSupport/AccelerateSupport.h"
+#endif // defined(__APPLE__)
 // IWYU pragma: end_exports
 
 #include "src/Core/util/ReenableStupidWarnings.h"
