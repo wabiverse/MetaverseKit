@@ -125,7 +125,6 @@
 #if defined(__APPLE__)
 #include <MaterialX/MXGenMslBitangentNodeMsl.h>
 #include <MaterialX/MXGenMslBlurNodeMsl.h>
-#include <MaterialX/MXGenMslExport.h>
 #include <MaterialX/MXGenMslFrameNodeMsl.h>
 #include <MaterialX/MXGenMslGeomColorNodeMsl.h>
 #include <MaterialX/MXGenMslGeomPropValueNodeMsl.h>
@@ -137,15 +136,16 @@
 #include <MaterialX/MXGenMslNormalNodeMsl.h>
 #include <MaterialX/MXGenMslNumLightsNodeMsl.h>
 #include <MaterialX/MXGenMslPositionNodeMsl.h>
-#include <MaterialX/MXGenMslResourceBindingContext.h>
-#include <MaterialX/MXGenMslShaderGenerator.h>
-#include <MaterialX/MXGenMslSurfaceNodeMsl.h>
 #include <MaterialX/MXGenMslSurfaceShaderNodeMsl.h>
-#include <MaterialX/MXGenMslSyntax.h>
 #include <MaterialX/MXGenMslTangentNodeMsl.h>
 #include <MaterialX/MXGenMslTimeNodeMsl.h>
 #include <MaterialX/MXGenMslUnlitSurfaceNodeMsl.h>
 #endif /* defined(__APPLE__) */
+#include <MaterialX/MXGenMslExport.h>
+#include <MaterialX/MXGenMslShaderGenerator.h>
+#include <MaterialX/MXGenMslResourceBindingContext.h>
+#include <MaterialX/MXGenMslSurfaceNodeMsl.h>
+#include <MaterialX/MXGenMslSyntax.h>
 #include <MaterialX/MXGenShader.h>
 #include <MaterialX/MXGenShaderBlurNode.h>
 #include <MaterialX/MXGenShaderClosureAddNode.h>
