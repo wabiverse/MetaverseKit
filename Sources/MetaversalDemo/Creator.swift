@@ -144,25 +144,32 @@ class Creator
   static func configImaging()
   {
     /* create some exr images. */
-    let dtp = OIIO.TypeDesc(.init("FLOAT"))
+    let dtp = OIIO.TypeDesc(.init("float"))
     let fmt = OIIO.ImageSpec(512, 89, 4, dtp)
 
     var fg = OIIO.ImageBuf(.init(std.string("fg.exr")), fmt, OIIO.InitializePixels.Yes)
     let bg = OIIO.ImageBuf(.init(std.string("bg.exr")), fmt, OIIO.InitializePixels.Yes)
 
-    fg.set_origin(512, 89, 0)
+    fg.set_origin(0, 0, 0)
 
-    let comp = OIIO.ImageBufAlgo.over(fg, bg, fmt.roi(), 0)
-    if !comp.has_error()
+    if OIIO.ImageBufAlgo.fill(&fg, .init(Float(0.01)), .init(Float(0.01)), .init(Float(1.0)), .init(Float(0.01)), .init(), 0)
     {
-      if comp.write(.init(std.string("composite.exr")), OIIO.TypeDesc(.init("UNKNOWN")), .init(""), nil, nil) == false || comp.has_error()
+      let comp = OIIO.ImageBufAlgo.over(fg, bg, .init(), 0)
+      if !comp.has_error()
+      {
+        if comp.write(.init(std.string("composite.exr")), OIIO.TypeDesc(.init("UNKNOWN")), .init(""), nil, nil) == false || comp.has_error()
+        {
+          print("Error writing image: \(comp.geterror(true))")
+        }
+      }
+      else
       {
         print("Error writing image: \(comp.geterror(true))")
       }
-    }
-    else
+    } 
+    else 
     {
-      print("Error writing image: \(comp.geterror(true))")
+      print("Error filling fg image.")
     }
   }
 

@@ -325,18 +325,14 @@ let package = Package(
 
     .target(
       name: "MXResources",
-      exclude: [
-        // FIXME:
-        // temporary workaround for metal shaders
-        // erroring on compilation, so we don't
-        // gunk up SwiftUSD and everything else.
-        "libraries",
-        "Resources/Lights",
-        "Resources/Geometry",
-        "Resources/Materials",
-      ],
       resources: [
-        .process("Resources/Images"),
+        .copy("libraries"),
+        .copy("Resources/Geometry"),
+        .copy("Resources/Images"),
+        .copy("Resources/Lights"),
+        .copy("Resources/Materials"),
+        .copy("Resources/CMakeLists.txt"),
+        .copy("Resources/README.md"),
       ],
       cxxSettings: [
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
