@@ -38,7 +38,7 @@ releases, and we will provide monolithic releases in accordance with the [**VFX 
 ##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file.
 ```swift
 dependencies: [
-  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.8.7"),
+  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.8.5"),
 ]
 ```
 
