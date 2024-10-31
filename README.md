@@ -1,8 +1,26 @@
-# MetaverseKit
+<div align="center">
+
+<h1 align="center">
+  MetaverseKit
+</h1>
+
+<p align="center">
+  <i align="center">Monolithic dependency encapsulating many <a href="https://landscape.aswf.io"><b>ASWF</b></a> projects to <b>swiftly</b> architect the <b>metaverse</b>.</i>
+</p>
+
+<h4 align="center">
+  <a href="https://github.com/wabiverse/MetaverseKit/actions/workflows/swift-ubuntu.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/wabiverse/MetaverseKit/swift-ubuntu.yml?style=flat-square&label=ubuntu%20&labelColor=E95420&logoColor=FFFFFF&logo=ubuntu">
+  </a>
+  <a href="https://github.com/wabiverse/MetaverseKit/actions/workflows/swift-macos.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/wabiverse/MetaverseKit/swift-macos.yml?style=flat-square&label=macOS&labelColor=000000&logo=apple">
+  </a>
+  <a href="https://github.com/wabiverse/MetaverseKit/actions/workflows/swift-debug-windows.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/wabiverse/MetaverseKit/swift-debug-windows.yml?style=flat-square&label=windows&labelColor=357EC7&logo=gitforwindows">
+  </a>
+</h4>
 
 <image src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2pxN2Q4Y29kdmtuaGp5b3JwMDRhdmtmcHJ0c3VzZXhrc25hdnV1ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f9m9SX5FUGIUImpaSa/giphy.gif">
-
-> One small step for **swift**, one giant leap for **reality**!
 
 ### Embark on the Metaversal Frontier 
 
@@ -12,40 +30,21 @@ continue to evolve with additional plugins, tools, and developer resources overt
 of these libraries as Swift Packages, the **MetaverseKit** package will begin to pull in these official git remotes through versioned
 releases, and we will provide monolithic releases in accordance with the [**VFX Reference Platform**](https://vfxplatform.com).
 
-> [!NOTE]  
-> The **Wabi Foundation** remains steadfast in its collaboration with industry leaders, diligently working to secure official support
-  for these foundational libraries through the implementation of Swift Packages. This strategic initiative opens the gateway for developers,
-  offering unparalleled opportunity to unleash the full power of industry-grade software, and unlocking its utmost potential.
-
 <br/>
 
-### 📰 News
+</div>
 
-Planning & initial development on [**CosmoGraph**](https://wabi.foundation/cosmograph/documentation/cosmograph/), seamlessly create native
-cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **WinRT**, and various graphics frameworks using a unified **Swift** and
-**C++** API.
+# Usage
+##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file.
+```swift
+dependencies: [
+  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.8.7"),
+]
+```
 
-<br/>
+<hr/>
 
-### Wabi Targets
-| Swift Target  | Description                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| MetaPy        | Metaversal Python, all the python modules from the below libraries, combined into a single swift target.                                                                                                                                                                                                                                                                                                                          |
-| MXGraphEditor | MaterialX Graph Editor, visualizing, creating, and editing MaterialX graphs on the flick of a `swift run MXGraphEditor` command.                                                                                                                                                                                                                                                                                                  |
-| MXResources   | MaterialX Resources, adding this target to your swift app or plugin will automatically install the [**MaterialX Standard Library**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/libraries) and [**MaterialX Resources**](https://github.com/AcademySoftwareFoundation/MaterialX/tree/main/resources) into the `/Resources` directory that is embedded within your swift application bundle or plugin module. |
-
-
-
-| Swift Plugins                                                | Description                                                                                                                                                                                         | Usage                                          |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| [SwiftBundler](https://github.com/stackotter/swift-bundler)  | Create cross-platform Swift apps, (Xcode optional!). Turn Swift Packages into fully bundled Swift apps from the comfort of the command line - including **macOS**, **iOS**, and even **visionOS**. | `swift bundler run -p visionOS` |
-
-
-### Industry Swift Targets
-> [!IMPORTANT]
-> As of **January 10th, 2024**, **Linux** is now supported, in addition to **Apple** platforms,
-> you can grab the latest release [here](https://github.com/wabiverse/MetaverseKit/releases/tag/v1.7.7)! 🎉
-> And, as of **August 3rd, 2024**, **Microsoft Windows** is now supported.
+### Swift Targets
 
 | Swift Target                                                               | Version           |
 | -------------------------------------------------------------------------- | ----------------- |
@@ -84,15 +83,6 @@ cross-platform applications and games for **ObjCRT**, **GLibRT**, **FreeRT**, **
 | Swift Target                                                                                                                                           | Version                              |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
 | Apple ([Metal-cpp]([https://github.com/oneapi-src/oneTBB/issues/1244](https://developer.apple.com/metal/cpp/files/metal-cpp_macOS14.2_iOS17.2.zip)))   | macOS 14.2 / iOS 17.2 / visionOS 1.0 |
-
-
-# Usage
-##### To use MetaverseKit with Swift, add **MetaverseKit** as a **Package** dependency in your Package.swift file, [example usage](https://github.com/wabiverse/SwiftUSD/blob/main/Package.swift#L85).
-```swift
-dependencies: [
-  .package(url: "https://github.com/wabiverse/MetaverseKit.git", from: "1.7.7"),
-]
-```
 
 > [!NOTE]
 > Swift is an open source programming language that is fully
