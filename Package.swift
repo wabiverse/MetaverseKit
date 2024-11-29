@@ -365,6 +365,10 @@ let package = Package(
 
     .target(
       name: "MXResources",
+      exclude: [
+        // todo: fix metal shader compilation.
+        "libraries"
+      ],
       resources: [
         // todo: fix metal shader compilation.
         // .copy("libraries"),
