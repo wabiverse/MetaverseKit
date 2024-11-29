@@ -366,7 +366,8 @@ let package = Package(
     .target(
       name: "MXResources",
       resources: [
-        .copy("libraries"),
+        // todo: fix metal shader compilation.
+        // .copy("libraries"),
         .copy("Resources/Geometry"),
         .copy("Resources/Images"),
         .copy("Resources/Lights"),
