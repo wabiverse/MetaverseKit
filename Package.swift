@@ -795,22 +795,6 @@ let package = Package(
       linkerSettings: getConfig(for: .openvdb).linkerSettings
     ),
 
-    .target(
-      name: "CosmoGraph",
-      dependencies: [
-        .target(name: "Apple", condition: .when(platforms: Arch.OS.apple.platform)),
-        .target(name: "ImGui"),
-      ],
-      cxxSettings: [
-        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
-        .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
-        .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
-      ],
-      swiftSettings: [
-        .interoperabilityMode(.Cxx),
-      ]
-    ),
-
     /* 
       * Run this from the command line via:
       *
@@ -872,8 +856,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
 
   switch target
   {
-    case .cosmo:
-      break
     case .draco:
       break
     case .tbbMallocProxy:
@@ -1318,10 +1300,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       break
     case .all:
       config.products = [
-        .library(
-          name: "CosmoGraph",
-          targets: ["CosmoGraph"]
-        ),
         .library(
           name: "OneTBB",
           targets: ["OneTBB"]
@@ -1836,7 +1814,6 @@ enum Arch
 
 enum PkgTarget: String
 {
-  case cosmo = "CosmoGraph"
   case draco = "Draco"
   case tbbMallocProxy = "TBBMallocProxy"
   case tbbMalloc = "TBBMalloc"
