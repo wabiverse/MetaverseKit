@@ -754,7 +754,7 @@ let package = Package(
         .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
       ],
       linkerSettings: [
-        .linkedLibrary("python3.10", .when(platforms: Arch.OS.linux.platform)),
+        .linkedLibrary("python\(Arch.OS.Python.current.versionMajor).\(Arch.OS.Python.current.versionMinor)", .when(platforms: Arch.OS.linux.platform)),
       ]
     ),
 
@@ -1293,7 +1293,7 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           .linkedLibrary("boost_atomic"),
           .linkedLibrary("boost_iostreams"),
           .linkedLibrary("boost_program_options"),
-          .linkedLibrary("boost_python310"),
+          .linkedLibrary("boost_python\(Arch.OS.Python.current.versionMajor)\(Arch.OS.Python.current.versionMinor)"),
         ]
       #endif /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
     case .demo:
@@ -1520,6 +1520,30 @@ enum Arch
         case .applewindowsdroid: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .windows, .android]
         case .nixnodroid: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux, .openbsd]
         case .nodroid: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux, .openbsd, .windows]
+      }
+    }
+
+    enum Python: String
+    {
+      case v3_10 = "3.10"
+      case v3_11 = "3.11"
+      case v3_12 = "3.12"
+
+      public static let current: Python = .v3_12
+
+      public var version: String
+      {
+        self.rawValue
+      }
+
+      public var versionMajor: String
+      {
+        self.rawValue.split(separator: ".").first.map(String.init) ?? "3"
+      }
+
+      public var versionMinor: String
+      {
+        self.rawValue.split(separator: ".").last.map(String.init) ?? "10"
       }
     }
 
