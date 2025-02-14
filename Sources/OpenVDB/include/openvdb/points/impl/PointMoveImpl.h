@@ -260,7 +260,7 @@ struct GlobalMovePointsOp
             if (i < mSortedIndices.size()) {
                 return std::get<0>(this->leafIndexTriple(i));
             }
-            return std::numeric_limits<Index>::max();
+            return (std::numeric_limits<Index>::max)();
         }
 
         Index sourceIndex() const
@@ -498,7 +498,7 @@ inline void movePoints( PointDataGridT& points,
 
     LeafMap targetLeafMap;
     LeafIndexArray sourceIndices(targetLeafManager.leafCount(),
-        std::numeric_limits<LeafIndex>::max());
+        (std::numeric_limits<LeafIndex>::max)());
 
     LeafOffsetArray offsetMap(targetLeafManager.leafCount());
 

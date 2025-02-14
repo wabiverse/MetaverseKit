@@ -391,7 +391,7 @@ nonUniformPointScatter(const GridT& grid,
             if (iter.isValueOn()) {
                 double fractional =
                     double(accessor.getValue(iter.getCoord())) * pointsPerVoxel;
-                fractional = std::max(0.0, fractional);
+                fractional = (std::max)(0.0, fractional);
                 int count = int(fractional);
                 if (rand01() < (fractional - double(count))) ++count;
                 else if (count == 0) leafIter->setValueOff(iter.pos());

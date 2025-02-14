@@ -127,8 +127,8 @@ struct StaggeredTransfer :
 
         math::Vec3<RealT> centerw, macw;
 
-        const Coord& a(intersectBox.min());
-        const Coord& b(intersectBox.max());
+        const Coord& a((intersectBox.min)());
+        const Coord& b((intersectBox.max)());
         for (Coord c = a; c.x() <= b.x(); ++c.x()) {
             // @todo can probably simplify the double call to value() in some way
             const Index i = ((c.x() & (DIM-1u)) << 2*LOG2DIM); // unsigned bit shift mult
@@ -207,12 +207,12 @@ struct CellCenteredTransfer :
 
         // build area of influence depending on point position
         CoordBBox intersectBox(ijk, ijk);
-        if (P.x() < 0.0f) intersectBox.min().x() -= 1;
-        else              intersectBox.max().x() += 1;
-        if (P.y() < 0.0f) intersectBox.min().y() -= 1;
-        else              intersectBox.max().y() += 1;
-        if (P.z() < 0.0f) intersectBox.min().z() -= 1;
-        else              intersectBox.max().z() += 1;
+        if (P.x() < 0.0f) (intersectBox.min)().x() -= 1;
+        else              (intersectBox.max)().x() += 1;
+        if (P.y() < 0.0f) (intersectBox.min)().y() -= 1;
+        else              (intersectBox.max)().y() += 1;
+        if (P.z() < 0.0f) (intersectBox.min)().z() -= 1;
+        else              (intersectBox.max)().z() += 1;
         OPENVDB_ASSERT(intersectBox.volume() == 8);
 
         intersectBox.intersect(bounds);
@@ -224,8 +224,8 @@ struct CellCenteredTransfer :
         const SourceValueT s(this->mSHandle->get(id));
         math::Vec3<RealT> centerw;
 
-        const Coord& a(intersectBox.min());
-        const Coord& b(intersectBox.max());
+        const Coord& a((intersectBox.min)());
+        const Coord& b((intersectBox.max)());
         for (Coord c = a; c.x() <= b.x(); ++c.x()) {
             const Index i = ((c.x() & (DIM-1u)) << 2*LOG2DIM); // unsigned bit shift mult
             const RealT x = static_cast<RealT>(c.x()-ijk.x()); // distance from ijk to c

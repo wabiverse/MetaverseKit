@@ -18,7 +18,7 @@
 #include "GridTransformer.h" // for resampleToMatch()
 #include "LevelSetUtil.h" // for sdfSegmentation()
 
-#include <algorithm> // for std::max(), std::min()
+#include <algorithm> // for (std::max)(), (std::min)()
 #include <limits>
 #include <list>
 #include <vector>
@@ -108,14 +108,14 @@ struct FindMinMaxVoxelValue {
     using ValueType = typename LeafNodeType::ValueType;
 
     FindMinMaxVoxelValue(const std::vector<const LeafNodeType*>& nodes)
-        : minValue(std::numeric_limits<ValueType>::max())
+        : minValue((std::numeric_limits<ValueType>::max)())
         , maxValue(-minValue)
         , mNodes(nodes.empty() ? nullptr : &nodes.front())
     {
     }
 
     FindMinMaxVoxelValue(FindMinMaxVoxelValue& rhs, tbb::split)
-        : minValue(std::numeric_limits<ValueType>::max())
+        : minValue((std::numeric_limits<ValueType>::max)())
         , maxValue(-minValue)
         , mNodes(rhs.mNodes)
     {
@@ -125,15 +125,15 @@ struct FindMinMaxVoxelValue {
         for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
             const ValueType* data = mNodes[n]->buffer().data();
             for (Index i = 0; i < LeafNodeType::SIZE; ++i) {
-                minValue = std::min(minValue, data[i]);
-                maxValue = std::max(maxValue, data[i]);
+                minValue = (std::min)(minValue, data[i]);
+                maxValue = (std::max)(maxValue, data[i]);
             }
         }
     }
 
     void join(FindMinMaxVoxelValue& rhs) {
-        minValue = std::min(minValue, rhs.minValue);
-        maxValue = std::max(maxValue, rhs.maxValue);
+        minValue = (std::min)(minValue, rhs.minValue);
+        maxValue = (std::max)(maxValue, rhs.maxValue);
     }
 
     ValueType minValue, maxValue;

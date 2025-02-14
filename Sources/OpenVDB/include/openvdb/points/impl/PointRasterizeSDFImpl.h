@@ -47,9 +47,9 @@ struct FixedBandRadius : public FixedRadius<ValueT>
 
     inline void reset(const PointDataTree::LeafNodeType&) const {}
     inline const FixedBandRadius& eval(const Index) const { return *this; }
-    inline ValueT min() const { return mMinSearchIS; }
+    inline ValueT (min)() const { return mMinSearchIS; }
     inline ValueT minSq() const { return mMinSearchSqIS; }
-    inline ValueT max() const { return mMaxSearchIS; }
+    inline ValueT (max)() const { return mMaxSearchIS; }
     inline ValueT maxSq() const { return mMaxSearchSqIS; }
 private:
     const ValueT mMinSearchIS, mMaxSearchIS;
@@ -256,7 +256,7 @@ struct SphericalTransfer :
         P = this->transformSourceToTarget(P);
 
         const auto& r = this->mRadius.eval(id);
-        const RealT max = r.max();
+        const RealT max = (r.max)();
 
         CoordBBox intersectBox(Coord::floor(P - max), Coord::ceil(P + max));
         intersectBox.intersect(bounds);
@@ -277,8 +277,8 @@ struct SphericalTransfer :
         const RealT min2 = r.minSq() == 0.0 ? -1.0 : r.minSq();
         const RealT max2 = r.maxSq();
 
-        const Coord& a(intersectBox.min());
-        const Coord& b(intersectBox.max());
+        const Coord& a((intersectBox.min)());
+        const Coord& b((intersectBox.max)());
         for (Coord c = a; c.x() <= b.x(); ++c.x()) {
             const RealT x2 = static_cast<RealT>(math::Pow2(c.x() - P[0]));
             const Index i = ((c.x() & (DIM-1u)) << 2*LOG2DIM); // unsigned bit shift mult
@@ -404,7 +404,7 @@ struct AveragePositionTransfer :
         // init buffers
         this->BaseT::initialize(origin, idx, bounds);
         mWeights.assign(NUM_VALUES, PosRadPair());
-        if (CPG) mDist.assign(NUM_VALUES, std::numeric_limits<float>::max());
+        if (CPG) mDist.assign(NUM_VALUES, (std::numeric_limits<float>::max)());
         // We use the surface buffer to store the intermediate weights as
         // defined by the sum of k(|x−xj|/R), where k(s) = max(0,(1−s^2)^3)
         // and R is the maximum search distance. The active buffer currently
@@ -450,8 +450,8 @@ struct AveragePositionTransfer :
         const RealT rad = r.get();
         const RealT invsq = 1.0 / mMaxSearchSqIS;
 
-        const Coord& a(intersectBox.min());
-        const Coord& b(intersectBox.max());
+        const Coord& a((intersectBox.min)());
+        const Coord& b((intersectBox.max)());
         for (Coord c = a; c.x() <= b.x(); ++c.x()) {
             const RealT x2 = static_cast<RealT>(math::Pow2(c.x() - P[0]));
             const Index i = ((c.x() & (DIM-1u)) << 2*LOG2DIM); // unsigned bit shift mult
@@ -891,7 +891,7 @@ transferAttributes(const tree::LeafManager<const PointDataTreeT>& manager,
     // @note we can use a point list impl to support larger counts
     // if necessary but this is far faster
     OPENVDB_ASSERT(manager.leafCount() <
-        size_t(std::numeric_limits<Index>::max()));
+        size_t((std::numeric_limits<Index>::max)()));
 
     // linearise cpg to avoid having to probe data
     const tree::LeafManager<const Int64Tree> cpmanager(cpg);
@@ -1114,8 +1114,8 @@ rasterizeSpheres(const PointDataGridT& points,
     // search distance at the SDF transform, including its half band
     const Real radiusIndexSpace = radius / vs;
     const FixedBandRadius<Real> rad(radiusIndexSpace, halfband);
-    const Real minBandRadius = rad.min();
-    const Real maxBandRadius = rad.max();
+    const Real minBandRadius = (rad.min)();
+    const Real maxBandRadius = (rad.max)();
     const size_t width = static_cast<size_t>(math::RoundUp(maxBandRadius));
 
     typename SdfT::Ptr surface =
@@ -1263,7 +1263,7 @@ rasterizeSmoothSpheres(const PointDataGridT& points,
     const float background = static_cast<float>(vs * halfband);
     const Real indexSpaceSearch = searchRadius / vs;
     const FixedBandRadius<Real> bands(radius / vs, halfband);
-    const Real max = bands.max();
+    const Real max = (bands.max)();
 
     typename SdfT::Ptr surface =
         initFixedSdf<SdfT, InterrupterT>

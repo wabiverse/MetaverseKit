@@ -266,9 +266,9 @@ bool FindActiveValues<TreeT>::anyActiveValues(const CoordBBox &bbox, bool useAcc
 {
     // test early-out: the center of the bbox is active
     if (useAccessor) {
-        if (mAcc.isValueOn( (bbox.min() + bbox.max())>>1 )) return true;
+        if (mAcc.isValueOn( ((bbox.min)() + (bbox.max)())>>1 )) return true;
     } else {
-        if (mAcc.tree().isValueOn( (bbox.min() + bbox.max())>>1 )) return true;
+        if (mAcc.tree().isValueOn( ((bbox.min)() + (bbox.max)())>>1 )) return true;
     }
 
     for (auto& tile : mRootTiles) {
@@ -392,10 +392,10 @@ typename NodeT::NodeMaskType FindActiveValues<TreeT>::getBBoxMask(const CoordBBo
     } else {
         b.intersect(bbox);// trim bounding box
         // transform bounding box from global to local coordinates
-        b.min() &=  NodeT::DIM-1u;
-        b.min() >>= NodeT::ChildNodeType::TOTAL;
-        b.max() &=  NodeT::DIM-1u;
-        b.max() >>= NodeT::ChildNodeType::TOTAL;
+        (b.min)() &=  NodeT::DIM-1u;
+        (b.min)() >>= NodeT::ChildNodeType::TOTAL;
+        (b.max)() &=  NodeT::DIM-1u;
+        (b.max)() >>= NodeT::ChildNodeType::TOTAL;
         OPENVDB_ASSERT( b.hasVolume() );
         auto it = b.begin();// iterates over all the child nodes or tiles that intersects bbox
         for (const Coord& ijk = *it; it; ++it) {

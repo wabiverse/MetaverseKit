@@ -520,7 +520,7 @@ Abs(const Vec4<T>& v)
 }
 
 /// @remark We are switching to a more explicit name because the semantics
-/// are different from std::min/max. In that case, the function returns a
+/// are different from (std::min)/max. In that case, the function returns a
 /// reference to one of the objects based on a comparator. Here, we must
 /// fabricate a new object which might not match either of the inputs.
 
@@ -529,10 +529,10 @@ template <typename T>
 inline Vec4<T> minComponent(const Vec4<T> &v1, const Vec4<T> &v2)
 {
     return Vec4<T>(
-            std::min(v1.x(), v2.x()),
-            std::min(v1.y(), v2.y()),
-            std::min(v1.z(), v2.z()),
-            std::min(v1.w(), v2.w()));
+            (std::min)(v1.x(), v2.x()),
+            (std::min)(v1.y(), v2.y()),
+            (std::min)(v1.z(), v2.z()),
+            (std::min)(v1.w(), v2.w()));
 }
 
 /// Return component-wise maximum of the two vectors.
@@ -540,10 +540,10 @@ template <typename T>
 inline Vec4<T> maxComponent(const Vec4<T> &v1, const Vec4<T> &v2)
 {
     return Vec4<T>(
-            std::max(v1.x(), v2.x()),
-            std::max(v1.y(), v2.y()),
-            std::max(v1.z(), v2.z()),
-            std::max(v1.w(), v2.w()));
+            (std::max)(v1.x(), v2.x()),
+            (std::max)(v1.y(), v2.y()),
+            (std::max)(v1.z(), v2.z()),
+            (std::max)(v1.w(), v2.w()));
 }
 
 /// @brief Return a vector with the exponent applied to each of

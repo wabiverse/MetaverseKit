@@ -11,7 +11,7 @@
 #include <openvdb/Types.h>
 #include <openvdb/tree/LeafManager.h>
 #include "Dense.h"
-#include <algorithm> // for std::min()
+#include <algorithm> // for (std::min)()
 #include <vector>
 
 
@@ -233,8 +233,8 @@ public:
 
         // Snap the bbox to nearest leaf nodes min and max
 
-        openvdb::math::Coord padded_min = mBBox.min();
-        openvdb::math::Coord padded_max = mBBox.max();
+        openvdb::math::Coord padded_min = (mBBox.min)();
+        openvdb::math::Coord padded_max = (mBBox.max)();
 
 
         padded_min &= ~(mWidth - 1);
@@ -692,7 +692,7 @@ public:
         // The stride in the z-direction.
         // Note: the bbox is [inclusive, inclusive]
 
-        const size_t zlength = size_t(mBBox.max().z() - mBBox.min().z() + 1);
+        const size_t zlength = size_t((mBBox.max)().z() - (mBBox.min)().z() + 1);
 
         const IntType imin = range.rows().begin();
         const IntType imax = range.rows().end();
@@ -700,7 +700,7 @@ public:
         const IntType jmax = range.cols().end();
 
 
-        openvdb::math::Coord xyz(imin, jmin, mBBox.min().z());
+        openvdb::math::Coord xyz(imin, jmin, (mBBox.min)().z());
         for (xyz[0] = imin; xyz[0] != imax; ++xyz[0]) {
             for (xyz[1] = jmin; xyz[1] != jmax; ++xyz[1]) {
 
@@ -887,16 +887,16 @@ public:
         using IntType = openvdb::math::Coord::ValueType;
 
         const ValueT sbeta = strength * beta;
-        openvdb::math::Coord ijk = bbox.min();
+        openvdb::math::Coord ijk = (bbox.min)();
 
 
         if (alpha.isDense() /*all active values*/) {
 
             // Optimal path for dense alphaLeaf
-            const IntType size = bbox.max().z() + 1 - bbox.min().z();
+            const IntType size = (bbox.max)().z() + 1 - (bbox.min)().z();
 
-            for (ijk[0] = bbox.min().x(); ijk[0] < bbox.max().x() + 1; ++ijk[0]) {
-                for (ijk[1] = bbox.min().y(); ijk[1] < bbox.max().y() + 1; ++ijk[1]) {
+            for (ijk[0] = (bbox.min)().x(); ijk[0] < (bbox.max)().x() + 1; ++ijk[0]) {
+                for (ijk[1] = (bbox.min)().y(); ijk[1] < (bbox.max)().y() + 1; ++ijk[1]) {
 
                     ValueT* d = const_cast<ValueT*>(&dense.getValue(ijk));
                     const ValueT* a = &alpha.getValue(ijk);
@@ -912,9 +912,9 @@ public:
 
             // AlphaLeaf has non-active cells.
 
-            for (ijk[0] = bbox.min().x(); ijk[0] < bbox.max().x() + 1; ++ijk[0]) {
-                for (ijk[1] = bbox.min().y(); ijk[1] < bbox.max().y() + 1; ++ijk[1]) {
-                    for (ijk[2] = bbox.min().z(); ijk[2] < bbox.max().z() + 1; ++ijk[2]) {
+            for (ijk[0] = (bbox.min)().x(); ijk[0] < (bbox.max)().x() + 1; ++ijk[0]) {
+                for (ijk[1] = (bbox.min)().y(); ijk[1] < (bbox.max)().y() + 1; ++ijk[1]) {
+                    for (ijk[2] = (bbox.min)().z(); ijk[2] < (bbox.max)().z() + 1; ++ijk[2]) {
 
                         if (alpha.isValueOn(ijk)) {
                             dense.setValue(ijk, CompositeMethod::apply(dense.getValue(ijk),
@@ -945,9 +945,9 @@ public:
         /// bounding box of the dense volume
         const openvdb::math::CoordBBox& bbox = mDense.bbox();
 
-        Range3d  range(bbox.min().x(), bbox.max().x(), LeafT::DIM,
-                       bbox.min().y(), bbox.max().y(), LeafT::DIM,
-                       bbox.min().z(), bbox.max().z(), LeafT::DIM);
+        Range3d  range((bbox.min)().x(), (bbox.max)().x(), LeafT::DIM,
+                       (bbox.min)().y(), (bbox.max)().y(), LeafT::DIM,
+                       (bbox.min)().z(), (bbox.max)().z(), LeafT::DIM);
 
         // Iterate over the range, compositing into
         // the dense grid using value accessors for
@@ -1104,7 +1104,7 @@ namespace ds
                                    const ValueT s /*trength*/,
                                    const ValueT beta,
                                    const ValueT /*sbeta*/)
-        { return ( ( 1 - s * alpha) * u + s * alpha * std::min(u, beta * v) ); }
+        { return ( ( 1 - s * alpha) * u + s * alpha * (std::min)(u, beta * v) ); }
     };
 
     template<typename ValueT>
@@ -1115,7 +1115,7 @@ namespace ds
                                    const ValueT s/*trength*/,
                                    const ValueT beta,
                                    const ValueT /*sbeta*/)
-        { return ( ( 1 - s * alpha ) * u + s * alpha * std::min(u, beta * v) ); }
+        { return ( ( 1 - s * alpha ) * u + s * alpha * (std::min)(u, beta * v) ); }
     };
 
     template<typename ValueT>

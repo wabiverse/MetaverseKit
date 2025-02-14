@@ -36,7 +36,7 @@
 #include <OneTBB/tbb/blocked_range.h>
 #include <OneTBB/tbb/parallel_for.h>
 #include <OneTBB/tbb/parallel_reduce.h>
-#include <algorithm> // for std::min(), std::max()
+#include <algorithm> // for (std::min)(), (std::max)()
 #include <cmath> // for std::sqrt()
 #include <deque>
 #include <limits>
@@ -252,15 +252,15 @@ struct ComputeExtremas
 
     ComputeExtremas(const ParticleArrayT& particles)
         : particleArray(&particles)
-        , minRadius(std::numeric_limits<ScalarType>::max())
-        , maxRadius(-std::numeric_limits<ScalarType>::max())
+        , minRadius((std::numeric_limits<ScalarType>::max)())
+        , maxRadius(-(std::numeric_limits<ScalarType>::max)())
     {
     }
 
     ComputeExtremas(ComputeExtremas& rhs, tbb::split)
         : particleArray(rhs.particleArray)
-        , minRadius(std::numeric_limits<ScalarType>::max())
-        , maxRadius(-std::numeric_limits<ScalarType>::max())
+        , minRadius((std::numeric_limits<ScalarType>::max)())
+        , maxRadius(-(std::numeric_limits<ScalarType>::max)())
     {
     }
 
@@ -270,17 +270,17 @@ struct ComputeExtremas
 
         for (size_t n = range.begin(), N = range.end(); n != N; ++n) {
             particleArray->getRadius(n, radius);
-            tmpMin = std::min(radius, tmpMin);
-            tmpMax = std::max(radius, tmpMax);
+            tmpMin = (std::min)(radius, tmpMin);
+            tmpMax = (std::max)(radius, tmpMax);
         }
 
-        minRadius = std::min(minRadius, tmpMin);
-        maxRadius = std::max(maxRadius, tmpMax);
+        minRadius = (std::min)(minRadius, tmpMin);
+        maxRadius = (std::max)(maxRadius, tmpMax);
     }
 
     void join(const ComputeExtremas& rhs) {
-        minRadius = std::min(minRadius, rhs.minRadius);
-        maxRadius = std::max(maxRadius, rhs.maxRadius);
+        minRadius = (std::min)(minRadius, rhs.minRadius);
+        maxRadius = (std::max)(maxRadius, rhs.maxRadius);
     }
 
     ParticleArrayT const * const particleArray;
@@ -572,7 +572,7 @@ struct BBoxFilter
         const BBoxd& bbox, const ParticleArrayType& particles, bool hasUniformRadius = false)
         : mRanges(ranges)
         , mIndices(indices)
-        , mBBox(PosType(bbox.min()), PosType(bbox.max()))
+        , mBBox(PosType((bbox.min)()), PosType((bbox.max)()))
         , mCenter(mBBox.getCenter())
         , mParticles(&particles)
         , mHasUniformRadius(hasUniformRadius)
@@ -651,13 +651,13 @@ private:
 
             const ScalarType a = pos[i];
 
-            ScalarType b = mBBox.min()[i];
+            ScalarType b = (mBBox.min)()[i];
             if (a < b) {
                 ScalarType delta = b - a;
                 distSqr += delta * delta;
             }
 
-            b = mBBox.max()[i];
+            b = (mBBox.max)()[i];
             if (a > b) {
                 ScalarType delta = a - b;
                 distSqr += delta * delta;
@@ -701,7 +701,7 @@ ParticleAtlas<PointIndexGridType>::construct(
     tbb::parallel_reduce(tbb::blocked_range<size_t>(0, particles.size()), extremas);
     const double firstMin = extremas.minRadius;
     const double firstMax = extremas.maxRadius;
-    const double firstVoxelSize = std::max(minVoxelSize, firstMin);
+    const double firstVoxelSize = (std::max)(minVoxelSize, firstMin);
 
     if (!(firstMax < (firstVoxelSize * double(2.0))) && maxLevels > 1) {
 
@@ -884,7 +884,7 @@ ParticleAtlas<PointIndexGridType>::Iterator::updateFromLevel(size_t level)
     this->clear();
 
     if (mAccessorListSize > 0) {
-        const size_t levelIdx = std::min(mAccessorListSize - 1, level);
+        const size_t levelIdx = (std::min)(mAccessorListSize - 1, level);
 
         const TreeT& tree = mAtlas->pointIndexGrid(levelIdx).tree();
 
@@ -996,8 +996,8 @@ ParticleAtlas<PointIndexGridType>::Iterator::worldSpaceSearchAndUpdate(
         ConstAccessor& acc = *mAccessorList[n];
 
         openvdb::CoordBBox inscribedRegion(
-            xform.worldToIndexCellCentered(bbox.min()),
-            xform.worldToIndexCellCentered(bbox.max()));
+            xform.worldToIndexCellCentered((bbox.min)()),
+            xform.worldToIndexCellCentered((bbox.max)()));
 
         inscribedRegion.expand(-1); // erode by one voxel
 
@@ -1007,8 +1007,8 @@ ParticleAtlas<PointIndexGridType>::Iterator::worldSpaceSearchAndUpdate(
         searchRegions.clear();
 
         const openvdb::CoordBBox region(
-            xform.worldToIndexCellCentered(bbox.min() - maxRadius),
-            xform.worldToIndexCellCentered(bbox.max() + maxRadius));
+            xform.worldToIndexCellCentered((bbox.min)() - maxRadius),
+            xform.worldToIndexCellCentered((bbox.max)() + maxRadius));
 
         inscribedRegion.expand(1);
         point_index_grid_internal::constructExclusiveRegions(

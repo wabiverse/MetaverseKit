@@ -28,7 +28,7 @@
 #include "PyUtil.h"
 #include "PyTypeCasters.h"
 #include "PyAccessor.h" // for pyAccessor::AccessorWrap
-#include <algorithm> // for std::max()
+#include <algorithm> // for (std::max)()
 #include <cstring> // for memcpy()
 #include <iostream>
 #include <memory>
@@ -179,7 +179,7 @@ evalLeafBoundingBox(const GridType& grid)
 {
     CoordBBox bbox;
     grid.tree().evalLeafBoundingBox(bbox);
-    return std::make_tuple((bbox.min)(), (bbox.max)());
+    return std::make_tuple(((bbox.min))(), ((bbox.max))());
 }
 
 
@@ -250,7 +250,7 @@ getIndexRange(const GridType& grid)
 {
     CoordBBox bbox;
     grid.tree().getIndexRange(bbox);
-    return std::make_tuple((bbox.min)(), (bbox.max)());
+    return std::make_tuple(((bbox.min))(), ((bbox.max))());
 }
 
 
@@ -417,7 +417,7 @@ public:
         // origin specifies the coordinates (i, j, k) of the voxel at which to start populating data.
         // Voxel (i, j, k) will correspond to array element (0, 0, 0).
         Coord bboxMax = origin;
-        for (size_t n = 0, N = std::min<size_t>(mArrayDims.size(), 3); n < N; ++n) {
+        for (size_t n = 0, N = (std::min)<size_t>(mArrayDims.size(), 3); n < N; ++n) {
             bboxMax[n] += int(mArrayDims[n]) - 1;
         }
         mBBox.reset(origin, bboxMax);

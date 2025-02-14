@@ -187,7 +187,7 @@ void DelayedLoadMetadata::readValue(std::istream& is, Index32 numBytes)
 
     is.read(reinterpret_cast<char*>(&bytes), sizeof(Index32));
 
-    if (bytes != std::numeric_limits<Index32>::max()) {
+    if (bytes != (std::numeric_limits<Index32>::max)()) {
         if (bytes > Index32(0)) {
             std::unique_ptr<char[]> compressedBuffer(new char[bytes]);
             is.read(reinterpret_cast<char*>(compressedBuffer.get()), bytes);
@@ -222,7 +222,7 @@ void DelayedLoadMetadata::readValue(std::istream& is, Index32 numBytes)
         const size_t BUFFER_SIZE = 1024;
         std::vector<char> buffer(BUFFER_SIZE);
         for (Index32 bytesRemaining = numBytes - totalBytes; bytesRemaining > 0; ) {
-            const Index32 bytesToSkip = std::min<Index32>(bytesRemaining, BUFFER_SIZE);
+            const Index32 bytesToSkip = (std::min<Index32>)(bytesRemaining, BUFFER_SIZE);
             is.read(&buffer[0], bytesToSkip);
             bytesRemaining -= bytesToSkip;
         }
@@ -232,8 +232,8 @@ void DelayedLoadMetadata::readValue(std::istream& is, Index32 numBytes)
 void DelayedLoadMetadata::writeValue(std::ostream& os) const
 {
     // metadata has a limit of 2^32 bytes
-    OPENVDB_ASSERT(mMask.size() < std::numeric_limits<Index32>::max());
-    OPENVDB_ASSERT(mCompressedSize.size() < std::numeric_limits<Index32>::max());
+    OPENVDB_ASSERT(mMask.size() < (std::numeric_limits<Index32>::max)());
+    OPENVDB_ASSERT(mCompressedSize.size() < (std::numeric_limits<Index32>::max)());
 
     if (mMask.empty() && mCompressedSize.empty())     return;
 
@@ -243,7 +243,7 @@ void DelayedLoadMetadata::writeValue(std::ostream& os) const
     os.write(reinterpret_cast<const char*>(&count), sizeof(Index32));
 
     const Index32 zeroSize(0);
-    const Index32 maxSize(std::numeric_limits<Index32>::max());
+    const Index32 maxSize((std::numeric_limits<Index32>::max)());
 
     { // mask buffer
         size_t compressedBytes(0);
@@ -255,7 +255,7 @@ void DelayedLoadMetadata::writeValue(std::ostream& os) const
         }
 
         if (compressedBuffer) {
-            OPENVDB_ASSERT(compressedBytes < std::numeric_limits<Index32>::max());
+            OPENVDB_ASSERT(compressedBytes < (std::numeric_limits<Index32>::max)());
             Index32 bytes(static_cast<Index32>(compressedBytes));
             os.write(reinterpret_cast<const char*>(&bytes), sizeof(Index32));
             os.write(reinterpret_cast<const char*>(compressedBuffer.get()), compressedBytes);
@@ -282,7 +282,7 @@ void DelayedLoadMetadata::writeValue(std::ostream& os) const
         }
 
         if (compressedBuffer) {
-            OPENVDB_ASSERT(compressedBytes < std::numeric_limits<Index32>::max());
+            OPENVDB_ASSERT(compressedBytes < (std::numeric_limits<Index32>::max)());
             Index32 bytes(static_cast<Index32>(compressedBytes));
             os.write(reinterpret_cast<const char*>(&bytes), sizeof(Index32));
             os.write(reinterpret_cast<const char*>(compressedBuffer.get()), compressedBytes);

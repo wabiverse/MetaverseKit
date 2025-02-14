@@ -2112,7 +2112,7 @@ public:
         // Move the center of the x-face of the bbox
         // to the origin in index space.
         Vec3d centered(isloc);
-        centered = centered - mBBox.min();
+        centered = centered - (mBBox.min)();
         centered.x() -= mXo;
         centered.y() -= mYo;
 
@@ -2141,7 +2141,7 @@ public:
         // Move the center of the x-face of the bbox
         // to the origin in index space.
         Vec3d centered(isloc);
-        centered = centered - mBBox.min();
+        centered = centered - (mBBox.min)();
         centered.x() -= mXo;
         centered.y() -= mYo;
 
@@ -2168,7 +2168,7 @@ public:
         // Move the center of the x-face of the bbox
         // to the origin in index space.
         Vec3d centered(isloc);
-        centered = centered - mBBox.min();
+        centered = centered - (mBBox.min)();
         centered.x() -= mXo;
         centered.y() -= mYo;
 
@@ -2325,9 +2325,9 @@ public:
     /// Return the size of a voxel at the center of the near plane
     Vec3d voxelSize() const override
     {
-        const Vec3d loc( 0.5*(mBBox.min().x() + mBBox.max().x()),
-                         0.5*(mBBox.min().y() + mBBox.max().y()),
-                         mBBox.min().z());
+        const Vec3d loc( 0.5*((mBBox.min)().x() + (mBBox.max)().x()),
+                         0.5*((mBBox.min)().y() + (mBBox.max)().y()),
+                         (mBBox.min)().z());
 
         return voxelSize(loc);
 
@@ -2378,7 +2378,7 @@ public:
         if (io::getFormatVersion(is) < OPENVDB_FILE_VERSION_FLOAT_FRUSTUM_BBOX ) {
             CoordBBox bb;
             bb.read(is);
-            mBBox = BBoxd(bb.min().asVec3d(), bb.max().asVec3d());
+            mBBox = BBoxd((bb.min)().asVec3d(), (bb.max)().asVec3d());
         } else {
             mBBox.read(is);
         }
@@ -2529,7 +2529,7 @@ private:
         // Move the center of the x-face of the bbox
         // to the origin in index space.
         Vec3d out(in);
-        out = out - mBBox.min();
+        out = out - (mBBox.min)();
         out.x() -= mXo;
         out.y() -= mYo;
 
@@ -2559,7 +2559,7 @@ private:
         out.z() /= mDepthOnLz;
 
         // move back
-        out = out +  mBBox.min();
+        out = out +  (mBBox.min)();
         return out;
     }
 

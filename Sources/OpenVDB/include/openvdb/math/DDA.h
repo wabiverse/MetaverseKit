@@ -60,8 +60,8 @@ public:
         for (int axis = 0; axis < 3; ++axis) {
             if (math::isZero(dir[axis])) {//handles dir = +/- 0
                 mStep[axis]  = 0;//dummy value
-                mNext[axis]  = std::numeric_limits<RealT>::max();//i.e. disabled!
-                mDelta[axis] = std::numeric_limits<RealT>::max();//dummy value
+                mNext[axis]  = (std::numeric_limits<RealT>::max)();//i.e. disabled!
+                mDelta[axis] = (std::numeric_limits<RealT>::max)();//dummy value
             } else if (inv[axis] > 0) {
                 mStep[axis]  = DIM;
                 mNext[axis]  = mT0 + (mVoxel[axis] + DIM - pos[axis]) * inv[axis];

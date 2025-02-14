@@ -2347,27 +2347,27 @@ InternalNode<ChildT, Log2Dim>::copyToDense(const CoordBBox& bbox, DenseT& dense)
 
     const size_t xStride = dense.xStride(), yStride = dense.yStride(), zStride = dense.zStride();
     const Coord& min = dense.bbox().min();
-    for (Coord xyz = bbox.min(), max; xyz[0] <= bbox.max()[0]; xyz[0] = max[0] + 1) {
-        for (xyz[1] = bbox.min()[1]; xyz[1] <= bbox.max()[1]; xyz[1] = max[1] + 1) {
-            for (xyz[2] = bbox.min()[2]; xyz[2] <= bbox.max()[2]; xyz[2] = max[2] + 1) {
+    for (Coord xyz = (bbox.min)(), max; xyz[0] <= (bbox.max)()[0]; xyz[0] = max[0] + 1) {
+        for (xyz[1] = (bbox.min)()[1]; xyz[1] <= (bbox.max)()[1]; xyz[1] = max[1] + 1) {
+            for (xyz[2] = (bbox.min)()[2]; xyz[2] <= (bbox.max)()[2]; xyz[2] = max[2] + 1) {
                 const Index n = this->coordToOffset(xyz);
                 // Get max coordinates of the child node that contains voxel xyz.
                 max = this->offsetToGlobalCoord(n).offsetBy(ChildT::DIM-1);
 
                 // Get the bbox of the interection of bbox and the child node
-                CoordBBox sub(xyz, Coord::minComponent(bbox.max(), max));
+                CoordBBox sub(xyz, Coord::minComponent((bbox.max)(), max));
 
                 if (this->isChildMaskOn(n)) {//is a child
                     mNodes[n].getChild()->copyToDense(sub, dense);
                 } else {//a tile value
                     const ValueType value = mNodes[n].getValue();
                     sub.translate(-min);
-                    DenseValueType* a0 = dense.data() + zStride*sub.min()[2];
-                    for (Int32 x=sub.min()[0], ex=sub.max()[0]+1; x<ex; ++x) {
+                    DenseValueType* a0 = dense.data() + zStride*(sub.min)()[2];
+                    for (Int32 x=(sub.min)()[0], ex=(sub.max)()[0]+1; x<ex; ++x) {
                         DenseValueType* a1 = a0 + x*xStride;
-                        for (Int32 y=sub.min()[1], ey=sub.max()[1]+1; y<ey; ++y) {
+                        for (Int32 y=(sub.min)()[1], ey=(sub.max)()[1]+1; y<ey; ++y) {
                             DenseValueType* a2 = a1 + y*yStride;
-                            for (Int32 z = sub.min()[2], ez = sub.max()[2]+1;
+                            for (Int32 z = (sub.min)()[2], ez = (sub.max)()[2]+1;
                                 z < ez; ++z, a2 += zStride)
                             {
                                 *a2 = DenseValueType(value);

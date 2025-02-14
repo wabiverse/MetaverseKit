@@ -313,7 +313,7 @@ public:
 
         mTree->root().evalActiveBoundingBox(mBBox, /*visit individual voxels*/false);
 
-        mBBox.max().offset(1);//padding so the bbox of a node becomes (origin,origin + node_dim)
+        (mBBox.max)().offset(1);//padding so the bbox of a node becomes (origin,origin + node_dim)
     }
 
     /// @brief Grid and BBox constructor

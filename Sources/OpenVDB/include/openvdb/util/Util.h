@@ -16,7 +16,7 @@ OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
 
-inline constexpr Index32 INVALID_IDX = std::numeric_limits<Index32>::max();
+inline constexpr Index32 INVALID_IDX = (std::numeric_limits<Index32>::max)();
 
 /// @brief coordinate offset table for neighboring voxels
 inline constexpr Coord COORD_OFFSETS[26] =

@@ -36,7 +36,7 @@ public:
     /// @brief Empty constructor
     ///
     /// @warning Only use this constructor with POD types
-    MinMax() : mMin(Limits::max()), mMax(Limits::lowest())
+    MinMax() : mMin((Limits::max)()), mMax(Limits::lowest())
     {
         static_assert(std::numeric_limits<ValueType>::is_specialized,
                       "openvdb::math::MinMax default constructor requires a std::numeric_limits specialization");
@@ -54,10 +54,10 @@ public:
     }
 
     /// Return the minimum value.
-    inline const ValueType& min() const { return mMin; }
+    inline const ValueType& (min)() const { return mMin; }
 
     /// Return the maximum value.
-    inline const ValueType& max() const { return mMax; }
+    inline const ValueType& (max)() const { return mMax; }
 
     /// Add the samples from the other Stats instance.
     inline void add(const MinMax& other, const Less &less = Less())
@@ -94,7 +94,7 @@ public:
     /// @warning The min/max values are initiated to extreme values
     Extrema()
         : mSize(0)
-        , mMin(std::numeric_limits<double>::max())
+        , mMin((std::numeric_limits<double>::max)())
         , mMax(-mMin)
     {
     }
@@ -103,26 +103,26 @@ public:
     void add(double val)
     {
         ++mSize;
-        mMin = std::min<double>(val, mMin);
-        mMax = std::max<double>(val, mMax);
+        mMin = (std::min<double>)(val, mMin);
+        mMax = (std::max<double>)(val, mMax);
     }
 
     /// Add @a n samples with constant value @a val.
     void add(double val, uint64_t n)
     {
         mSize += n;
-        mMin  = std::min<double>(val, mMin);
-        mMax  = std::max<double>(val, mMax);
+        mMin  = (std::min<double>)(val, mMin);
+        mMax  = (std::max<double>)(val, mMax);
     }
 
     /// Return the size of the population, i.e., the total number of samples.
     inline uint64_t size() const { return mSize; }
 
     /// Return the minimum value.
-    inline double min() const { return mMin; }
+    inline double (min)() const { return mMin; }
 
     /// Return the maximum value.
-    inline double max() const { return mMax; }
+    inline double (max)() const { return mMax; }
 
     /// Return the range defined as the maximum value minus the minimum value.
     inline double range() const { return mMax - mMin; }
@@ -159,8 +159,8 @@ protected:
     {
         OPENVDB_ASSERT(other.mSize > 0);
         mSize += other.mSize;
-        mMin   = std::min<double>(mMin, other.mMin);
-        mMax   = std::max<double>(mMax, other.mMax);
+        mMin   = (std::min<double>)(mMin, other.mMin);
+        mMax   = (std::max<double>)(mMax, other.mMax);
     }
 
     uint64_t mSize;
@@ -292,7 +292,7 @@ public:
     /// @brief Construct with the given bin count and with minimum and maximum values
     /// taken from a Stats object.
     Histogram(const Stats& s, size_t numBins = 10):
-        mSize(0), mMin(s.min()), mMax(s.max()+1e-10),
+        mSize(0), mMin((s.min)()), mMax((s.max)()+1e-10),
         mDelta(double(numBins)/(mMax-mMin)), mBins(numBins)
     {
         if ( mMax <= mMin ) {
@@ -328,9 +328,9 @@ public:
     /// Return the number of bins in this histogram.
     inline size_t numBins() const { return mBins.size(); }
     /// Return the lower bound of this histogram's value range.
-    inline double min() const { return mMin; }
+    inline double (min)() const { return mMin; }
     /// Return the upper bound of this histogram's value range.
-    inline double max() const { return mMax; }
+    inline double (max)() const { return mMax; }
     /// Return the minimum value in the <i>n</i>th bin.
     inline double min(int n) const { return mMin+n/mDelta; }
     /// Return the maximum value in the <i>n</i>th bin.
@@ -355,8 +355,8 @@ public:
             os << "||  #   |       Min      |       Max      | Frequency |  %  ||\n";
             os << "==============================================================\n";
             for (int i = 0, e = int(mBins.size()); i != e; ++i) {
-                os << "|| " << std::setw(4) << i << " | " << std::setw(14) << this->min(i) << " | "
-                   << std::setw(14) << this->max(i) << " | " << std::setw(9) << mBins[i] << " | "
+                os << "|| " << std::setw(4) << i << " | " << std::setw(14) << (this->min)(i) << " | "
+                   << std::setw(14) << (this->max)(i) << " | " << std::setw(9) << mBins[i] << " | "
                    << std::setw(3) << (100*mBins[i]/mSize) << " ||\n";
             }
             os << "==============================================================\n";

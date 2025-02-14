@@ -29,7 +29,7 @@
 #ifndef OPENVDB_TOOLS_VALUETRANSFORMER_HAS_BEEN_INCLUDED
 #define OPENVDB_TOOLS_VALUETRANSFORMER_HAS_BEEN_INCLUDED
 
-#include <algorithm> // for std::min(), std::max()
+#include <algorithm> // for (std::min)(), (std::max)()
 #include <OneTBB/tbb/parallel_for.h>
 #include <OneTBB/tbb/parallel_reduce.h>
 #include <openvdb/Types.h>
@@ -237,14 +237,14 @@ template<typename ValueType>
 struct MinOp {
     const ValueType val;
     MinOp(const ValueType& v): val(v) {}
-    inline void operator()(ValueType& v) const { v = std::min<ValueType>(v, val); }
+    inline void operator()(ValueType& v) const { v = (std::min)<ValueType>(v, val); }
 };
 
 template<typename ValueType>
 struct MaxOp {
     const ValueType val;
     MaxOp(const ValueType& v): val(v) {}
-    inline void operator()(ValueType& v) const { v = std::max<ValueType>(v, val); }
+    inline void operator()(ValueType& v) const { v = (std::max)<ValueType>(v, val); }
 };
 
 template<typename ValueType>

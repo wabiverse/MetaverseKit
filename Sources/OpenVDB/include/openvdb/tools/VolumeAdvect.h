@@ -94,7 +94,7 @@ public:
     {
         math::Extrema e = extrema(velGrid.cbeginValueAll(), /*threading*/true);
         e.add(velGrid.background().length());
-        mMaxVelocity = e.max();
+        mMaxVelocity = (e.max)();
     }
 
     virtual ~VolumeAdvection()

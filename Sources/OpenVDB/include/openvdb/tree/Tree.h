@@ -454,7 +454,7 @@ public:
     /// floatTree.modifyValue(xyz, [](float& f) { f *= 0.25; }); // C++11
     /// // Set the value of a voxel to the maximum of its current value and 0.25,
     /// // and mark the voxel as active.
-    /// floatTree.modifyValue(xyz, [](float& f) { f = std::max(f, 0.25f); }); // C++11
+    /// floatTree.modifyValue(xyz, [](float& f) { f = (std::max)(f, 0.25f); }); // C++11
     /// @endcode
     /// @note The functor is not guaranteed to be called only once.
     /// @see tools::foreach()
@@ -476,7 +476,7 @@ public:
     /// // Set the value of a voxel to the maximum of its current value and 0.25,
     /// // but don't change the voxel's active state.
     /// floatTree.modifyValueAndActiveState(xyz,
-    ///     [](float& f, bool&) { f = std::max(f, 0.25f); }); // C++11
+    ///     [](float& f, bool&) { f = (std::max)(f, 0.25f); }); // C++11
     /// @endcode
     /// @note The functor is not guaranteed to be called only once.
     /// @see tools::foreach()

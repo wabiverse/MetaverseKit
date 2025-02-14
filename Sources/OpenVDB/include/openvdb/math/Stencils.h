@@ -143,14 +143,14 @@ public:
     }
 
     /// @brief Return the smallest value in the stencil buffer.
-    inline ValueType min() const
+    inline ValueType (min)() const
     {
         const auto iter = std::min_element(mValues.begin(), mValues.end());
         return *iter;
     }
 
     /// @brief Return the largest value in the stencil buffer.
-    inline ValueType max() const
+    inline ValueType (max)() const
     {
         const auto iter = std::max_element(mValues.begin(), mValues.end());
         return *iter;
@@ -212,7 +212,7 @@ protected:
         : mGrid(&grid)
         , mAcc(grid.tree())
         , mValues(size)
-        , mCenter(Coord::max())
+        , mCenter((Coord::max)())
     {
     }
 

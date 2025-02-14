@@ -6,7 +6,7 @@
 
 #include "Math.h" // for math::isApproxEqual() and math::Tolerance()
 #include "Vec3.h"
-#include <algorithm> // for std::min(), std::max()
+#include <algorithm> // for (std::min)(), (std::max)()
 #include <cmath> // for std::abs()
 #include <iostream>
 #include <limits>
@@ -59,13 +59,13 @@ public:
     void sort();
 
     /// @brief Return a const reference to the minimum point of this bounding box.
-    const Vec3T& min() const { return mMin; }
+    const Vec3T& (min)() const { return mMin; }
     /// @brief Return a const reference to the maximum point of this bounding box.
-    const Vec3T& max() const { return mMax; }
+    const Vec3T& (max)() const { return mMax; }
     /// @brief Return a non-const reference to the minimum point of this bounding box.
-    Vec3T& min() { return mMin; }
+    Vec3T& (min)() { return mMin; }
     /// @brief Return a non-const reference to the maximum point of this bounding box.
-    Vec3T& max() { return mMax; }
+    Vec3T& (max)() { return mMax; }
 
     /// @brief Return @c true if this bounding box is identical to the given bounding box.
     bool operator==(const BBox& rhs) const;
@@ -221,8 +221,8 @@ BBox<Vec3T>::sort()
 {
     Vec3T tMin(mMin), tMax(mMax);
     for (int i = 0; i < 3; ++i) {
-        mMin[i] = std::min(tMin[i], tMax[i]);
-        mMax[i] = std::max(tMin[i], tMax[i]);
+        mMin[i] = (std::min)(tMin[i], tMax[i]);
+        mMax[i] = (std::max)(tMin[i], tMax[i]);
     }
 }
 
@@ -284,14 +284,14 @@ inline bool
 BBox<Vec3T>::isInside(const BBox& b) const
 {
     if (std::is_integral<ElementType>::value) {
-        return b.min()[0] >= mMin[0]  && b.max()[0] <= mMax[0] &&
-               b.min()[1] >= mMin[1]  && b.max()[1] <= mMax[1] &&
-               b.min()[2] >= mMin[2]  && b.max()[2] <= mMax[2];
+        return (b.min)()[0] >= mMin[0]  && (b.max)()[0] <= mMax[0] &&
+               (b.min)()[1] >= mMin[1]  && (b.max)()[1] <= mMax[1] &&
+               (b.min)()[2] >= mMin[2]  && (b.max)()[2] <= mMax[2];
     } else {
         ElementType t = math::Tolerance<ElementType>::value();
-        return (b.min()[0]-t) > mMin[0]  && (b.max()[0]+t) < mMax[0] &&
-               (b.min()[1]-t) > mMin[1]  && (b.max()[1]+t) < mMax[1] &&
-               (b.min()[2]-t) > mMin[2]  && (b.max()[2]+t) < mMax[2];
+        return ((b.min)()[0]-t) > mMin[0]  && ((b.max)()[0]+t) < mMax[0] &&
+               ((b.min)()[1]-t) > mMin[1]  && ((b.max)()[1]+t) < mMax[1] &&
+               ((b.min)()[2]-t) > mMin[2]  && ((b.max)()[2]+t) < mMax[2];
     }
 }
 
@@ -301,14 +301,14 @@ inline bool
 BBox<Vec3T>::hasOverlap(const BBox& b) const
 {
     if (std::is_integral<ElementType>::value) {
-        return mMax[0] >= b.min()[0] && mMin[0] <= b.max()[0] &&
-               mMax[1] >= b.min()[1] && mMin[1] <= b.max()[1] &&
-               mMax[2] >= b.min()[2] && mMin[2] <= b.max()[2];
+        return mMax[0] >= (b.min)()[0] && mMin[0] <= (b.max)()[0] &&
+               mMax[1] >= (b.min)()[1] && mMin[1] <= (b.max)()[1] &&
+               mMax[2] >= (b.min)()[2] && mMin[2] <= (b.max)()[2];
     } else {
         ElementType t = math::Tolerance<ElementType>::value();
-        return mMax[0] > (b.min()[0]-t) && mMin[0] < (b.max()[0]+t) &&
-               mMax[1] > (b.min()[1]-t) && mMin[1] < (b.max()[1]+t) &&
-               mMax[2] > (b.min()[2]-t) && mMin[2] < (b.max()[2]+t);
+        return mMax[0] > ((b.min)()[0]-t) && mMin[0] < ((b.max)()[0]+t) &&
+               mMax[1] > ((b.min)()[1]-t) && mMin[1] < ((b.max)()[1]+t) &&
+               mMax[2] > ((b.min)()[2]-t) && mMin[2] < ((b.max)()[2]+t);
     }
 }
 
@@ -333,8 +333,8 @@ inline void
 BBox<Vec3T>::expand(const Vec3T& xyz)
 {
     for (int i = 0; i < 3; ++i) {
-        mMin[i] = std::min(mMin[i], xyz[i]);
-        mMax[i] = std::max(mMax[i], xyz[i]);
+        mMin[i] = (std::min)(mMin[i], xyz[i]);
+        mMax[i] = (std::max)(mMax[i], xyz[i]);
     }
 }
 
@@ -344,8 +344,8 @@ inline void
 BBox<Vec3T>::expand(const BBox& b)
 {
     for (int i = 0; i < 3; ++i) {
-        mMin[i] = std::min(mMin[i], b.min()[i]);
-        mMax[i] = std::max(mMax[i], b.max()[i]);
+        mMin[i] = (std::min)(mMin[i], (b.min)()[i]);
+        mMax[i] = (std::max)(mMax[i], (b.max)()[i]);
     }
 }
 
@@ -355,8 +355,8 @@ BBox<Vec3T>::expand(const Vec3T& xyzMin, const ElementType& length)
 {
     const ElementType size = std::is_integral<ElementType>::value ? length-1 : length;
     for (int i = 0; i < 3; ++i) {
-        mMin[i] = std::min(mMin[i], xyzMin[i]);
-        mMax[i] = std::max(mMax[i], xyzMin[i] + size);
+        mMin[i] = (std::min)(mMin[i], xyzMin[i]);
+        mMax[i] = (std::max)(mMax[i], xyzMin[i] + size);
     }
 }
 
@@ -412,7 +412,7 @@ template<typename Vec3T>
 inline std::ostream&
 operator<<(std::ostream& os, const BBox<Vec3T>& b)
 {
-    os << b.min() << " -> " << b.max();
+    os << (b.min)() << " -> " << (b.max)();
     return os;
 }
 

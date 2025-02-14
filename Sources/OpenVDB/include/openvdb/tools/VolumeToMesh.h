@@ -344,8 +344,8 @@ inline Vec3d findFeaturePoint(
     Mat3d D = Mat3d::identity();
 
 
-    double tolerance = std::max(std::abs(eigenValues[0]), std::abs(eigenValues[1]));
-    tolerance = std::max(tolerance, std::abs(eigenValues[2]));
+    double tolerance = (std::max)(std::abs(eigenValues[0]), std::abs(eigenValues[1]));
+    tolerance = (std::max)(tolerance, std::abs(eigenValues[2]));
     tolerance *= 0.01;
 
     int clamped = 0;
@@ -399,7 +399,7 @@ template<typename ValueType>
 inline void
 fillArray(ValueType* array, const ValueType& val, const size_t length)
 {
-    const auto grainSize = std::max<size_t>(
+    const auto grainSize = (std::max<size_t>)(
         length / tbb::this_task_arena::max_concurrency(), 1024);
     const tbb::blocked_range<size_t> range(0, length, grainSize);
     tbb::parallel_for(range, FillArray<ValueType>(array, val), tbb::simple_partitioner());
@@ -1335,8 +1335,8 @@ computeWeightedPoint(const Vec3d& p,
     double maxWeight = weights.front();
 
     for (size_t i = 1, I = weights.size(); i < I; ++i) {
-        minWeight = std::min(minWeight, weights[i]);
-        maxWeight = std::max(maxWeight, weights[i]);
+        minWeight = (std::min)(minWeight, weights[i]);
+        maxWeight = (std::max)(maxWeight, weights[i]);
     }
 
     const double offset = maxWeight + minWeight * 0.1;
@@ -2656,20 +2656,20 @@ MaskTileBorders<InputTreeType>::operator()(const tbb::blocked_range<size_t>& ran
 
         const Vec4i& tile = mTileArray[n];
 
-        bbox.min()[0] = tile[0];
-        bbox.min()[1] = tile[1];
-        bbox.min()[2] = tile[2];
-        bbox.max() = bbox.min();
-        bbox.max().offset(tile[3]);
+        (bbox.min)()[0] = tile[0];
+        (bbox.min)()[1] = tile[1];
+        (bbox.min)()[2] = tile[2];
+        (bbox.max)() = (bbox.min)();
+        (bbox.max)().offset(tile[3]);
 
         InputValueType value = mInputTree->background();
 
-        const bool isInside = isInsideValue(inputTreeAcc.getValue(bbox.min()), mIsovalue);
-        const int valueDepth = inputTreeAcc.getValueDepth(bbox.min());
+        const bool isInside = isInsideValue(inputTreeAcc.getValue((bbox.min)()), mIsovalue);
+        const int valueDepth = inputTreeAcc.getValueDepth((bbox.min)());
 
         // eval x-edges
 
-        ijk = bbox.max();
+        ijk = (bbox.max)();
         nijk = ijk;
         ++nijk[0];
 
@@ -2681,12 +2681,12 @@ MaskTileBorders<InputTreeType>::operator()(const tbb::blocked_range<size_t>& ran
         if (processRegion) {
             region = bbox;
             region.expand(1);
-            region.min()[0] = region.max()[0] = ijk[0];
+            (region.min)()[0] = (region.max)()[0] = ijk[0];
             mMask->fill(region, false);
         }
 
 
-        ijk = bbox.min();
+        ijk = (bbox.min)();
         --ijk[0];
 
         processRegion = true;
@@ -2698,14 +2698,14 @@ MaskTileBorders<InputTreeType>::operator()(const tbb::blocked_range<size_t>& ran
         if (processRegion) {
             region = bbox;
             region.expand(1);
-            region.min()[0] = region.max()[0] = ijk[0];
+            (region.min)()[0] = (region.max)()[0] = ijk[0];
             mMask->fill(region, false);
         }
 
 
         // eval y-edges
 
-        ijk = bbox.max();
+        ijk = (bbox.max)();
         nijk = ijk;
         ++nijk[1];
 
@@ -2717,12 +2717,12 @@ MaskTileBorders<InputTreeType>::operator()(const tbb::blocked_range<size_t>& ran
         if (processRegion) {
             region = bbox;
             region.expand(1);
-            region.min()[1] = region.max()[1] = ijk[1];
+            (region.min)()[1] = (region.max)()[1] = ijk[1];
             mMask->fill(region, false);
         }
 
 
-        ijk = bbox.min();
+        ijk = (bbox.min)();
         --ijk[1];
 
         processRegion = true;
@@ -2734,14 +2734,14 @@ MaskTileBorders<InputTreeType>::operator()(const tbb::blocked_range<size_t>& ran
         if (processRegion) {
             region = bbox;
             region.expand(1);
-            region.min()[1] = region.max()[1] = ijk[1];
+            (region.min)()[1] = (region.max)()[1] = ijk[1];
             mMask->fill(region, false);
         }
 
 
         // eval z-edges
 
-        ijk = bbox.max();
+        ijk = (bbox.max)();
         nijk = ijk;
         ++nijk[2];
 
@@ -2753,11 +2753,11 @@ MaskTileBorders<InputTreeType>::operator()(const tbb::blocked_range<size_t>& ran
         if (processRegion) {
             region = bbox;
             region.expand(1);
-            region.min()[2] = region.max()[2] = ijk[2];
+            (region.min)()[2] = (region.max)()[2] = ijk[2];
             mMask->fill(region, false);
         }
 
-        ijk = bbox.min();
+        ijk = (bbox.min)();
         --ijk[2];
 
         processRegion = true;
@@ -2769,7 +2769,7 @@ MaskTileBorders<InputTreeType>::operator()(const tbb::blocked_range<size_t>& ran
         if (processRegion) {
             region = bbox;
             region.expand(1);
-            region.min()[2] = region.max()[2] = ijk[2];
+            (region.min)()[2] = (region.max)()[2] = ijk[2];
             mMask->fill(region, false);
         }
     }
@@ -2802,10 +2802,10 @@ maskActiveTileBorders(const InputTreeType& inputTree,
         for (; tileIter; ++tileIter) {
             Vec4i& tile = tiles[index++];
             tileIter.getBoundingBox(bbox);
-            tile[0] = bbox.min()[0];
-            tile[1] = bbox.min()[1];
-            tile[2] = bbox.min()[2];
-            tile[3] = bbox.max()[0] - bbox.min()[0];
+            tile[0] = (bbox.min)()[0];
+            tile[1] = (bbox.min)()[1];
+            tile[2] = (bbox.min)()[2];
+            tile[3] = (bbox.max)()[0] - (bbox.min)()[0];
         }
 
         MaskTileBorders<InputTreeType> op(inputTree, iso, mask, tiles.get());
@@ -3746,11 +3746,11 @@ ComputeAuxiliaryData<InputTreeType>::ComputeAuxiliaryData(
     , mIntersectionNodes(intersectionLeafNodes.data())
     , mSignFlagsTree(0)
     , mSignFlagsAccessor(signFlagsTree)
-    , mPointIndexTree(std::numeric_limits<Index32>::max())
+    , mPointIndexTree((std::numeric_limits<Index32>::max)())
     , mPointIndexAccessor(pointIndexTree)
     , mIsovalue(iso)
 {
-    pointIndexTree.root().setBackground(std::numeric_limits<Index32>::max(), false);
+    pointIndexTree.root().setBackground((std::numeric_limits<Index32>::max)(), false);
 }
 
 
@@ -3760,7 +3760,7 @@ ComputeAuxiliaryData<InputTreeType>::ComputeAuxiliaryData(ComputeAuxiliaryData& 
     , mIntersectionNodes(rhs.mIntersectionNodes)
     , mSignFlagsTree(0)
     , mSignFlagsAccessor(mSignFlagsTree)
-    , mPointIndexTree(std::numeric_limits<Index32>::max())
+    , mPointIndexTree((std::numeric_limits<Index32>::max)())
     , mPointIndexAccessor(mPointIndexTree)
     , mIsovalue(rhs.mIsovalue)
 {
@@ -4929,7 +4929,7 @@ VolumeToMesh::operator()(const InputGridType& inputGrid)
     }
 
     Int16TreeType signFlagsTree(0);
-    Index32TreeType pointIndexTree(std::numeric_limits<Index32>::max());
+    Index32TreeType pointIndexTree((std::numeric_limits<Index32>::max)());
 
 
     // collect auxiliary data
@@ -4973,7 +4973,7 @@ VolumeToMesh::operator()(const InputGridType& inputGrid)
 
             typename Int16TreeType::Ptr refSignFlagsTreePt(new Int16TreeType(0));
             typename Index32TreeType::Ptr refPointIndexTreePt(
-                new Index32TreeType(std::numeric_limits<Index32>::max()));
+                new Index32TreeType((std::numeric_limits<Index32>::max)()));
 
             BoolTreeType refIntersectionTree(false);
 

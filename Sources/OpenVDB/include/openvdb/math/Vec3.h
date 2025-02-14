@@ -625,7 +625,7 @@ inline void orthonormalize(Vec3<T> &v1, Vec3<T> &v2, Vec3<T> &v3)
 }
 
 /// @remark We are switching to a more explicit name because the semantics
-/// are different from std::min/max. In that case, the function returns a
+/// are different from (std::min)/max. In that case, the function returns a
 /// reference to one of the objects based on a comparator. Here, we must
 /// fabricate a new object which might not match either of the inputs.
 
@@ -634,9 +634,9 @@ template <typename T>
 inline Vec3<T> minComponent(const Vec3<T> &v1, const Vec3<T> &v2)
 {
     return Vec3<T>(
-            std::min(v1.x(), v2.x()),
-            std::min(v1.y(), v2.y()),
-            std::min(v1.z(), v2.z()));
+            (std::min)(v1.x(), v2.x()),
+            (std::min)(v1.y(), v2.y()),
+            (std::min)(v1.z(), v2.z()));
 }
 
 /// Return component-wise maximum of the two vectors.
@@ -644,9 +644,9 @@ template <typename T>
 inline Vec3<T> maxComponent(const Vec3<T> &v1, const Vec3<T> &v2)
 {
     return Vec3<T>(
-            std::max(v1.x(), v2.x()),
-            std::max(v1.y(), v2.y()),
-            std::max(v1.z(), v2.z()));
+            (std::max)(v1.x(), v2.x()),
+            (std::max)(v1.y(), v2.y()),
+            (std::max)(v1.z(), v2.z()));
 }
 
 /// @brief Return a vector with the exponent applied to each of

@@ -7,7 +7,7 @@
 #define OPENVDB_UTIL_MAPSUTIL_HAS_BEEN_INCLUDED
 
 #include <openvdb/math/Maps.h>
-#include <algorithm> // for std::min(), std::max()
+#include <algorithm> // for (std::min)(), (std::max)()
 #include <cmath>
 #include <vector>
 
@@ -48,8 +48,8 @@ calculateBounds(const MapType& map, const BBoxd& in, BBoxd& out)
     for (int i = 1; i < 8; ++i) {
         pre_image = map.applyInverseMap(corners[i]);
         for (int j = 0; j < 3; ++j) {
-            out_min(j) = std::min( out_min(j), pre_image(j));
-            out_max(j) = std::max( out_max(j), pre_image(j));
+            out_min(j) = (std::min)( out_min(j), pre_image(j));
+            out_max(j) = (std::max)( out_max(j), pre_image(j));
         }
     }
 }
@@ -200,13 +200,13 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
     // the bounding box in index space for the points in the frustum
     const BBoxd&  bbox = frustum.getBBox();
     // initialize min and max
-    const double x_min = bbox.min().x();
-    const double y_min = bbox.min().y();
-    const double z_min = bbox.min().z();
+    const double x_min = (bbox.min)().x();
+    const double y_min = (bbox.min)().y();
+    const double z_min = (bbox.min)().z();
 
-    const double x_max = bbox.max().x();
-    const double y_max = bbox.max().y();
-    const double z_max = bbox.max().z();
+    const double x_max = (bbox.max)().x();
+    const double y_max = (bbox.max)().y();
+    const double z_max = (bbox.max)().z();
 
     out_min.x() = x_min;
     out_max.x() = x_max;
@@ -227,7 +227,7 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
         extreme2 = secondMap.applyMap(extreme);
         // convert back to voxel space
         pre_image = frustum.applyInverseMap(extreme2);
-        out_max.x() = std::max(x_min, std::min(x_max, pre_image.x()));
+        out_max.x() = (std::max)(x_min, (std::min)(x_max, pre_image.x()));
 
         extreme.x() = xm;
         extreme.y() = centerLS.y();
@@ -237,7 +237,7 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
 
         // convert back to voxel space
         pre_image = frustum.applyInverseMap(extreme2);
-        out_min.x() = std::max(x_min, std::min(x_max, pre_image.x()));
+        out_min.x() = (std::max)(x_min, (std::min)(x_max, pre_image.x()));
 
     } else if (soln_number == 1) {
         // the circle was tangent at the focal point
@@ -256,7 +256,7 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
         extreme2 = secondMap.applyMap(extreme);
         // convert back to voxel space
         pre_image = frustum.applyInverseMap(extreme2);
-        out_max.y() = std::max(y_min, std::min(y_max, pre_image.y()));
+        out_max.y() = (std::max)(y_min, (std::min)(y_max, pre_image.y()));
 
         extreme.x() = centerLS.x();
         extreme.y() = xm;
@@ -265,7 +265,7 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
 
         // convert back to voxel space
         pre_image = frustum.applyInverseMap(extreme2);
-        out_min.y() = std::max(y_min, std::min(y_max, pre_image.y()));
+        out_min.y() = (std::max)(y_min, (std::min)(y_max, pre_image.y()));
 
     } else if (soln_number == 1) {
         // the circle was tangent at the focal point
@@ -275,15 +275,15 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
 
     // the near and far
     // the closest point.  The front of the frustum is at 0 in index space
-    double near_dist = std::max(centerLS.z() - radiusLS, 0.);
+    double near_dist = (std::max)(centerLS.z() - radiusLS, 0.);
     // the farthest point.  The back of the frustum is at mDepth in index space
-    double far_dist = std::min(centerLS.z() + radiusLS, frustum.getDepth() );
+    double far_dist = (std::min)(centerLS.z() + radiusLS, frustum.getDepth() );
 
     Vec3d near_point(0.f, 0.f, near_dist);
     Vec3d far_point(0.f, 0.f, far_dist);
 
-    out_min.z() = std::max(z_min, frustum.applyInverseMap(secondMap.applyMap(near_point)).z());
-    out_max.z() = std::min(z_max, frustum.applyInverseMap(secondMap.applyMap(far_point)).z());
+    out_min.z() = (std::max)(z_min, frustum.applyInverseMap(secondMap.applyMap(near_point)).z());
+    out_max.z() = (std::min)(z_max, frustum.applyInverseMap(secondMap.applyMap(far_point)).z());
 
 }
 

@@ -3,7 +3,7 @@
 
 #include "Metadata.h"
 
-#include <algorithm> // for std::min()
+#include <algorithm> // for (std::min)()
 #include <map>
 #include <mutex>
 #include <sstream>

@@ -581,7 +581,7 @@ PagedOutputStream::compressAndWrite(const char* buffer, size_t size)
 {
     if (size == 0)  return;
 
-    OPENVDB_ASSERT(size < std::numeric_limits<int>::max());
+    OPENVDB_ASSERT(size < (std::numeric_limits<int>::max)());
 
     this->resize(size);
 

@@ -14,7 +14,7 @@
 #include <OneTBB/tbb/task_arena.h>
 
 #include <thread>
-#include <algorithm> // for std::max()
+#include <algorithm> // for (std::max)()
 #include <atomic>
 #include <iostream>
 #include <map>
@@ -219,9 +219,9 @@ Queue::~Queue()
 
 
 bool Queue::empty() const { return (mImpl->mNumTasks == 0); }
-Index32 Queue::size() const { return Index32(std::max<Int32>(0, mImpl->mNumTasks)); }
+Index32 Queue::size() const { return Index32((std::max<Int32>)(0, mImpl->mNumTasks)); }
 Index32 Queue::capacity() const { return mImpl->mCapacity; }
-void Queue::setCapacity(Index32 n) { mImpl->mCapacity = std::max<Index32>(1, n); }
+void Queue::setCapacity(Index32 n) { mImpl->mCapacity = (std::max<Index32>)(1, n); }
 
 /// @todo void Queue::setCapacity(Index64 bytes);
 

@@ -8,7 +8,7 @@
 #ifndef OPENVDB_UTIL_NODEMASKS_HAS_BEEN_INCLUDED
 #define OPENVDB_UTIL_NODEMASKS_HAS_BEEN_INCLUDED
 
-#include <algorithm> // for std::min()
+#include <algorithm> // for (std::min)()
 #include <cstring>
 #include <iostream>// for cout
 #include <openvdb/Platform.h>
@@ -1249,7 +1249,7 @@ public:
     RootNodeMask operator!() const { RootNodeMask m = *this; m.toggle(); return m; }
     const RootNodeMask& operator&=(const RootNodeMask& other) {
         OPENVDB_ASSERT(mIntSize == other.mIntSize);
-        for (Index32 i = 0, N = std::min(mIntSize, other.mIntSize); i < N; ++i) {
+        for (Index32 i = 0, N = (std::min)(mIntSize, other.mIntSize); i < N; ++i) {
             mBits[i] &= other.mBits[i];
         }
         for (Index32 i = other.mIntSize; i < mIntSize; ++i) mBits[i] = 0x00000000;
@@ -1257,14 +1257,14 @@ public:
     }
     const RootNodeMask& operator|=(const RootNodeMask& other) {
         OPENVDB_ASSERT(mIntSize == other.mIntSize);
-        for (Index32 i = 0, N = std::min(mIntSize, other.mIntSize); i < N; ++i) {
+        for (Index32 i = 0, N = (std::min)(mIntSize, other.mIntSize); i < N; ++i) {
             mBits[i] |= other.mBits[i];
         }
         return *this;
     }
     const RootNodeMask& operator^=(const RootNodeMask& other) {
         OPENVDB_ASSERT(mIntSize == other.mIntSize);
-        for (Index32 i = 0, N = std::min(mIntSize, other.mIntSize); i < N; ++i) {
+        for (Index32 i = 0, N = (std::min)(mIntSize, other.mIntSize); i < N; ++i) {
             mBits[i] ^= other.mBits[i];
         }
         return *this;

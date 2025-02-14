@@ -285,7 +285,7 @@ public:
         const SeedCountPair& value = it->second;
         const unsigned int seed = static_cast<unsigned int>(value.first);
         const auto total = static_cast<Index>(leaf.pointCount());
-        mCount = std::min(value.second, total);
+        mCount = (std::min)(value.second, total);
 
         mIndices = generateRandomSubset<RandGenT, int>(seed, mCount, total);
 
@@ -296,7 +296,7 @@ public:
     inline void next() const {
         mSubsetOffset++;
         mNextIndex =    mSubsetOffset >= mCount ?
-                        std::numeric_limits<int>::max() :
+                        (std::numeric_limits<int>::max)() :
                         mIndices[mSubsetOffset];
     }
 

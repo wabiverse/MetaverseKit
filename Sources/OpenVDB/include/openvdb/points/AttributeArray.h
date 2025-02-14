@@ -1076,8 +1076,8 @@ TypedAttributeArray<ValueType_, Codec_>::TypedAttributeArray(
                                         "a total size of at least the number of elements in the array.")
         }
     }
-    mSize = std::max(Index(1), mSize);
-    mStrideOrTotalSize = std::max(Index(1), mStrideOrTotalSize);
+    mSize = (std::max)(Index(1), mSize);
+    mStrideOrTotalSize = (std::max)(Index(1), mStrideOrTotalSize);
     Codec::encode(uniformValue, this->data()[0]);
 }
 

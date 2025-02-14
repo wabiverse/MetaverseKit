@@ -517,7 +517,7 @@ void PagedArray<ValueT, Log2PageSize>::add_partially_full(Page*& page, size_t si
     OPENVDB_ASSERT(size > 0 && size < Page::Size);//page must be partially full
     if (size_t m = mSize & Page::Mask) {//page table is also partially full
         ValueT *s = page->data(), *t = mPageTable.back()->data() + m;
-        for (size_t i=std::min(mSize+size, mCapacity)-mSize; i; --i) *t++ = *s++;
+        for (size_t i=(std::min)(mSize+size, mCapacity)-mSize; i; --i) *t++ = *s++;
         if (mSize+size > mCapacity) {//grow page table
             mPageTable.push_back( new Page() );
             t = mPageTable.back()->data();

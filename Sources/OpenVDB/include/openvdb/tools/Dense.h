@@ -252,7 +252,7 @@ public:
     inline const CoordBBox& bbox() const { return BaseT::mBBox; }
 
      /// Return the grid's origin in index coordinates.
-    inline const Coord& origin() const { return BaseT::mBBox.min(); }
+    inline const Coord& origin() const { return (BaseT::mBBox.min)(); }
 
     /// @brief Return the number of voxels contained in this grid.
     inline Index64 valueCount() const { return BaseT::mBBox.volume(); }
@@ -328,15 +328,15 @@ public:
     inline size_t coordToOffset(const Coord& xyz) const
     {
         OPENVDB_ASSERT(BaseT::mBBox.isInside(xyz));
-        return BaseT::coordToOffset(size_t(xyz[0]-BaseT::mBBox.min()[0]),
-                                    size_t(xyz[1]-BaseT::mBBox.min()[1]),
-                                    size_t(xyz[2]-BaseT::mBBox.min()[2]));
+        return BaseT::coordToOffset(size_t(xyz[0]-(BaseT::mBBox.min)()[0]),
+                                    size_t(xyz[1]-(BaseT::mBBox.min)()[1]),
+                                    size_t(xyz[2]-(BaseT::mBBox.min)()[2]));
     }
 
     /// @brief Return the global coordinate corresponding to the specified linear offset.
     inline Coord offsetToCoord(size_t n) const
     {
-      return this->offsetToLocalCoord(n) + BaseT::mBBox.min();
+      return this->offsetToLocalCoord(n) + (BaseT::mBBox.min)();
     }
 
     /// @brief Return the memory footprint of this Dense grid in bytes.
@@ -474,15 +474,15 @@ public:
         mBlocks = new std::vector<Block>();
         const CoordBBox& bbox = mDense->bbox();
         // Pre-process: Construct a list of blocks aligned with (potential) leaf nodes
-        for (CoordBBox sub=bbox; sub.min()[0] <= bbox.max()[0]; sub.min()[0] = sub.max()[0] + 1) {
-            for (sub.min()[1] = bbox.min()[1]; sub.min()[1] <= bbox.max()[1];
-                 sub.min()[1] = sub.max()[1] + 1)
+        for (CoordBBox sub=bbox; (sub.min)()[0] <= (bbox.max)()[0]; (sub.min)()[0] = (sub.max)()[0] + 1) {
+            for ((sub.min)()[1] = (bbox.min)()[1]; (sub.min)()[1] <= (bbox.max)()[1];
+                 (sub.min)()[1] = (sub.max)()[1] + 1)
             {
-                for (sub.min()[2] = bbox.min()[2]; sub.min()[2] <= bbox.max()[2];
-                     sub.min()[2] = sub.max()[2] + 1)
+                for ((sub.min)()[2] = (bbox.min)()[2]; (sub.min)()[2] <= (bbox.max)()[2];
+                     (sub.min)()[2] = (sub.max)()[2] + 1)
                 {
-                    sub.max() = Coord::minComponent(bbox.max(),
-                        (sub.min()&(~(LeafT::DIM-1u))).offsetBy(LeafT::DIM-1u));
+                    (sub.max)() = Coord::minComponent((bbox.max)(),
+                        ((sub.min)()&(~(LeafT::DIM-1u))).offsetBy(LeafT::DIM-1u));
                     mBlocks->push_back(Block(sub));
                 }
             }
@@ -502,7 +502,7 @@ public:
             if (block.leaf) {
                 acc.addLeaf(block.leaf);
             } else if (block.tile.second) {//only background tiles are inactive
-                acc.addTile(1, block.bbox.min(), block.tile.first, true);//leaf tile
+                acc.addTile(1, (block.bbox.min)(), block.tile.first, true);//leaf tile
             }
         }
         delete mBlocks;
@@ -526,11 +526,11 @@ public:
             if (mAccessor.get() == nullptr) {//i.e. empty target tree
                 leaf->fill(mTree->background(), false);
             } else {//account for existing leaf nodes in the target tree
-                if (const LeafT* target = mAccessor->probeConstLeaf(bbox.min())) {
+                if (const LeafT* target = mAccessor->probeConstLeaf((bbox.min)())) {
                     (*leaf) = (*target);
                 } else {
                     ValueT value = zeroVal<ValueT>();
-                    bool state = mAccessor->probeValue(bbox.min(), value);
+                    bool state = mAccessor->probeValue((bbox.min)(), value);
                     leaf->fill(value, state);
                 }
             }
@@ -538,7 +538,7 @@ public:
             leaf->copyFromDense(bbox, *mDense, mTree->background(), mTolerance);
 
             if (!leaf->isConstant(block.tile.first, block.tile.second, mTolerance)) {
-                leaf->setOrigin(bbox.min() & (~(LeafT::DIM - 1)));
+                leaf->setOrigin((bbox.min)() & (~(LeafT::DIM - 1)));
                 block.leaf = leaf;
                 leaf = new LeafT();
             }

@@ -52,7 +52,7 @@ readCompressedValues(   std::istream& is, PointDataIndex32* destBuf, Index destC
     const bool seek = destBuf == nullptr;
 
     const size_t destBytes = destCount*sizeof(PointDataIndex32);
-    const size_t maximumBytes = std::numeric_limits<uint16_t>::max();
+    const size_t maximumBytes = (std::numeric_limits<uint16_t>::max)();
     if (destBytes >= maximumBytes) {
         OPENVDB_THROW(openvdb::IoError, "Cannot read more than " <<
                                 maximumBytes << " bytes in voxel values.")
@@ -74,7 +74,7 @@ readCompressedValues(   std::istream& is, PointDataIndex32* destBuf, Index destC
         is.read(reinterpret_cast<char*>(&bytes16), sizeof(uint16_t));
     }
 
-    if (bytes16 == std::numeric_limits<uint16_t>::max()) {
+    if (bytes16 == (std::numeric_limits<uint16_t>::max)()) {
         // read or seek uncompressed data
         if (seek) {
             is.seekg(destBytes, std::ios_base::cur);
@@ -111,7 +111,7 @@ writeCompressedValues(  std::ostream& os, PointDataIndex32* srcBuf, Index srcCou
     using compression::bloscCompress;
 
     const size_t srcBytes = srcCount*sizeof(PointDataIndex32);
-    const size_t maximumBytes = std::numeric_limits<uint16_t>::max();
+    const size_t maximumBytes = (std::numeric_limits<uint16_t>::max)();
     if (srcBytes >= maximumBytes) {
         OPENVDB_THROW(openvdb::IoError, "Cannot write more than " <<
                                 maximumBytes << " bytes in voxel values.")
@@ -142,7 +142,7 @@ writeCompressedValuesSize(std::ostream& os, const T* srcBuf, Index srcCount)
     using compression::bloscCompressedSize;
 
     const size_t srcBytes = srcCount*sizeof(T);
-    const size_t maximumBytes = std::numeric_limits<uint16_t>::max();
+    const size_t maximumBytes = (std::numeric_limits<uint16_t>::max)();
     if (srcBytes >= maximumBytes) {
         OPENVDB_THROW(openvdb::IoError, "Cannot write more than " <<
                                 maximumBytes << " bytes in voxel values.")
@@ -1553,11 +1553,11 @@ PointDataLeafNode<T, Log2Dim>::fill(const CoordBBox& bbox, const ValueType& valu
 
     // active state is permitted to be updated
 
-    for (Int32 x = bbox.min().x(); x <= bbox.max().x(); ++x) {
+    for (Int32 x = (bbox.min)().x(); x <= (bbox.max)().x(); ++x) {
         const Index offsetX = (x & (DIM-1u)) << 2*Log2Dim;
-        for (Int32 y = bbox.min().y(); y <= bbox.max().y(); ++y) {
+        for (Int32 y = (bbox.min)().y(); y <= (bbox.max)().y(); ++y) {
             const Index offsetXY = offsetX + ((y & (DIM-1u)) << Log2Dim);
-            for (Int32 z = bbox.min().z(); z <= bbox.max().z(); ++z) {
+            for (Int32 z = (bbox.min)().z(); z <= (bbox.max)().z(); ++z) {
                 const Index offset = offsetXY + (z & (DIM-1u));
                 this->setValueMask(offset, active);
             }

@@ -39,7 +39,7 @@ using GroupType = uint8_t;
 class OPENVDB_API AttributeSet
 {
 public:
-    enum AttributePositionLabel : size_t { INVALID_POS = std::numeric_limits<size_t>::max() };
+    enum AttributePositionLabel : size_t { INVALID_POS = (std::numeric_limits<size_t>::max)() };
 
     using Ptr                   = std::shared_ptr<AttributeSet>;
     using ConstPtr              = std::shared_ptr<const AttributeSet>;
@@ -467,7 +467,7 @@ public:
     /// @brief Return a group offset that is not in use
     /// @param hint if provided, request a specific offset as a hint
     /// @return index of an offset or size_t max if no available group offsets
-    size_t unusedGroupOffset(size_t hint = std::numeric_limits<size_t>::max()) const;
+    size_t unusedGroupOffset(size_t hint = (std::numeric_limits<size_t>::max)()) const;
 
     /// @brief Determine if a move is required to efficiently compact the data and store the
     /// source name, offset and the target offset in the input parameters
