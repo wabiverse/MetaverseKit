@@ -1346,11 +1346,11 @@ LeafNode<ValueMask, Log2Dim>::fill(const CoordBBox& bbox, bool value, bool)
     clippedBBox.intersect(bbox);
     if (!clippedBBox) return;
 
-    for (Int32 x = clippedBBox.min().x(); x <= clippedBBox.max().x(); ++x) {
+    for (Int32 x = (clippedBBox.min)().x(); x <= (clippedBBox.max)().x(); ++x) {
         const Index offsetX = (x & (DIM-1u))<<2*Log2Dim;
-        for (Int32 y = clippedBBox.min().y(); y <= clippedBBox.max().y(); ++y) {
+        for (Int32 y = (clippedBBox.min)().y(); y <= (clippedBBox.max)().y(); ++y) {
             const Index offsetXY = offsetX + ((y & (DIM-1u))<<  Log2Dim);
-            for (Int32 z = clippedBBox.min().z(); z <= clippedBBox.max().z(); ++z) {
+            for (Int32 z = (clippedBBox.min)().z(); z <= (clippedBBox.max)().z(); ++z) {
                 const Index offset = offsetXY + (z & (DIM-1u));
                 mBuffer.mData.set(offset, value);
             }

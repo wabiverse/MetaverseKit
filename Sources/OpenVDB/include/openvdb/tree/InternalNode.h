@@ -2246,11 +2246,11 @@ InternalNode<ChildT, Log2Dim>::fill(const CoordBBox& bbox, const ValueType& valu
     // Iterate over the fill region in axis-aligned, tile-sized chunks.
     // (The first and last chunks along each axis might be smaller than a tile.)
     Coord xyz, tileMin, tileMax;
-    for (int x = clippedBBox.min().x(); x <= clippedBBox.max().x(); x = tileMax.x() + 1) {
+    for (int x = (clippedBBox.min)().x(); x <= (clippedBBox.max)().x(); x = tileMax.x() + 1) {
         xyz.setX(x);
-        for (int y = clippedBBox.min().y(); y <= clippedBBox.max().y(); y = tileMax.y() + 1) {
+        for (int y = (clippedBBox.min)().y(); y <= (clippedBBox.max)().y(); y = tileMax.y() + 1) {
             xyz.setY(y);
-            for (int z = clippedBBox.min().z(); z <= clippedBBox.max().z(); z = tileMax.z() + 1) {
+            for (int z = (clippedBBox.min)().z(); z <= (clippedBBox.max)().z(); z = tileMax.z() + 1) {
                 xyz.setZ(z);
 
                 // Get the bounds of the tile that contains voxel (x, y, z).
@@ -2258,8 +2258,8 @@ InternalNode<ChildT, Log2Dim>::fill(const CoordBBox& bbox, const ValueType& valu
                 tileMin = this->offsetToGlobalCoord(n);
                 tileMax = tileMin.offsetBy(ChildT::DIM - 1);
 
-                if (xyz != tileMin || Coord::lessThan(clippedBBox.max(), tileMax)) {
-                    // If the box defined by (xyz, clippedBBox.max()) doesn't completely enclose
+                if (xyz != tileMin || Coord::lessThan((clippedBBox.max)(), tileMax)) {
+                    // If the box defined by (xyz, (clippedBBox.max)()) doesn't completely enclose
                     // the tile to which xyz belongs, create a child node (or retrieve
                     // the existing one).
                     ChildT* child = nullptr;
@@ -2274,12 +2274,12 @@ InternalNode<ChildT, Log2Dim>::fill(const CoordBBox& bbox, const ValueType& valu
 
                     // Forward the fill request to the child.
                     if (child) {
-                        const Coord tmp = Coord::minComponent(clippedBBox.max(), tileMax);
+                        const Coord tmp = Coord::minComponent((clippedBBox.max)(), tileMax);
                         child->fill(CoordBBox(xyz, tmp), value, active);
                     }
 
                 } else {
-                    // If the box given by (xyz, clippedBBox.max()) completely encloses
+                    // If the box given by (xyz, (clippedBBox.max)()) completely encloses
                     // the tile to which xyz belongs, create the tile (if it
                     // doesn't already exist) and give it the fill value.
                     this->makeChildNodeEmpty(n, value);
@@ -2302,11 +2302,11 @@ InternalNode<ChildT, Log2Dim>::denseFill(const CoordBBox& bbox, const ValueType&
     // Iterate over the fill region in axis-aligned, tile-sized chunks.
     // (The first and last chunks along each axis might be smaller than a tile.)
     Coord xyz, tileMin, tileMax;
-    for (int x = clippedBBox.min().x(); x <= clippedBBox.max().x(); x = tileMax.x() + 1) {
+    for (int x = (clippedBBox.min)().x(); x <= (clippedBBox.max)().x(); x = tileMax.x() + 1) {
         xyz.setX(x);
-        for (int y = clippedBBox.min().y(); y <= clippedBBox.max().y(); y = tileMax.y() + 1) {
+        for (int y = (clippedBBox.min)().y(); y <= (clippedBBox.max)().y(); y = tileMax.y() + 1) {
             xyz.setY(y);
-            for (int z = clippedBBox.min().z(); z <= clippedBBox.max().z(); z = tileMax.z() + 1) {
+            for (int z = (clippedBBox.min)().z(); z <= (clippedBBox.max)().z(); z = tileMax.z() + 1) {
                 xyz.setZ(z);
 
                 // Get the table index of the tile that contains voxel (x, y, z).
@@ -2328,7 +2328,7 @@ InternalNode<ChildT, Log2Dim>::denseFill(const CoordBBox& bbox, const ValueType&
                 tileMax = tileMin.offsetBy(ChildT::DIM - 1);
 
                 // Forward the fill request to the child.
-                child->denseFill(CoordBBox{xyz, clippedBBox.max()}, value, active);
+                child->denseFill(CoordBBox{xyz, (clippedBBox.max)()}, value, active);
             }
         }
     }
