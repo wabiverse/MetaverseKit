@@ -51,9 +51,9 @@ inline IntegerT
 floatingPointToFixedPoint(const FloatT s)
 {
     static_assert(std::is_unsigned<IntegerT>::value, "IntegerT must be unsigned");
-    if (FloatT(0.0) > s) return std::numeric_limits<IntegerT>::min();
-    else if (FloatT(1.0) <= s) return std::numeric_limits<IntegerT>::max();
-    return IntegerT(s * FloatT(std::numeric_limits<IntegerT>::max()));
+    if (FloatT(0.0) > s) return (std::numeric_limits<IntegerT>::min)();
+    else if (FloatT(1.0) <= s) return (std::numeric_limits<IntegerT>::max)();
+    return IntegerT(s * FloatT((std::numeric_limits<IntegerT>::max)()));
 }
 
 
@@ -62,7 +62,7 @@ inline FloatT
 fixedPointToFloatingPoint(const IntegerT s)
 {
     static_assert(std::is_unsigned<IntegerT>::value, "IntegerT must be unsigned");
-    return FloatT(s) / FloatT((std::numeric_limits<IntegerT>::max()));
+    return FloatT(s) / FloatT(((std::numeric_limits<IntegerT>::max)()));
 }
 
 template <typename IntegerVectorT, typename FloatT>

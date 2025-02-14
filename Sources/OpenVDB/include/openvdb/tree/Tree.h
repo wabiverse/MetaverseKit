@@ -2081,8 +2081,8 @@ Tree<RootNodeType>::print(std::ostream& os, int verboseLevel) const
     if (verboseLevel > 3) {
         // This forces loading of all non-resident nodes.
         const math::MinMax<ValueType> extrema = tools::minMax(*this);
-        minVal = extrema.min();
-        maxVal = extrema.max();
+        minVal = (extrema.min)();
+        maxVal = (extrema.max)();
     }
 
     const auto nodeCount = this->nodeCount();//fast
