@@ -1319,9 +1319,9 @@ LeafNode<ValueMask, Log2Dim>::clip(const CoordBBox& clipBBox, bool background)
     nodeBBox.intersect(clipBBox);
     Coord xyz;
     int &x = xyz.x(), &y = xyz.y(), &z = xyz.z();
-    for (x = nodeBBox.min().x(); x <= nodeBBox.max().x(); ++x) {
-        for (y = nodeBBox.min().y(); y <= nodeBBox.max().y(); ++y) {
-            for (z = nodeBBox.min().z(); z <= nodeBBox.max().z(); ++z) {
+    for (x = (nodeBBox.min)().x(); x <= (nodeBBox.max)().x(); ++x) {
+        for (y = (nodeBBox.min)().y(); y <= (nodeBBox.max)().y(); ++y) {
+            for (z = (nodeBBox.min)().z(); z <= (nodeBBox.max)().z(); ++z) {
                 mask.setOn(static_cast<Index32>(this->coordToOffset(xyz)));
             }
         }
@@ -1377,7 +1377,7 @@ LeafNode<ValueMask, Log2Dim>::copyToDense(const CoordBBox& bbox, DenseT& dense) 
     using DenseValueType = typename DenseT::ValueType;
 
     const size_t xStride = dense.xStride(), yStride = dense.yStride(), zStride = dense.zStride();
-    const Coord& min = dense.bbox().min();
+    const Coord& min = (dense.bbox().min)();
     DenseValueType* t0 = dense.data() + zStride * ((bbox.min)()[2] - min[2]); // target array
     const Int32 n0 = (bbox.min)()[2] & (DIM-1u);
     for (Int32 x = (bbox.min)()[0], ex = (bbox.max)()[0] + 1; x < ex; ++x) {
@@ -1406,7 +1406,7 @@ LeafNode<ValueMask, Log2Dim>::copyFromDense(const CoordBBox& bbox, const DenseT&
     };
 
     const size_t xStride = dense.xStride(), yStride = dense.yStride(), zStride = dense.zStride();
-    const Coord& min = dense.bbox().min();
+    const Coord& min = (dense.bbox().min)();
     const DenseValueType* s0 = dense.data() + zStride * ((bbox.min)()[2] - min[2]); // source
     const Int32 n0 = (bbox.min)()[2] & (DIM-1u);
     for (Int32 x = (bbox.min)()[0], ex = (bbox.max)()[0] + 1; x < ex; ++x) {

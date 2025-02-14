@@ -2306,19 +2306,19 @@ RootNode<ChildT>::copyToDense(const CoordBBox& bbox, DenseT& dense) const
     using DenseValueType = typename DenseT::ValueType;
 
     const size_t xStride = dense.xStride(), yStride = dense.yStride(), zStride = dense.zStride();
-    const Coord& min = dense.bbox().min();
+    const Coord& min = (dense.bbox().min)();
     CoordBBox nodeBBox;
-    for (Coord xyz = (bbox.min)(); xyz[0] <= (bbox.max)()[0]; xyz[0] = nodeBBox.max()[0] + 1) {
-        for (xyz[1] = (bbox.min)()[1]; xyz[1] <= (bbox.max)()[1]; xyz[1] = nodeBBox.max()[1] + 1) {
-            for (xyz[2] = (bbox.min)()[2]; xyz[2] <= (bbox.max)()[2]; xyz[2] = nodeBBox.max()[2] + 1) {
+    for (Coord xyz = (bbox.min)(); xyz[0] <= (bbox.max)()[0]; xyz[0] = (nodeBBox.max)()[0] + 1) {
+        for (xyz[1] = (bbox.min)()[1]; xyz[1] <= (bbox.max)()[1]; xyz[1] = (nodeBBox.max)()[1] + 1) {
+            for (xyz[2] = (bbox.min)()[2]; xyz[2] <= (bbox.max)()[2]; xyz[2] = (nodeBBox.max)()[2] + 1) {
 
                 // Get the coordinate bbox of the child node that contains voxel xyz.
                 nodeBBox = CoordBBox::createCube(coordToKey(xyz), ChildT::DIM);
 
                 // Get the coordinate bbox of the interection of inBBox and nodeBBox
-                CoordBBox sub(xyz, Coord::minComponent((bbox.max)(), nodeBBox.max()));
+                CoordBBox sub(xyz, Coord::minComponent((bbox.max)(), (nodeBBox.max)()));
 
-                MapCIter iter = this->findKey(nodeBBox.min());
+                MapCIter iter = this->findKey((nodeBBox.min)());
                 if (iter != mTable.end() && isChild(iter)) {//is a child
                     getChild(iter).copyToDense(sub, dense);
                 } else {//is background or a tile value

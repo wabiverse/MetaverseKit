@@ -2346,7 +2346,7 @@ InternalNode<ChildT, Log2Dim>::copyToDense(const CoordBBox& bbox, DenseT& dense)
     using DenseValueType = typename DenseT::ValueType;
 
     const size_t xStride = dense.xStride(), yStride = dense.yStride(), zStride = dense.zStride();
-    const Coord& min = dense.bbox().min();
+    const Coord& min = (dense.bbox().min)();
     for (Coord xyz = (bbox.min)(), max; xyz[0] <= (bbox.max)()[0]; xyz[0] = max[0] + 1) {
         for (xyz[1] = (bbox.min)()[1]; xyz[1] <= (bbox.max)()[1]; xyz[1] = max[1] + 1) {
             for (xyz[2] = (bbox.min)()[2]; xyz[2] <= (bbox.max)()[2]; xyz[2] = max[2] + 1) {

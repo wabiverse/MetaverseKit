@@ -332,9 +332,9 @@ public:
     /// Return the upper bound of this histogram's value range.
     inline double (max)() const { return mMax; }
     /// Return the minimum value in the <i>n</i>th bin.
-    inline double min(int n) const { return mMin+n/mDelta; }
+    inline double (min)(int n) const { return mMin+n/mDelta; }
     /// Return the maximum value in the <i>n</i>th bin.
-    inline double max(int n) const { return mMin+(n+1)/mDelta; }
+    inline double (max)(int n) const { return mMin+(n+1)/mDelta; }
     /// Return the number of samples in the <i>n</i>th bin.
     inline uint64_t count(int n) const { return mBins[n]; }
     /// Return the population size, i.e., the total number of samples.
