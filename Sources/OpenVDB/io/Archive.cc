@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 #include "Archive.h"
 
@@ -23,139 +23,18 @@
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-#if defined(_WIN32)
-#include <any/any.hpp>
-#include <iostream>
-#include <strstream>
-#else // !defined(_WIN32)
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/iostreams/device/array.hpp>
 #include <boost/iostreams/stream.hpp>
-#endif // defined(_WIN32)
 
 #ifdef _WIN32
-#include <windows.h>
-// extern "C" __declspec(dllimport) bool __stdcall GetFileTime(
-//     void* fh, void* ctime, void* atime, void* mtime);
+#include <boost/interprocess/detail/os_file_functions.hpp> // open_existing_file(), close_file()
+extern "C" __declspec(dllimport) bool __stdcall GetFileTime(
+    void* fh, void* ctime, void* atime, void* mtime);
 // boost::interprocess::detail was renamed to boost::interprocess::ipcdetail in Boost 1.48.
 // Ensure that both namespaces exist.
-namespace boost
-{
-  #if defined(_WIN32)
-  using namespace linb;
-  #endif // defined(_WIN32)
-
-  namespace interprocess
-  {
-    #if defined(_WIN32)
-    constexpr long read_only = GENERIC_READ;
-    constexpr long write = GENERIC_WRITE;
-    #endif // defined(_WIN32)
-
-    namespace detail
-    {
-    }
-    namespace ipcdetail
-    {
-    }
-  }
-}
-
-class MemoryMappedFile
-{  
- public:
-  MemoryMappedFile(const char* filename, long accessLevel = boost::interprocess::read_only)
-    : filename(filename)
-  {
-    // Open the file
-    hFile = CreateFileA(
-      filename,
-      GENERIC_READ | GENERIC_WRITE,
-      0,
-      NULL,
-      OPEN_EXISTING,
-      FILE_ATTRIBUTE_NORMAL,
-      NULL
-    );
-    if (hFile == INVALID_HANDLE_VALUE) {
-      throw std::runtime_error("OPENVDB: Failed to open file");
-    }
-
-    // Get the file size
-    LARGE_INTEGER fileSize;
-    if (!GetFileSizeEx(hFile, &fileSize)) {
-      CloseHandle(hFile);
-      throw std::runtime_error("OPENVDB: Failed to get file size");
-    }
-    size = fileSize.QuadPart;
-  }
-
-  ~MemoryMappedFile()
-  {
-    if (hFile != INVALID_HANDLE_VALUE) CloseHandle(hFile);
-  }
-
-  std::string get_name() const { return filename; }
-  HANDLE get_file() const { return hFile; }
-  size_t get_size() const { return size; }
-
- private:
-  const char* filename;
-  HANDLE hFile = INVALID_HANDLE_VALUE;
-  size_t size = 0;
-};
-
-class MappedRegion
-{
- public:
-  MappedRegion(const MemoryMappedFile &file, long accessLevel = boost::interprocess::read_only)
-    : hFile(file)
-  {
-    // Create a file mapping object
-    hMapping = CreateFileMapping(
-      hFile.get_file(),
-      NULL,
-      PAGE_READWRITE,
-      0,
-      0,
-      NULL
-    );
-    if (hMapping == NULL) {
-      CloseHandle(hFile.get_file());
-      throw std::runtime_error("Failed to create file mapping");
-    }
-
-    // Map the file to memory
-    data = static_cast<char*>(MapViewOfFile(
-      hMapping,
-      FILE_MAP_READ | FILE_MAP_WRITE,
-      0,
-      0,
-      0
-    ));
-    if (data == NULL) {
-      CloseHandle(hMapping);
-      CloseHandle(hFile.get_file());
-      throw std::runtime_error("Failed to map file to memory");
-    }
-  }
-
-  ~MappedRegion()
-  {
-    if (data) UnmapViewOfFile(data);
-    if (hMapping) CloseHandle(hMapping);
-    hFile.~MemoryMappedFile();
-  }
-  
-  char* get_data() { return data; }
-  size_t get_size() const { return hFile.get_size(); }
-
- private:
-  MemoryMappedFile hFile;
-  HANDLE hMapping = NULL;
-  char* data = NULL;
-};
+namespace boost { namespace interprocess { namespace detail {} namespace ipcdetail {} } }
 #else
 #include <sys/types.h> // for struct stat
 #include <sys/stat.h> // for stat()
@@ -451,10 +330,10 @@ namespace {
 
 template<typename T>
 inline bool
-writeAsType(std::ostream& os, const boost::any& val)
+writeAsType(std::ostream& os, const std::any& val)
 {
     if (val.type() == typeid(T)) {
-        os << boost::any_cast<T>(val);
+        os << std::any_cast<T>(val);
         return true;
     }
     return false;
@@ -478,10 +357,10 @@ struct PopulateDelayedLoadMetadataOp
         using MaskT = typename LeafT::NodeMaskType;
 
         const TreeT& tree = grid.constTree();
-        const Index32 leafCount = tree.leafCount();
+        const Index64 leafCount = tree.leafCount();
 
         // early exit if not leaf nodes
-        if (leafCount == Index32(0))    return;
+        if (leafCount == Index64(0))    return;
 
         metadata.resizeMask(leafCount);
 
@@ -536,8 +415,8 @@ operator<<(std::ostream& os, const StreamMetadata::AuxDataMap& auxData)
         it != end; ++it)
     {
         os << it->first << ": ";
-        // Note: boost::any doesn't support serialization.
-        const boost::any& val = it->second;
+        // Note: std::any doesn't support serialization.
+        const std::any& val = it->second;
         if (!writeAsType<int32_t>(os, val)
             && !writeAsType<int64_t>(os, val)
             && !writeAsType<int16_t>(os, val)
@@ -599,17 +478,10 @@ public:
     ~Impl()
     {
         std::string filename;
-#if defined(_WIN32)
-        filename = mMap.get_name();
-#else // !defined(_WIN32)
         if (const char* s = mMap.get_name()) filename = s;
-#endif // defined(_WIN32)
         OPENVDB_LOG_DEBUG_RUNTIME("closing memory-mapped file " << filename);
         if (mNotifier) mNotifier(filename);
         if (mAutoDelete) {
-#if defined(_WIN32)
-            mRegion.~MappedRegion();
-#else // !defined(_WIN32)
             if (!boost::interprocess::file_mapping::remove(filename.c_str())) {
                 if (errno != ENOENT) {
                     // Warn if the file exists but couldn't be removed.
@@ -618,31 +490,25 @@ public:
                     OPENVDB_LOG_WARN("failed to remove temporary file " << filename << mesg);
                 }
             }
-#endif // defined(_WIN32)
         }
     }
 
     Index64 getLastWriteTime() const
     {
         Index64 result = 0;
-#if defined(_WIN32)
-        std::string filename = mMap.get_name();
-#else // !defined(_WIN32)
         const char* filename = mMap.get_name();
-#endif // defined(_WIN32)
 
 #ifdef _WIN32
         // boost::interprocess::detail was renamed to boost::interprocess::ipcdetail in Boost 1.48.
         using namespace boost::interprocess::detail;
         using namespace boost::interprocess::ipcdetail;
 
-        MemoryMappedFile f(filename.c_str());
-        if (HANDLE fh = f.get_file()) {
+        if (void* fh = open_existing_file(filename, boost::interprocess::read_only)) {
             struct { unsigned long lo, hi; } mtime; // Windows FILETIME struct
-            if (GetFileTime(fh, nullptr, nullptr, (LPFILETIME)&mtime)) {
+            if (GetFileTime(fh, nullptr, nullptr, &mtime)) {
                 result = (Index64(mtime.hi) << 32) | mtime.lo;
             }
-            f.~MemoryMappedFile();
+            close_file(fh);
         }
 #else
         struct stat info;
@@ -653,13 +519,8 @@ public:
         return result;
     }
 
-#if !defined(_WIN32)
     boost::interprocess::file_mapping mMap;
     boost::interprocess::mapped_region mRegion;
-#else // defined(_WIN32)
-    MemoryMappedFile mMap;
-    MappedRegion mRegion;
-#endif // !defined(_WIN32)
     bool mAutoDelete;
     Notifier mNotifier;
     mutable std::atomic<Index64> mLastWriteTime;
@@ -680,16 +541,12 @@ MappedFile::~MappedFile()
 {
 }
 
+
 std::string
 MappedFile::filename() const
 {
     std::string result;
-    #if defined(_WIN32)
-    result = mImpl->mMap.get_name();
-    #else // !defined(_WIN32)
     if (const char* s = mImpl->mMap.get_name()) result = s;
-    #endif // defined(_WIN32)
-
     return result;
 }
 
@@ -707,17 +564,11 @@ MappedFile::createBuffer() const
         }
     }
 
-    #if !defined(_WIN32)
     return SharedPtr<std::streambuf>{
         new boost::iostreams::stream_buffer<boost::iostreams::array_source>{
             static_cast<const char*>(mImpl->mRegion.get_address()), mImpl->mRegion.get_size()}};
-    #else // defined(_WIN32)
-    std::strstreambuf buff_s(mImpl->mRegion.get_data(), mImpl->mRegion.get_size());
-    return SharedPtr<std::streambuf>{
-        &buff_s
-    };
-    #endif // !defined(_WIN32)
 }
+
 
 void
 MappedFile::setNotifier(const Notifier& notifier)

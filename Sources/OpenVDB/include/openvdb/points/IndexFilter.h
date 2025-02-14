@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file points/IndexFilter.h
 ///
@@ -42,6 +42,7 @@
 
 #include <openvdb/math/Transform.h>
 #include <openvdb/tools/Interpolation.h>
+#include <openvdb/util/Assert.h>
 
 #include "IndexIterator.h"
 #include "AttributeArray.h"
@@ -198,7 +199,7 @@ public:
 
     template <typename IterT>
     bool valid(const IterT& iter) const {
-        assert(mInitialized);
+        OPENVDB_ASSERT(mInitialized);
         // accept no include filters as valid
         bool includeValid = mIncludeHandles.empty();
         for (const GroupHandle& handle : mIncludeHandles) {
@@ -242,9 +243,9 @@ public:
         const float factor = targetPoints > currentPoints ? 1.0f : float(targetPoints) / float(currentPoints);
 
         std::mt19937 generator(seed);
-        std::uniform_int_distribution<unsigned int> dist(0, (std::numeric_limits<unsigned int>::max)() - 1);
+        std::uniform_int_distribution<unsigned int> dist(0, std::numeric_limits<unsigned int>::max() - 1);
 
-        Index32 leafCounter = 0;
+        Index64 leafCounter = 0;
         float totalPointsFloat = 0.0f;
         int totalPoints = 0;
         for (auto iter = tree.cbeginLeaf(); iter; ++iter) {
@@ -284,7 +285,7 @@ public:
         const SeedCountPair& value = it->second;
         const unsigned int seed = static_cast<unsigned int>(value.first);
         const auto total = static_cast<Index>(leaf.pointCount());
-        mCount = (std::min)(value.second, total);
+        mCount = std::min(value.second, total);
 
         mIndices = generateRandomSubset<RandGenT, int>(seed, mCount, total);
 
@@ -295,7 +296,7 @@ public:
     inline void next() const {
         mSubsetOffset++;
         mNextIndex =    mSubsetOffset >= mCount ?
-                        (std::numeric_limits<int>::max)() :
+                        std::numeric_limits<int>::max() :
                         mIndices[mSubsetOffset];
     }
 
@@ -348,13 +349,13 @@ public:
 
     template <typename LeafT>
     void reset(const LeafT& leaf) {
-        assert(leaf.hasAttribute(mIndex));
+        OPENVDB_ASSERT(leaf.hasAttribute(mIndex));
         mIdHandle.reset(new Handle(leaf.constAttributeArray(mIndex)));
     }
 
     template <typename IterT>
     bool valid(const IterT& iter) const {
-        assert(mIdHandle);
+        OPENVDB_ASSERT(mIdHandle);
         const IntType id = mIdHandle->get(*iter);
         const unsigned int seed = mSeed + static_cast<unsigned int>(id);
         RandGenT generator(seed);
@@ -410,8 +411,8 @@ public:
 
     template <typename IterT>
     bool valid(const IterT& iter) const {
-        assert(mPositionHandle);
-        assert(iter);
+        OPENVDB_ASSERT(mPositionHandle);
+        OPENVDB_ASSERT(iter);
 
         const openvdb::Coord ijk = iter.getCoord();
         const openvdb::Vec3f voxelIndexSpace = ijk.asVec3d();
@@ -477,7 +478,7 @@ public:
 
     template <typename IterT>
     bool valid(const IterT& iter) const {
-        assert(mPositionHandle);
+        OPENVDB_ASSERT(mPositionHandle);
 
         const openvdb::Coord ijk = iter.getCoord();
         const openvdb::Vec3f voxelIndexSpace = ijk.asVec3d();

@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @file Composite.h
 ///
@@ -103,28 +103,28 @@ namespace composite {
 // composite::min() and composite::max() for non-vector types compare with operator<().
 template<typename T> inline
 const typename std::enable_if<!VecTraits<T>::IsVec, T>::type& // = T if T is not a vector type
-(min)(const T& a, const T& b) { return (std::min)(a, b); }
+min(const T& a, const T& b) { return std::min(a, b); }
 
 template<typename T> inline
 const typename std::enable_if<!VecTraits<T>::IsVec, T>::type&
-(max)(const T& a, const T& b) { return (std::max)(a, b); }
+max(const T& a, const T& b) { return std::max(a, b); }
 
 
 // composite::min() and composite::max() for OpenVDB vector types compare by magnitude.
 template<typename T> inline
 const typename std::enable_if<VecTraits<T>::IsVec, T>::type& // = T if T is a vector type
-(min)(const T& a, const T& b)
+min(const T& a, const T& b)
 {
     const typename T::ValueType aMag = a.lengthSqr(), bMag = b.lengthSqr();
-    return (aMag < bMag ? a : (bMag < aMag ? b : (std::min)(a, b)));
+    return (aMag < bMag ? a : (bMag < aMag ? b : std::min(a, b)));
 }
 
 template<typename T> inline
 const typename std::enable_if<VecTraits<T>::IsVec, T>::type&
-(max)(const T& a, const T& b)
+max(const T& a, const T& b)
 {
     const typename T::ValueType aMag = a.lengthSqr(), bMag = b.lengthSqr();
-    return (aMag < bMag ? b : (bMag < aMag ? a : (std::max)(a, b)));
+    return (aMag < bMag ? b : (bMag < aMag ? a : std::max(a, b)));
 }
 
 
@@ -139,7 +139,7 @@ divide(const T& a, const T& b)
     const T zero(0);
     if (b != zero) return a / b;
     if (a == zero) return 0;
-    return (a > 0 ? (std::numeric_limits<T>::max)() : -(std::numeric_limits<T>::max)());
+    return (a > 0 ? std::numeric_limits<T>::max() : -std::numeric_limits<T>::max());
 }
 
 // If b is true, return a / 1 = a.
@@ -752,7 +752,7 @@ compMax(GridOrTreeT& aTree, GridOrTreeT& bTree)
     using ValueT = typename TreeT::ValueType;
     struct Local {
         static inline void op(CombineArgs<ValueT>& args) {
-            args.setResult((composite::max)(args.a(), args.b()));
+            args.setResult(composite::max(args.a(), args.b()));
         }
     };
     Adapter::tree(aTree).combineExtended(Adapter::tree(bTree), Local::op, /*prune=*/false);
@@ -768,7 +768,7 @@ compMin(GridOrTreeT& aTree, GridOrTreeT& bTree)
     using ValueT = typename TreeT::ValueType;
     struct Local {
         static inline void op(CombineArgs<ValueT>& args) {
-            args.setResult((composite::min)(args.a(), args.b()));
+            args.setResult(composite::min(args.a(), args.b()));
         }
     };
     Adapter::tree(aTree).combineExtended(Adapter::tree(bTree), Local::op, /*prune=*/false);

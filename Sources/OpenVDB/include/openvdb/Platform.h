@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 ///
 /// @file Platform.h
 
@@ -66,12 +66,6 @@
     // linking in the CRT, unless OPENVDB_STATICLIB is defined.
     #if defined(_DLL) && !defined(OPENVDB_STATICLIB) && !defined(OPENVDB_DLL)
         #define OPENVDB_DLL
-    #endif
-
-    // By default, assume that we're dynamically linking OpenEXR, unless
-    // OPENVDB_OPENEXR_STATICLIB is defined.
-    #if !defined(OPENVDB_OPENEXR_STATICLIB) && !defined(OPENEXR_DLL)
-        #define OPENEXR_DLL
     #endif
 #endif
 
@@ -217,16 +211,10 @@
     #define OPENVDB_NO_TYPE_CONVERSION_WARNING_END
 #elif defined __GNUC__
     // -Wfloat-conversion was only introduced in GCC 4.9
-    #if OPENVDB_CHECK_GCC(4, 9)
-        #define OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN \
-            _Pragma("GCC diagnostic push") \
-            _Pragma("GCC diagnostic ignored \"-Wconversion\"") \
-            _Pragma("GCC diagnostic ignored \"-Wfloat-conversion\"")
-    #else
-        #define OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN \
-            _Pragma("GCC diagnostic push") \
-            _Pragma("GCC diagnostic ignored \"-Wconversion\"")
-    #endif
+    #define OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN \
+        _Pragma("GCC diagnostic push") \
+        _Pragma("GCC diagnostic ignored \"-Wconversion\"") \
+        _Pragma("GCC diagnostic ignored \"-Wfloat-conversion\"")
     #define OPENVDB_NO_TYPE_CONVERSION_WARNING_END \
         _Pragma("GCC diagnostic pop")
 #else

@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef OPENVDB_UTIL_UTIL_HAS_BEEN_INCLUDED
 #define OPENVDB_UTIL_UTIL_HAS_BEEN_INCLUDED
@@ -16,7 +16,7 @@ OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
 
-inline constexpr Index32 INVALID_IDX = (std::numeric_limits<Index32>::max)();
+inline constexpr Index32 INVALID_IDX = std::numeric_limits<Index32>::max();
 
 /// @brief coordinate offset table for neighboring voxels
 inline constexpr Coord COORD_OFFSETS[26] =

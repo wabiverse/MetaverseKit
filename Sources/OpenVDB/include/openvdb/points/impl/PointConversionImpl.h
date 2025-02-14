@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Dan Bailey, Nick Avramoussis
 ///
@@ -167,7 +167,7 @@ struct ConvertPointDataGridPositionOp {
 
         for (auto leaf = range.begin(); leaf; ++leaf) {
 
-            assert(leaf.pos() < mPointOffsets.size());
+            OPENVDB_ASSERT(leaf.pos() < mPointOffsets.size());
 
             if (mInCoreOnly && leaf->buffer().isOutOfCore())    continue;
 
@@ -255,7 +255,7 @@ struct ConvertPointDataGridAttributeOp {
 
         for (auto leaf = range.begin(); leaf; ++leaf) {
 
-            assert(leaf.pos() < mPointOffsets.size());
+            OPENVDB_ASSERT(leaf.pos() < mPointOffsets.size());
 
             if (mInCoreOnly && leaf->buffer().isOutOfCore())    continue;
 
@@ -335,7 +335,7 @@ struct ConvertPointDataGridGroupOp {
     {
         for (auto leaf = range.begin(); leaf; ++leaf) {
 
-            assert(leaf.pos() < mPointOffsets.size());
+            OPENVDB_ASSERT(leaf.pos() < mPointOffsets.size());
 
             if (mInCoreOnly && leaf->buffer().isOutOfCore())    continue;
 
@@ -344,7 +344,7 @@ struct ConvertPointDataGridGroupOp {
             if (leaf.pos() > 0)     offset += mPointOffsets[leaf.pos() - 1];
 
             const AttributeArray& array = leaf->constAttributeArray(mIndex.first);
-            assert(isGroup(array));
+            OPENVDB_ASSERT(isGroup(array));
             const GroupAttributeArray& groupArray = GroupAttributeArray::cast(array);
 
             if (mFilter.state() == index::ALL) {
@@ -375,14 +375,14 @@ struct CalculatePositionBounds
                             const math::Mat4d& inverse)
         : mPositions(positions)
         , mInverseMat(inverse)
-        , mMin((std::numeric_limits<Real>::max)())
-        , mMax(-(std::numeric_limits<Real>::max)()) {}
+        , mMin(std::numeric_limits<Real>::max())
+        , mMax(-std::numeric_limits<Real>::max()) {}
 
     CalculatePositionBounds(const CalculatePositionBounds& other, tbb::split)
         : mPositions(other.mPositions)
         , mInverseMat(other.mInverseMat)
-        , mMin((std::numeric_limits<Real>::max)())
-        , mMax(-(std::numeric_limits<Real>::max)()) {}
+        , mMin(std::numeric_limits<Real>::max())
+        , mMax(-std::numeric_limits<Real>::max()) {}
 
     void operator()(const tbb::blocked_range<size_t>& range) {
         VecT pos;
@@ -448,7 +448,7 @@ createPointDataGrid(const PointIndexGridT& pointIndexGrid,
     // retrieve position index
 
     const size_t positionIndex = descriptor->find("P");
-    assert(positionIndex != AttributeSet::INVALID_POS);
+    OPENVDB_ASSERT(positionIndex != AttributeSet::INVALID_POS);
 
     // acquire registry lock to avoid locking when appending attributes in parallel
 
@@ -463,7 +463,7 @@ createPointDataGrid(const PointIndexGridT& pointIndexGrid,
             // obtain the PointIndexLeafNode (using the origin of the current leaf)
 
             const auto* pointIndexLeaf = pointIndexTree.probeConstLeaf(leaf.origin());
-            assert(pointIndexLeaf);
+            OPENVDB_ASSERT(pointIndexLeaf);
 
             // initialise the attribute storage
 
@@ -688,7 +688,7 @@ computeVoxelSize(  const PositionWrapper& positions,
         {
             // dictated by the math::ScaleMap limit
             static const double minimumVoxelVolume(3e-15);
-            static const double maximumVoxelVolume((std::numeric_limits<float>::max)());
+            static const double maximumVoxelVolume(std::numeric_limits<float>::max());
 
             double voxelVolume = volume / static_cast<double>(estimatedVoxelCount);
             bool valid = true;
@@ -748,7 +748,7 @@ computeVoxelSize(  const PositionWrapper& positions,
 
     // return default size if points are coincident
 
-    if ((bbox.min)() == (bbox.max)())  return voxelSize;
+    if (bbox.min() == bbox.max())  return voxelSize;
 
     double volume = bbox.volume();
 

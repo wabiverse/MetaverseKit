@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef OPENVDB_MATH_VEC2_HAS_BEEN_INCLUDED
 #define OPENVDB_MATH_VEC2_HAS_BEEN_INCLUDED
@@ -504,8 +504,8 @@ template <typename T>
 inline Vec2<T> minComponent(const Vec2<T> &v1, const Vec2<T> &v2)
 {
     return Vec2<T>(
-            (std::min)(v1.x(), v2.x()),
-            (std::min)(v1.y(), v2.y()));
+            std::min(v1.x(), v2.x()),
+            std::min(v1.y(), v2.y()));
 }
 
 /// Return component-wise maximum of the two vectors.
@@ -513,8 +513,8 @@ template <typename T>
 inline Vec2<T> maxComponent(const Vec2<T> &v1, const Vec2<T> &v2)
 {
     return Vec2<T>(
-            (std::max)(v1.x(), v2.x()),
-            (std::max)(v1.y(), v2.y()));
+            std::max(v1.x(), v2.x()),
+            std::max(v1.y(), v2.y()));
 }
 
 /// @brief Return a vector with the exponent applied to each of

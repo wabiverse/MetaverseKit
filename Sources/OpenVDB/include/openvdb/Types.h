@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 #ifndef OPENVDB_TYPES_HAS_BEEN_INCLUDED
 #define OPENVDB_TYPES_HAS_BEEN_INCLUDED
@@ -10,7 +10,9 @@
 
 #ifdef OPENVDB_USE_IMATH_HALF
 #ifdef OPENVDB_IMATH_VERSION
-#include <half.h>
+#include <Imath/half.h>
+#else
+#include <OpenEXR/half.h>
 #endif
 namespace openvdb {
 OPENVDB_USE_VERSION_NAMESPACE
@@ -354,13 +356,13 @@ private:
     template <size_t bits>
     using TypeT = typename std::conditional<std::is_integral<T>::value,
         types_internal::int_t<bits, std::is_signed<T>::value>,
-        types_internal::flt_t<(std::max)(size_t(16), bits)>>::type;
+        types_internal::flt_t<std::max(size_t(16), bits)>>::type;
 public:
     static_assert(sizeof(T) <= 8ul, "Unsupported source type for promotion");
 
 #define OPENVDB_TARGET_BITS(SHIFT, PROMOTE) \
-        (std::max)(size_t(8), \
-            (std::min)(size_t(64), (PROMOTE ? size_t(8)*(sizeof(T)<<SHIFT) : \
+        std::max(size_t(8), \
+            std::min(size_t(64), (PROMOTE ? size_t(8)*(sizeof(T)<<SHIFT) : \
                 size_t(8)*(sizeof(T)>>SHIFT))))
     template <size_t Shift = ~0UL> using Promote = typename TypeT<OPENVDB_TARGET_BITS(Shift, true)>::type;
     template <size_t Shift = ~0UL> using Demote = typename TypeT<OPENVDB_TARGET_BITS(Shift, false)>::type;
@@ -685,6 +687,23 @@ class DeepCopy {};
 class Steal {};
 /// @brief Tag dispatch class that distinguishes constructors during file input
 class PartialCreate {};
+
+// For half compilation
+namespace math {
+template<>
+inline auto cwiseAdd(const math::Vec3<math::half>& v, const float s)
+{
+    math::Vec3<math::half> out;
+    const math::half* ip = v.asPointer();
+    math::half* op = out.asPointer();
+    for (unsigned i = 0; i < 3; ++i, ++op, ++ip) {
+        OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
+        *op = *ip + s;
+        OPENVDB_NO_TYPE_CONVERSION_WARNING_END
+    }
+    return out;
+}
+} // namespace math
 
 } // namespace OPENVDB_VERSION_NAME
 } // namespace openvdb

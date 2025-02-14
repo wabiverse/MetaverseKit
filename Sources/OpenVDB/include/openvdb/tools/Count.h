@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @file   Count.h
 ///
@@ -344,8 +344,8 @@ struct MinMaxValuesOp
     using ValueT = typename TreeType::ValueType;
 
     explicit MinMaxValuesOp()
-        : mmin(zeroVal<ValueT>())
-        , mmax(zeroVal<ValueT>())
+        : min(zeroVal<ValueT>())
+        , max(zeroVal<ValueT>())
         , seen_value(false) {}
 
     MinMaxValuesOp(const MinMaxValuesOp&, tbb::split)
@@ -357,18 +357,18 @@ struct MinMaxValuesOp
         if (auto iter = node.cbeginValueOn()) {
             if (!seen_value) {
                 seen_value = true;
-                mmin = mmax = *iter;
+                min = max = *iter;
                 ++iter;
             }
 
             for (; iter; ++iter) {
                 const ValueT val = *iter;
 
-                if (math::cwiseLessThan(val, mmin))
-                    mmin = val;
+                if (math::cwiseLessThan(val, min))
+                    min = val;
 
-                if (math::cwiseGreaterThan(val, mmax))
-                    mmax = val;
+                if (math::cwiseGreaterThan(val, max))
+                    max = val;
             }
         }
 
@@ -380,21 +380,21 @@ struct MinMaxValuesOp
         if (!other.seen_value) return true;
 
         if (!seen_value) {
-            mmin = other.mmin;
-            mmax = other.mmax;
+            min = other.min;
+            max = other.max;
         }
         else {
-            if (math::cwiseLessThan(other.mmin, mmin))
-                mmin = other.mmin;
-            if (math::cwiseGreaterThan(other.mmax, mmax))
-                mmax = other.mmax;
+            if (math::cwiseLessThan(other.min, min))
+                min = other.min;
+            if (math::cwiseGreaterThan(other.max, max))
+                max = other.max;
         }
 
         seen_value = true;
         return true;
     }
 
-    ValueT mmin, mmax;
+    ValueT min, max;
 
 private:
 
@@ -521,7 +521,7 @@ math::MinMax<typename TreeT::ValueType> minMax(const TreeT& tree, bool threaded)
     tree::DynamicNodeManager<const TreeT> nodeManager(tree);
     nodeManager.reduceTopDown(op, threaded);
 
-    return math::MinMax<ValueT>(op.mmin, op.mmax);
+    return math::MinMax<ValueT>(op.min, op.max);
 }
 
 

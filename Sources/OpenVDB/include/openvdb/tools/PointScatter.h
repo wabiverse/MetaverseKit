@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @author Ken Museth
 ///
@@ -150,7 +150,7 @@ public:
                 BaseT::addPoint(grid, valueIter.getCoord() - offset);
             } else {// tiles contain multiple (virtual) voxels
                 valueIter.getBoundingBox(bbox);
-                BaseT::addPoint(grid, (bbox.min)() - offset, bbox.extents());
+                BaseT::addPoint(grid, bbox.min() - offset, bbox.extents());
             }
         }//loop over all the active voxels and tiles
         //}
@@ -227,7 +227,7 @@ public:
             } else {// tiles contain multiple (virtual) voxels
                 iter.getBoundingBox(bbox);
                 const Coord size(bbox.extents());
-                const Vec3R dmin = (bbox.min)() - offset;
+                const Vec3R dmin = bbox.min() - offset;
                 const double d = mPointsPerVoxel * float(iter.getVoxelCount());
                 const int m = math::Floor(d);
                 for (int n = 0; n != m; ++n)  BaseT::addPoint(grid, dmin, size);
@@ -309,7 +309,7 @@ public:
             } else { // tiles contain multiple (virtual) voxels
                 iter.getBoundingBox(bbox);
                 const Coord size(bbox.extents());
-                const Vec3R dmin = (bbox.min)() - offset;
+                const Vec3R dmin = bbox.min() - offset;
                 for (int i = 0; i < n; ++i) BaseT::addPoint(grid, dmin, size);
                 if (BaseT::getRand01() < (d - n)) BaseT::addPoint(grid, dmin, size);
             }

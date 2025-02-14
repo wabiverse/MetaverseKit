@@ -283,7 +283,7 @@ let package = Package(
     .target(
       name: "OpenMP",
       dependencies: [
-        Arch.OS.python()
+        .target(name: "MicrosoftSTL", condition: .when(platforms: [.windows])),
       ],
       exclude: getConfig(for: .openmp).exclude,
       publicHeadersPath: "include",
@@ -396,9 +396,8 @@ let package = Package(
         .target(name: "ImGui"),
         .target(name: "OpenImageIO"),
         .target(name: "OpenImageIO_Util"),
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
         .target(name: "MXResources"),
-        Arch.OS.python()
+        .target(name: "MicrosoftSTL", condition: .when(platforms: [.windows])),
       ],
       exclude: getConfig(for: .materialx).exclude,
       publicHeadersPath: "include",
@@ -448,9 +447,8 @@ let package = Package(
     .target(
       name: "Imath",
       dependencies: [
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
         .target(name: "pystring"),
-        Arch.OS.python()
+        .target(name: "MicrosoftSTL", condition: .when(platforms: [.windows])),
       ],
       exclude: [
         /* metapy builds pyimath. */
@@ -467,7 +465,6 @@ let package = Package(
       ],
       publicHeadersPath: "src/Imath",
       cxxSettings: [
-        .headerSearchPath("src/python/PyImath"),
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
         .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
         .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
@@ -511,12 +508,11 @@ let package = Package(
     .target(
       name: "OpenTime",
       dependencies: [
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
         .target(name: "any"),
         .target(name: "nonstd"),
         .target(name: "rapidjson"),
         .target(name: "Imath"),
-        Arch.OS.python()
+        .target(name: "MicrosoftSTL", condition: .when(platforms: [.windows])),
       ],
       path: "Sources/OpenTimelineIO/src/opentime",
       publicHeadersPath: "include",
@@ -592,7 +588,6 @@ let package = Package(
         .target(name: "OpenVDB"),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
         .target(name: "MicrosoftSTL", condition: .when(platforms: Arch.OS.windows.platform)),
       ],
       exclude: getConfig(for: .oiio).exclude,
@@ -667,27 +662,6 @@ let package = Package(
       ]
     ),
 
-    // .target(
-    //   name: "MetaPy",
-    //   dependencies: [
-    //     .target(name: "Imath"),
-    //     .target(name: "OpenEXR"),
-    //     .target(name: "OpenVDB"),
-    //     .target(name: "Alembic"),
-    //     .target(name: "OpenImageIO"),
-    //     .target(name: "MaterialX"),
-    //     Arch.OS.python(),
-    //     Arch.OS.boost()
-    //   ],
-    //   exclude: getConfig(for: .mpy).exclude,
-    //   publicHeadersPath: "include/python",
-    //   cxxSettings: [
-    //     .headerSearchPath("include/python/PyImath"),
-    //     .headerSearchPath("include/python/PyAlembic"),
-    //     .headerSearchPath("include/python/PyOIIO"),
-    //   ]
-    // ),
-
     .target(
       name: "Ptex",
       dependencies: [
@@ -729,9 +703,7 @@ let package = Package(
       dependencies: [
         .target(name: "HDF5"),
         .target(name: "Imath"),
-        .target(name: "OpenEXR"),
-        Arch.OS.python(),
-        Arch.OS.boost()
+        .target(name: "OpenEXR")
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -739,22 +711,6 @@ let package = Package(
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
         .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
         .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
-      ]
-    ),
-
-    .target(
-      name: "PyBind11",
-      dependencies: [
-        Arch.OS.python()
-      ],
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
-        .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
-        .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
-      ],
-      linkerSettings: [
-        .linkedLibrary("python\(Arch.OS.Python.current.versionMajor).\(Arch.OS.Python.current.versionMinor)", .when(platforms: Arch.OS.linux.platform)),
       ]
     ),
 
@@ -782,13 +738,10 @@ let package = Package(
       dependencies: [
         .target(name: "MetaTBB"),
         .target(name: "Blosc"),
-        .target(name: "PyBind11", condition: .when(platforms: Arch.OS.nixnodroid.platform)),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "ZLibDataCompression"),
-        .target(name: "any"),
-        Arch.OS.python(),
-        Arch.OS.boost()
+        .target(name: "any")
       ],
       publicHeadersPath: "include",
       cxxSettings: getConfig(for: .openvdb).cxxSettings,
@@ -815,7 +768,7 @@ let package = Package(
         .target(name: "OpenSubdiv"),
         .target(name: "Ptex"),
         .target(name: "Draco"),
-        Arch.OS.python()
+        .target(name: "MicrosoftSTL", condition: .when(platforms: [.windows])),
       ],
       cxxSettings: [
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
@@ -1251,8 +1204,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       break
     case .alembic:
       break
-    case .pybind11:
-      break
     case .blosc:
       #if !os(Windows)
         config.exclude = ["include/win32"]
@@ -1274,7 +1225,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
            original openvdb headers remain unchanged.
           ------------------------------------------- */
         .headerSearchPath("include/openvdb"),
-        .define("OPENVDB_USE_DELAYED_LOADING", to: "1"),
         .define("OPENVDB_USE_BLOSC", to: "1"),
         .define("OPENVDB_USE_ZLIB", to: "1"),
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
@@ -1282,20 +1232,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
         .define("OPENVDB_PRIVATE")
       ]
-      #if os(Linux) || os(OpenBSD) || os(FreeBSD)
-        config.linkerSettings = [
-          .linkedLibrary("boost_system"),
-          .linkedLibrary("boost_filesystem"),
-          .linkedLibrary("boost_thread"),
-          .linkedLibrary("boost_regex"),
-          .linkedLibrary("boost_date_time"),
-          .linkedLibrary("boost_chrono"),
-          .linkedLibrary("boost_atomic"),
-          .linkedLibrary("boost_iostreams"),
-          .linkedLibrary("boost_program_options"),
-          .linkedLibrary("boost_python\(Arch.OS.Python.current.versionMajor)\(Arch.OS.Python.current.versionMinor)"),
-        ]
-      #endif /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
     case .demo:
       break
     case .all:
@@ -1429,10 +1365,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["Yaml"]
         ),
         .library(
-          name: "PyBind11",
-          targets: ["PyBind11"]
-        ),
-        .library(
           name: "Blosc",
           targets: ["Blosc"]
         ),
@@ -1523,35 +1455,10 @@ enum Arch
       }
     }
 
-    enum Python: String
-    {
-      case v3_10 = "3.10"
-      case v3_11 = "3.11"
-      case v3_12 = "3.12"
-
-      public static let current: Python = .v3_12
-
-      public var version: String
-      {
-        self.rawValue
-      }
-
-      public var versionMajor: String
-      {
-        self.rawValue.split(separator: ".").first.map(String.init) ?? "3"
-      }
-
-      public var versionMinor: String
-      {
-        self.rawValue.split(separator: ".").last.map(String.init) ?? "10"
-      }
-    }
-
     public static func packageDeps() -> [Package.Dependency]
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         [
-          .package(url: "https://github.com/wabiverse/MetaversePythonFramework", from: "3.11.7"),
           .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.2"),
         ]
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
@@ -1562,24 +1469,9 @@ enum Arch
     public static func targets() -> [Target]
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
-        var targs: [Target] = [
-          .binaryTarget(
-            name: "Boost",
-            url: "https://github.com/wabiverse/MetaverseBoostFramework/releases/download/1.81.4/boost.xcframework.zip",
-            checksum: "2636f77d3ee22507da4484d7b5ab66645a08b196c0fca8a7af28d36c6948404e"
-          ),
-        ]
+        var targs: [Target] = []
       #elseif os(Linux) || os(OpenBSD) || os(FreeBSD)
         var targs: [Target] = [
-          .systemLibrary(
-            name: "Boost",
-            pkgConfig: "boost",
-            providers: [
-              .apt(["libboost-all-dev"]),
-              .yum(["boost-devel"]),
-            ]
-          ),
-
           .systemLibrary(
             name: "BZ2",
             pkgConfig: "libbz2",
@@ -1587,16 +1479,7 @@ enum Arch
               .apt(["libbz2-dev"]),
               .yum(["bzip2-devel"]),
             ]
-          ),
-
-          .systemLibrary(
-            name: "Python",
-            pkgConfig: "python3",
-            providers: [
-              .apt(["python3-dev"]),
-              .yum(["python3-devel"]),
-            ]
-          ),
+          )
         ]
       #else /* os(WASI) || os(Android) || os(Windows) || os(Cygwin) */
         var targs: [Target] = []
@@ -1620,7 +1503,6 @@ enum Arch
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         var prods: [Product] = [
-          .library(name: "Boost", targets: ["Boost"]),
           .library(name: "tbb", targets: ["tbb"]),
         ]
       #elseif os(Windows) || os(Cygwin) || os(WASI) || os(Android)
@@ -1657,8 +1539,7 @@ enum Arch
           .target(name: "Imath"),
           .target(name: "OpenEXR"),
           .target(name: "MiniZip"),
-          .target(name: "Yaml"),
-          .target(name: "Python")
+          .target(name: "Yaml")
         ] + sse2neon
       #elseif os(Windows) || os(Cygwin) || os(WASI) || os(Android)
         return [
@@ -1677,42 +1558,7 @@ enum Arch
           .target(name: "MiniZip"),
           .target(name: "Yaml"),
           .target(name: "expat", condition: .when(platforms: [.android])),
-          .product(name: "Python", package: "MetaversePythonFramework", condition: .when(platforms: Arch.OS.apple.platform))
         ] + sse2neon
-      #endif
-    }
-
-    public static func boost() -> Target.Dependency
-    {
-      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Linux) || os(OpenBSD) || os(FreeBSD)
-        .target(name: "Boost")
-      #elseif os(Windows) || os(Cygwin) || os(WASI)
-        // boost is disabled on Windows, Cygwin, and WASI
-        // just return Eigen for fast package resolution,
-        // things get very slow to resolve if this is optional
-        // or if we try to add arrays together.
-        .target(name: "Eigen")
-      #endif
-    }
-
-    public static func python() -> Target.Dependency
-    {
-      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
-        .product(name: "Python", package: "MetaversePythonFramework", condition: .when(platforms: Arch.OS.apple.platform))
-      #elseif os(Windows) || os(Cygwin)
-        // python is disabled on both Windows, Cygwin here
-        // just return the STL for fast package resolution,
-        // things get very slow to resolve if this is optional
-        // or if we try to add arrays together.
-        .target(name: "MicrosoftSTL")
-      #elseif os(WASI)
-        // python is disabled on WebAssembly, for now just
-        // just return the Zstd for fast package resolution,
-        // things get very slow to resolve if this is optional
-        // or if we try to add arrays together.
-        .target(name: "ZStandard")
-      #else /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
-        .target(name: "Python")
       #endif
     }
 
@@ -1871,7 +1717,6 @@ enum PkgTarget: String
   case ptex = "Ptex"
   case hdf5 = "HDF5"
   case alembic = "Alembic"
-  case pybind11 = "PyBind11"
   case blosc = "Blosc"
   case openvdb = "OpenVDB"
   case demo = "MetaversalDemo"

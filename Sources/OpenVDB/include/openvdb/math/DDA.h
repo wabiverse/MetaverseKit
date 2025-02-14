@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @file DDA.h
 ///
@@ -14,6 +14,7 @@
 #include "Math.h"
 #include "Vec3.h"
 #include <openvdb/Types.h>
+#include <openvdb/util/Assert.h>
 #include <iostream> // for std::ostream
 #include <limits> // for std::numeric_limits<Type>::max()
 
@@ -50,7 +51,7 @@ public:
 
     inline void init(const RayT& ray, RealT startTime, RealT maxTime)
     {
-        assert(startTime <= maxTime);
+        OPENVDB_ASSERT(startTime <= maxTime);
         static const int DIM = 1 << Log2Dim;
         mT0 = startTime;
         mT1 = maxTime;
@@ -59,8 +60,8 @@ public:
         for (int axis = 0; axis < 3; ++axis) {
             if (math::isZero(dir[axis])) {//handles dir = +/- 0
                 mStep[axis]  = 0;//dummy value
-                mNext[axis]  = (std::numeric_limits<RealT>::max)();//i.e. disabled!
-                mDelta[axis] = (std::numeric_limits<RealT>::max)();//dummy value
+                mNext[axis]  = std::numeric_limits<RealT>::max();//i.e. disabled!
+                mDelta[axis] = std::numeric_limits<RealT>::max();//dummy value
             } else if (inv[axis] > 0) {
                 mStep[axis]  = DIM;
                 mNext[axis]  = mT0 + (mVoxel[axis] + DIM - pos[axis]) * inv[axis];

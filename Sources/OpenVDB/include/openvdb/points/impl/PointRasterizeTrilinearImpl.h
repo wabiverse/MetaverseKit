@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @author Nick Avramoussis
 ///
@@ -127,8 +127,8 @@ struct StaggeredTransfer :
 
         math::Vec3<RealT> centerw, macw;
 
-        const Coord& a((intersectBox.min)());
-        const Coord& b((intersectBox.max)());
+        const Coord& a(intersectBox.min());
+        const Coord& b(intersectBox.max());
         for (Coord c = a; c.x() <= b.x(); ++c.x()) {
             // @todo can probably simplify the double call to value() in some way
             const Index i = ((c.x() & (DIM-1u)) << 2*LOG2DIM); // unsigned bit shift mult
@@ -143,7 +143,7 @@ struct StaggeredTransfer :
                 macw.y() = value(P.y() - (y-RealT(0.5)));
 
                 for (c.z() = a.z(); c.z() <= b.z(); ++c.z()) {
-                    assert(bounds.isInside(c));
+                    OPENVDB_ASSERT(bounds.isInside(c));
                     const Index offset = ij + /*k*/(c.z() & (DIM-1u));
                     if (!mask.isOn(offset)) continue;
                     const RealT z = static_cast<RealT>(c.z()-ijk.z());
@@ -207,13 +207,13 @@ struct CellCenteredTransfer :
 
         // build area of influence depending on point position
         CoordBBox intersectBox(ijk, ijk);
-        if (P.x() < 0.0f) (intersectBox.min)().x() -= 1;
-        else              (intersectBox.max)().x() += 1;
-        if (P.y() < 0.0f) (intersectBox.min)().y() -= 1;
-        else              (intersectBox.max)().y() += 1;
-        if (P.z() < 0.0f) (intersectBox.min)().z() -= 1;
-        else              (intersectBox.max)().z() += 1;
-        assert(intersectBox.volume() == 8);
+        if (P.x() < 0.0f) intersectBox.min().x() -= 1;
+        else              intersectBox.max().x() += 1;
+        if (P.y() < 0.0f) intersectBox.min().y() -= 1;
+        else              intersectBox.max().y() += 1;
+        if (P.z() < 0.0f) intersectBox.min().z() -= 1;
+        else              intersectBox.max().z() += 1;
+        OPENVDB_ASSERT(intersectBox.volume() == 8);
 
         intersectBox.intersect(bounds);
         if (intersectBox.empty()) return;
@@ -224,8 +224,8 @@ struct CellCenteredTransfer :
         const SourceValueT s(this->mSHandle->get(id));
         math::Vec3<RealT> centerw;
 
-        const Coord& a((intersectBox.min)());
-        const Coord& b((intersectBox.max)());
+        const Coord& a(intersectBox.min());
+        const Coord& b(intersectBox.max());
         for (Coord c = a; c.x() <= b.x(); ++c.x()) {
             const Index i = ((c.x() & (DIM-1u)) << 2*LOG2DIM); // unsigned bit shift mult
             const RealT x = static_cast<RealT>(c.x()-ijk.x()); // distance from ijk to c
@@ -237,15 +237,15 @@ struct CellCenteredTransfer :
                 centerw[1] = value(P.y() - y);
 
                 for (c.z() = a.z(); c.z() <= b.z(); ++c.z()) {
-                    assert(bounds.isInside(c));
+                    OPENVDB_ASSERT(bounds.isInside(c));
                     const Index offset = ij + /*k*/(c.z() & (DIM-1u));
                     if (!mask.isOn(offset)) continue;
                     const RealT z = static_cast<RealT>(c.z()-ijk.z());
                     centerw[2] = value(P.z() - z);
 
-                    assert(centerw[0] >= 0.0f && centerw[0] <= 1.0f);
-                    assert(centerw[1] >= 0.0f && centerw[1] <= 1.0f);
-                    assert(centerw[2] >= 0.0f && centerw[2] <= 1.0f);
+                    OPENVDB_ASSERT(centerw[0] >= 0.0f && centerw[0] <= 1.0f);
+                    OPENVDB_ASSERT(centerw[1] >= 0.0f && centerw[1] <= 1.0f);
+                    OPENVDB_ASSERT(centerw[2] >= 0.0f && centerw[2] <= 1.0f);
 
                     const RealT weight = centerw.product();
                     data[offset] += s * weight;

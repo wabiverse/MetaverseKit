@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @author Nick Avramoussis
 ///
@@ -25,6 +25,7 @@
 #include <openvdb/Grid.h>
 #include <openvdb/math/Transform.h>
 #include <openvdb/util/NullInterrupter.h>
+#include <openvdb/util/Assert.h>
 #include <openvdb/thread/Threading.h>
 
 #include <type_traits>
@@ -285,7 +286,7 @@ struct VolumeTransfer<TreeT>
         : mTree(tree)
         , mBuffer(nullptr)
         , mMask(nullptr) {
-        assert(tree);
+        OPENVDB_ASSERT(tree);
     }
 
     VolumeTransfer(TreeType& tree)
@@ -300,7 +301,7 @@ struct VolumeTransfer<TreeT>
 
     inline void initialize(const Coord& origin, const size_t, const CoordBBox&)
     {
-        assert(mTree);
+        OPENVDB_ASSERT(mTree);
         if (auto leaf = mTree->probeLeaf(origin)) {
             mBuffer = leaf->buffer().data();
             mMask = &(leaf->getValueMask());
@@ -367,7 +368,7 @@ VolumeTransfer<TreeTypes...>::VolumeTransfer(TreeTypes*... trees)
         static_assert(std::is_base_of<TreeBase, TreeT>::value,
             "One or more template arguments to VolumeTransfer "
             "are not a valid openvdb::Tree type.");
-        assert(tree);
+        OPENVDB_ASSERT(tree);
     }, std::make_integer_sequence<size_t, Size>());
 
     mBuffers.fill(nullptr);
@@ -379,7 +380,7 @@ inline void VolumeTransfer<TreeTypes...>::initialize(const Coord& origin, const 
 {
     transfer_internal::foreach(mTreeArray,
         [&](auto&& tree, const size_t i) {
-            assert(tree);
+            OPENVDB_ASSERT(tree);
             if (auto leaf = tree->probeLeaf(origin)) {
                 mBuffers[i] = static_cast<void*>(leaf->buffer().data());
                 mMasks[i] = &(leaf->getValueMask());
@@ -444,7 +445,7 @@ struct RasterizePoints
             // Use evalActiveBoundingBox over getNodeBoundingBox()
             // to get a better approximation
             leaf.evalActiveBoundingBox(bounds);
-            assert(!bounds.empty());
+            OPENVDB_ASSERT(!bounds.empty());
         }
 
         mTransfer.initialize(origin, idx, bounds);
@@ -453,8 +454,8 @@ struct RasterizePoints
         this->transform<>(search);
 
         // start the iteration from a leaf origin
-        const Coord min = ((search.min)() & ~(DIM-1));
-        const Coord& max = (search.max)();
+        const Coord min = (search.min() & ~(DIM-1));
+        const Coord& max = search.max();
         PointFilterT localFilter(mFilter);
 
         // loop over overlapping leaf nodes
@@ -475,15 +476,15 @@ struct RasterizePoints
                     localFilter.reset(*pointLeaf);
 
                     // loop over point voxels which contribute to this leaf
-                    const Coord& pmin((pbox.min)());
-                    const Coord& pmax((pbox.max)());
+                    const Coord& pmin(pbox.min());
+                    const Coord& pmax(pbox.max());
                     for (Coord ijk = pmin; ijk.x() <= pmax.x(); ++ijk.x()) {
                         const Index i = ((ijk.x() & (DIM-1u)) << 2*LOG2DIM); // unsigned bit shift mult
                         for (ijk.y() = pmin.y(); ijk.y() <= pmax.y(); ++ijk.y()) {
                             const Index ij = i + ((ijk.y() & (DIM-1u)) << LOG2DIM);
                             for (ijk.z() = pmin.z(); ijk.z() <= pmax.z(); ++ijk.z()) {
                                 // voxel should be in this points leaf
-                                assert((ijk & ~(DIM-1u)) == leafOrigin);
+                                OPENVDB_ASSERT((ijk & ~(DIM-1u)) == leafOrigin);
                                 const Index index = ij + /*k*/(ijk.z() & (DIM-1u));
                                 const Index end = pointLeaf->getValue(index);
                                 Index id = (index == 0) ? 0 : Index(pointLeaf->getValue(index - 1));
@@ -527,7 +528,7 @@ private:
     {
         const TransformTransfer* transform =
             static_cast<TransformTransfer*>(&mTransfer);
-        const BBoxd bbox((bounds.min)().asVec3d(), (bounds.max)().asVec3d());
+        const BBoxd bbox(bounds.min().asVec3d(), bounds.max().asVec3d());
         bounds = transform->sourceTransform().worldToIndexCellCentered(
             transform->targetTransform().indexToWorld(bbox));
     }

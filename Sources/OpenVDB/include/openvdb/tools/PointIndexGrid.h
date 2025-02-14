@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file   PointIndexGrid.h
 ///
@@ -27,6 +27,7 @@
 #include <openvdb/tree/LeafManager.h>
 #include <openvdb/tree/LeafNode.h>
 #include <openvdb/tree/Tree.h>
+#include <openvdb/util/Assert.h>
 
 #include <OneTBB/tbb/blocked_range.h>
 #include <OneTBB/tbb/parallel_for.h>
@@ -419,7 +420,7 @@ struct PopulateLeafNodesOp
 
         size_t maxPointCount = 0;
         for (size_t n = range.begin(), N = range.end(); n != N; ++n) {
-            maxPointCount = (std::max)(maxPointCount, mPartitioner->indices(n).size());
+            maxPointCount = std::max(maxPointCount, mPartitioner->indices(n).size());
         }
 
         const IndexT voxelCount = LeafNodeT::SIZE;
@@ -543,16 +544,16 @@ constructExclusiveRegions(std::vector<CoordBBox>& regions,
 {
     regions.clear();
     regions.reserve(6);
-    Coord cmin = (ibox.min)();
-    Coord cmax = (ibox.max)();
+    Coord cmin = ibox.min();
+    Coord cmax = ibox.max();
 
     // left-face bbox
     regions.push_back(bbox);
-    (regions.back().max)().z() = cmin.z();
+    regions.back().max().z() = cmin.z();
 
     // right-face bbox
     regions.push_back(bbox);
-    (regions.back().min)().z() = cmax.z();
+    regions.back().min().z() = cmax.z();
 
     --cmax.z(); // accounting for cell centered bucketing.
     ++cmin.z();
@@ -560,15 +561,15 @@ constructExclusiveRegions(std::vector<CoordBBox>& regions,
     // front-face bbox
     regions.push_back(bbox);
     CoordBBox* lastRegion = &regions.back();
-    (lastRegion->min)().z() = cmin.z();
-    (lastRegion->max)().z() = cmax.z();
-    (lastRegion->max)().x() = cmin.x();
+    lastRegion->min().z() = cmin.z();
+    lastRegion->max().z() = cmax.z();
+    lastRegion->max().x() = cmin.x();
 
     // back-face bbox
     regions.push_back(*lastRegion);
     lastRegion = &regions.back();
-    (lastRegion->min)().x() = cmax.x();
-    (lastRegion->max)().x() = (bbox.max)().x();
+    lastRegion->min().x() = cmax.x();
+    lastRegion->max().x() = bbox.max().x();
 
     --cmax.x();
     ++cmin.x();
@@ -576,15 +577,15 @@ constructExclusiveRegions(std::vector<CoordBBox>& regions,
     // bottom-face bbox
     regions.push_back(*lastRegion);
     lastRegion = &regions.back();
-    (lastRegion->min)().x() = cmin.x();
-    (lastRegion->max)().x() = cmax.x();
-    (lastRegion->max)().y() = cmin.y();
+    lastRegion->min().x() = cmin.x();
+    lastRegion->max().x() = cmax.x();
+    lastRegion->max().y() = cmin.y();
 
     // top-face bbox
     regions.push_back(*lastRegion);
     lastRegion = &regions.back();
-    (lastRegion->min)().y() = cmax.y();
-    (lastRegion->max)().y() = (bbox.max)().y();
+    lastRegion->min().y() = cmax.y();
+    lastRegion->max().y() = bbox.max().y();
 }
 
 
@@ -803,8 +804,8 @@ filteredPointIndexSearch(RangeFilterType& filter, ConstAccessor& acc, const Coor
 {
     using LeafNodeType = typename ConstAccessor::TreeType::LeafNodeType;
     Coord ijk(0), ijkMax(0), ijkA(0), ijkB(0);
-    const Coord leafMin = (bbox.min)() & ~(LeafNodeType::DIM - 1);
-    const Coord leafMax = (bbox.max)() & ~(LeafNodeType::DIM - 1);
+    const Coord leafMin = bbox.min() & ~(LeafNodeType::DIM - 1);
+    const Coord leafMax = bbox.max() & ~(LeafNodeType::DIM - 1);
 
     for (ijk[0] = leafMin[0]; ijk[0] <= leafMax[0]; ijk[0] += LeafNodeType::DIM) {
         for (ijk[1] = leafMin[1]; ijk[1] <= leafMax[1]; ijk[1] += LeafNodeType::DIM) {
@@ -815,8 +816,8 @@ filteredPointIndexSearch(RangeFilterType& filter, ConstAccessor& acc, const Coor
                     ijkMax.offset(LeafNodeType::DIM - 1);
 
                     // intersect leaf bbox with search region.
-                    ijkA = Coord::maxComponent((bbox.min)(), ijk);
-                    ijkB = Coord::minComponent((bbox.max)(), ijkMax);
+                    ijkA = Coord::maxComponent(bbox.min(), ijk);
+                    ijkB = Coord::minComponent(bbox.max(), ijkMax);
 
                     if (ijkA != ijk || ijkB != ijkMax) {
                         filteredPointIndexSearchVoxels(filter, *leaf, ijkA, ijkB);
@@ -882,8 +883,8 @@ pointIndexSearch(RangeDeque& rangeList, ConstAccessor& acc, const CoordBBox& bbo
     using Range = typename RangeDeque::value_type;
 
     Coord ijk(0), ijkMax(0), ijkA(0), ijkB(0);
-    const Coord leafMin = (bbox.min)() & ~(LeafNodeType::DIM - 1);
-    const Coord leafMax = (bbox.max)() & ~(LeafNodeType::DIM - 1);
+    const Coord leafMin = bbox.min() & ~(LeafNodeType::DIM - 1);
+    const Coord leafMax = bbox.max() & ~(LeafNodeType::DIM - 1);
 
     for (ijk[0] = leafMin[0]; ijk[0] <= leafMax[0]; ijk[0] += LeafNodeType::DIM) {
         for (ijk[1] = leafMin[1]; ijk[1] <= leafMax[1]; ijk[1] += LeafNodeType::DIM) {
@@ -894,8 +895,8 @@ pointIndexSearch(RangeDeque& rangeList, ConstAccessor& acc, const CoordBBox& bbo
                     ijkMax.offset(LeafNodeType::DIM - 1);
 
                     // intersect leaf bbox with search region.
-                    ijkA = Coord::maxComponent((bbox.min)(), ijk);
-                    ijkB = Coord::minComponent((bbox.max)(), ijkMax);
+                    ijkA = Coord::maxComponent(bbox.min(), ijk);
+                    ijkB = Coord::minComponent(bbox.max(), ijkMax);
 
                     if (ijkA != ijk || ijkB != ijkMax) {
                         pointIndexSearchVoxels(rangeList, *leaf, ijkA, ijkB);
@@ -1108,10 +1109,10 @@ PointIndexIterator<TreeType>::searchAndUpdate(const BBoxd& bbox, ConstAccessor& 
     this->clear();
 
     std::vector<CoordBBox> searchRegions;
-    CoordBBox region(Coord::round((bbox.min)()), Coord::round((bbox.max)()));
+    CoordBBox region(Coord::round(bbox.min()), Coord::round(bbox.max()));
 
     const Coord dim = region.dim();
-    const int minExtent = (std::min)(dim[0], (std::min)(dim[1], dim[2]));
+    const int minExtent = std::min(dim[0], std::min(dim[1], dim[2]));
 
     if (minExtent > 2) {
         // collect indices that don't need to be tested
@@ -1201,7 +1202,7 @@ PointIndexIterator<TreeType>::worldSpaceSearchAndUpdate(const BBoxd& bbox, Const
     const PointArray& points, const math::Transform& xform)
 {
     this->searchAndUpdate(
-        BBoxd(xform.worldToIndex((bbox.min)()), xform.worldToIndex((bbox.max)())), acc, points, xform);
+        BBoxd(xform.worldToIndex(bbox.min()), xform.worldToIndex(bbox.max())), acc, points, xform);
 }
 
 
@@ -1499,7 +1500,7 @@ public:
     // to the point-array offsets.
 
     void assertNonmodifiable() {
-        assert(false && "Cannot modify voxel values in a PointIndexTree.");
+        OPENVDB_ASSERT(false && "Cannot modify voxel values in a PointIndexTree.");
     }
 
     void setActiveState(const Coord&, bool) { assertNonmodifiable(); }
@@ -1696,15 +1697,15 @@ template<typename T, Index Log2Dim>
 inline bool
 PointIndexLeafNode<T, Log2Dim>::isEmpty(const CoordBBox& bbox) const
 {
-    Index xPos, pos, zStride = Index((bbox.max)()[2] - (bbox.min)()[2]);
+    Index xPos, pos, zStride = Index(bbox.max()[2] - bbox.min()[2]);
     Coord ijk;
 
-    for (ijk[0] = (bbox.min)()[0]; ijk[0] <= (bbox.max)()[0]; ++ijk[0]) {
+    for (ijk[0] = bbox.min()[0]; ijk[0] <= bbox.max()[0]; ++ijk[0]) {
         xPos = (ijk[0] & (DIM - 1u)) << (2 * LOG2DIM);
 
-        for (ijk[1] = (bbox.min)()[1]; ijk[1] <= (bbox.max)()[1]; ++ijk[1]) {
+        for (ijk[1] = bbox.min()[1]; ijk[1] <= bbox.max()[1]; ++ijk[1]) {
             pos = xPos + ((ijk[1] & (DIM - 1u)) << LOG2DIM);
-            pos += ((bbox.min)()[2] & (DIM - 1u));
+            pos += (bbox.min()[2] & (DIM - 1u));
 
             if (this->buffer()[pos+zStride] > (pos == 0 ? T(0) : this->buffer()[pos - 1])) {
                 return false;

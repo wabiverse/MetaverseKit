@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Dan Bailey
 ///
@@ -255,7 +255,7 @@ inline void appendGroup(PointDataTreeT& tree, const Name& group)
 
     // ensure that there are now available groups
 
-    assert(descriptor->unusedGroups() > 0);
+    OPENVDB_ASSERT(descriptor->unusedGroups() > 0);
 
     // find next unused offset
 
@@ -422,7 +422,7 @@ inline void compactGroups(PointDataTreeT& tree)
 
     const size_t totalAttributesToDrop = descriptor->unusedGroups() / descriptor->groupBits();
 
-    assert(totalAttributesToDrop <= indices.size());
+    OPENVDB_ASSERT(totalAttributesToDrop <= indices.size());
 
     const std::vector<size_t> indicesToDrop(indices.end() - totalAttributesToDrop,
         indices.end());
@@ -468,12 +468,12 @@ inline void setGroup(   PointDataTreeT& tree,
             [](const typename IndexTreeManager::LeafRange& range, int64_t value) -> int64_t {
                 for (auto leaf = range.begin(); leaf; ++leaf) {
                     auto it = std::max_element(leaf->indices().begin(), leaf->indices().end());
-                    value = (std::max)(value, static_cast<int64_t>(*it));
+                    value = std::max(value, static_cast<int64_t>(*it));
                 }
                 return value;
             },
             [](const int64_t a, const int64_t b) {
-                return (std::max)(a, b);
+                return std::max(a, b);
             }
         );
 

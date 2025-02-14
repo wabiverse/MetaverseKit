@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @file Ray.h
 ///
@@ -13,6 +13,7 @@
 #include "openvdb/math/Math.h"
 #include "openvdb/math/Vec3.h"
 #include "openvdb/math/Transform.h"
+#include <openvdb/util/Assert.h>
 #include <algorithm> // for std::swap()
 #include <iostream> // for std::ostream
 #include <limits> // for std::numeric_limits<Type>::max()
@@ -48,7 +49,7 @@ public:
         /// @brief Return the midpoint of the ray.
         inline RealT mid() const { return 0.5*(t0 + t1); }
         /// @brief Multiplies both times
-        inline void scale(RealT s) {assert(s>0); t0*=s; t1*=s; }
+        inline void scale(RealT s) {OPENVDB_ASSERT(s>0); t0*=s; t1*=s; }
         /// @brief Return @c true if time is inclusive
         inline bool test(RealT t) const { return (t>=t0 && t<=t1); }
     };
@@ -56,7 +57,7 @@ public:
     Ray(const Vec3Type& eye = Vec3Type(0,0,0),
         const Vec3Type& direction = Vec3Type(1,0,0),
         RealT t0 = math::Delta<RealT>::value(),
-        RealT t1 = (std::numeric_limits<RealT>::max)())
+        RealT t1 = std::numeric_limits<RealT>::max())
         : mEye(eye), mDir(direction), mInvDir(1/mDir), mTimeSpan(t0, t1)
     {
     }
@@ -69,15 +70,15 @@ public:
         mInvDir = 1/mDir;
     }
 
-    inline void setMinTime(RealT t0) { assert(t0>0); mTimeSpan.t0 = t0; }
+    inline void setMinTime(RealT t0) { OPENVDB_ASSERT(t0>0); mTimeSpan.t0 = t0; }
 
-    inline void setMaxTime(RealT t1) { assert(t1>0); mTimeSpan.t1 = t1; }
+    inline void setMaxTime(RealT t1) { OPENVDB_ASSERT(t1>0); mTimeSpan.t1 = t1; }
 
     inline void setTimes(
         RealT t0 = math::Delta<RealT>::value(),
-        RealT t1 = (std::numeric_limits<RealT>::max)())
+        RealT t1 = std::numeric_limits<RealT>::max())
     {
-        assert(t0>0 && t1>0);
+        OPENVDB_ASSERT(t0>0 && t1>0);
         mTimeSpan.set(t0, t1);
     }
 
@@ -87,7 +88,7 @@ public:
         const Vec3Type& eye,
         const Vec3Type& direction,
         RealT t0 = math::Delta<RealT>::value(),
-        RealT t1 = (std::numeric_limits<RealT>::max)())
+        RealT t1 = std::numeric_limits<RealT>::max())
     {
         this->setEye(eye);
         this->setDir(direction);
@@ -131,8 +132,8 @@ public:
     template<typename MapType>
     inline Ray applyMap(const MapType& map) const
     {
-        assert(map.isLinear());
-        assert(math::isRelOrApproxEqual(mDir.length(), RealT(1),
+        OPENVDB_ASSERT(map.isLinear());
+        OPENVDB_ASSERT(math::isRelOrApproxEqual(mDir.length(), RealT(1),
             Tolerance<RealT>::value(), Delta<RealT>::value()));
         const Vec3T eye = map.applyMap(mEye);
         const Vec3T dir = map.applyJacobian(mDir);
@@ -149,8 +150,8 @@ public:
     template<typename MapType>
     inline Ray applyInverseMap(const MapType& map) const
     {
-        assert(map.isLinear());
-        assert(math::isRelOrApproxEqual(mDir.length(), RealT(1), Tolerance<RealT>::value(), Delta<RealT>::value()));
+        OPENVDB_ASSERT(map.isLinear());
+        OPENVDB_ASSERT(math::isRelOrApproxEqual(mDir.length(), RealT(1), Tolerance<RealT>::value(), Delta<RealT>::value()));
         const Vec3T eye = map.applyInverseMap(mEye);
         const Vec3T dir = map.applyInverseJacobian(mDir);
         const RealT length = dir.length();
@@ -234,8 +235,8 @@ public:
     {
         mTimeSpan.get(t0, t1);
         for (int i = 0; i < 3; ++i) {
-            RealT a = ((bbox.min)()[i] - mEye[i]) * mInvDir[i];
-            RealT b = ((bbox.max)()[i] - mEye[i]) * mInvDir[i];
+            RealT a = (bbox.min()[i] - mEye[i]) * mInvDir[i];
+            RealT b = (bbox.max()[i] - mEye[i]) * mInvDir[i];
             if (a > b) std::swap(a, b);
             if (a > t0) t0 = a;
             if (b < t1) t1 = b;

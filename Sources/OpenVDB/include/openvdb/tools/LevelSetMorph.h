@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Ken Museth
 ///
@@ -500,7 +500,7 @@ sampleXformedSpeed(const LeafRange& range, Index speedBuffer)
                 if (!math::isApproxZero(s)) isZero = false;
                 mMaxAbsS = math::Max(mMaxAbsS, math::Abs(s));
             }
-            if (isZero) speed[0] = (std::numeric_limits<ValueType>::max)();//tag first voxel
+            if (isZero) speed[0] = std::numeric_limits<ValueType>::max();//tag first voxel
         }
     } else {
         const ValueType min = mParent->mMinMask, invNorm = 1.0f/(mParent->mDeltaMask);
@@ -519,7 +519,7 @@ sampleXformedSpeed(const LeafRange& range, Index speedBuffer)
                 if (!math::isApproxZero(s)) isZero = false;
                 mMaxAbsS = math::Max(mMaxAbsS, math::Abs(s));
             }
-            if (isZero) speed[0] = (std::numeric_limits<ValueType>::max)();//tag first voxel
+            if (isZero) speed[0] = std::numeric_limits<ValueType>::max();//tag first voxel
         }
     }
 }
@@ -548,7 +548,7 @@ sampleAlignedSpeed(const LeafRange& range, Index speedBuffer)
                 if (!math::isApproxZero(s)) isZero = false;
                 mMaxAbsS = math::Max(mMaxAbsS, math::Abs(s));
             }
-            if (isZero) speed[0] = (std::numeric_limits<ValueType>::max)();//tag first voxel
+            if (isZero) speed[0] = std::numeric_limits<ValueType>::max();//tag first voxel
         }
     } else {
         const ValueType min = mParent->mMinMask, invNorm = 1.0f/(mParent->mDeltaMask);
@@ -566,7 +566,7 @@ sampleAlignedSpeed(const LeafRange& range, Index speedBuffer)
                 if (!math::isApproxZero(s)) isZero = false;
                 mMaxAbsS = math::Max(mMaxAbsS, math::Abs(s));
             }
-            if (isZero) speed[0] = (std::numeric_limits<ValueType>::max)();//tag first voxel
+            if (isZero) speed[0] = std::numeric_limits<ValueType>::max();//tag first voxel
         }
     }
 }
@@ -624,7 +624,7 @@ euler(const LeafRange& range, ValueType dt,
 
     for (typename LeafRange::Iterator leafIter = range.begin(); leafIter; ++leafIter) {
         const ValueType* speed = leafIter.buffer(speedBuffer).data();
-        if (math::isExactlyEqual(speed[0], (std::numeric_limits<ValueType>::max)())) continue;
+        if (math::isExactlyEqual(speed[0], std::numeric_limits<ValueType>::max())) continue;
         const ValueType* phi = leafIter.buffer(phiBuffer).data();
         ValueType* result = leafIter.buffer(resultBuffer).data();
         for (VoxelIterT voxelIter = leafIter->cbeginValueOn(); voxelIter; ++voxelIter) {

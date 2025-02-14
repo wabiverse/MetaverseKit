@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @file tree/TreeIterator.h
 
@@ -10,6 +10,7 @@
 #include <OneTBB/tbb/parallel_for.h>
 #include <openvdb/version.h>
 #include <openvdb/Types.h>
+#include <openvdb/util/Assert.h>
 #include <algorithm>
 #include <sstream>
 #include <string>
@@ -585,7 +586,7 @@ public:
 
     const NCValueT& getValue(Index lvl) const
     {
-        assert(lvl == Level);
+        OPENVDB_ASSERT(lvl == Level);
         (void)lvl; // avoid unused variable warning in optimized builds
         return mIter.getValue();
     }
@@ -795,7 +796,7 @@ inline void
 TreeValueIteratorBase<TreeT, ValueIterT>::setMaxDepth(Index maxDepth)
 {
     // level = ROOT_LEVEL - depth
-    mMinLevel = int(ROOT_LEVEL - (std::min)(maxDepth, this->getLeafDepth()));
+    mMinLevel = int(ROOT_LEVEL - std::min(maxDepth, this->getLeafDepth()));
     if (int(mLevel) < mMinLevel) this->next();
 }
 
@@ -897,8 +898,8 @@ TreeValueIteratorBase<TreeT, ValueIterT>::getBoundingBox(CoordBBox& bbox) const
         bbox = CoordBBox();
         return false;
     }
-    (bbox.min)() = mValueIterList.getCoord(mLevel);
-    (bbox.max)() = (bbox.min)().offsetBy(mValueIterList.getChildDim(mLevel) - 1);
+    bbox.min() = mValueIterList.getCoord(mLevel);
+    bbox.max() = bbox.min().offsetBy(mValueIterList.getChildDim(mLevel) - 1);
     return true;
 }
 
@@ -1091,7 +1092,7 @@ inline void
 NodeIteratorBase<TreeT, RootChildOnIterT>::setMaxDepth(Index maxDepth)
 {
     // level = ROOT_LEVEL - depth
-    mMinLevel = int(ROOT_LEVEL - (std::min)(maxDepth, this->getLeafDepth()));
+    mMinLevel = int(ROOT_LEVEL - std::min(maxDepth, this->getLeafDepth()));
     if (int(mLevel) < mMinLevel) this->next();
 }
 
@@ -1135,7 +1136,7 @@ NodeIteratorBase<TreeT, RootChildOnIterT>::getCoord() const
     if (mLevel != ROOT_LEVEL) return  mIterList.getCoord(mLevel + 1);
     RootNodeT* root = nullptr;
     this->getNode(root);
-    return root ? root->getMinIndex() : (Coord::min)();
+    return root ? root->getMinIndex() : Coord::min();
 }
 
 
@@ -1153,8 +1154,8 @@ NodeIteratorBase<TreeT, RootChildOnIterT>::getBoundingBox(CoordBBox& bbox) const
         root->getIndexRange(bbox);
         return true;
     }
-    (bbox.min)() = mIterList.getCoord(mLevel + 1);
-    (bbox.max)() = (bbox.min)().offsetBy(mIterList.getChildDim(mLevel + 1) - 1);
+    bbox.min() = mIterList.getCoord(mLevel + 1);
+    bbox.max() = bbox.min().offsetBy(mIterList.getChildDim(mLevel + 1) - 1);
     return true;
 }
 

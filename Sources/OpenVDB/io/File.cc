@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file io/File.cc
 
@@ -8,15 +8,12 @@
 #include "TempFile.h"
 #include <openvdb/Exceptions.h>
 #include <openvdb/util/logging.h>
+#include <openvdb/util/Assert.h>
 #include <cstdint>
 
 #ifdef OPENVDB_USE_DELAYED_LOADING
-#if defined(_WIN32)
-#include <iterator>
-#include <algorithm>
-#endif // defined(_WIN32)
-#ifndef _WIN32
 #include <boost/iostreams/copy.hpp>
+#ifndef _WIN32
 #include <sys/types.h>
 #include <unistd.h>
 #endif
@@ -24,7 +21,6 @@
 
 #include <sys/stat.h> // stat()
 
-#include <cassert>
 #include <cstdlib> // for getenv(), strtoul()
 #include <cstring> // for strerror_r()
 #include <fstream>
@@ -51,7 +47,7 @@ struct File::Impl
     static GridBase::Ptr readGrid(const File& file, const GridDescriptor& gd, const BoxType& bbox)
     {
         // This method should not be called for files that don't contain grid offsets.
-        assert(file.inputHasGridOffsets());
+        OPENVDB_ASSERT(file.inputHasGridOffsets());
 
         GridBase::Ptr grid = file.createGrid(gd);
         gd.seekToGrid(file.inputStream());
@@ -224,7 +220,7 @@ File::getSize() const
     /// but as of 9/2014, Houdini ships without the Boost.Filesystem library,
     /// which makes it much less convenient to use that library.
 
-    Index64 result = (std::numeric_limits<Index64>::max)();
+    Index64 result = std::numeric_limits<Index64>::max();
 
     std::string mesg = "could not get size of file " + filename();
 
@@ -315,15 +311,7 @@ File::open(bool /*delayLoad = true*/)
                 TempFile tempFile;
                 std::ifstream fstrm(filename().c_str(),
                     std::ios_base::in | std::ios_base::binary);
-                #if defined(_WIN32)
-                std::copy(
-                  std::istreambuf_iterator<char>(fstrm),
-                  std::istreambuf_iterator<char>(),
-                  std::ostreambuf_iterator<char>(tempFile)
-                );
-                #else // !defined(_WIN32)
                 boost::iostreams::copy(fstrm, tempFile);
-                #endif // defined(_WIN32)
                 fname = tempFile.filename();
                 isTempFile = true;
             } catch (std::exception& e) {
@@ -691,7 +679,7 @@ void
 File::readGridDescriptors(std::istream& is)
 {
     // This method should not be called for files that don't contain grid offsets.
-    assert(inputHasGridOffsets());
+    OPENVDB_ASSERT(inputHasGridOffsets());
 
     gridDescriptors().clear();
 
@@ -779,7 +767,7 @@ GridBase::ConstPtr
 File::readGridPartial(const GridDescriptor& gd, bool readTopology) const
 {
     // This method should not be called for files that don't contain grid offsets.
-    assert(inputHasGridOffsets());
+    OPENVDB_ASSERT(inputHasGridOffsets());
 
     GridBase::Ptr grid = createGrid(gd);
 
@@ -822,7 +810,7 @@ File::readGridPartial(GridBase::Ptr grid, std::istream& is,
     bool isInstance, bool readTopology) const
 {
     // This method should not be called for files that don't contain grid offsets.
-    assert(inputHasGridOffsets());
+    OPENVDB_ASSERT(inputHasGridOffsets());
 
     // This code needs to stay in sync with io::Archive::readGrid(), in terms of
     // the order of operations.

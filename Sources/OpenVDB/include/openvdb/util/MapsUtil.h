@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @file MapsUtil.h
 
@@ -26,12 +26,12 @@ template<typename MapType>
 inline void
 calculateBounds(const MapType& map, const BBoxd& in, BBoxd& out)
 {
-    const Vec3d& min = (in.min)();
-    const Vec3d& max = (in.max)();
+    const Vec3d& min = in.min();
+    const Vec3d& max = in.max();
 
     // the pre-image of the 8 corners of the box
     Vec3d corners[8];
-    corners[0] = (in.min)();;
+    corners[0] = in.min();;
     corners[1] = Vec3d(min(0), min(1), min(2));
     corners[2] = Vec3d(max(0), max(1), min(2));
     corners[3] = Vec3d(min(0), max(1), min(2));
@@ -41,15 +41,15 @@ calculateBounds(const MapType& map, const BBoxd& in, BBoxd& out)
     corners[7] = Vec3d(min(0), max(1), max(2));
 
     Vec3d pre_image;
-    Vec3d& out_min = (out.min)();
-    Vec3d& out_max = (out.max)();
+    Vec3d& out_min = out.min();
+    Vec3d& out_max = out.max();
     out_min = map.applyInverseMap(corners[0]);
     out_max = min;
     for (int i = 1; i < 8; ++i) {
         pre_image = map.applyInverseMap(corners[i]);
         for (int j = 0; j < 3; ++j) {
-            out_min(j) = (std::min)( out_min(j), pre_image(j));
-            out_max(j) = (std::max)( out_max(j), pre_image(j));
+            out_min(j) = std::min( out_min(j), pre_image(j));
+            out_max(j) = std::max( out_max(j), pre_image(j));
         }
     }
 }
@@ -85,8 +85,8 @@ calculateBounds(const MapType& map, const Vec3d& center, const Real radius, BBox
         coordinate_units.push_back(Vec3d(0,1,0));
         coordinate_units.push_back(Vec3d(0,0,1));
 
-        Vec3d& out_min = (out.min)();
-        Vec3d& out_max = (out.max)();
+        Vec3d& out_min = out.min();
+        Vec3d& out_max = out.max();
         for (int direction = 0; direction < 3; ++direction) {
             Vec3d temp  = map.applyIJT(coordinate_units[direction]);
             double offset =
@@ -181,8 +181,8 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
     }
 
     // for convenience
-    Vec3d& out_min = (out.min)();
-    Vec3d& out_max = (out.max)();
+    Vec3d& out_min = out.min();
+    Vec3d& out_max = out.max();
 
     Vec3d centerLS = secondMap.applyInverseMap(center);
     Vec3d voxelSize = secondMap.voxelSize();
@@ -200,13 +200,13 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
     // the bounding box in index space for the points in the frustum
     const BBoxd&  bbox = frustum.getBBox();
     // initialize min and max
-    const double x_min = (bbox.min)().x();
-    const double y_min = (bbox.min)().y();
-    const double z_min = (bbox.min)().z();
+    const double x_min = bbox.min().x();
+    const double y_min = bbox.min().y();
+    const double z_min = bbox.min().z();
 
-    const double x_max = (bbox.max)().x();
-    const double y_max = (bbox.max)().y();
-    const double z_max = (bbox.max)().z();
+    const double x_max = bbox.max().x();
+    const double y_max = bbox.max().y();
+    const double z_max = bbox.max().z();
 
     out_min.x() = x_min;
     out_max.x() = x_max;
@@ -227,7 +227,7 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
         extreme2 = secondMap.applyMap(extreme);
         // convert back to voxel space
         pre_image = frustum.applyInverseMap(extreme2);
-        out_max.x() = (std::max)(x_min, (std::min)(x_max, pre_image.x()));
+        out_max.x() = std::max(x_min, std::min(x_max, pre_image.x()));
 
         extreme.x() = xm;
         extreme.y() = centerLS.y();
@@ -237,7 +237,7 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
 
         // convert back to voxel space
         pre_image = frustum.applyInverseMap(extreme2);
-        out_min.x() = (std::max)(x_min, (std::min)(x_max, pre_image.x()));
+        out_min.x() = std::max(x_min, std::min(x_max, pre_image.x()));
 
     } else if (soln_number == 1) {
         // the circle was tangent at the focal point
@@ -256,7 +256,7 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
         extreme2 = secondMap.applyMap(extreme);
         // convert back to voxel space
         pre_image = frustum.applyInverseMap(extreme2);
-        out_max.y() = (std::max)(y_min, (std::min)(y_max, pre_image.y()));
+        out_max.y() = std::max(y_min, std::min(y_max, pre_image.y()));
 
         extreme.x() = centerLS.x();
         extreme.y() = xm;
@@ -265,7 +265,7 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
 
         // convert back to voxel space
         pre_image = frustum.applyInverseMap(extreme2);
-        out_min.y() = (std::max)(y_min, (std::min)(y_max, pre_image.y()));
+        out_min.y() = std::max(y_min, std::min(y_max, pre_image.y()));
 
     } else if (soln_number == 1) {
         // the circle was tangent at the focal point
@@ -275,15 +275,15 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
 
     // the near and far
     // the closest point.  The front of the frustum is at 0 in index space
-    double near_dist = (std::max)(centerLS.z() - radiusLS, 0.);
+    double near_dist = std::max(centerLS.z() - radiusLS, 0.);
     // the farthest point.  The back of the frustum is at mDepth in index space
-    double far_dist = (std::min)(centerLS.z() + radiusLS, frustum.getDepth() );
+    double far_dist = std::min(centerLS.z() + radiusLS, frustum.getDepth() );
 
     Vec3d near_point(0.f, 0.f, near_dist);
     Vec3d far_point(0.f, 0.f, far_dist);
 
-    out_min.z() = (std::max)(z_min, frustum.applyInverseMap(secondMap.applyMap(near_point)).z());
-    out_max.z() = (std::min)(z_max, frustum.applyInverseMap(secondMap.applyMap(far_point)).z());
+    out_min.z() = std::max(z_min, frustum.applyInverseMap(secondMap.applyMap(near_point)).z());
+    out_max.z() = std::min(z_max, frustum.applyInverseMap(secondMap.applyMap(far_point)).z());
 
 }
 

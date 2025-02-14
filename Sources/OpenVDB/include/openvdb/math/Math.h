@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 //
 /// @file Math.h
 /// @brief General-purpose arithmetic and comparison routines, most of which
@@ -10,9 +10,7 @@
 
 #include <openvdb/Platform.h>
 #include <openvdb/version.h>
-#if !defined(_WIN32) && !defined(__ANDROID__)
-#include <boost/numeric/conversion/conversion_traits.hpp>
-#endif // !defined(_WIN32) && !defined(__ANDROID__)
+#include <openvdb/util/Assert.h>
 #include <algorithm> // for std::max()
 #include <cassert>
 #include <cmath>     // for std::ceil(), std::fabs(), std::pow(), std::sqrt(), etc.
@@ -20,7 +18,7 @@
 #include <cstring>   // for memcpy
 #include <random>
 #include <string>
-#include <type_traits> // for std::is_arithmetic, std::common_type
+#include <type_traits> // for std::is_arithmetic
 
 
 // Compile pragmas
@@ -214,7 +212,7 @@ public:
     /// @param imin,imax  generate integers that are uniformly distributed over [imin, imax]
     RandInt(const EngineType& engine, IntType imin, IntType imax):
         mEngine(engine),
-        mRand((std::min)(imin, imax), (std::max)(imin, imax))
+        mRand(std::min(imin, imax), std::max(imin, imax))
     {}
 
     /// @brief Initialize the generator.
@@ -222,13 +220,13 @@ public:
     /// @param imin,imax  generate integers that are uniformly distributed over [imin, imax]
     RandInt(unsigned int seed, IntType imin, IntType imax):
         mEngine(static_cast<typename EngineType::result_type>(seed)),
-        mRand((std::min)(imin, imax), (std::max)(imin, imax))
+        mRand(std::min(imin, imax), std::max(imin, imax))
     {}
 
     /// Change the range over which integers are distributed to [imin, imax].
     void setRange(IntType imin, IntType imax)
     {
-        mRand = Distr((std::min)(imin, imax), (std::max)(imin, imax));
+        mRand = Distr(std::min(imin, imax), std::max(imin, imax));
     }
 
     /// Set the seed value for the random number generator
@@ -247,7 +245,7 @@ public:
     /// without changing the current range.
     IntType operator()(IntType imin, IntType imax)
     {
-        const IntType lo = (std::min)(imin, imax), hi = (std::max)(imin, imax);
+        const IntType lo = std::min(imin, imax), hi = std::max(imin, imax);
         return mRand(mEngine, typename Distr::param_type(lo, hi));
     }
 };
@@ -262,7 +260,7 @@ template<typename Type>
 inline Type
 Clamp(Type x, Type min, Type max)
 {
-    assert( !(min>max) );
+    OPENVDB_ASSERT( !(min>max) );
     return x > min ? x < max ? x : max : min;
 }
 
@@ -297,7 +295,7 @@ template<typename Type>
 inline Type
 SmoothUnitStep(Type x, Type min, Type max)
 {
-    assert(min < max);
+    OPENVDB_ASSERT(min < max);
     return SmoothUnitStep((x-min)/(max-min));
 }
 
@@ -576,14 +574,14 @@ Pow(Type x, int n)
 inline float
 Pow(float b, float e)
 {
-    assert( b >= 0.0f && "Pow(float,float): base is negative" );
+    OPENVDB_ASSERT( b >= 0.0f && "Pow(float,float): base is negative" );
     return powf(b,e);
 }
 
 inline double
 Pow(double b, double e)
 {
-    assert( b >= 0.0 && "Pow(double,double): base is negative" );
+    OPENVDB_ASSERT( b >= 0.0 && "Pow(double,double): base is negative" );
     return std::pow(b,e);
 }
 //@}
@@ -596,7 +594,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b)
 {
-    return (std::max)(a,b);
+    return std::max(a,b);
 }
 
 /// Return the maximum of three values
@@ -604,7 +602,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b, const Type& c)
 {
-    return (std::max)((std::max)(a,b), c);
+    return std::max(std::max(a,b), c);
 }
 
 /// Return the maximum of four values
@@ -612,7 +610,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d)
 {
-    return (std::max)((std::max)(a,b), (std::max)(c,d));
+    return std::max(std::max(a,b), std::max(c,d));
 }
 
 /// Return the maximum of five values
@@ -620,7 +618,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d, const Type& e)
 {
-    return (std::max)((std::max)(a,b), Max(c,d,e));
+    return std::max(std::max(a,b), Max(c,d,e));
 }
 
 /// Return the maximum of six values
@@ -628,7 +626,7 @@ template<typename Type>
 inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d, const Type& e, const Type& f)
 {
-    return (std::max)(Max(a,b,c), Max(d,e,f));
+    return std::max(Max(a,b,c), Max(d,e,f));
 }
 
 /// Return the maximum of seven values
@@ -637,7 +635,7 @@ inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d,
     const Type& e, const Type& f, const Type& g)
 {
-    return (std::max)(Max(a,b,c,d), Max(e,f,g));
+    return std::max(Max(a,b,c,d), Max(e,f,g));
 }
 
 /// Return the maximum of eight values
@@ -646,7 +644,7 @@ inline const Type&
 Max(const Type& a, const Type& b, const Type& c, const Type& d,
     const Type& e, const Type& f, const Type& g, const Type& h)
 {
-    return (std::max)(Max(a,b,c,d), Max(e,f,g,h));
+    return std::max(Max(a,b,c,d), Max(e,f,g,h));
 }
 
 
@@ -655,19 +653,19 @@ Max(const Type& a, const Type& b, const Type& c, const Type& d,
 /// Return the minimum of two values
 template<typename Type>
 inline const Type&
-Min(const Type& a, const Type& b) { return (std::min)(a, b); }
+Min(const Type& a, const Type& b) { return std::min(a, b); }
 
 /// Return the minimum of three values
 template<typename Type>
 inline const Type&
-Min(const Type& a, const Type& b, const Type& c) { return (std::min)((std::min)(a, b), c); }
+Min(const Type& a, const Type& b, const Type& c) { return std::min(std::min(a, b), c); }
 
 /// Return the minimum of four values
 template<typename Type>
 inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d)
 {
-    return (std::min)((std::min)(a, b), (std::min)(c, d));
+    return std::min(std::min(a, b), std::min(c, d));
 }
 
 /// Return the minimum of five values
@@ -675,7 +673,7 @@ template<typename Type>
 inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d, const Type& e)
 {
-    return (std::min)((std::min)(a,b), Min(c,d,e));
+    return std::min(std::min(a,b), Min(c,d,e));
 }
 
 /// Return the minimum of six values
@@ -683,7 +681,7 @@ template<typename Type>
 inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d, const Type& e, const Type& f)
 {
-    return (std::min)(Min(a,b,c), Min(d,e,f));
+    return std::min(Min(a,b,c), Min(d,e,f));
 }
 
 /// Return the minimum of seven values
@@ -692,7 +690,7 @@ inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d,
     const Type& e, const Type& f, const Type& g)
 {
-    return (std::min)(Min(a,b,c,d), Min(e,f,g));
+    return std::min(Min(a,b,c,d), Min(e,f,g));
 }
 
 /// Return the minimum of eight values
@@ -701,7 +699,7 @@ inline const Type&
 Min(const Type& a, const Type& b, const Type& c, const Type& d,
     const Type& e, const Type& f, const Type& g, const Type& h)
 {
-    return (std::min)(Min(a,b,c,d), Min(e,f,g,h));
+    return std::min(Min(a,b,c,d), Min(e,f,g,h));
 }
 
 
@@ -895,7 +893,7 @@ template<typename Type>
 inline Type
 Inv(Type x)
 {
-    assert(x);
+    OPENVDB_ASSERT(x);
     return Type(1)/x;
 }
 
@@ -918,23 +916,10 @@ enum RotationOrder {
     ZXZ_ROTATION
 };
 
-#if defined(_WIN32) || defined(__ANDROID__)
-// wabi: hacked to compile. revisit this.
-template<typename S, typename T>
-struct PromotedType {
-  using supertype = S;
-};
-
-template <typename S, typename T>
+template <typename S, typename T, typename = std::enable_if_t<std::is_arithmetic_v<S>&& std::is_arithmetic_v<T>>>
 struct promote {
-    using type = typename PromotedType<S, typename std::common_type<S, T>>::supertype;
+    using type = typename std::common_type_t<S,T>;
 };
-#else // !defined(_WIN32) && !defined(__ANDROID__)
-template <typename S, typename T>
-struct promote {
-    using type = typename boost::numeric::conversion_traits<S, T>::supertype;
-};
-#endif // defined(_WIN32) || defined(__ANDROID__)
 
 /// @brief Return the index [0,1,2] of the smallest value in a 3D vector.
 /// @note This methods assumes operator[] exists.

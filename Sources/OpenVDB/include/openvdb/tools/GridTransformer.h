@@ -1,5 +1,5 @@
 // Copyright Contributors to the OpenVDB Project
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 /// @file GridTransformer.h
 /// @author Peter Cucka
@@ -99,7 +99,7 @@ public:
     /// @param tileVal  the tile's value
     /// @param on       the tile's active state
     TileSampler(const CoordBBox& b, const ValueT& tileVal, bool on):
-        mBBox((b.min)().asVec3d(), (b.max)().asVec3d()), mVal(tileVal), mActive(on), mEmpty(false)
+        mBBox(b.min().asVec3d(), b.max().asVec3d()), mVal(tileVal), mActive(on), mEmpty(false)
     {
         mBBox.expand(-this->radius()); // shrink the bounding box by the sample radius
         mEmpty = mBBox.empty();
@@ -300,7 +300,7 @@ decompose(const math::Mat4<T>& m, math::Vec3<T>& scale,
     bool hasRotation = false;
     bool validDecomposition = false;
 
-    T minAngle = (std::numeric_limits<T>::max)();
+    T minAngle = std::numeric_limits<T>::max();
 
     // If the transformation matrix contains a reflection, test different negative scales
     // to find a decomposition that favors the optimal resampling algorithm.
@@ -324,8 +324,8 @@ decompose(const math::Mat4<T>& m, math::Vec3<T>& scale,
 
         if (xform.eq(rebuild)) {
 
-            const T maxAngle = (std::max)(std::abs(tmpAngle[0]),
-                (std::max)(std::abs(tmpAngle[1]), std::abs(tmpAngle[2])));
+            const T maxAngle = std::max(std::abs(tmpAngle[0]),
+                std::max(std::abs(tmpAngle[1]), std::abs(tmpAngle[2])));
 
             if (!(minAngle < maxAngle)) { // Update if less or equal.
 
@@ -808,8 +808,8 @@ public:
             if (!mBBox.empty()) {
                 // Intersect the leaf node's bounding box with mBBox.
                 bbox = CoordBBox(
-                    Coord::maxComponent((bbox.min)(), (mBBox.min)()),
-                    Coord::minComponent((bbox.max)(), (mBBox.max)()));
+                    Coord::maxComponent(bbox.min(), mBBox.min()),
+                    Coord::minComponent(bbox.max(), mBBox.max()));
             }
             if (!bbox.empty()) {
                 transformBBox<Sampler>(mXform, bbox, mInAcc, mOutAcc, mInterrupt);
@@ -833,8 +833,8 @@ public:
             if (!mBBox.empty()) {
                 // Intersect the tile's bounding box with mBBox.
                 bbox = CoordBBox(
-                    Coord::maxComponent((bbox.min)(), (mBBox.min)()),
-                    Coord::minComponent((bbox.max)(), (mBBox.max)()));
+                    Coord::maxComponent(bbox.min(), mBBox.min()),
+                    Coord::minComponent(bbox.max(), mBBox.max()));
             }
             if (!bbox.empty()) {
                 /// @todo This samples the tile voxel-by-voxel, which is much too slow.
@@ -950,8 +950,8 @@ GridResampler::transformBBox(
     // Transform the corners of the input tree's bounding box
     // and compute the enclosing bounding box in the output tree.
     Vec3R
-        inRMin((bbox.min)().x(), (bbox.min)().y(), (bbox.min)().z()),
-        inRMax((bbox.max)().x()+1, (bbox.max)().y()+1, (bbox.max)().z()+1),
+        inRMin(bbox.min().x(), bbox.min().y(), bbox.min().z()),
+        inRMax(bbox.max().x()+1, bbox.max().y()+1, bbox.max().z()+1),
         outRMin = math::minComponent(xform.transform(inRMin), xform.transform(inRMax)),
         outRMax = math::maxComponent(xform.transform(inRMin), xform.transform(inRMax));
     for (int i = 0; i < 8; ++i) {
