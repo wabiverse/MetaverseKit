@@ -181,25 +181,6 @@ let package = Package(
     ),
 
     .target(
-      name: "ZLibDataCompression",
-      dependencies: [],
-      exclude: [],
-      publicHeadersPath: "include",
-      cSettings: [
-        .headerSearchPath("."),
-        .define("HAVE_ATTRIBUTE_ALIGNED", to: "1"),
-        .define("WITH_GZFILEOP", to: "1"),
-        .define("HAVE_UNISTD_H", to: "1", .when(platforms: Arch.OS.nix.platform)),
-        .define("Z_HAVE_STDARG_H", to: "1"),
-      ],
-      cxxSettings: [
-        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
-        .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
-        .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
-      ]
-    ),
-
-    .target(
       name: "Raw",
       dependencies: [],
       exclude: [],
@@ -210,21 +191,6 @@ let package = Package(
         .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
         .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
         .define("LIBRAW_BUILDLIB", .when(platforms: [.windows])),
-      ]
-    ),
-
-    .target(
-      name: "LibPNG",
-      dependencies: [
-        .target(name: "ZLibDataCompression"),
-      ],
-      exclude: getConfig(for: .png).exclude,
-      publicHeadersPath: "include",
-      cSettings: getConfig(for: .png).cSettings,
-      cxxSettings: [
-        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
-        .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
-        .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
       ]
     ),
 
@@ -249,11 +215,11 @@ let package = Package(
     .target(
       name: "TIFF",
       dependencies: [
-        .target(name: "ZLibDataCompression"),
-        .target(name: "WebP", condition: .when(platforms: Arch.OS.nix.platform)),
         .target(name: "LZMA2"),
         .target(name: "ZStandard"),
         .target(name: "TurboJPEG"),
+        .product(name: "WebP", package: "swift-libwebp"),
+        .product(name: "ZLib", package: "zlib"),
       ],
       exclude: getConfig(for: .tiff).exclude,
       publicHeadersPath: "include",
@@ -261,19 +227,6 @@ let package = Package(
         .define("FROM_TIF_JPEG_12", to: "1"),
         .define("HAVE_JPEGTURBO_DUAL_MODE_8_12", to: "1"),
         .define("BITS_IN_JSAMPLE", to: "12"),
-        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
-        .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
-        .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
-      ]
-    ),
-
-    .target(
-      name: "WebP",
-      publicHeadersPath: "include",
-      cSettings: [
-        .headerSearchPath("."),
-      ],
-      cxxSettings: [
         .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
         .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
         .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
@@ -580,15 +533,15 @@ let package = Package(
     .target(
       name: "OpenImageIO",
       dependencies: [
-        .target(name: "WebP", condition: .when(platforms: Arch.OS.nix.platform)),
         .target(name: "TIFF"),
         .target(name: "Raw"),
         .target(name: "Ptex"),
-        .target(name: "LibPNG"),
         .target(name: "OpenVDB"),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "MicrosoftSTL", condition: .when(platforms: Arch.OS.windows.platform)),
+        .product(name: "WebP", package: "swift-libwebp"),
+        .product(name: "LibPNG", package: "libpng"),
       ],
       exclude: getConfig(for: .oiio).exclude,
       publicHeadersPath: "include",
@@ -602,7 +555,6 @@ let package = Package(
         .define("DISABLE_BMP", to: "1"),
         .define("DISABLE_TERM", to: "1"),
         .define("DISABLE_PNM", to: "1"),
-        .define("DISABLE_WEBP", to: "1", .when(platforms: [.windows])),
         .define("DISABLE_OPENVDB", to: "1", .when(platforms: [.windows])),
         // FIXME: We broke the ABI for fmt::detail::get_file
         // to stop the swift compiler from crashing at this
@@ -665,7 +617,7 @@ let package = Package(
     .target(
       name: "Ptex",
       dependencies: [
-        .target(name: "ZLibDataCompression")
+        .product(name: "ZLib", package: "zlib"),
       ],
       publicHeadersPath: "include",
       cxxSettings: [
@@ -680,7 +632,7 @@ let package = Package(
     .target(
       name: "HDF5",
       dependencies: [
-        .target(name: "ZLibDataCompression")
+        .product(name: "ZLib", package: "zlib"),
       ],
       publicHeadersPath: "include",
       cSettings: [
@@ -717,8 +669,8 @@ let package = Package(
     .target(
       name: "Blosc",
       dependencies: [
-        .target(name: "ZLibDataCompression"),
         .target(name: "ZStandard"),
+        .product(name: "ZLib", package: "zlib"),
       ],
       exclude: getConfig(for: .blosc).exclude,
       publicHeadersPath: "include/blosc",
@@ -740,8 +692,8 @@ let package = Package(
         .target(name: "Blosc"),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
-        .target(name: "ZLibDataCompression"),
-        .target(name: "any")
+        .target(name: "any"),
+        .product(name: "ZLib", package: "zlib"),
       ],
       publicHeadersPath: "include",
       cxxSettings: getConfig(for: .openvdb).cxxSettings,
@@ -870,64 +822,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "mz_strm_libcomp.c"
         ]
       #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
-    case .zlib:
-      break
     case .raw:
       break
-    case .png:
-      if Arch.cpuArch.family.contains(.arm)
-      {
-        config.exclude = [
-          "example.c",
-          "pngtest.c",
-          "intel",
-          "powerpc",
-        ]
-        config.cSettings = [
-          .headerSearchPath("."),
-          .define("WITH_ARM", to: "1"),
-        ]
-      }
-      else if Arch.cpuArch.family.contains(.x86_64)
-      {
-        config.exclude = [
-          "example.c",
-          "pngtest.c",
-          "arm",
-          "powerpc",
-        ]
-        config.cSettings = [
-          .headerSearchPath("."),
-          .define("WITH_INTEL", to: "1"),
-        ]
-      }
-      else if Arch.cpuArch.family.contains(.powerpc)
-      {
-        config.exclude = [
-          "example.c",
-          "pngtest.c",
-          "arm",
-          "intel",
-        ]
-        config.cSettings = [
-          .headerSearchPath("."),
-          .define("WITH_POWERPC", to: "1"),
-        ]
-      }
-      else /* a unicorn! 🦄 */
-      {
-        config.exclude = [
-          "example.c",
-          "pngtest.c",
-          "arm",
-          "intel",
-          "powerpc",
-        ]
-        config.cSettings = [
-          .headerSearchPath("."),
-          .define("WITH_UNICORNS", to: "1"),
-        ]
-      }
     case .turbojpeg:
       config.exclude = [
         "cjpeg.c",
@@ -945,8 +841,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
       #if os(Windows)
         config.exclude += ["tif_unix.c"]
       #endif
-    case .webp:
-      break
     case .openmp:
       config.exclude = [
         "runtime/extractExternal.cpp",
@@ -1168,17 +1062,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
         "pnm.imageio",
         "oiiotool",
       ]
-
-      #if os(Windows)
-        config.exclude += [
-          // drop webp for now,
-          // need to add target
-          // attributes to webp
-          // functions for this
-          // to compile.
-          "webp.imageio"
-        ]
-      #endif
     case .ocioBundle:
       break
     case .ocio:
@@ -1325,10 +1208,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["MaterialX"]
         ),
         .library(
-          name: "WebP",
-          targets: ["WebP"]
-        ),
-        .library(
           name: "TurboJPEG",
           targets: ["TurboJPEG"]
         ),
@@ -1341,16 +1220,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["TIFF"]
         ),
         .library(
-          name: "LibPNG",
-          targets: ["LibPNG"]
-        ),
-        .library(
           name: "ZStandard",
           targets: ["ZStandard"]
-        ),
-        .library(
-          name: "ZLibDataCompression",
-          targets: ["ZLibDataCompression"]
         ),
         .library(
           name: "LZMA2",
@@ -1460,9 +1331,16 @@ enum Arch
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         [
           .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.2"),
+          .package(url: "https://github.com/stackotter/swift-libwebp", revision: "61dc378"),
+          .package(url: "https://github.com/the-swift-collective/zlib", from: "1.3.1"),
+          .package(url: "https://github.com/the-swift-collective/libpng", from: "1.6.45"),
         ]
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
-        []
+        [
+          .package(url: "https://github.com/stackotter/swift-libwebp", revision: "61dc378"),
+          .package(url: "https://github.com/the-swift-collective/zlib", from: "1.3.1"),
+          .package(url: "https://github.com/the-swift-collective/libpng", from: "1.6.45"),
+        ]
       #endif
     }
 
@@ -1567,14 +1445,12 @@ enum Arch
       #if os(Linux) || os(OpenBSD) || os(FreeBSD)
         [
           .target(name: "LZMA2"),
-          .target(name: "ZLibDataCompression"),
           .target(name: "ZStandard"),
           .target(name: "BZ2"),
         ]
       #else /* os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS) || os(Windows) || os(Cygwin) || os(WASI) || os(Android) */
         [
           .target(name: "LZMA2"),
-          .target(name: "ZLibDataCompression"),
           .target(name: "ZStandard"),
         ]
       #endif
@@ -1693,12 +1569,9 @@ enum PkgTarget: String
   case lzma2 = "LZMA2"
   case yaml = "Yaml"
   case minizip = "MiniZip"
-  case zlib = "ZLibDataCompression"
   case raw = "Raw"
-  case png = "LibPNG"
   case turbojpeg = "TurboJPEG"
   case tiff = "TIFF"
-  case webp = "WebP"
   case openmp = "OpenMP"
   case glfw = "GLFW"
   case imgui = "ImGui"

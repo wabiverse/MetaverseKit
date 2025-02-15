@@ -1,6 +1,15 @@
 {
-  "originHash" : "647c9de0ca382516bf4c012e5f3b7d994501efc7efd6cd2dae406aaf0e9a7e4b",
+  "originHash" : "57f63815f0724167d282028d2c767722ebc42afd287118b6e1e379a3f8385d06",
   "pins" : [
+    {
+      "identity" : "libpng",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/the-swift-collective/libpng.git",
+      "state" : {
+        "revision" : "0eff23aca92a086b7892831f5cb4f58e15be9449",
+        "version" : "1.6.45"
+      }
+    },
     {
       "identity" : "metaversevulkanframework",
       "kind" : "remoteSourceControl",
@@ -8,6 +17,24 @@
       "state" : {
         "revision" : "13c7061599c61a4959c558d8ec1836e5b32b640b",
         "version" : "1.26.2"
+      }
+    },
+    {
+      "identity" : "swift-libwebp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stackotter/swift-libwebp",
+      "state" : {
+        "branch" : "61dc378",
+        "revision" : "61dc3787c764022ad2f5ab4f9994a569afe86f9f"
+      }
+    },
+    {
+      "identity" : "zlib",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/the-swift-collective/zlib.git",
+      "state" : {
+        "revision" : "f35d438c14187cb369dfd82603c3427dc66fbed5",
+        "version" : "1.3.1"
       }
     }
   ],
