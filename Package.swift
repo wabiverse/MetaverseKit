@@ -218,7 +218,7 @@ let package = Package(
         .target(name: "LZMA2"),
         .target(name: "ZStandard"),
         .target(name: "TurboJPEG"),
-        .product(name: "WebP", package: "swift-libwebp"),
+        .product(name: "WebP", package: "libwebp"),
         .product(name: "ZLib", package: "zlib"),
       ],
       exclude: getConfig(for: .tiff).exclude,
@@ -540,7 +540,7 @@ let package = Package(
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "MicrosoftSTL", condition: .when(platforms: Arch.OS.windows.platform)),
-        .product(name: "WebP", package: "swift-libwebp"),
+        .product(name: "WebP", package: "libwebp"),
         .product(name: "LibPNG", package: "libpng"),
       ],
       exclude: getConfig(for: .oiio).exclude,
@@ -1331,13 +1331,13 @@ enum Arch
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         [
           .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.2"),
-          .package(url: "https://github.com/stackotter/swift-libwebp", revision: "61dc378"),
+          .package(url: "https://github.com/the-swift-collective/libwebp", from: "1.4.1"),
           .package(url: "https://github.com/the-swift-collective/zlib", from: "1.3.1"),
           .package(url: "https://github.com/the-swift-collective/libpng", from: "1.6.45"),
         ]
       #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
         [
-          .package(url: "https://github.com/stackotter/swift-libwebp", revision: "61dc378"),
+          .package(url: "https://github.com/the-swift-collective/libwebp", from: "1.4.1"),
           .package(url: "https://github.com/the-swift-collective/zlib", from: "1.3.1"),
           .package(url: "https://github.com/the-swift-collective/libpng", from: "1.6.45"),
         ]

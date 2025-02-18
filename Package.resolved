@@ -1,5 +1,5 @@
 {
-  "originHash" : "57f63815f0724167d282028d2c767722ebc42afd287118b6e1e379a3f8385d06",
+  "originHash" : "2e6669067fcda5e53e5c8f22dc9ffe8cf60a795666a102f14fd1c19ef69c5e96",
   "pins" : [
     {
       "identity" : "libpng",
@@ -11,21 +11,21 @@
       }
     },
     {
+      "identity" : "libwebp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/the-swift-collective/libwebp",
+      "state" : {
+        "revision" : "5f745a17b9a5c2a4283f17c2cde4517610ab5f99",
+        "version" : "1.4.1"
+      }
+    },
+    {
       "identity" : "metaversevulkanframework",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/wabiverse/MetaverseVulkanFramework",
       "state" : {
         "revision" : "13c7061599c61a4959c558d8ec1836e5b32b640b",
         "version" : "1.26.2"
-      }
-    },
-    {
-      "identity" : "swift-libwebp",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/stackotter/swift-libwebp",
-      "state" : {
-        "branch" : "61dc378",
-        "revision" : "61dc3787c764022ad2f5ab4f9994a569afe86f9f"
       }
     },
     {
