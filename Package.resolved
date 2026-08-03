@@ -1,6 +1,15 @@
 {
-  "originHash" : "2e6669067fcda5e53e5c8f22dc9ffe8cf60a795666a102f14fd1c19ef69c5e96",
+  "originHash" : "af06a3ad17ed5c9d1258349cde92b9b64ba32baf6bfc76683a10e44f7d66b871",
   "pins" : [
+    {
+      "identity" : "imgui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/the-swift-collective/imgui",
+      "state" : {
+        "revision" : "a324b2cb33615ddb6d55ce5aa1dc0d7514b6bec1",
+        "version" : "1.91.9"
+      }
+    },
     {
       "identity" : "libpng",
       "kind" : "remoteSourceControl",
@@ -20,21 +29,12 @@
       }
     },
     {
-      "identity" : "metaversevulkanframework",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/wabiverse/MetaverseVulkanFramework",
-      "state" : {
-        "revision" : "13c7061599c61a4959c558d8ec1836e5b32b640b",
-        "version" : "1.26.2"
-      }
-    },
-    {
       "identity" : "zlib",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/the-swift-collective/zlib.git",
       "state" : {
-        "revision" : "f35d438c14187cb369dfd82603c3427dc66fbed5",
-        "version" : "1.3.1"
+        "revision" : "f1d153b90420f9fcc6ef916cd67ea96f0e68d137",
+        "version" : "1.3.2"
       }
     }
   ],

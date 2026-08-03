@@ -15,7 +15,12 @@ let package = Package(
     .watchOS(.v10),
   ],
   products: getConfig(for: .all).products,
-  dependencies: Arch.OS.packageDeps(),
+  dependencies: [
+    .package(url: "https://github.com/the-swift-collective/imgui", from: "1.91.9"),
+    .package(url: "https://github.com/the-swift-collective/libwebp", from: "1.4.1"),
+    .package(url: "https://github.com/the-swift-collective/zlib", from: "1.3.1"),
+    .package(url: "https://github.com/the-swift-collective/libpng", from: "1.6.45"),
+  ],
   targets: [
     .target(
       name: "Eigen",
@@ -332,6 +337,7 @@ let package = Package(
       name: "MaterialX",
       dependencies: [
         .product(name: "ImGui", package: "imgui"),
+        .product(name: "glfw", package: "imgui"),
         .target(name: "OpenImageIO"),
         .target(name: "OpenImageIO_Util"),
         .target(name: "MXResources"),
@@ -351,6 +357,8 @@ let package = Package(
       name: "MXGraphEditor",
       dependencies: [
         .target(name: "MaterialX"),
+        .product(name: "backend_glfw", package: "imgui"),
+        .product(name: "backend_opengl3", package: "imgui"),
       ],
       exclude: getConfig(for: .mxGraphEditor).exclude,
       cxxSettings: [
@@ -1180,24 +1188,6 @@ enum Arch
         case .nodroid: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux, .openbsd, .windows]
         case .nowasm: [.macOS, .iOS, .visionOS, .tvOS, .watchOS, .linux, .android, .openbsd, .windows]
       }
-    }
-
-    static func packageDeps() -> [Package.Dependency]
-    {
-      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
-        [
-          .package(url: "https://github.com/the-swift-collective/imgui", from: "1.91.5"),
-          .package(url: "https://github.com/the-swift-collective/libwebp", from: "1.4.1"),
-          .package(url: "https://github.com/the-swift-collective/zlib", from: "1.3.1"),
-          .package(url: "https://github.com/the-swift-collective/libpng", from: "1.6.45"),
-        ]
-      #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
-        [
-          .package(url: "https://github.com/the-swift-collective/libwebp", from: "1.4.1"),
-          .package(url: "https://github.com/the-swift-collective/zlib", from: "1.3.1"),
-          .package(url: "https://github.com/the-swift-collective/libpng", from: "1.6.45"),
-        ]
-      #endif
     }
 
     static func targets() -> [Target]

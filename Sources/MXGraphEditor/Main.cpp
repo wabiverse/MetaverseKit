@@ -8,10 +8,10 @@
 #include <MaterialX/MXFormatUtil.h>
 #include <MaterialX/MXGraphEditorGraph.h>
 
-#include <ImGui/ImplGLFW.h>
-#include <ImGui/ImplOpenGL.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
-#include <GLFW/GLFW.h>
+#include <GLFW/glfw3.h>
 
 #include <cstdlib>
 #include <iostream>

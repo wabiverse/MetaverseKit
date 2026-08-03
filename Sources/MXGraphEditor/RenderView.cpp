@@ -19,7 +19,7 @@
 
 #include <MaterialX/MXFormatUtil.h>
 
-#include <ImGui/ImplGLFW.h>
+#include <backends/imgui_impl_glfw.h>
 
 #include <iostream>
 
