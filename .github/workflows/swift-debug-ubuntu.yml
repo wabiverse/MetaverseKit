@@ -8,12 +8,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        swift: ["5.10"]
+        swift: ["6.3.3"]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: swift-actions/setup-swift@v2
+      - uses: swift-actions/setup-swift@v3
         with:
           swift-version: ${{ matrix.swift }}
+          skip-verify-signature: true
       - uses: actions/checkout@v4
       - name: 👨‍💻 Install CxxStdlib
         run: sudo apt install libstdc++-12-dev

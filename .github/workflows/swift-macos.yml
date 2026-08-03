@@ -7,13 +7,14 @@ jobs:
     name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-14]
-        swift: ["5.10"]
+        os: [macos-26]
+        swift: ["6.3.3"]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: swift-actions/setup-swift@v2
+      - uses: swift-actions/setup-swift@v3
         with:
           swift-version: ${{ matrix.swift }}
+          skip-verify-signature: true
       - uses: actions/checkout@v4
       - name: 🗃️ Checkout Submodules
         run: git submodule update --init --recursive

@@ -8,13 +8,13 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        swift: ["5.10"]
+        swift: ["6.3"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: compnerd/gha-setup-swift@main
         with:
-          branch: swift-5.10-release
-          tag: 5.10-RELEASE
+          branch: swift-6.3-release
+          tag: 6.3-RELEASE
       - uses: actions/checkout@v4
       - name: 🗃️ Checkout Submodules
         run: git submodule update --init --recursive
