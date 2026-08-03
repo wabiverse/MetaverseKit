@@ -303,38 +303,6 @@ let package = Package(
     ),
 
     .target(
-      name: "GLFW",
-      dependencies: Arch.OS.glfwDeps(),
-      exclude: getConfig(for: .glfw).exclude,
-      publicHeadersPath: "include",
-      cxxSettings: getConfig(for: .glfw).cxxSettings,
-      linkerSettings: getConfig(for: .glfw).linkerSettings
-    ),
-
-    .target(
-      name: "ImGui",
-      dependencies: [
-        .target(name: "GLFW"),
-      ],
-      exclude: getConfig(for: .imgui).exclude,
-      publicHeadersPath: "include",
-      cxxSettings: [
-        .define("VK_USE_PLATFORM_MACOS_MVK", to: "1", .when(platforms: [.macOS])),
-        .define("VK_USE_PLATFORM_IOS_MVK", to: "1", .when(platforms: [.iOS, .visionOS])),
-        .headerSearchPath("."),
-        .headerSearchPath("backends"),
-        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
-        .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
-        .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
-      ],
-      linkerSettings: [
-        .linkedFramework("Cocoa", .when(platforms: [.macOS])),
-        .linkedFramework("GLUT", .when(platforms: [.macOS])),
-        .linkedFramework("GameController", .when(platforms: Arch.OS.apple.platform)),
-      ]
-    ),
-
-    .target(
       name: "MXResources",
       exclude: [
         // TODO: fix metal shader compilation.
@@ -363,7 +331,7 @@ let package = Package(
     .target(
       name: "MaterialX",
       dependencies: [
-        .target(name: "ImGui"),
+        .product(name: "ImGui", package: "imgui"),
         .target(name: "OpenImageIO"),
         .target(name: "OpenImageIO_Util"),
         .target(name: "MXResources"),
@@ -727,7 +695,7 @@ let package = Package(
       name: "MetaversalDemo",
       dependencies: [
         .target(name: "OneTBB"),
-        .target(name: "ImGui"),
+        .product(name: "ImGui", package: "imgui"),
         .target(name: "Imath"),
         .target(name: "OpenEXR"),
         .target(name: "OCIOBundle"),
@@ -877,132 +845,6 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           "runtime/kmp_gsupport.cpp"
         ]
       #endif /* os(Windows) */
-    case .glfw:
-      // null_*.c are guarded internally with #if defined(_GLFW_OSMESA) so they
-      // compile to empty translation units on macOS/Linux (where _GLFW_OSMESA is
-      // not defined) and provide the full null-platform implementation on Android
-      // (where _GLFW_OSMESA is set via .when(platforms: [.android]) in cxxSettings).
-      // Do NOT add them to the exclude list.
-      config.exclude = [
-        "wl_init.c",
-        "wl_window.c",
-        "wl_monitor.c",
-      ]
-      #if !os(Windows)
-        config.exclude += [
-          "wgl_context.c",
-          "win32_init.c",
-          "win32_joystick.c",
-          "win32_monitor.c",
-          "win32_thread.c",
-          "win32_time.c",
-          "win32_window.c",
-        ]
-      #endif /* !os(Windows) */
-      #if os(Windows)
-        config.exclude += [
-          "posix_thread.c"
-        ]
-      #endif
-      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
-        config.exclude += [
-          "nsgl_context.m",
-          "cocoa_init.m",
-          "cocoa_joystick.m",
-          "cocoa_window.m",
-          "cocoa_monitor.m",
-          "cocoa_time.c",
-        ]
-      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
-      // Exclude X11/GLX files on every platform that does not use X11.
-      // Android uses the null/OSMESA platform, so it also gets excluded here.
-      #if !os(Linux) && !os(OpenBSD) && !os(FreeBSD)
-        config.exclude += [
-          "xkb_unicode.c",
-          "x11_init.c",
-          "x11_monitor.c",
-          "x11_window.c",
-          "glx_context.c",
-          "linux_joystick.c",
-        ]
-      #endif /* !os(Linux) && !os(OpenBSD) && !os(FreeBSD) */
-      // posix_time.c is guarded internally with #if !defined(_GLFW_COCOA) so it
-      // compiles to nothing on macOS (which uses cocoa_time.c instead) and
-      // provides POSIX timer functions on Linux, Android, and other POSIX targets.
-      config.cxxSettings = [
-        .headerSearchPath("."),
-        .define("_GLFW_COCOA", to: "1", .when(platforms: Arch.OS.apple.platform)),
-        .define("_GLFW_X11", to: "1", .when(platforms: [.linux, .openbsd])),
-        .define("_GLFW_OSMESA", to: "1", .when(platforms: [.android])),
-        .define("_GLFW_WIN32", to: "1", .when(platforms: Arch.OS.windows.platform)),
-        .define("GL_SILENCE_DEPRECATION", to: "1"),
-        .define("_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH", .when(platforms: [.windows])),
-        .define("_ALLOW_KEYWORD_MACROS", to: "1", .when(platforms: [.windows])),
-        .define("static_assert(_conditional, ...)", to: "", .when(platforms: [.windows])),
-      ]
-      #if os(Windows)
-        config.linkerSettings = [
-          .linkedLibrary("opengl32", .when(platforms: [.windows])),
-        ]
-      #endif // os(Windows)
-      #if os(Linux) || os(OpenBSD) || os(FreeBSD)
-        config.linkerSettings = [
-          .linkedLibrary("glut"),
-          .linkedLibrary("GL"),
-          .linkedLibrary("GLU"),
-          .linkedLibrary("m"),
-          .linkedLibrary("X11"),
-          .linkedLibrary("Xt"),
-        ]
-      #endif /* os(Linux) || os(OpenBSD) || os(FreeBSD) */
-    case .imgui:
-      config.exclude = [
-        // no wgpu (for now)
-        "backends/ImplWGPU.cpp",
-        // no allegro
-        "backends/ImplAllegro5.cpp",
-        // no android
-        "backends/ImplAndroid.cpp",
-        // no directx (for now)
-        "backends/ImplDX9.cpp",
-        "backends/ImplDX10.cpp",
-        "backends/ImplDX11.cpp",
-        "backends/ImplDX12.cpp",
-        // no sdl
-        "backends/ImplSDL.cpp",
-        "backends/ImplSDLRenderer.cpp",
-      ]
-      #if os(Windows)
-        config.exclude += [
-          "backends/ImplGLUT.cpp",
-          "backends/ImplGLFW.cpp",
-        ]
-      #endif /* os(Windows) */
-      #if !os(macOS) && !os(iOS) && !os(tvOS)
-        /* fixup metaversalvulkanframework,
-         we should be able to rig moltenvk
-         to work on visionOS, but disabled
-         for now. */
-        config.exclude += [
-          // no vulkan (for now)
-          "backends/ImplVulkan.cpp",
-          "backends/ImplVulkan.h",
-        ]
-      #endif /* !os(macOS) && !os(iOS) && !os(tvOS) */
-      #if !os(Windows)
-        config.exclude += [
-          // no win32
-          "backends/ImplWin32.cpp",
-        ]
-      #endif /* !os(Windows) */
-      #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
-        config.exclude += [
-          // no metal
-          "backends/ImplMetal.mm",
-          // no apple os
-          "backends/ImplMacOS.mm",
-        ]
-      #endif /* !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS) */
     case .mxGraphEditor:
       #if !os(macOS) && !os(visionOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
         config.exclude = [
@@ -1211,16 +1053,8 @@ func getConfig(for target: PkgTarget) -> TargetInfo
           targets: ["OpenMP"]
         ),
         .library(
-          name: "GLFW",
-          targets: ["GLFW"]
-        ),
-        .library(
           name: "Imath",
           targets: ["pystring", "Imath"]
-        ),
-        .library(
-          name: "ImGui",
-          targets: ["ImGui"]
         ),
         .library(
           name: "MaterialX",
@@ -1352,7 +1186,7 @@ enum Arch
     {
       #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
         [
-          .package(url: "https://github.com/wabiverse/MetaverseVulkanFramework", from: "1.26.2"),
+          .package(url: "https://github.com/the-swift-collective/imgui", from: "1.91.5"),
           .package(url: "https://github.com/the-swift-collective/libwebp", from: "1.4.1"),
           .package(url: "https://github.com/the-swift-collective/zlib", from: "1.3.1"),
           .package(url: "https://github.com/the-swift-collective/libpng", from: "1.6.45"),
@@ -1483,17 +1317,6 @@ enum Arch
         ]
       #endif
     }
-
-    static func glfwDeps() -> [Target.Dependency]
-    {
-      #if os(macOS) || os(visionOS) || os(iOS) || os(tvOS) || os(watchOS)
-        [
-          .product(name: "MoltenVK", package: "MetaverseVulkanFramework", condition: .when(platforms: [.macOS, .iOS, .tvOS])),
-        ]
-      #else /* os(Linux) || os(Android) || os(OpenBSD) || os(FreeBSD) || os(Windows) || os(Cygwin) || os(WASI) */
-        []
-      #endif
-    }
   }
 
   enum CPU: String
@@ -1600,8 +1423,6 @@ enum PkgTarget: String
   case turbojpeg = "TurboJPEG"
   case tiff = "TIFF"
   case openmp = "OpenMP"
-  case glfw = "GLFW"
-  case imgui = "ImGui"
   case pystring
   case imath = "Imath"
   case mxGraphEditor = "MXGraphEditor"
