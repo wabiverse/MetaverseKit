@@ -16,7 +16,7 @@ let package = Package(
   ],
   products: getConfig(for: .all).products,
   dependencies: [
-    .package(url: "https://github.com/the-swift-collective/imgui", from: "1.91.9"),
+    .package(url: "https://github.com/the-swift-collective/imgui", from: "1.92.0"),
     .package(url: "https://github.com/the-swift-collective/libwebp", from: "1.4.1"),
     .package(url: "https://github.com/the-swift-collective/zlib", from: "1.3.1"),
     .package(url: "https://github.com/the-swift-collective/libpng", from: "1.6.45"),

@@ -1,13 +1,13 @@
 {
-  "originHash" : "af06a3ad17ed5c9d1258349cde92b9b64ba32baf6bfc76683a10e44f7d66b871",
+  "originHash" : "ec2d82efd10dc816ed13ffa578ef4abd50dedbc2542af8c39bcbdb3dbb6af676",
   "pins" : [
     {
       "identity" : "imgui",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/the-swift-collective/imgui",
       "state" : {
-        "revision" : "a324b2cb33615ddb6d55ce5aa1dc0d7514b6bec1",
-        "version" : "1.91.9"
+        "revision" : "5bd25cffd4ad22635563aa29c59ebee56943964e",
+        "version" : "1.92.0"
       }
     },
     {
